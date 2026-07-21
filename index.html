@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HTML 原型预览</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #e8edef; background: #080a0b; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    main { width: min(1040px, calc(100% - 40px)); margin: 64px auto; }
+    h1 { margin: 0 0 8px; font-size: 30px; letter-spacing: 0; }
+    .subtitle { margin: 0 0 36px; color: #89949b; font-size: 14px; }
+    .table { overflow: hidden; border: 1px solid #2b3236; border-radius: 6px; }
+    .row { display: grid; grid-template-columns: minmax(220px, 1.3fr) minmax(260px, 2fr) 130px 100px; align-items: center; min-height: 64px; padding: 0 20px; border-bottom: 1px solid #252c30; background: #111518; }
+    .row:last-child { border-bottom: 0; }
+    .head { min-height: 44px; color: #7f8a90; background: #0e1113; font-size: 13px; }
+    .name { color: #f4f7f8; font-weight: 600; }
+    .desc, .date { color: #9aa4aa; font-size: 14px; }
+    a { color: #40ddd4; font-size: 14px; text-decoration: none; }
+    a:hover { color: #79eee8; }
+    @media (max-width: 720px) {
+      .row { grid-template-columns: 1fr; gap: 7px; padding: 16px; }
+      .head { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>HTML 原型预览</h1>
+    <p class="subtitle">容量万相产品原型统一发布目录，页面更新后刷新原链接即可查看最新版。</p>
+    <section class="table">
+      <div class="row head"><span>原型名称</span><span>说明</span><span>更新时间</span><span>预览</span></div>
+      <div class="row">
+        <span class="name">官网商务合作表单</span>
+        <span class="desc">商务合作线索收集、隐私政策及提交反馈</span>
+        <span class="date">2026-07-21</span>
+        <a href="business-cooperation/">打开原型</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
