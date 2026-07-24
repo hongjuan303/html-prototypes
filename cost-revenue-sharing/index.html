@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>成本及分成比例设置</title>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg: #f3f5f8;
+      --surface: #fff;
+      --text: #3f4650;
+      --muted: #8a929d;
+      --line: #e3e8ef;
+      --line-strong: #d4dce7;
+      --primary: #2589ff;
+      --primary-soft: #edf6ff;
+      --danger: #ff3b3b;
+      --shadow: 0 16px 50px rgba(32, 44, 61, .18);
+      --radius: 4px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+    button, input, select { font: inherit; letter-spacing: 0; }
+    button { cursor: pointer; }
+    [hidden] { display: none !important; }
+
+    .workspace {
+      min-height: 100vh;
+      color: #69727e;
+      background: #f6f8fb;
+    }
+    .workspace-header {
+      display: flex;
+      align-items: center;
+      height: 58px;
+      padding: 0 28px;
+      background: #fff;
+      border-bottom: 1px solid #e8edf2;
+    }
+    .workspace-header strong { color: #303844; font-size: 17px; }
+    .workspace-header nav { display: flex; gap: 28px; margin-left: 54px; font-size: 13px; }
+    .workspace-header nav span:first-child { color: var(--primary); }
+    .workspace-main { width: min(1180px, calc(100% - 48px)); margin: 28px auto; }
+    .workspace-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .workspace-title h1 { margin: 0; color: #303844; font-size: 22px; }
+    .open-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 36px;
+      padding: 0 14px;
+      color: #fff;
+      background: var(--primary);
+      border: 0;
+      border-radius: var(--radius);
+    }
+    .open-button svg { width: 16px; height: 16px; }
+    .placeholder-panel { padding: 18px; background: #fff; border: 1px solid #e6ebf1; border-radius: var(--radius); }
+    .filters { display: flex; gap: 12px; margin-bottom: 18px; }
+    .fake-input { width: 210px; height: 34px; background: #fafbfd; border: 1px solid #e1e7ee; border-radius: var(--radius); }
+    .fake-table { overflow: hidden; border: 1px solid #e6ebf1; }
+    .fake-row { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr 120px; min-height: 48px; border-bottom: 1px solid #edf0f4; }
+    .fake-row:last-child { border-bottom: 0; }
+    .fake-row span { display: flex; align-items: center; padding: 0 14px; border-right: 1px solid #edf0f4; }
+    .fake-row span:last-child { border-right: 0; }
+    .fake-row.head { min-height: 42px; color: #7c8591; background: #fafbfd; font-size: 12px; }
+
+    .modal-layer {
+      position: fixed;
+      z-index: 50;
+      inset: 0;
+      display: grid;
+      padding: 24px;
+      background: rgba(33, 42, 55, .36);
+      place-items: center;
+    }
+    .modal {
+      display: flex;
+      flex-direction: column;
+      width: min(940px, calc(100vw - 48px));
+      max-height: calc(100vh - 48px);
+      overflow: hidden;
+      background: var(--surface);
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+      animation: modal-in .18s ease-out;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(10px) scale(.992); }
+    }
+    .modal-header {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      padding: 0 18px 0 22px;
+      border-bottom: 1px solid #edf0f4;
+    }
+    .modal-header h2 { margin: 0; color: #313842; font-size: 18px; font-weight: 500; }
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      color: #9ba3ad;
+      background: transparent;
+      border: 0;
+      border-radius: 50%;
+    }
+    .icon-button:hover { color: #4b535d; background: #f4f6f8; }
+    .icon-button svg { width: 17px; height: 17px; }
+    .modal-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 22px 18px 26px;
+    }
+
+    .basic-form { padding: 0 76px 10px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 142px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 46px;
+    }
+    .form-label { color: #666e78; font-size: 14px; text-align: right; }
+    .required::before { margin-right: 5px; color: var(--danger); content: "*"; }
+    .static-value { color: #464e58; font-size: 14px; }
+    .control-line { display: flex; flex-wrap: wrap; gap: 25px; align-items: center; min-width: 0; }
+
+    .radio {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      color: #555d67;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .radio input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .radio-mark {
+      position: relative;
+      flex: 0 0 14px;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border: 1px solid #cfd7e2;
+      border-radius: 50%;
+    }
+    .radio input:checked + .radio-mark { background: var(--primary); border-color: var(--primary); }
+    .radio input:checked + .radio-mark::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 4px;
+      content: "";
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .radio input:checked ~ .radio-text { color: var(--primary); }
+    .help-icon { display: inline-flex; margin-left: -18px; color: #6d747d; }
+    .help-icon svg { width: 14px; height: 14px; }
+
+    .input, .select {
+      width: 142px;
+      height: 30px;
+      padding: 0 10px;
+      color: #4b535d;
+      background: #fff;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .input:focus, .select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37,137,255,.1); }
+    .input::placeholder { color: #bdc4cd; }
+    .input.date { width: 248px; }
+    .input.error, .select.error { border-color: var(--danger); }
+    .input-wrap { position: relative; display: inline-flex; align-items: center; }
+    .input-wrap > svg { position: absolute; left: 10px; width: 14px; color: #b6bec8; pointer-events: none; }
+    .input-wrap .date { padding-left: 32px; }
+    .unit { margin-left: -19px; color: #5d6570; font-size: 13px; }
+    .select { appearance: none; padding-right: 28px; color: #8f98a4; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aeb6c0' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center; }
+    .select:valid { color: #4b535d; }
+    .stepper { display: inline-grid; grid-template-columns: 30px 64px 30px; height: 30px; overflow: hidden; border: 1px solid var(--line-strong); border-radius: var(--radius); }
+    .stepper button { padding: 0; color: #87909b; background: #f8fafc; border: 0; }
+    .stepper button:first-child { border-right: 1px solid var(--line-strong); }
+    .stepper button:last-child { border-left: 1px solid var(--line-strong); }
+    .stepper input { width: 100%; min-width: 0; padding: 0 5px; text-align: center; border: 0; outline: none; }
+
+    .accordion {
+      margin-top: 18px;
+      border: 1px solid #dce6f2;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 7px rgba(49, 76, 104, .05);
+    }
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 56px;
+      padding: 0 22px;
+      color: #4c545e;
+      background: #fff;
+      border: 0;
+      text-align: left;
+    }
+    .accordion-header strong { color: var(--primary); font-size: 18px; font-weight: 600; }
+    .accordion-header span { font-size: 13px; }
+    .accordion-content { padding: 20px 76px 27px; border-top: 1px solid #eef2f6; }
+    .script-content { padding-top: 15px; }
+    .scheme-row { margin: 6px 0 6px; }
+    .scheme-row .control-line { gap: 28px; }
+    .formula-block {
+      max-width: 650px;
+      margin: 4px 0 0 154px;
+      color: var(--danger);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    .formula-line { display: block; }
+    .formula-line.muted { opacity: .55; }
+    .formula-line.active { font-weight: 500; }
+    .pure-formula { padding-top: 1px; }
+
+    .modal-footer {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      height: 62px;
+      padding: 0 20px;
+      background: #fff;
+      border-top: 1px solid #e9edf2;
+    }
+    .button {
+      min-width: 76px;
+      height: 34px;
+      padding: 0 16px;
+      border-radius: var(--radius);
+    }
+    .button.secondary { color: #59616c; background: #fff; border: 1px solid #d5dce5; }
+    .button.primary { color: #fff; background: var(--primary); border: 1px solid var(--primary); }
+    .button:hover { filter: brightness(.98); }
+
+    .toast {
+      position: fixed;
+      z-index: 80;
+      top: 24px;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: calc(100vw - 32px);
+      padding: 11px 16px;
+      color: #fff;
+      background: rgba(42, 50, 59, .94);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(21, 29, 37, .16);
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -8px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast svg { width: 16px; height: 16px; }
+
+    @media (max-width: 760px) {
+      .workspace-header nav { display: none; }
+      .workspace-main { width: calc(100% - 28px); }
+      .fake-row { grid-template-columns: 1fr 1fr; }
+      .fake-row span:nth-child(n+3) { display: none; }
+      .modal-layer { align-items: stretch; padding: 0; }
+      .modal { width: 100%; max-height: 100dvh; border-radius: 0; }
+      .modal-header { height: 56px; }
+      .modal-body { padding: 14px 12px 22px; }
+      .basic-form, .accordion-content { padding-right: 10px; padding-left: 10px; }
+      .form-row { grid-template-columns: 1fr; gap: 7px; align-items: start; padding: 7px 0; }
+      .form-label { text-align: left; }
+      .input.date { width: min(100%, 248px); }
+      .control-line { gap: 12px 22px; }
+      .accordion-header { padding: 0 16px; }
+      .formula-block { max-width: none; margin-left: 0; padding: 4px 0 0; }
+      .modal-footer { height: 58px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="workspace">
+    <header class="workspace-header">
+      <strong>内容合作管理</strong>
+      <nav><span>项目管理</span><span>结算管理</span><span>供应商管理</span></nav>
+    </header>
+    <main class="workspace-main">
+      <div class="workspace-title">
+        <h1>剧目合作项目</h1>
+        <button class="open-button" id="openModal" type="button"><i data-lucide="settings-2"></i><span>设置分成</span></button>
+      </div>
+      <section class="placeholder-panel">
+        <div class="filters"><div class="fake-input"></div><div class="fake-input"></div></div>
+        <div class="fake-table">
+          <div class="fake-row head"><span>剧目名称</span><span>合作模式</span><span>合作主体</span><span>分成方案</span><span>操作</span></div>
+          <div class="fake-row"><span>花在江湖</span><span>制作</span><span>杭州容量</span><span>消耗+收益分成</span><span>设置</span></div>
+          <div class="fake-row"><span>星河入梦</span><span>采购</span><span>象山容量</span><span>消耗分成</span><span>设置</span></div>
+          <div class="fake-row"><span>野火与春风</span><span>制作</span><span>杭州容量</span><span>纯收益分成</span><span>设置</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-layer" id="modalLayer">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <h2 id="modalTitle">设置成本及分成比例</h2>
+        <button class="icon-button" id="closeModal" type="button" title="关闭"><i data-lucide="x"></i></button>
+      </header>
+
+      <div class="modal-body">
+        <section class="basic-form">
+          <div class="form-row">
+            <div class="form-label">当前剧：</div>
+            <div class="static-value">花在江湖</div>
+          </div>
+          <div class="form-row">
+            <div class="form-label">合作模式：</div>
+            <div class="control-line">
+              <label class="radio"><input type="radio" name="cooperationMode" value="制作" checked><span class="radio-mark"></span><span class="radio-text">制作</span></label>
+              <label class="radio"><input type="radio" name="cooperationMode" value="采购"><span class="radio-mark"></span><span class="radio-text">采购</span></label>
+              <span class="help-icon" title="合作模式说明"><i data-lucide="circle-help"></i></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="startDate">分账开始时间：</label>
+            <div class="input-wrap"><i data-lucide="calendar-days"></i><input class="input date" id="startDate" type="date" data-required></div>
+          </div>
+        </section>
+
+        <section class="accordion">
+          <button class="accordion-header" type="button" data-accordion="productionContent" aria-expanded="false">
+            <strong>制作</strong><span data-accordion-label>展开</span>
+          </button>
+          <div class="accordion-content" id="productionContent" hidden>
+            <div class="form-row">
+              <label class="form-label" for="productionTeam">制作团队：</label>
+              <select class="select" id="productionTeam"><option value="">请选择</option><option>容量制作一组</option><option>容量制作二组</option></select>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="productionBudget">制作预算（元）：</label>
+              <input class="input" id="productionBudget" type="number" min="0" placeholder="请输入">
+            </div>
+          </div>
+        </section>
+
+        <section class="accordion">
+          <button class="accordion-header" type="button" data-accordion="scriptContent" aria-expanded="true">
+            <strong>剧本</strong><span data-accordion-label>收起</span>
+          </button>
+          <div class="accordion-content script-content" id="scriptContent">
+            <div class="form-row">
+              <div class="form-label">合作主体：</div>
+              <div class="control-line">
+                <label class="radio"><input type="radio" name="company" value="杭州容量" checked><span class="radio-mark"></span><span class="radio-text">杭州容量</span></label>
+                <label class="radio"><input type="radio" name="company" value="象山容量"><span class="radio-mark"></span><span class="radio-text">象山容量</span></label>
+              </div>
+            </div>
+
+            <div class="form-row scheme-row">
+              <div class="form-label">分成方案：</div>
+              <div class="control-line">
+                <label class="radio"><input type="radio" name="shareScheme" value="consumption"><span class="radio-mark"></span><span class="radio-text">消耗分成</span></label>
+                <label class="radio"><input type="radio" name="shareScheme" value="hybrid" checked><span class="radio-mark"></span><span class="radio-text">消耗+收益分成</span></label>
+                <label class="radio"><input type="radio" name="shareScheme" value="profit"><span class="radio-mark"></span><span class="radio-text">纯收益分成</span></label>
+              </div>
+            </div>
+
+            <div class="form-row pure-only" hidden>
+              <label class="form-label required" for="totalProductionCost">总制作成本（元）：</label>
+              <input class="input" id="totalProductionCost" type="number" min="0" placeholder="请输入" data-required-dynamic>
+            </div>
+            <div class="form-row">
+              <label class="form-label required" for="scriptCost">剧本成本（元）：</label>
+              <input class="input" id="scriptCost" type="number" min="0" placeholder="请输入" data-required>
+            </div>
+            <div class="form-row pure-only" hidden>
+              <label class="form-label required" for="ipCost">IP成本（元）：</label>
+              <input class="input" id="ipCost" type="number" min="0" placeholder="请输入" data-required-dynamic>
+            </div>
+            <div class="form-row">
+              <label class="form-label required" for="scriptRatio">剧本分成比例：</label>
+              <div class="control-line"><input class="input" id="scriptRatio" type="number" min="0" max="100" step="0.1" placeholder="请输入" data-required><span class="unit">%</span></div>
+            </div>
+            <div class="form-row">
+              <label class="form-label required" for="supplier">供应商：</label>
+              <select class="select" id="supplier" data-required>
+                <option value="">请选择</option>
+                <option value="杭州星河文化">杭州星河文化</option>
+                <option value="象山云帆传媒">象山云帆传媒</option>
+                <option value="上海远望工作室">上海远望工作室</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="thirdPartyRatio">第三方分成比例：</label>
+              <div class="control-line">
+                <div class="stepper">
+                  <button type="button" data-step="-1" title="减少"><i data-lucide="minus"></i></button>
+                  <input id="thirdPartyRatio" type="number" min="0" max="100" value="0">
+                  <button type="button" data-step="1" title="增加"><i data-lucide="plus"></i></button>
+                </div>
+                <span class="unit">%</span>
+              </div>
+            </div>
+
+            <div id="settlementBlock">
+              <div class="form-row">
+                <div class="form-label required">剧本结算方式：</div>
+                <div class="control-line" id="settlementOptions"></div>
+              </div>
+              <div class="formula-block" id="hybridFormula">
+                <span class="formula-line active" data-formula="after">后扣：投放消耗 * 剧本分成比例 + 第三方应分【（抖音端上+星图+转授权收益+多多+红果）收益 * 第三方分成比例】 - 剧本成本</span>
+                <span class="formula-line muted" data-formula="none">不扣：投放消耗 * 剧本分成比例 + 第三方应分【（抖音端上+星图+转授权收益+多多+红果）收益 * 第三方分成比例】</span>
+              </div>
+              <div class="formula-block pure-formula" id="profitFormula" hidden>
+                <span class="formula-line active">前扣：（投放收益+第三方收益-总制作成本-剧本成本-IP成本）*分成比例</span>
+                <span class="formula-line active">=【投放收益+第三方收益（抖音端上+星图+转授权收益+多多+红果）-总制作成本-剧本成本-IP成本】*分成比例</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="modal-footer">
+        <button class="button secondary" id="cancelModal" type="button">取消</button>
+        <button class="button primary" id="saveForm" type="button">保存</button>
+      </footer>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><i data-lucide="circle-check"></i><span></span></div>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const modalLayer = $("#modalLayer");
+    let currentScheme = "hybrid";
+    let toastTimer;
+
+    function refreshIcons() {
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function openModal() {
+      modalLayer.hidden = false;
+      document.body.style.overflow = "hidden";
+      refreshIcons();
+    }
+
+    function closeModal() {
+      modalLayer.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.querySelector("span").textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function radioOption(value, label, checked) {
+      return `<label class="radio"><input type="radio" name="settlement" value="${value}" ${checked ? "checked" : ""}><span class="radio-mark"></span><span class="radio-text">${label}</span></label>`;
+    }
+
+    function updateFormulaHighlight() {
+      const selected = document.querySelector('input[name="settlement"]:checked')?.value;
+      $$("#hybridFormula [data-formula]").forEach((line) => {
+        line.classList.toggle("active", line.dataset.formula === selected);
+        line.classList.toggle("muted", line.dataset.formula !== selected);
+      });
+    }
+
+    function updateScheme(scheme) {
+      currentScheme = scheme;
+      const isConsumption = scheme === "consumption";
+      const isProfit = scheme === "profit";
+
+      $$(".pure-only").forEach((row) => row.hidden = !isProfit);
+      $$("[data-required-dynamic]").forEach((input) => {
+        input.dataset.activeRequired = isProfit ? "true" : "false";
+        if (!isProfit) input.classList.remove("error");
+      });
+      $("#settlementBlock").hidden = isConsumption;
+      $("#hybridFormula").hidden = isProfit || isConsumption;
+      $("#profitFormula").hidden = !isProfit;
+
+      if (isProfit) {
+        $("#settlementOptions").innerHTML = radioOption("before", "前扣", true);
+      } else if (!isConsumption) {
+        $("#settlementOptions").innerHTML = radioOption("after", "后扣", true) + radioOption("none", "不扣", false);
+      } else {
+        $("#settlementOptions").innerHTML = "";
+      }
+
+      $$("#settlementOptions input").forEach((input) => input.addEventListener("change", updateFormulaHighlight));
+      updateFormulaHighlight();
+      refreshIcons();
+    }
+
+    function validate() {
+      const required = $$('[data-required], [data-active-required="true"]');
+      let valid = true;
+      required.forEach((input) => {
+        const empty = String(input.value || "").trim() === "";
+        input.classList.toggle("error", empty);
+        if (empty) valid = false;
+      });
+      return valid;
+    }
+
+    $$("[data-accordion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const content = document.getElementById(button.dataset.accordion);
+        const expanded = button.getAttribute("aria-expanded") === "true";
+        button.setAttribute("aria-expanded", String(!expanded));
+        button.querySelector("[data-accordion-label]").textContent = expanded ? "展开" : "收起";
+        content.hidden = expanded;
+      });
+    });
+
+    $$('input[name="shareScheme"]').forEach((input) => input.addEventListener("change", () => updateScheme(input.value)));
+    $$("[data-step]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = $("#thirdPartyRatio");
+        const next = Math.min(100, Math.max(0, Number(input.value || 0) + Number(button.dataset.step)));
+        input.value = next;
+      });
+    });
+
+    $("#saveForm").addEventListener("click", () => {
+      if (!validate()) {
+        showToast("请补充必填信息");
+        $(".error")?.focus();
+        return;
+      }
+      const schemeName = document.querySelector('input[name="shareScheme"]:checked').nextElementSibling.nextElementSibling.textContent;
+      showToast(`${schemeName}已保存`);
+      setTimeout(closeModal, 650);
+    });
+
+    $("#openModal").addEventListener("click", openModal);
+    $("#closeModal").addEventListener("click", closeModal);
+    $("#cancelModal").addEventListener("click", closeModal);
+    modalLayer.addEventListener("click", (event) => { if (event.target === modalLayer) closeModal(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !modalLayer.hidden) closeModal(); });
+
+    updateScheme(currentScheme);
+    openModal();
+    refreshIcons();
+  </script>
+</body>
+</html>

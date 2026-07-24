@@ -12,3 +12,4 @@
 ## 当前原型
 
 - `business-cooperation/`：官网商务合作表单。
+- `cost-revenue-sharing/`：成本及分成比例设置弹窗。
