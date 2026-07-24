@@ -459,7 +459,7 @@
             </div>
 
             <div id="settlementBlock">
-              <div class="form-row">
+              <div class="form-row" id="settlementRow">
                 <div class="form-label required">剧本结算方式：</div>
                 <div class="control-line" id="settlementOptions"></div>
               </div>
@@ -468,7 +468,7 @@
                 <span class="formula-line muted" data-formula="none">不扣：投放消耗 * 剧本分成比例 + 第三方应分【（抖音端上+星图+转授权收益+多多+红果）收益 * 第三方分成比例】</span>
               </div>
               <div class="formula-block pure-formula" id="profitFormula" hidden>
-                <span class="formula-line active">前扣：（投放收益+第三方收益-总制作成本-剧本成本-IP成本）*分成比例</span>
+                <span class="formula-line active">纯收益分成_前扣 =（投放收益+第三方收益-总制作成本-剧本成本-IP成本）*分成比例</span>
                 <span class="formula-line active">=【投放收益+第三方收益（抖音端上+星图+转授权收益+多多+红果）-总制作成本-剧本成本-IP成本】*分成比例</span>
               </div>
             </div>
@@ -538,6 +538,7 @@
         if (!isProfit) input.classList.remove("error");
       });
       $("#settlementBlock").hidden = isConsumption;
+      $("#settlementRow").hidden = isProfit;
       $("#hybridFormula").hidden = isProfit || isConsumption;
       $("#profitFormula").hidden = !isProfit;
       $("#scriptRatioRow").hidden = isConsumption;
@@ -548,7 +549,7 @@
       $("#consumptionRatio").classList.remove("error");
 
       if (isProfit) {
-        $("#settlementOptions").innerHTML = radioOption("before", "前扣", true);
+        $("#settlementOptions").innerHTML = "";
       } else if (!isConsumption) {
         $("#settlementOptions").innerHTML = radioOption("after", "后扣", true) + radioOption("none", "不扣", false);
       } else {
