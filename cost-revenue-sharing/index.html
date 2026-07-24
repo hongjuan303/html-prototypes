@@ -203,6 +203,19 @@
     .stepper button:first-child { border-right: 1px solid var(--line-strong); }
     .stepper button:last-child { border-left: 1px solid var(--line-strong); }
     .stepper input { width: 100%; min-width: 0; padding: 0 5px; text-align: center; border: 0; outline: none; }
+    .text-link {
+      height: 30px;
+      padding: 0;
+      color: var(--primary);
+      background: transparent;
+      border: 0;
+      font-size: 14px;
+    }
+    .text-link:hover { color: #0875ee; }
+    .text-link.subtle { color: #7f8894; }
+    .ratio-editor { display: inline-flex; align-items: center; gap: 10px; }
+    .ratio-editor .input { width: 94px; }
+    .ratio-editor .unit { margin-left: -29px; }
 
     .accordion {
       margin-top: 18px;
@@ -408,9 +421,21 @@
               <label class="form-label required" for="ipCost">IP成本（元）：</label>
               <input class="input" id="ipCost" type="number" min="0" placeholder="请输入" data-required-dynamic>
             </div>
-            <div class="form-row">
+            <div class="form-row" id="scriptRatioRow">
               <label class="form-label required" for="scriptRatio">剧本分成比例：</label>
               <div class="control-line"><input class="input" id="scriptRatio" type="number" min="0" max="100" step="0.1" placeholder="请输入" data-required><span class="unit">%</span></div>
+            </div>
+            <div class="form-row" id="consumptionRatioRow" hidden>
+              <div class="form-label">分成比例：</div>
+              <div class="control-line">
+                <button class="text-link" id="editConsumptionRatio" type="button">编辑</button>
+                <div class="ratio-editor" id="consumptionRatioEditor" hidden>
+                  <input class="input" id="consumptionRatio" type="number" min="0" max="100" step="0.1" value="30" aria-label="分成比例">
+                  <span class="unit">%</span>
+                  <button class="text-link" id="finishConsumptionRatio" type="button">完成</button>
+                  <button class="text-link subtle" id="cancelConsumptionRatio" type="button">取消</button>
+                </div>
+              </div>
             </div>
             <div class="form-row">
               <label class="form-label required" for="supplier">供应商：</label>
@@ -421,7 +446,7 @@
                 <option value="上海远望工作室">上海远望工作室</option>
               </select>
             </div>
-            <div class="form-row">
+            <div class="form-row" id="thirdPartyRatioRow">
               <label class="form-label" for="thirdPartyRatio">第三方分成比例：</label>
               <div class="control-line">
                 <div class="stepper">
@@ -515,6 +540,12 @@
       $("#settlementBlock").hidden = isConsumption;
       $("#hybridFormula").hidden = isProfit || isConsumption;
       $("#profitFormula").hidden = !isProfit;
+      $("#scriptRatioRow").hidden = isConsumption;
+      $("#consumptionRatioRow").hidden = !isConsumption;
+      $("#thirdPartyRatioRow").hidden = scheme !== "hybrid";
+      $("#editConsumptionRatio").hidden = false;
+      $("#consumptionRatioEditor").hidden = true;
+      $("#consumptionRatio").classList.remove("error");
 
       if (isProfit) {
         $("#settlementOptions").innerHTML = radioOption("before", "前扣", true);
@@ -530,7 +561,7 @@
     }
 
     function validate() {
-      const required = $$('[data-required], [data-active-required="true"]');
+      const required = $$('[data-required], [data-active-required="true"]').filter((input) => input.offsetParent !== null);
       let valid = true;
       required.forEach((input) => {
         const empty = String(input.value || "").trim() === "";
@@ -557,6 +588,31 @@
         const next = Math.min(100, Math.max(0, Number(input.value || 0) + Number(button.dataset.step)));
         input.value = next;
       });
+    });
+    $("#editConsumptionRatio").addEventListener("click", () => {
+      $("#editConsumptionRatio").hidden = true;
+      $("#consumptionRatioEditor").hidden = false;
+      $("#consumptionRatio").focus();
+      $("#consumptionRatio").select();
+    });
+    $("#finishConsumptionRatio").addEventListener("click", () => {
+      const input = $("#consumptionRatio");
+      const value = Number(input.value);
+      if (input.value === "" || value < 0 || value > 100) {
+        input.classList.add("error");
+        showToast("请输入0至100之间的分成比例");
+        input.focus();
+        return;
+      }
+      input.classList.remove("error");
+      $("#consumptionRatioEditor").hidden = true;
+      $("#editConsumptionRatio").hidden = false;
+      showToast(`分成比例已更新为${value}%`);
+    });
+    $("#cancelConsumptionRatio").addEventListener("click", () => {
+      $("#consumptionRatio").classList.remove("error");
+      $("#consumptionRatioEditor").hidden = true;
+      $("#editConsumptionRatio").hidden = false;
     });
 
     $("#saveForm").addEventListener("click", () => {
