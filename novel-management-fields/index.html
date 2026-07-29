@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="小说管理字段扩展高保真交互原型" />
+    <title>小说管理字段扩展原型</title>
+    <link rel="stylesheet" href="/html-prototypes/novel-management-fields/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <button class="icon-button menu-button" aria-label="展开菜单" title="展开菜单">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="breadcrumb" aria-label="面包屑">
+          <b>小说管理</b><i>/</i><span>小说管理</span>
+        </nav>
+        <div class="challenge">百日0故障挑战 第330天</div>
+        <button class="user-button"><span class="avatar">洪</span>洪娟 <i>⌄</i></button>
+      </header>
+
+      <main>
+        <div class="page-tab">小说管理 <button aria-label="关闭标签">×</button></div>
+
+        <section class="filter-panel" aria-label="小说筛选">
+          <div class="filter-grid">
+            <label><span>小说ID</span><input placeholder="请输入" /></label>
+            <label><span>小说名称</span><input placeholder="请输入" /></label>
+            <label><span>作者笔名</span><input placeholder="请输入" /></label>
+            <label><span>小说状态</span><select><option>全部</option><option>上架</option><option>下架</option></select></label>
+            <label><span>克隆类型</span><select><option>全部</option><option>原小说</option><option>克隆小说</option></select></label>
+            <label><span>标签</span><select><option>请选择标签</option><option>情感</option><option>家庭</option><option>打脸</option></select></label>
+            <label><span>男女频</span><select><option>全部</option><option>男频</option><option>女频</option></select></label>
+            <label><span>送审信息</span><select><option>全部</option><option>已送审</option><option>未送审</option></select></label>
+            <label><span>责编</span><select><option>请选择</option><option>梁洁敏</option><option>蔡兴达</option></select></label>
+            <label><span>版权类型</span><select><option>请选择</option><option>自有版权</option><option>非自有版权</option></select></label>
+            <label><span>版权资质文件</span><select><option>全部</option><option>有</option><option>无</option></select></label>
+            <label><span>上架类型</span><select><option>请选择</option><option>签约</option><option>精修</option><option>原创</option></select></label>
+            <label><span>授权番茄</span><select id="tomatoFilter"><option>全部</option><option>是</option><option>否</option></select></label>
+            <label id="exclusiveFilterWrap" hidden><span>是否独家</span><select id="exclusiveFilter"><option>全部</option><option>是</option><option>否</option></select></label>
+            <label><span>部门</span><select><option>全部</option><option>七月工作室</option><option>钱行工作室</option></select></label>
+            <label class="date-filter"><span>创建日期</span><div><input type="text" placeholder="开始日期" /><i>至</i><input type="text" placeholder="结束日期" /></div></label>
+          </div>
+          <div class="filter-actions">
+            <button class="primary" id="queryButton">查询</button>
+            <button class="secondary" id="resetButton">重置</button>
+            <button class="secondary" id="exportButton">导出</button>
+          </div>
+        </section>
+
+        <section class="table-panel">
+          <div class="table-toolbar">
+            <button class="primary" id="createButton">新建小说</button>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th class="checkbox-cell"><input type="checkbox" aria-label="全选" /></th>
+                  <th>小说ID</th><th>小说名称</th><th>送审信息</th><th>封面</th><th>作者</th><th>编辑</th><th>责编</th>
+                  <th>男女频</th><th>小说类型</th><th>标签</th><th>克隆类型</th><th>卡点章</th><th>总章数</th><th>总字数</th>
+                  <th>上架类型</th><th>成本</th><th>授权番茄</th><th>版权类型</th><th>版权文件</th><th>部门</th><th>状态</th><th>创建时间</th>
+                  <th class="sticky-action">操作</th>
+                </tr>
+              </thead>
+              <tbody id="novelRows"></tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span id="resultCount">共 5 条</span>
+            <select aria-label="每页条数"><option>10条/页</option><option>20条/页</option></select>
+            <button disabled>‹</button><b>1</b><button>2</button><button>3</button><span>…</span><button>114</button><button>›</button>
+            <span>前往</span><input type="number" value="1" aria-label="前往页码" /><span>页</span>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-overlay" id="novelModal" hidden>
+      <section class="novel-dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <header class="dialog-header">
+          <h1 id="dialogTitle">新建小说</h1>
+          <button class="dialog-close" id="closeButton" aria-label="关闭">×</button>
+        </header>
+        <div class="dialog-body">
+          <form id="novelForm" novalidate>
+            <section class="form-section">
+              <h2>小说信息</h2>
+              <label class="form-row required"><span>小说名称</span><div class="control-with-count"><input id="novelName" maxlength="50" placeholder="请输入小说名称" /><small><b id="nameCount">0</b>/50</small></div></label>
+              <label class="form-row required"><span>简介</span><div class="control-with-count"><textarea id="novelIntro" maxlength="500" placeholder="请输入导语"></textarea><small><b id="introCount">0</b>/500</small></div></label>
+              <div class="form-row"><span>封面</span><button class="cover-upload" type="button" id="coverUpload"><i>＋</i><b>上传封面</b></button></div>
+              <label class="form-row required"><span>完结日期</span><input id="finishDate" type="date" /></label>
+              <label class="form-row"><span>主角名</span><div class="inline-short"><input maxlength="6" placeholder="请输入" /><small>0/6</small><button type="button" title="新增主角名">＋</button></div></label>
+              <label class="form-row required"><span>作者笔名</span><div class="control-with-count"><input id="authorName" maxlength="10" placeholder="请输入作者笔名" /><small>0/10</small></div></label>
+              <label class="form-row"><span>编辑</span><div class="control-with-count"><input id="editorName" maxlength="10" /><small>0/10</small></div></label>
+              <label class="form-row"><span>责编</span><select id="ownerName"><option value="">请选择</option><option>梁洁敏</option><option>蔡兴达</option><option>严润璐</option></select></label>
+            </section>
+
+            <section class="form-section">
+              <h2>内容信息</h2>
+              <label class="form-row"><span>标签</span><select><option>请选择标签</option><option>情感、家庭</option><option>追妻火葬场、打脸</option><option>婚恋现实、爽文</option></select></label>
+              <fieldset class="form-row required">
+                <legend>分类</legend>
+                <div class="radio-line"><label><input type="radio" name="channel" value="男频" checked /> 男频</label><label><input type="radio" name="channel" value="女频" /> 女频</label></div>
+              </fieldset>
+              <fieldset class="form-row required">
+                <legend>小说类型</legend>
+                <div class="radio-line"><label><input type="radio" name="novelType" value="长篇" /> 长篇</label><label><input type="radio" name="novelType" value="短篇" checked /> 短篇</label></div>
+              </fieldset>
+              <fieldset class="form-row">
+                <legend>上架类型</legend>
+                <div class="radio-line"><label><input type="radio" name="listingType" value="签约" checked /> 签约</label><label><input type="radio" name="listingType" value="精修" /> 精修</label><label><input type="radio" name="listingType" value="原创" /> 原创</label></div>
+              </fieldset>
+              <label class="form-row required" id="costRow"><span>成本</span><div class="money-control"><input id="costInput" inputmode="decimal" placeholder="请输入成本" /><i>元</i><small>保留小数点后 2 位</small></div></label>
+              <fieldset class="form-row required">
+                <legend>授权番茄</legend>
+                <div class="radio-line"><label><input type="radio" name="tomatoAuthorized" value="是" /> 是</label><label><input type="radio" name="tomatoAuthorized" value="否" checked /> 否</label></div>
+              </fieldset>
+              <fieldset class="form-row required" id="exclusiveRow" hidden>
+                <legend>是否独家</legend>
+                <div class="radio-line"><label><input type="radio" name="exclusive" value="是" /> 是</label><label><input type="radio" name="exclusive" value="否" checked /> 否</label></div>
+              </fieldset>
+            </section>
+
+            <section class="form-section">
+              <h2>版权信息</h2>
+              <label class="form-row required"><span>版权类型</span><select><option>自有版权</option><option>非自有版权</option></select></label>
+              <div class="form-row"><span>版权资质文件</span><div><button class="primary upload-button" type="button">上传文件</button><p class="help-text">最多上传5个PDF文件，单个不超过10M</p></div></div>
+              <div class="form-row"><span>版权资质文件</span><button class="image-upload" type="button"><i>＋</i><b>上传图片</b></button></div>
+            </section>
+
+            <section class="form-section">
+              <h2>其他</h2>
+              <label class="form-row"><span>备注</span><div class="control-with-count"><textarea maxlength="500" placeholder="请输入备注"></textarea><small>0/500</small></div></label>
+            </section>
+            <div class="form-error" id="formError" role="alert" hidden></div>
+          </form>
+        </div>
+        <footer class="dialog-footer">
+          <button class="secondary" type="button" id="cancelButton">取消</button>
+          <button class="primary" type="button" id="saveButton">确定</button>
+        </footer>
+      </section>
+    </div>
+    <div class="toast" id="toast" hidden></div>
+    <script src="/html-prototypes/novel-management-fields/app.js"></script>
+  </body>
+</html>
