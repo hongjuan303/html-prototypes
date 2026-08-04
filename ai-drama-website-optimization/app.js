@@ -16,7 +16,7 @@ const editions = {
       copy: "从优质IP、智能创作到全域发行，为专业内容团队提供一站式漫剧生产能力。",
       proof: ["IP内容供给", "AI规模生产", "全域发行增长"],
       banners: [
-        { image: "./assets/banner-infinite-canvas.png", theme: "cool", baked: true, badge: "正式上线", eyebrow: "INFINITE CANVAS", title: "无限画布", copy: "角色、场景、分镜与素材自由编排，让灵感从创意直达成片。", proof: ["自由编排", "全局联动", "多人协作"] },
+        { image: "./assets/banner-infinite-canvas.png", theme: "cool", baked: true, badge: "已上线", eyebrow: "INFINITE CANVAS", title: "无限画布", copy: "让灵感无限延展，让创作全局尽在掌控。", proof: ["自由编排", "全局联动", "多人协作"] },
         { image: "./assets/banner-seedance-2-5.png", theme: "warm", baked: true, badge: "即将上线", eyebrow: "SEEDANCE 2.5", title: "动态叙事，再进化", copy: "更强角色一致性、镜头连续性与运动表现，高品质漫剧视频生成能力即将抵达。", proof: ["角色更稳定", "镜头更连贯", "动态更自然"] },
         { image: "./assets/hero-cn.jpg", theme: "brand", badge: "国内内容生态", eyebrow: "AI DRAMA PRODUCTION PLATFORM", title: "全产业链驱动，让好故事走向全球", copy: "从优质IP、智能创作到全域发行，为专业内容团队提供一站式漫剧生产能力。", proof: ["IP内容供给", "AI规模生产", "全域发行增长"] }
       ],
