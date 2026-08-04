@@ -15,6 +15,11 @@ const editions = {
       title: "全产业链驱动，让好故事走向全球",
       copy: "从优质IP、智能创作到全域发行，为专业内容团队提供一站式漫剧生产能力。",
       proof: ["IP内容供给", "AI规模生产", "全域发行增长"],
+      banners: [
+        { image: "./assets/banner-infinite-canvas.png", theme: "cool", badge: "已上线", eyebrow: "INFINITE CANVAS", title: "无限画布，让创作从此没有边界", copy: "角色、场景、分镜与素材自由编排，在同一画布中完成创意到成片的全流程协作。", proof: ["自由编排", "全局联动", "多人协作"] },
+        { image: "./assets/banner-seedance-2-5.png", theme: "warm", badge: "即将上线", eyebrow: "SEEDANCE 2.5", title: "Seedance 2.5，重新定义动态叙事", copy: "更强的角色一致性、镜头连续性与运动表现，让高品质漫剧视频生成再进一步。", proof: ["角色更稳定", "镜头更连贯", "动态更自然"] },
+        { image: "./assets/hero-cn.jpg", theme: "brand", badge: "国内内容生态", eyebrow: "AI DRAMA PRODUCTION PLATFORM", title: "全产业链驱动，让好故事走向全球", copy: "从优质IP、智能创作到全域发行，为专业内容团队提供一站式漫剧生产能力。", proof: ["IP内容供给", "AI规模生产", "全域发行增长"] }
+      ],
       creationTitle: "多能力创作入口",
       creationIntro: "从灵感、小说到剧本与成片，在同一套工作流中完成专业创作。",
       creation: [
@@ -123,6 +128,11 @@ const editions = {
       title: "Create locally. Scale stories globally.",
       copy: "An end-to-end AI drama platform for international studios, covering story development, production, localization and global distribution.",
       proof: ["Global IP sourcing", "AI-native production", "Multi-market distribution"],
+      banners: [
+        { image: "./assets/banner-infinite-canvas.png", theme: "cool", badge: "NOW LIVE", eyebrow: "INFINITE CANVAS", title: "One canvas. No creative boundaries.", copy: "Arrange characters, scenes, shots and assets freely, then move from first idea to final episode in one connected workspace.", proof: ["Free-form layout", "Connected workflow", "Team collaboration"] },
+        { image: "./assets/banner-seedance-2-5.png", theme: "warm", badge: "COMING SOON", eyebrow: "SEEDANCE 2.5", title: "A new generation of motion storytelling", copy: "Stronger character consistency, shot continuity and natural motion for production-ready AI drama video.", proof: ["Stable characters", "Continuous shots", "Natural motion"] },
+        { image: "./assets/hero-global.jpg", theme: "brand", badge: "Global Content Edition", eyebrow: "GLOBAL AI DRAMA STUDIO", title: "Create locally. Scale stories globally.", copy: "An end-to-end AI drama platform for international studios, covering story development, production, localization and global distribution.", proof: ["Global IP sourcing", "AI-native production", "Multi-market distribution"] }
+      ],
       creationTitle: "Create for every market",
       creationIntro: "Move from concept to localized episodes in one production-ready workflow.",
       creation: [
@@ -180,7 +190,8 @@ const editions = {
   }
 };
 
-const state = { edition: localStorage.getItem("rlwx-edition") || "cn", route: location.hash.slice(1) || "home", studioTab: "script" };
+const state = { edition: localStorage.getItem("rlwx-edition") || "cn", route: location.hash.slice(1) || "home", studioTab: "script", bannerIndex: 0 };
+let bannerTimer;
 const app = document.getElementById("app");
 const primaryNav = document.getElementById("primaryNav");
 const toast = document.getElementById("toast");
@@ -210,22 +221,23 @@ function pageShell(content, configText) {
 function homePage() {
   const d = editions[state.edition].home;
   const config = state.edition === "cn"
-    ? "首页轮播、优质作品、小说IP与剧本均按“国内 / 海外”独立配置；版本切换后读取对应内容池、排序和上下架状态。"
-    : "Hero banners, selections, story IP and scripts are managed in independent Domestic / Global content pools with separate ordering and publishing states.";
+    ? "首页轮播按“国内 / 海外”独立配置；无限画布已更新为上线状态，新增 Seedance 2.5 即将上线 Banner。优质作品、小说IP与剧本继续读取对应版本内容池。"
+    : "Hero banners are managed in separate Domestic / Global pools. Infinite Canvas is now live and a Seedance 2.5 coming-soon banner has been added.";
   return pageShell(`
-    <section class="hero">
-      <img class="hero-media" src="${d.heroImage}" alt="">
-      <span class="edition-badge">${d.badge}</span>
-      <div class="hero-content">
-        <p class="eyebrow">${d.eyebrow}</p>
-        <h1>${d.title}</h1>
-        <p class="hero-copy">${d.copy}</p>
-        <div class="hero-actions">
-          <button class="button primary large" type="button" data-go-studio="drama">${state.edition === "cn" ? "开始创作" : "Start creating"}${icon("arrow-right")}</button>
-          <a class="button ghost large" href="#novels" data-route="novels">${state.edition === "cn" ? "探索IP内容" : "Explore stories"}</a>
+    <section class="hero hero-carousel" aria-label="首页功能轮播">
+      ${d.banners.map((banner, bannerIndex) => `<article class="hero-slide theme-${banner.theme} ${bannerIndex === state.bannerIndex ? "active" : ""}" data-banner-slide="${bannerIndex}" aria-hidden="${bannerIndex === state.bannerIndex ? "false" : "true"}">
+        <img class="hero-media" src="${banner.image}" alt="">
+        <span class="edition-badge">${banner.badge}</span>
+        <div class="hero-content">
+          <p class="eyebrow">${banner.eyebrow}</p>
+          <h1>${banner.title}</h1>
+          <p class="hero-copy">${banner.copy}</p>
+          <div class="hero-proof">${banner.proof.map((item, index) => `<span>${icon(["panels-top-left", "sparkles", "users-round"][index])}${item}</span>`).join("")}</div>
         </div>
-        <div class="hero-proof">${d.proof.map((item, index) => `<span>${icon(["book-open", "sparkles", "globe-2"][index])}${item}</span>`).join("")}</div>
-      </div>
+      </article>`).join("")}
+      <button class="banner-arrow previous" type="button" data-banner-direction="-1" aria-label="上一张">${icon("chevron-left")}</button>
+      <button class="banner-arrow next" type="button" data-banner-direction="1" aria-label="下一张">${icon("chevron-right")}</button>
+      <div class="banner-dots" role="tablist" aria-label="选择Banner">${d.banners.map((_, index) => `<button class="banner-dot ${index === state.bannerIndex ? "active" : ""}" type="button" data-banner-index="${index}" aria-label="第${index + 1}张"></button>`).join("")}</div>
     </section>
     <section class="section">
       <div class="section-heading"><div><p class="section-kicker">QUICK CREATE</p><h2>${d.creationTitle}</h2><p class="section-intro">${d.creationIntro}</p></div></div>
@@ -290,6 +302,7 @@ function studioPage() {
 }
 
 function render() {
+  clearInterval(bannerTimer);
   const validRoutes = ["home", "novels", "scripts", "assets", "agents", "studio"];
   if (!validRoutes.includes(state.route)) state.route = "home";
   renderNav();
@@ -314,6 +327,7 @@ function bindPageInteractions() {
     item.addEventListener("click", go);
     item.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") go(); });
   });
+  bindBannerInteractions();
   document.querySelectorAll(".segment").forEach(button => button.addEventListener("click", () => {
     button.closest(".segmented").querySelectorAll(".segment").forEach(item => item.classList.remove("active"));
     button.classList.add("active");
@@ -341,6 +355,24 @@ function bindPageInteractions() {
   });
 }
 
+function bindBannerInteractions() {
+  clearInterval(bannerTimer);
+  const slides = [...document.querySelectorAll("[data-banner-slide]")];
+  if (!slides.length) return;
+  const activate = index => {
+    state.bannerIndex = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      const active = slideIndex === state.bannerIndex;
+      slide.classList.toggle("active", active);
+      slide.setAttribute("aria-hidden", String(!active));
+    });
+    document.querySelectorAll("[data-banner-index]").forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === state.bannerIndex));
+  };
+  document.querySelectorAll("[data-banner-direction]").forEach(button => button.addEventListener("click", () => activate(state.bannerIndex + Number(button.dataset.bannerDirection))));
+  document.querySelectorAll("[data-banner-index]").forEach(button => button.addEventListener("click", () => activate(Number(button.dataset.bannerIndex))));
+  bannerTimer = setInterval(() => activate(state.bannerIndex + 1), 6500);
+}
+
 function openWorkDialog(index) {
   const work = editions[state.edition].home.works[index];
   dialogContent.innerHTML = `<h2>${work[0]}</h2><p>${work[1]}</p><div class="dialog-video"><img src="./assets/${work[2]}" alt="${esc(work[0])}"></div><div class="dialog-actions"><button class="button ghost" type="button" data-dialog-cancel>${state.edition === "cn" ? "关闭" : "Close"}</button><button class="button primary" type="button" data-route-dialog="scripts">${state.edition === "cn" ? "查看剧本" : "View script"}</button></div>`;
@@ -356,6 +388,7 @@ function closeDialog() { modalBackdrop.hidden = true; document.body.style.overfl
 document.querySelectorAll(".edition-option").forEach(button => button.addEventListener("click", () => {
   if (state.edition === button.dataset.edition) return;
   state.edition = button.dataset.edition;
+  state.bannerIndex = 0;
   localStorage.setItem("rlwx-edition", state.edition);
   render();
   showToast(state.edition === "cn" ? "已切换至国内版内容" : "Global content loaded");
