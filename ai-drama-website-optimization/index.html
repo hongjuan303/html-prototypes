@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b0d">
+  <title>容量万相 · AI漫剧全产业链平台</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#home" data-route="home" aria-label="容量万相首页">
+      <img src="./assets/logo.png" alt="容量万相">
+    </a>
+    <nav class="primary-nav" id="primaryNav" aria-label="主导航"></nav>
+    <div class="header-actions">
+      <div class="edition-switch" role="group" aria-label="版本切换">
+        <button class="edition-option active" type="button" data-edition="cn">国内版</button>
+        <button class="edition-option" type="button" data-edition="global">Global</button>
+      </div>
+      <a class="business-button" href="../business-cooperation/" target="_blank" rel="noopener">
+        <span data-i18n="business">商务合作</span>
+        <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+      </a>
+      <button class="mobile-menu" id="mobileMenu" type="button" aria-label="打开菜单" aria-expanded="false">
+        <i data-lucide="menu" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <img src="./assets/logo.png" alt="容量万相">
+      <p id="footerStatement">让好故事被看见，让优质内容走向更广阔的市场。</p>
+    </div>
+    <div class="footer-meta">
+      <span>Copyright © RONGLIANGHUYU</span>
+      <a href="../business-cooperation/privacy.html" target="_blank" rel="noopener" id="privacyLink">隐私政策</a>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <button class="dialog-close" id="dialogClose" type="button" aria-label="关闭">
+        <i data-lucide="x" aria-hidden="true"></i>
+      </button>
+      <div id="dialogContent"></div>
+    </section>
+  </div>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
