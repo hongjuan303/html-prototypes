@@ -16,8 +16,8 @@ const editions = {
       copy: "从优质IP、智能创作到全域发行，为专业内容团队提供一站式漫剧生产能力。",
       proof: ["IP内容供给", "AI规模生产", "全域发行增长"],
       banners: [
-        { image: "./assets/banner-infinite-canvas.png", theme: "cool", badge: "已上线", eyebrow: "INFINITE CANVAS", title: "无限画布，让创作从此没有边界", copy: "角色、场景、分镜与素材自由编排，在同一画布中完成创意到成片的全流程协作。", proof: ["自由编排", "全局联动", "多人协作"] },
-        { image: "./assets/banner-seedance-2-5.png", theme: "warm", badge: "即将上线", eyebrow: "SEEDANCE 2.5", title: "Seedance 2.5，重新定义动态叙事", copy: "更强的角色一致性、镜头连续性与运动表现，让高品质漫剧视频生成再进一步。", proof: ["角色更稳定", "镜头更连贯", "动态更自然"] },
+        { image: "./assets/banner-infinite-canvas.png", theme: "cool", baked: true, badge: "正式上线", eyebrow: "INFINITE CANVAS", title: "无限画布", copy: "角色、场景、分镜与素材自由编排，让灵感从创意直达成片。", proof: ["自由编排", "全局联动", "多人协作"] },
+        { image: "./assets/banner-seedance-2-5.png", theme: "warm", baked: true, badge: "即将上线", eyebrow: "SEEDANCE 2.5", title: "动态叙事，再进化", copy: "更强角色一致性、镜头连续性与运动表现，高品质漫剧视频生成能力即将抵达。", proof: ["角色更稳定", "镜头更连贯", "动态更自然"] },
         { image: "./assets/hero-cn.jpg", theme: "brand", badge: "国内内容生态", eyebrow: "AI DRAMA PRODUCTION PLATFORM", title: "全产业链驱动，让好故事走向全球", copy: "从优质IP、智能创作到全域发行，为专业内容团队提供一站式漫剧生产能力。", proof: ["IP内容供给", "AI规模生产", "全域发行增长"] }
       ],
       creationTitle: "多能力创作入口",
@@ -129,8 +129,8 @@ const editions = {
       copy: "An end-to-end AI drama platform for international studios, covering story development, production, localization and global distribution.",
       proof: ["Global IP sourcing", "AI-native production", "Multi-market distribution"],
       banners: [
-        { image: "./assets/banner-infinite-canvas.png", theme: "cool", badge: "NOW LIVE", eyebrow: "INFINITE CANVAS", title: "One canvas. No creative boundaries.", copy: "Arrange characters, scenes, shots and assets freely, then move from first idea to final episode in one connected workspace.", proof: ["Free-form layout", "Connected workflow", "Team collaboration"] },
-        { image: "./assets/banner-seedance-2-5.png", theme: "warm", badge: "COMING SOON", eyebrow: "SEEDANCE 2.5", title: "A new generation of motion storytelling", copy: "Stronger character consistency, shot continuity and natural motion for production-ready AI drama video.", proof: ["Stable characters", "Continuous shots", "Natural motion"] },
+        { image: "./assets/banner-infinite-canvas-bg.png", theme: "cool", badge: "NOW LIVE", eyebrow: "INFINITE CANVAS", title: "One canvas. No creative boundaries.", copy: "Arrange characters, scenes, shots and assets freely, then move from first idea to final episode in one connected workspace.", proof: ["Free-form layout", "Connected workflow", "Team collaboration"] },
+        { image: "./assets/banner-seedance-2-5-bg.png", theme: "warm", badge: "COMING SOON", eyebrow: "SEEDANCE 2.5", title: "A new generation of motion storytelling", copy: "Stronger character consistency, shot continuity and natural motion for production-ready AI drama video.", proof: ["Stable characters", "Continuous shots", "Natural motion"] },
         { image: "./assets/hero-global.jpg", theme: "brand", badge: "Global Content Edition", eyebrow: "GLOBAL AI DRAMA STUDIO", title: "Create locally. Scale stories globally.", copy: "An end-to-end AI drama platform for international studios, covering story development, production, localization and global distribution.", proof: ["Global IP sourcing", "AI-native production", "Multi-market distribution"] }
       ],
       creationTitle: "Create for every market",
@@ -225,15 +225,16 @@ function homePage() {
     : "Hero banners are managed in separate Domestic / Global pools. Infinite Canvas is now live and a Seedance 2.5 coming-soon banner has been added.";
   return pageShell(`
     <section class="hero hero-carousel" aria-label="首页功能轮播">
-      ${d.banners.map((banner, bannerIndex) => `<article class="hero-slide theme-${banner.theme} ${bannerIndex === state.bannerIndex ? "active" : ""}" data-banner-slide="${bannerIndex}" aria-hidden="${bannerIndex === state.bannerIndex ? "false" : "true"}">
+      ${d.banners.map((banner, bannerIndex) => `<article class="hero-slide theme-${banner.theme} ${banner.baked ? "baked" : ""} ${bannerIndex === state.bannerIndex ? "active" : ""}" data-banner-slide="${bannerIndex}" aria-hidden="${bannerIndex === state.bannerIndex ? "false" : "true"}" aria-label="${banner.badge}：${banner.title}">
         <img class="hero-media" src="${banner.image}" alt="">
-        <span class="edition-badge">${banner.badge}</span>
-        <div class="hero-content">
-          <p class="eyebrow">${banner.eyebrow}</p>
-          <h1>${banner.title}</h1>
-          <p class="hero-copy">${banner.copy}</p>
-          <div class="hero-proof">${banner.proof.map((item, index) => `<span>${icon(["panels-top-left", "sparkles", "users-round"][index])}${item}</span>`).join("")}</div>
-        </div>
+        ${banner.baked ? `<div class="sr-only"><p>${banner.eyebrow}</p><h1>${banner.title}</h1><p>${banner.badge}</p><p>${banner.copy}</p></div>` : `
+          <span class="edition-badge">${banner.badge}</span>
+          <div class="hero-content">
+            <p class="eyebrow">${banner.eyebrow}</p>
+            <h1>${banner.title}</h1>
+            <p class="hero-copy">${banner.copy}</p>
+            <div class="hero-proof">${banner.proof.map((item, index) => `<span>${icon(["panels-top-left", "sparkles", "users-round"][index])}${item}</span>`).join("")}</div>
+          </div>`}
       </article>`).join("")}
       <button class="banner-arrow previous" type="button" data-banner-direction="-1" aria-label="上一张">${icon("chevron-left")}</button>
       <button class="banner-arrow next" type="button" data-banner-direction="1" aria-label="下一张">${icon("chevron-right")}</button>
