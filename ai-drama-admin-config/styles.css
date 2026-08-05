@@ -54,7 +54,6 @@ svg { width: 17px; height: 17px; stroke-width: 1.8; }
 .content-card { min-width: 0; border: 1px solid #e3e8ee; background: #fff; }
 .content-version-tabs { height: 52px; padding: 0 18px; display: flex; align-items: stretch; gap: 26px; border: 1px solid #e3e8ee; border-bottom-color: var(--line); background: #fff; }
 .content-version-tabs + .content-card { border-top: 0; }
-.content-version-label { display: inline-flex; align-items: center; color: #5d6875; font-weight: 500; }
 .content-version-tab { position: relative; min-width: 54px; padding: 0 4px; border: 0; color: #687583; background: transparent; cursor: pointer; }
 .content-version-tab::after { content: ""; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: transparent; }
 .content-version-tab:hover { color: var(--blue); }
