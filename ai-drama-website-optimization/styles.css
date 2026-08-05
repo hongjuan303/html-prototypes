@@ -65,38 +65,32 @@ svg { width: 18px; height: 18px; }
 .navbar-item.is-active::after { content: ""; position: absolute; left: 0; right: 0; bottom: -7px; height: 1px; background: #fff; }
 .navbar-line { width: 1px; height: 12px; background: rgba(255, 255, 255, .2); }
 .navbar-actions { margin-left: auto; display: flex; align-items: center; gap: 23px; }
-.language-menu { position: relative; }
-.navbar-action-language {
-  min-height: 32px;
-  padding: 4px;
-  display: inline-flex;
+.market-switch {
+  height: 32px;
+  padding: 2px;
+  display: inline-grid;
+  grid-template-columns: repeat(2, 46px);
   align-items: center;
-  gap: 4px;
-  border: 0;
-  color: rgba(255, 255, 255, .7);
-  background: transparent;
-  cursor: pointer;
-}
-.navbar-action-language span { padding-right: 4px; white-space: nowrap; }
-.navbar-action-language svg { width: 16px; height: 16px; }
-.language-chevron { transition: transform .2s ease; }
-.navbar-action-language[aria-expanded="true"] .language-chevron { transform: rotate(180deg); }
-.language-popover {
-  position: absolute;
-  top: 40px;
-  right: 0;
-  min-width: 142px;
-  padding: 6px;
-  border: 1px solid rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .16);
   border-radius: 10px;
-  background: #232323;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+  background: rgba(255, 255, 255, .05);
 }
-.language-popover button { width: 100%; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; border: 0; border-radius: 6px; color: rgba(255, 255, 255, .7); background: transparent; cursor: pointer; }
-.language-popover button:hover { color: #fff; background: rgba(255, 255, 255, .08); }
-.language-popover button svg { width: 14px; height: 14px; opacity: 0; }
-.language-popover button.is-active { color: #fff; }
-.language-popover button.is-active svg { opacity: 1; }
+.market-switch button {
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  color: rgba(255, 255, 255, .56);
+  background: transparent;
+  font-size: 12px;
+  line-height: 26px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.market-switch button:hover { color: rgba(255, 255, 255, .9); }
+.market-switch button.is-active { color: #171717; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .24); }
+.market-switch button:focus-visible { outline: 2px solid rgba(87, 226, 221, .9); outline-offset: 2px; }
 .navbar-action-business {
   height: 32px;
   padding: 0 16px;

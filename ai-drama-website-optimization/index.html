@@ -16,16 +16,9 @@
       </a>
       <div class="navbar-list" id="primaryNav"></div>
       <div class="navbar-actions">
-        <div class="language-menu" id="languageMenu">
-          <button class="navbar-action-language" id="languageButton" type="button" aria-haspopup="menu" aria-expanded="false">
-            <i data-lucide="globe-2" aria-hidden="true"></i>
-            <span id="languageLabel">简体中文</span>
-            <i class="language-chevron" data-lucide="chevron-down" aria-hidden="true"></i>
-          </button>
-          <div class="language-popover" role="menu" hidden>
-            <button type="button" data-edition="cn" role="menuitem">简体中文<i data-lucide="check"></i></button>
-            <button type="button" data-edition="global" role="menuitem">English<i data-lucide="check"></i></button>
-          </div>
+        <div class="market-switch" role="group" aria-label="业务版本切换">
+          <button type="button" data-edition="cn" aria-pressed="true">国内</button>
+          <button type="button" data-edition="global" aria-pressed="false">海外</button>
         </div>
         <button class="navbar-action-business" id="businessButton" type="button">商务合作</button>
         <button class="mobile-menu" id="mobileMenu" type="button" aria-label="打开菜单" aria-expanded="false">

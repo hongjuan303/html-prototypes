@@ -147,9 +147,12 @@ function renderNav() {
   const t = copy[state.edition];
   nav.innerHTML = `${t.nav.map(([route, label]) => `<a class="navbar-item ${state.route === route ? "is-active" : ""}" href="#${route}" data-route="${route}">${label}</a>`).join("")}<span class="navbar-line"></span><button class="navbar-item navbar-studio" type="button" data-studio-launch>${t.studio}</button>`;
   document.documentElement.lang = state.edition === "cn" ? "zh-CN" : "en";
-  document.getElementById("languageLabel").textContent = state.edition === "cn" ? "简体中文" : "English";
   document.getElementById("businessButton").textContent = t.business;
-  document.querySelectorAll("[data-edition]").forEach(button => button.classList.toggle("is-active", button.dataset.edition === state.edition));
+  document.querySelectorAll("[data-edition]").forEach(button => {
+    const active = button.dataset.edition === state.edition;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 
 function homePage() {
@@ -371,10 +374,8 @@ function closeModal() { modal.hidden = true; document.body.style.overflow = ""; 
 
 document.addEventListener("click", event => {
   if (!event.target.closest(".filter-select")) document.querySelectorAll(".filter-select__menu").forEach(menu => { menu.hidden = true; });
-  if (!event.target.closest(".language-menu")) { document.querySelector(".language-popover").hidden = true; document.getElementById("languageButton").setAttribute("aria-expanded", "false"); }
 });
-document.getElementById("languageButton").addEventListener("click", event => { event.stopPropagation(); const popover = document.querySelector(".language-popover"); popover.hidden = !popover.hidden; event.currentTarget.setAttribute("aria-expanded", String(!popover.hidden)); });
-document.querySelectorAll("[data-edition]").forEach(button => button.addEventListener("click", () => { state.edition = button.dataset.edition; localStorage.setItem("rlwx-edition", state.edition); state.banner = 0; document.querySelector(".language-popover").hidden = true; render(); }));
+document.querySelectorAll("[data-edition]").forEach(button => button.addEventListener("click", () => { state.edition = button.dataset.edition; localStorage.setItem("rlwx-edition", state.edition); state.banner = 0; render(); }));
 document.getElementById("businessButton").addEventListener("click", openBusiness);
 document.getElementById("dialogClose").addEventListener("click", closeModal);
 modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });
