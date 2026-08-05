@@ -8,8 +8,8 @@ const copy = {
     home: {
       banners: ["qa-banner-1.jpg", "qa-banner-2.jpg"],
       quick: [
-        ["scroll-text", "AI 剧本", "输入创意或故事设定，智能生成大纲、角色与分集剧本。"],
         ["book-open-text", "小说创作", "从题材定位、故事大纲到章节续写，完成小说创作全流程。"],
+        ["scroll-text", "AI 剧本", "输入创意或故事设定，智能生成大纲、角色与分集剧本。"],
         ["panels-top-left", "无限画布", "自由组织角色、场景、分镜与素材，全局掌控创作脉络。"]
       ],
       sloganTitle: "全链路智能化创作平台",
@@ -42,8 +42,8 @@ const copy = {
     home: {
       banners: ["qa-banner-1.jpg", "qa-banner-2.jpg"],
       quick: [
-        ["scroll-text", "AI Script", "Turn an idea into a structured outline, characters and episodic scripts."],
         ["book-open-text", "Novel Creation", "Develop genres, story outlines and complete chapters in one workflow."],
+        ["scroll-text", "AI Script", "Turn an idea into a structured outline, characters and episodic scripts."],
         ["panels-top-left", "Infinite Canvas", "Organize characters, locations, shots and assets in one connected space."]
       ],
       sloganTitle: "End-to-End Creation",
@@ -163,11 +163,11 @@ function homePage() {
     </section>
     <div class="home-top-section">
       <section class="quick-create-section">
-        <div class="quick-create-heading"><h2>${state.edition === "cn" ? "开启新的AI故事灵感" : "Unlock New AI-Powered Story Inspiration"}</h2><p>${state.edition === "cn" ? "无论是创作漫剧、孵化IP，还是商务合作，从这里开始" : "Whether creating animated dramas, incubating IPs, or business partnerships, start here"}</p></div>
+        <div class="quick-create-heading"><h2>${state.edition === "cn" ? "开启新的AI故事灵感" : "Unlock New AI-Powered Story Inspiration"}</h2></div>
         <div class="quick-create-grid">${d.quick.map((item, index) => `<button class="quick-create-card" type="button" data-quick="${index}"><span class="quick-create-icon">${icon(item[0])}</span><span><strong>${item[1]}</strong><small>${item[2]}</small></span><i data-lucide="arrow-right"></i></button>`).join("")}</div>
       </section>
       <section class="home-slogan"><div class="home-slogan__header"><h2 class="home-slogan__title">${d.sloganTitle}</h2><p class="home-slogan__desc">${d.sloganDesc}</p></div><div class="home-slogan__cards">${d.slogans.map(item => `<article class="slogan-card"><span class="slogan-card__icon">${icon(item[0])}</span><h3 class="slogan-card__title">${item[1]}</h3><p class="slogan-card__desc">${item[2]}</p></article>`).join("")}</div></section>
-      <section class="home-hot"><h2 class="home-hot-title">${d.worksTitle}</h2><div class="home-hot-list">${d.works.map((item, index) => `<article class="home-hot-item" tabindex="0" data-work="${index}"><div class="home-hot-cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="home-hot-copy"><h3>${item[0]}</h3><p>${item[1]}</p></div></article>`).join("")}</div></section>
+      <section class="home-hot"><h2 class="home-hot-title">${d.worksTitle}</h2><div class="home-hot-list">${d.works.map((item, index) => `<article class="home-hot-item" tabindex="0" data-work="${index}"><div class="home-hot-cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="home-hot-copy"><h3>${item[0]}</h3></div></article>`).join("")}</div></section>
       <section class="home-creation"><div class="home-creation__left"><h2>${state.edition === "cn" ? "全业态一体化创作" : "All-in-One Content Creation"}</h2><div>${d.slogans.map(item => `<span>${item[1]}</span>`).join("")}</div></div><button type="button" data-studio-launch>${state.edition === "cn" ? "快速创作" : "Try Now"}${icon("arrow-right")}</button></section>
     </div>
     ${homeFooter()}
@@ -197,7 +197,16 @@ function searchBox(placeholder, attr = "data-library-search") {
 
 function novelsPage() {
   const f = copy[state.edition].filters;
-  return `<div class="novel-page"><div class="novel-content"><div class="filter-bar"><div class="filter-group">${filterSelect("length", f.length)}${filterSelect("channel", f.channel)}${filterSelect("category", f.category)}</div>${searchBox(f.search)}</div><div class="novel-card-grid" data-library-grid>${novels.map((item, index) => novelCard(item, index)).join("")}</div></div></div>`;
+  const features = state.edition === "cn" ? [
+    ["file-up", "小说投稿入库", "提交原创小说与版权资料，完成内容审核与IP入库。", "blue"],
+    ["sparkles", "IP智能评估", "AI分析题材、角色与剧情，快速评估改编潜力与市场价值。", "purple"],
+    ["handshake", "小说改编合作", "发起IP改编与联合开发，连接漫剧制作及全域发行资源。", "orange"]
+  ] : [
+    ["file-up", "Novel Submission", "Submit original stories and rights information for IP onboarding.", "blue"],
+    ["sparkles", "AI IP Evaluation", "Assess genre, characters, plot and adaptation potential with AI.", "purple"],
+    ["handshake", "Adaptation Partnership", "Connect premium IP with production and global distribution.", "orange"]
+  ];
+  return `<div class="novel-page"><div class="novel-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("length", f.length)}${filterSelect("channel", f.channel)}${filterSelect("category", f.category)}</div>${searchBox(f.search)}</div><div class="novel-card-grid" data-library-grid>${novels.map((item, index) => novelCard(item, index)).join("")}</div></div></div>`;
 }
 
 function novelCard(item, index) {
@@ -216,7 +225,12 @@ function scriptsPage() {
     ["rocket", "Global Production", "Move from script to localized production and global distribution.", "orange"]
   ];
   const categories = state.edition === "cn" ? ["全部分类", "都市", "古风", "悬疑", "现实", "年代"] : ["All genres", "Urban", "Historical", "Mystery", "Drama"];
-  return `<div class="script-page"><div class="script-content"><div class="feature-cards">${features.map(item => `<button class="feature-card feature-card--${item[3]}" type="button" data-capability><span class="feature-icon">${icon(item[0])}</span><strong>${item[1]}</strong><small>${item[2]}</small><em>${state.edition === "cn" ? "本期暂未开放" : "Coming later"}</em></button>`).join("")}</div><div class="filter-bar"><div class="filter-group">${filterSelect("channel", f.channel)}${filterSelect("category", categories)}</div>${searchBox(f.search)}</div><div class="script-card-grid" data-library-grid>${scripts.map((item, index) => `<article class="script-card" tabindex="0" data-script="${index}" data-library-card data-title="${esc(item[0] + item[1])}" data-channel="${item[4]}" data-category="${item[5]}"><div class="script-card__cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div class="script-card__overlay"><span>${item[1]}</span><div><strong>${item[0]}</strong><b>${item[3]}</b></div></div></div></article>`).join("")}</div></div></div>`;
+  return `<div class="script-page"><div class="script-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("channel", f.channel)}${filterSelect("category", categories)}</div>${searchBox(f.search)}</div><div class="script-card-grid" data-library-grid>${scripts.map((item, index) => `<article class="script-card" tabindex="0" data-script="${index}" data-library-card data-title="${esc(item[0] + item[1])}" data-channel="${item[4]}" data-category="${item[5]}"><div class="script-card__cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div class="script-card__overlay"><span>${item[1]}</span><div><strong>${item[0]}</strong><b>${item[3]}</b></div></div></div></article>`).join("")}</div></div></div>`;
+}
+
+function featureCards(features) {
+  const cta = state.edition === "cn" ? "立即体验" : "Explore now";
+  return `<div class="feature-cards">${features.map(item => `<button class="feature-card feature-card--${item[3]}" type="button" data-capability="${esc(item[1])}"><span class="feature-icon">${icon(item[0])}</span><strong>${item[1]}</strong><small>${item[2]}</small><em>${cta}${icon("arrow-up-right")}</em></button>`).join("")}</div>`;
 }
 
 function assetsPage() {
@@ -253,7 +267,7 @@ function bindPage() {
   document.querySelectorAll("[data-work]").forEach(card => bindKeyboardClick(card, () => openWork(Number(card.dataset.work))));
   document.querySelectorAll("[data-novel]").forEach(card => bindKeyboardClick(card, () => openNovel(Number(card.dataset.novel))));
   document.querySelectorAll("[data-script]").forEach(card => bindKeyboardClick(card, () => openScript(Number(card.dataset.script))));
-  document.querySelectorAll("[data-capability]").forEach(card => card.addEventListener("click", () => showToast(state.edition === "cn" ? "该能力入口本期暂未开放" : "This capability is not available in this release")));
+  document.querySelectorAll("[data-capability]").forEach(card => card.addEventListener("click", () => showToast(state.edition === "cn" ? `正在进入「${card.dataset.capability}」` : `Opening ${card.dataset.capability}`)));
   document.querySelectorAll("[data-agent]").forEach(button => button.addEventListener("click", () => showToast(state.edition === "cn" ? `${button.dataset.agent}工具已打开` : `Opening ${button.dataset.agent}`)));
   document.querySelectorAll("[data-asset-tab]").forEach(button => button.addEventListener("click", () => { state.assetTab = button.dataset.assetTab; state.assetFilters = ["全部", "全部", "全部", "全部"]; render(); }));
   document.querySelectorAll("[data-asset-filter]").forEach(button => button.addEventListener("click", () => { const group = Number(button.dataset.assetGroup); state.assetFilters[group] = button.dataset.assetFilter; button.parentElement.querySelectorAll("button").forEach(item => item.classList.toggle("is-active", item === button)); applyAssetFilters(); }));
