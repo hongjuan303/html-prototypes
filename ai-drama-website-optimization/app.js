@@ -87,18 +87,18 @@ const novels = [
 ];
 
 const scripts = [
-  ["《诊室全程录音后，她慌了》", "佚名", "qa-script-1.jpg", "34集", "女频", "都市"],
-  ["《满级福星驾到》", "佚名", "qa-script-2.jpg", "36集", "女频", "古风"],
-  ["《重生之我不是软柿子》", "佚名", "qa-script-3.jpg", "40集", "女频", "都市"],
-  ["《二十年终得昭雪》", "佚名", "qa-script-4.jpg", "34集", "男频", "悬疑"],
-  ["《我花三万请月嫂，她全家搬进来》", "佚名", "qa-script-5.jpg", "37集", "女频", "都市"],
-  ["《妈妈捡了四个爹》", "佚名", "qa-script-6.jpg", "39集", "女频", "都市"],
-  ["《保洁阿姨让我嫁给她弟弟》", "佚名", "qa-script-7.jpg", "32集", "女频", "都市"],
-  ["《八零甜宠：谁动了我夫人》", "佚名", "qa-script-8.jpg", "40集", "女频", "年代"],
-  ["《他救白月光，我嫁摄政王》", "佚名", "qa-script-9.jpg", "39集", "女频", "古风"],
-  ["《我的陪嫁房，成了小叔子婚房》", "佚名", "qa-script-10.jpg", "40集", "女频", "都市"],
-  ["《老厂房的风》", "佚名", "qa-script-11.jpg", "40集", "男频", "现实"],
-  ["《离婚当天，我入职前夫对家公司当副总裁》", "佚名", "qa-script-12.jpg", "40集", "女频", "都市"]
+  ["《诊室全程录音后，她慌了》", "佚名", "qa-script-1.jpg", "34集", "女频", "都市", "一段被完整保留的诊室录音，揭开精心掩饰的谎言与利益纠葛。"],
+  ["《满级福星驾到》", "佚名", "qa-script-2.jpg", "36集", "女频", "古风", "身负福运的少女意外卷入家族纷争，用智慧改写所有人的命运。"],
+  ["《重生之我不是软柿子》", "佚名", "qa-script-3.jpg", "40集", "女频", "都市", "重来一次，她不再忍让，在亲情、事业与爱情中夺回人生主动权。"],
+  ["《二十年终得昭雪》", "佚名", "qa-script-4.jpg", "34集", "男频", "悬疑", "沉寂二十年的旧案再起波澜，当事人沿着线索追寻迟来的真相。"],
+  ["《我花三万请月嫂，她全家搬进来》", "佚名", "qa-script-5.jpg", "37集", "女频", "都市", "高价聘请的月嫂竟将全家带进雇主家，一场家庭边界保卫战由此展开。"],
+  ["《妈妈捡了四个爹》", "佚名", "qa-script-6.jpg", "39集", "女频", "都市", "四位身份迥异的男人突然出现，母女平静的生活迎来连续反转。"],
+  ["《保洁阿姨让我嫁给她弟弟》", "佚名", "qa-script-7.jpg", "32集", "女频", "都市", "一次看似荒唐的介绍，意外牵出隐藏身份与跨越阶层的真心。"],
+  ["《八零甜宠：谁动了我夫人》", "佚名", "qa-script-8.jpg", "40集", "女频", "年代", "重回八零年代，她在烟火生活中创业成长，也收获坚定守护。"],
+  ["《他救白月光，我嫁摄政王》", "佚名", "qa-script-9.jpg", "39集", "女频", "古风", "被弃婚后她转身嫁入王府，在朝堂暗局中与摄政王并肩破局。"],
+  ["《我的陪嫁房，成了小叔子婚房》", "佚名", "qa-script-10.jpg", "40集", "女频", "都市", "陪嫁房被婆家私自占用，她不再妥协，决心守住自己的尊严与权益。"],
+  ["《老厂房的风》", "佚名", "qa-script-11.jpg", "40集", "男频", "现实", "老厂改制浪潮中，两代产业工人在选择与坚守间寻找新的方向。"],
+  ["《离婚当天，我入职前夫对家公司当副总裁》", "佚名", "qa-script-12.jpg", "40集", "女频", "都市", "婚姻结束当天，她转身进入竞争公司，用实力完成事业与人生逆袭。"]
 ];
 
 const assets = {
@@ -150,6 +150,9 @@ function renderNav() {
   document.getElementById("businessButton").textContent = t.business;
   document.querySelectorAll("[data-edition]").forEach(button => {
     const active = button.dataset.edition === state.edition;
+    button.textContent = state.edition === "cn"
+      ? (button.dataset.edition === "cn" ? "国内" : "海外")
+      : (button.dataset.edition === "cn" ? "Domestic" : "Overseas");
     button.classList.toggle("is-active", active);
     button.setAttribute("aria-pressed", String(active));
   });
@@ -228,7 +231,11 @@ function scriptsPage() {
     ["rocket", "Global Production", "Move from script to localized production and global distribution.", "orange"]
   ];
   const categories = state.edition === "cn" ? ["全部分类", "都市", "古风", "悬疑", "现实", "年代"] : ["All genres", "Urban", "Historical", "Mystery", "Drama"];
-  return `<div class="script-page"><div class="script-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("channel", f.channel)}${filterSelect("category", categories)}</div>${searchBox(f.search)}</div><div class="script-card-grid" data-library-grid>${scripts.map((item, index) => `<article class="script-card" tabindex="0" data-script="${index}" data-library-card data-title="${esc(item[0] + item[1])}" data-channel="${item[4]}" data-category="${item[5]}"><div class="script-card__cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div class="script-card__overlay"><span>${item[1]}</span><div><strong>${item[0]}</strong><b>${item[3]}</b></div></div></div></article>`).join("")}</div></div></div>`;
+  return `<div class="script-page"><div class="script-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("channel", f.channel)}${filterSelect("category", categories)}</div>${searchBox(f.search)}</div><div class="novel-card-grid script-library-grid" data-library-grid>${scripts.map((item, index) => scriptLibraryCard(item, index)).join("")}</div></div></div>`;
+}
+
+function scriptLibraryCard(item, index) {
+  return `<article class="novel-card script-library-card" tabindex="0" data-script="${index}" data-library-card data-title="${esc(item[0] + item[1])}" data-channel="${item[4]}" data-category="${item[5]}"><div class="card-cover"><img class="cover-img" src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="card-content"><h3 class="card-title">${item[0]}</h3><div class="card-tags"><span class="tag tag-source">${item[4]}</span><span class="tag tag-type">${item[5]}</span><span class="tag tag-count">${item[3]}</span></div><p class="card-desc">${item[6]}</p><p class="card-author">${state.edition === "cn" ? "作者" : "Author"}：${item[1]}</p></div></article>`;
 }
 
 function featureCards(features) {
