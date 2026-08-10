@@ -206,11 +206,11 @@ function novelsPage() {
   const features = state.edition === "cn" ? [
     ["file-up", "小说投稿入库", "提交原创小说与版权资料，完成内容审核与IP入库。", "blue"],
     ["sparkles", "IP智能评估", "AI分析题材、角色与剧情，快速评估改编潜力与市场价值。", "purple"],
-    ["handshake", "小说改编合作", "发起IP改编与联合开发，连接漫剧制作及全域发行资源。", "orange"]
+    ["handshake", "小说改编合作", "打通IP改编、漫剧制作与全域发行。", "orange"]
   ] : [
     ["file-up", "Novel Submission", "Submit original stories and rights information for IP onboarding.", "blue"],
     ["sparkles", "AI IP Evaluation", "Assess genre, characters, plot and adaptation potential with AI.", "purple"],
-    ["handshake", "Adaptation Partnership", "Connect premium IP with production and global distribution.", "orange"]
+    ["handshake", "Adaptation Partnership", "Connect IP adaptation, production, and global distribution.", "orange"]
   ];
   return `<div class="novel-page"><div class="novel-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("length", f.length)}${filterSelect("channel", f.channel)}${filterSelect("category", f.category)}</div>${searchBox(f.search)}</div><div class="novel-card-grid" data-library-grid>${novels.map((item, index) => novelCard(item, index)).join("")}</div></div></div>`;
 }
@@ -222,12 +222,12 @@ function novelCard(item, index) {
 function scriptsPage() {
   const f = copy[state.edition].filters;
   const features = state.edition === "cn" ? [
-    ["book-copy", "小说智能改编", "基于优质小说IP，提炼情节与角色，快速生成标准化漫剧剧本。", "blue"],
-    ["wand-sparkles", "AI原创剧本", "输入创意或故事设定，智能完成大纲、角色与分集剧本创作。", "purple"],
+    ["book-copy", "小说智能改编", "提炼情节与角色，快速生成漫剧剧本。", "blue"],
+    ["wand-sparkles", "AI原创剧本", "输入创意，智能生成大纲与分集剧本。", "purple"],
     ["rocket", "剧本全球化", "AI驱动剧本快速成片，贯通本地化适配与海外发行。", "orange"]
   ] : [
-    ["book-copy", "Novel Adaptation", "Turn premium IP into production-ready episodic scripts.", "blue"],
-    ["wand-sparkles", "AI Original Scripts", "Generate outlines, characters and episode scripts from an idea.", "purple"],
+    ["book-copy", "Novel Adaptation", "Turn story beats and characters into production-ready scripts.", "blue"],
+    ["wand-sparkles", "AI Original Scripts", "Turn ideas into outlines and episodic scripts.", "purple"],
     ["rocket", "Global Production", "Move from script to localized production and global distribution.", "orange"]
   ];
   const categories = state.edition === "cn" ? ["全部分类", "都市", "古风", "悬疑", "现实", "年代"] : ["All genres", "Urban", "Historical", "Mystery", "Drama"];
