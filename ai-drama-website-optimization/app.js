@@ -177,7 +177,7 @@ function currentBanners() {
 
 function renderNav() {
   const t = copy[state.edition];
-  nav.innerHTML = `${t.nav.map(([route, label]) => `<a class="navbar-item ${state.route === route ? "is-active" : ""}" href="#${route}" data-route="${route}">${label}</a>`).join("")}<span class="navbar-line"></span><button class="navbar-item navbar-studio" type="button" data-studio-launch>${t.studio}</button>`;
+  nav.innerHTML = `${t.nav.map(([route, label]) => `<a class="navbar-item ${state.route === route ? "is-active" : ""}" href="#${route}" data-route="${route}">${label}</a>`).join("")}<span class="navbar-line"></span><button class="navbar-item navbar-studio" type="button" data-studio-launch>${icon("sparkles")}<span>${t.studio}</span><em>AI</em></button>`;
   document.documentElement.lang = state.edition === "cn" ? "zh-CN" : "en";
   document.getElementById("businessButton").textContent = t.business;
   document.querySelectorAll("[data-market]").forEach(button => {
@@ -207,7 +207,7 @@ function homePage() {
     <div class="home-top-section">
       <section class="quick-create-section">
         <div class="quick-create-heading"><h2>${state.edition === "cn" ? "开启新的AI故事灵感" : "Unlock New AI-Powered Story Inspiration"}</h2></div>
-        <div class="quick-create-grid">${d.quick.map((item, index) => `<button class="quick-create-card ${item[3] === "featured" ? "is-featured" : ""}" type="button" data-quick="${index}"><span class="quick-create-icon">${icon(item[0])}</span><span><strong>${item[1]}</strong><small>${item[2]}</small></span><i data-lucide="arrow-right"></i></button>`).join("")}</div>
+        <div class="quick-create-grid">${d.quick.map((item, index) => `<button class="quick-create-card ${item[3] === "featured" ? "is-featured" : ""}" type="button" data-quick="${index}">${item[3] === "featured" ? `<em class="quick-feature-badge">${icon("sparkles")}${state.edition === "cn" ? "亮点功能" : "Featured"}</em>` : ""}<span class="quick-create-icon">${icon(item[0])}</span><span><strong>${item[1]}</strong><small>${item[2]}</small></span><i data-lucide="arrow-right"></i></button>`).join("")}</div>
       </section>
       <section class="home-slogan"><div class="home-slogan__header"><h2 class="home-slogan__title">${d.sloganTitle}</h2><p class="home-slogan__desc">${d.sloganDesc}</p></div><div class="home-slogan__cards">${d.slogans.map(item => `<article class="slogan-card"><span class="slogan-card__icon">${icon(item[0])}</span><h3 class="slogan-card__title">${item[1]}</h3><p class="slogan-card__desc">${item[2]}</p></article>`).join("")}</div></section>
       <section class="home-hot"><div class="home-section-heading"><h2 class="home-hot-title">${d.worksTitle}</h2></div><div class="home-hot-list">${works.map((item, index) => `<article class="home-hot-item" tabindex="0" data-work="${index}"><div class="home-hot-cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="home-hot-copy"><h3>${item[0]}</h3></div></article>`).join("")}</div></section>
@@ -410,7 +410,7 @@ function openLogin(source = "") {
     return;
   }
   const cn = state.edition === "cn";
-  openModal(`<form id="loginForm" class="login-form"><div class="login-brand"><img src="${A}qa-logo.png" alt=""><h2 id="dialogTitle">容量万相</h2><p>${cn ? "登录后继续使用专业漫剧创作能力" : "Sign in to continue with professional creation tools"}</p></div><label><span>${cn ? "账号" : "Account"}</span><div>${icon("user-round")}<input name="account" autocomplete="username" required placeholder="${cn ? "请输入账号" : "Enter your account"}"></div></label><label><span>${cn ? "密码" : "Password"}</span><div>${icon("lock-keyhole")}<input name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="${cn ? "请输入密码" : "Enter your password"}"></div></label><button class="login-submit" type="submit">${cn ? "登录" : "Sign in"}</button><p class="login-help">${cn ? "没有账号密码？" : "Need an account?"}<button type="button" data-open-business>${cn ? "联系商务" : "Contact business"}</button></p></form>`, "login");
+  openModal(`<form id="loginForm" class="login-form"><div class="login-brand"><img src="${A}qa-logo.png" alt="容量万相"><h2 id="dialogTitle">${cn ? "登录" : "Sign in"}</h2><p>${cn ? "登录后继续使用专业漫剧创作能力" : "Sign in to continue with professional creation tools"}</p></div><label><span>${cn ? "账号" : "Account"}</span><div>${icon("user-round")}<input name="account" autocomplete="username" required placeholder="${cn ? "请输入账号" : "Enter your account"}"></div></label><label><span>${cn ? "密码" : "Password"}</span><div>${icon("lock-keyhole")}<input name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="${cn ? "请输入密码" : "Enter your password"}"></div></label><button class="login-submit" type="submit">${cn ? "登录" : "Sign in"}</button><p class="login-help">${cn ? "没有账号密码？" : "Need an account?"}<button type="button" data-open-business>${cn ? "联系商务" : "Contact business"}</button></p></form>`, "login");
   const form = document.getElementById("loginForm");
   form.addEventListener("submit", event => {
     event.preventDefault();
