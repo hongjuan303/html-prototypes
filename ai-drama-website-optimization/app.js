@@ -8,9 +8,10 @@ const copy = {
     home: {
       banners: ["qa-banner-1.jpg", "qa-banner-2.jpg"],
       quick: [
-        ["book-open-text", "小说创作", "从题材定位、故事大纲到章节续写，完成小说创作全流程。"],
-        ["scroll-text", "AI 剧本", "输入创意或故事设定，智能生成大纲、角色与分集剧本。"],
-        ["panels-top-left", "无限画布", "自由组织角色、场景、分镜与素材，全局掌控创作脉络。"]
+        ["scroll-text", "AI剧本", "输入故事设定，智能生成大纲、角色与分集剧本。"],
+        ["book-open-text", "小说创作", "从题材定位到章节续写，完成小说创作全流程。"],
+        ["panels-top-left", "无限画布", "流水线画布，自由组合素材，激发创作灵感。", "featured"],
+        ["clapperboard", "漫剧制作", "从剧本、分镜到成片，完成漫剧生产全流程。"]
       ],
       sloganTitle: "全链路智能化创作平台",
       sloganDesc: "以IP内容为源头，以AI生产为引擎，以全域发行为放大器，打造覆盖创作、生产、孵化与商业合作的全链路内容生态。",
@@ -33,18 +34,19 @@ const copy = {
       ]
     },
     filters: { search: "搜索", length: ["全部篇幅", "短篇", "中篇"], channel: ["全部频道", "女频", "男频"], category: ["全部分类", "现代言情", "古代言情", "悬疑", "现实"] },
-    agent: { title: "AI驱动的创作工具", sub: "AI驱动的漫剧创作工具集，让视频、图像与声音高效协同。", action: "去创作" }
+    agent: { title: "AI驱动的创作工具", sub: "AI驱动的漫剧创作工具集，让视频、图像与声音高效协同。", action: "去创作", building: "建设中" }
   },
   global: {
     nav: [["home", "Home"], ["novels", "Novel IP Library"], ["scripts", "Script Library"], ["assets", "Creative Library"], ["agents", "Agent Tools"]],
-    studio: "Animated Microdrama Production",
+    studio: "Drama Production",
     business: "Business Partnership",
     home: {
       banners: ["qa-banner-1.jpg", "qa-banner-2.jpg"],
       quick: [
+        ["scroll-text", "AI Script", "Turn a story idea into an outline, characters and episodic scripts."],
         ["book-open-text", "Novel Creation", "Develop genres, story outlines and complete chapters in one workflow."],
-        ["scroll-text", "AI Script", "Turn an idea into a structured outline, characters and episodic scripts."],
-        ["panels-top-left", "Infinite Canvas", "Organize characters, locations, shots and assets in one connected space."]
+        ["panels-top-left", "Infinite Canvas", "Connect every asset on one flexible creative canvas.", "featured"],
+        ["clapperboard", "Drama Production", "Move from script and storyboard to a production-ready drama."]
       ],
       sloganTitle: "End-to-End Creation",
       sloganDesc: "Powered by IP and AI, we build an end-to-end ecosystem spanning creation, production, incubation, and partnerships.",
@@ -67,7 +69,7 @@ const copy = {
       ]
     },
     filters: { search: "Search", length: ["All lengths", "Short", "Series"], channel: ["All audiences", "Female", "Male"], category: ["All genres", "Romance", "Historical", "Mystery", "Drama"] },
-    agent: { title: "AI-Powered Creative Tools", sub: "An AI toolkit that brings video, image, and sound production together.", action: "Create" }
+    agent: { title: "AI-Powered Creative Tools", sub: "An AI toolkit that brings video, image, and sound production together.", action: "Create", building: "Coming soon" }
   }
 };
 
@@ -101,6 +103,22 @@ const scripts = [
   ["《离婚当天，我入职前夫对家公司当副总裁》", "佚名", "qa-script-12.jpg", "40集", "女频", "都市", "婚姻结束当天，她转身进入竞争公司，用实力完成事业与人生逆袭。"]
 ];
 
+const overseasNovels = [
+  ["The Last Signal", "Avery Lin", "A deep-space engineer receives a signal from a colony that vanished twenty years ago.", "work-7.jpg", "科幻", "短篇", "1.2万字", "男频"],
+  ["A Crown of Ash", "Mira Stone", "An exiled heir returns to a kingdom built on a secret only she can expose.", "work-3.jpg", "奇幻", "中篇", "2.8万字", "女频"],
+  ["Neon Memory", "Kai North", "A memory broker uncovers a case that links his own past to a citywide conspiracy.", "work-2.jpg", "悬疑", "短篇", "1.6万字", "男频"],
+  ["Before the Snow Falls", "Elena Hart", "Two former partners reunite on one final rescue mission before winter closes in.", "work-4.jpg", "现实", "短篇", "1.1万字", "女频"],
+  ["The Seventh Door", "Noah Reed", "Every door in the abandoned hotel opens to a different version of the truth.", "work-5.jpg", "悬疑", "中篇", "3.1万字", "男频"]
+];
+
+const overseasScripts = [
+  ["THE LAST SIGNAL", "Avery Lin", "work-7.jpg", "36集", "男频", "科幻", "A vanished colony, a forbidden transmission, and one engineer racing against a planetary blackout."],
+  ["A CROWN OF ASH", "Mira Stone", "work-3.jpg", "40集", "女频", "奇幻", "An exiled heir returns to reclaim a kingdom while exposing the secret beneath its crown."],
+  ["NEON MEMORY", "Kai North", "work-2.jpg", "32集", "男频", "悬疑", "A memory broker follows a corrupted file into the heart of a citywide conspiracy."],
+  ["BEFORE THE SNOW FALLS", "Elena Hart", "work-4.jpg", "30集", "女频", "现实", "Two former partners reunite for a rescue mission that forces them to confront the past."],
+  ["THE SEVENTH DOOR", "Noah Reed", "work-5.jpg", "38集", "男频", "悬疑", "An abandoned hotel reveals a different truth behind every locked door."]
+];
+
 const assets = {
   characters: [
     ["天使女神", "asset-character-02.png", "3D风格", "女", "架空/异世界", "海外"], ["古代红发狐狸", "asset-character-01.png", "2D风格", "女", "古代", "国内"],
@@ -115,15 +133,21 @@ const assets = {
 };
 
 const agentTools = [
-  ["视频创作", "支持视频生成、智能剪辑与镜头编辑，高效完成漫剧成片。", "qa-agent-1.png", "video"],
-  ["图片创作", "支持角色、场景与分镜图生成，保持作品视觉风格统一。", "qa-agent-2.png", "image"],
-  ["音频创作", "智能生成角色配音、环境音效与背景音乐，构建沉浸式声音体验。", "qa-agent-3.png", "audio-lines"],
-  ["AI超分", "智能增强画面分辨率与纹理细节，让低清素材清晰呈现。", null, "scan-search"],
-  ["音色塑造", "生成并锁定角色专属音色，让多集配音保持统一与鲜明。", null, "mic-2"]
+  [{ cn: "视频创作", global: "Video Creation" }, { cn: "支持视频生成、智能剪辑与镜头编辑，高效完成漫剧成片。", global: "Generate, edit and assemble shots into production-ready video." }, "qa-agent-1.png", "video", false],
+  [{ cn: "图片创作", global: "Image Creation" }, { cn: "支持角色、场景与分镜图生成，保持作品视觉风格统一。", global: "Create consistent characters, scenes and storyboard frames." }, "qa-agent-2.png", "image", false],
+  [{ cn: "音频创作", global: "Audio Creation" }, { cn: "智能生成角色配音、环境音效与背景音乐，构建沉浸式声音体验。", global: "Generate voices, sound effects and music for every scene." }, "qa-agent-3.png", "audio-lines", false],
+  [{ cn: "AI超分", global: "AI Upscaling" }, { cn: "智能增强画面分辨率与纹理细节，让低清素材清晰呈现。", global: "Enhance resolution and texture while preserving visual detail." }, null, "scan-search", false],
+  [{ cn: "音色塑造", global: "Voice Design" }, { cn: "生成并锁定角色专属音色，让多集配音保持统一与鲜明。", global: "Design and lock distinctive character voices across episodes." }, null, "mic-2", false],
+  [{ cn: "智能分镜", global: "AI Storyboard" }, { cn: "从剧本自动拆解镜头，生成可编辑分镜草案。", global: "Turn scripts into editable storyboard drafts." }, null, "panels-top-left", true],
+  [{ cn: "角色一致性", global: "Character Consistency" }, { cn: "跨场景保持角色外观、服装与视觉特征统一。", global: "Keep character identity and styling consistent across scenes." }, null, "scan-face", true],
+  [{ cn: "动作生成", global: "Motion Generation" }, { cn: "根据剧情与镜头要求生成自然连贯的角色动作。", global: "Generate coherent character motion from story direction." }, null, "person-standing", true],
+  [{ cn: "多语种配音", global: "Multilingual Dubbing" }, { cn: "智能适配多语种台词、口型与角色音色。", global: "Adapt dialogue, lip sync and voices across languages." }, null, "languages", true]
 ];
 
 const state = {
   edition: localStorage.getItem("rlwx-edition") || "cn",
+  market: localStorage.getItem("rlwx-market") || "domestic",
+  loggedIn: localStorage.getItem("rlwx-login") === "true",
   route: location.hash.slice(1) || "home",
   banner: 0,
   assetTab: "characters",
@@ -142,38 +166,53 @@ function icon(name) { return `<i data-lucide="${name}" aria-hidden="true"></i>`;
 function esc(value) { return String(value).replace(/[&<>\"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" })[char]); }
 function refreshIcons() { if (window.lucide) window.lucide.createIcons({ attrs: { "stroke-width": 1.7 } }); }
 function showToast(message) { toast.textContent = message; toast.classList.add("show"); clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200); }
+function currentNovels() { return state.market === "overseas" ? overseasNovels : novels; }
+function currentScripts() { return state.market === "overseas" ? overseasScripts : scripts; }
+function currentWorks() { return state.market === "overseas" ? copy.global.home.works : copy.cn.home.works; }
+function currentBanners() {
+  return state.market === "overseas"
+    ? ["hero-global.jpg"]
+    : ["qa-banner-1.jpg", "qa-banner-2.jpg", "banner-infinite-canvas.png", "banner-seedance-2-5.png"];
+}
 
 function renderNav() {
   const t = copy[state.edition];
   nav.innerHTML = `${t.nav.map(([route, label]) => `<a class="navbar-item ${state.route === route ? "is-active" : ""}" href="#${route}" data-route="${route}">${label}</a>`).join("")}<span class="navbar-line"></span><button class="navbar-item navbar-studio" type="button" data-studio-launch>${t.studio}</button>`;
   document.documentElement.lang = state.edition === "cn" ? "zh-CN" : "en";
   document.getElementById("businessButton").textContent = t.business;
-  document.querySelectorAll("[data-edition]").forEach(button => {
-    const active = button.dataset.edition === state.edition;
+  document.querySelectorAll("[data-market]").forEach(button => {
+    const active = button.dataset.market === state.market;
     button.textContent = state.edition === "cn"
-      ? (button.dataset.edition === "cn" ? "国内" : "海外")
-      : (button.dataset.edition === "cn" ? "Domestic" : "Overseas");
+      ? (button.dataset.market === "domestic" ? "国内" : "海外")
+      : (button.dataset.market === "domestic" ? "Domestic" : "Overseas");
     button.classList.toggle("is-active", active);
     button.setAttribute("aria-pressed", String(active));
   });
+  document.querySelector("#languageToggle span").textContent = state.edition === "cn" ? "中文" : "EN";
+  document.querySelector("#accountButton span").textContent = state.loggedIn ? (state.edition === "cn" ? "个人中心" : "Account") : (state.edition === "cn" ? "登录" : "Sign in");
+  document.getElementById("accountButton").classList.toggle("is-logged-in", state.loggedIn);
 }
 
 function homePage() {
   const d = copy[state.edition].home;
+  const banners = currentBanners();
+  const works = currentWorks().slice(0, 5);
   return `<div class="home-container"><div class="home-main">
     <section class="hero-carousel home-carousel" aria-label="首页轮播图">
-      <div class="viewport">${d.banners.map((image, index) => `<div class="slide ${slideClass(index)}" data-banner-slide="${index}"><img class="slide-media" src="${A}${image}" alt=""></div>`).join("")}</div>
+      <div class="viewport">${banners.map((image, index) => `<div class="slide ${slideClass(index)} ${image.includes("seedance") ? "is-motion" : ""} ${state.market === "overseas" ? "is-global" : ""}" data-banner-slide="${index}"><img class="slide-media" src="${A}${image}" alt="">${state.market === "overseas" ? `<div class="global-hero-copy"><span>GLOBAL CONTENT ECOSYSTEM</span><strong>CREATE LOCALLY.<br>REACH GLOBALLY.</strong><p>AI-powered production and worldwide distribution for stories without borders.</p></div>` : ""}${image.includes("seedance") ? `<span class="motion-badge">${icon("video")} ${state.edition === "cn" ? "动态视频" : "Motion video"}</span>` : ""}</div>`).join("")}</div>
       <button class="arrow arrow-prev" type="button" data-banner-dir="-1" aria-label="上一张">${icon("chevron-left")}</button>
       <button class="arrow arrow-next" type="button" data-banner-dir="1" aria-label="下一张">${icon("chevron-right")}</button>
-      <div class="indicators">${d.banners.map((_, index) => `<button class="dot ${index === state.banner ? "active" : ""}" type="button" data-banner-index="${index}" aria-label="第 ${index + 1} 张"></button>`).join("")}</div>
+      <div class="indicators">${banners.map((_, index) => `<button class="dot ${index === state.banner ? "active" : ""}" type="button" data-banner-index="${index}" aria-label="第 ${index + 1} 张"></button>`).join("")}</div>
     </section>
     <div class="home-top-section">
       <section class="quick-create-section">
         <div class="quick-create-heading"><h2>${state.edition === "cn" ? "开启新的AI故事灵感" : "Unlock New AI-Powered Story Inspiration"}</h2></div>
-        <div class="quick-create-grid">${d.quick.map((item, index) => `<button class="quick-create-card" type="button" data-quick="${index}"><span class="quick-create-icon">${icon(item[0])}</span><span><strong>${item[1]}</strong><small>${item[2]}</small></span><i data-lucide="arrow-right"></i></button>`).join("")}</div>
+        <div class="quick-create-grid">${d.quick.map((item, index) => `<button class="quick-create-card ${item[3] === "featured" ? "is-featured" : ""}" type="button" data-quick="${index}"><span class="quick-create-icon">${icon(item[0])}</span><span><strong>${item[1]}</strong><small>${item[2]}</small></span><i data-lucide="arrow-right"></i></button>`).join("")}</div>
       </section>
       <section class="home-slogan"><div class="home-slogan__header"><h2 class="home-slogan__title">${d.sloganTitle}</h2><p class="home-slogan__desc">${d.sloganDesc}</p></div><div class="home-slogan__cards">${d.slogans.map(item => `<article class="slogan-card"><span class="slogan-card__icon">${icon(item[0])}</span><h3 class="slogan-card__title">${item[1]}</h3><p class="slogan-card__desc">${item[2]}</p></article>`).join("")}</div></section>
-      <section class="home-hot"><h2 class="home-hot-title">${d.worksTitle}</h2><div class="home-hot-list">${d.works.map((item, index) => `<article class="home-hot-item" tabindex="0" data-work="${index}"><div class="home-hot-cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="home-hot-copy"><h3>${item[0]}</h3></div></article>`).join("")}</div></section>
+      <section class="home-hot"><div class="home-section-heading"><h2 class="home-hot-title">${d.worksTitle}</h2></div><div class="home-hot-list">${works.map((item, index) => `<article class="home-hot-item" tabindex="0" data-work="${index}"><div class="home-hot-cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="home-hot-copy"><h3>${item[0]}</h3></div></article>`).join("")}</div></section>
+      ${homeLibrarySection("novels", currentNovels().slice(0, 5))}
+      ${homeLibrarySection("scripts", currentScripts().slice(0, 5))}
       <section class="home-creation"><div class="home-creation__left"><h2>${state.edition === "cn" ? "全业态一体化创作" : "All-in-One Content Creation"}</h2><div>${d.slogans.map(item => `<span>${item[1]}</span>`).join("")}</div></div><button type="button" data-studio-launch>${state.edition === "cn" ? "快速创作" : "Try Now"}${icon("arrow-right")}</button></section>
     </div>
     ${homeFooter()}
@@ -182,10 +221,17 @@ function homePage() {
 
 function slideClass(index) {
   if (index === state.banner) return "is-current";
-  const total = copy[state.edition].home.banners.length;
+  const total = currentBanners().length;
   if (total === 2) return "is-prev";
   if (index === (state.banner + 1) % total) return "is-next";
   return "is-prev";
+}
+
+function homeLibrarySection(route, items) {
+  const cn = state.edition === "cn";
+  const isNovel = route === "novels";
+  const title = isNovel ? (cn ? "小说IP库" : "Novel IP Library") : (cn ? "剧本库" : "Script Library");
+  return `<section class="home-library"><div class="home-section-heading"><h2>${title}</h2><button type="button" data-home-route="${route}">${cn ? "查看更多" : "View more"}${icon("arrow-right")}</button></div><div class="home-library-row">${items.map((item, index) => `<article class="home-library-card" tabindex="0" ${isNovel ? `data-home-novel="${index}"` : `data-home-script="${index}"`}><img src="${A}${isNovel ? item[3] : item[2]}" alt="${esc(item[0])}"><div><strong>${item[0]}</strong><span>${isNovel ? item[4] : `${item[4]} · ${item[3]}`}</span></div></article>`).join("")}</div></section>`;
 }
 
 function homeFooter() {
@@ -205,14 +251,14 @@ function novelsPage() {
   const f = copy[state.edition].filters;
   const features = state.edition === "cn" ? [
     ["file-up", "小说投稿入库", "提交原创小说与版权资料，完成内容审核与IP入库。", "blue"],
-    ["sparkles", "IP智能评估", "AI分析题材、角色与剧情，快速评估改编潜力与市场价值。", "purple"],
-    ["handshake", "小说改编合作", "打通IP改编、漫剧制作与全域发行。", "orange"]
+    ["notebook-pen", "AI小说创作", "输入创意与题材，智能完成大纲及章节创作。", "purple"],
+    ["handshake", "商务合作", "连接IP合作、漫剧制作与全域发行资源。", "orange"]
   ] : [
     ["file-up", "Novel Submission", "Submit original stories and rights information for IP onboarding.", "blue"],
-    ["sparkles", "AI IP Evaluation", "Assess genre, characters, plot and adaptation potential with AI.", "purple"],
-    ["handshake", "Adaptation Partnership", "Connect IP adaptation, production, and global distribution.", "orange"]
+    ["notebook-pen", "AI Novel Creation", "Turn an idea into an outline and complete chapters with AI.", "purple"],
+    ["handshake", "Business Partnership", "Connect IP, production and global distribution resources.", "orange"]
   ];
-  return `<div class="novel-page"><div class="novel-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("length", f.length)}${filterSelect("channel", f.channel)}${filterSelect("category", f.category)}</div>${searchBox(f.search)}</div><div class="novel-card-grid" data-library-grid>${novels.map((item, index) => novelCard(item, index)).join("")}</div></div></div>`;
+  return `<div class="novel-page"><div class="novel-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("length", f.length)}${filterSelect("channel", f.channel)}${filterSelect("category", f.category)}</div>${searchBox(f.search)}</div><div class="novel-card-grid" data-library-grid>${currentNovels().map((item, index) => novelCard(item, index)).join("")}</div></div></div>`;
 }
 
 function novelCard(item, index) {
@@ -224,18 +270,18 @@ function scriptsPage() {
   const features = state.edition === "cn" ? [
     ["book-copy", "小说智能改编", "提炼情节与角色，快速生成漫剧剧本。", "blue"],
     ["wand-sparkles", "AI原创剧本", "输入创意，智能生成大纲与分集剧本。", "purple"],
-    ["rocket", "剧本全球化", "AI驱动剧本快速成片，贯通本地化适配与海外发行。", "orange"]
+    ["chart-no-axes-combined", "剧本智能评估", "智能分析结构、角色与市场潜力，辅助内容决策。", "orange"]
   ] : [
     ["book-copy", "Novel Adaptation", "Turn story beats and characters into production-ready scripts.", "blue"],
     ["wand-sparkles", "AI Original Scripts", "Turn ideas into outlines and episodic scripts.", "purple"],
-    ["rocket", "Global Production", "Move from script to localized production and global distribution.", "orange"]
+    ["chart-no-axes-combined", "AI Script Evaluation", "Assess structure, characters and market potential with AI.", "orange"]
   ];
   const categories = state.edition === "cn" ? ["全部分类", "都市", "古风", "悬疑", "现实", "年代"] : ["All genres", "Urban", "Historical", "Mystery", "Drama"];
-  return `<div class="script-page"><div class="script-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("channel", f.channel)}${filterSelect("category", categories)}</div>${searchBox(f.search)}</div><div class="novel-card-grid script-library-grid" data-library-grid>${scripts.map((item, index) => scriptLibraryCard(item, index)).join("")}</div></div></div>`;
+  return `<div class="script-page"><div class="script-content">${featureCards(features)}<div class="filter-bar"><div class="filter-group">${filterSelect("channel", f.channel)}${filterSelect("category", categories)}</div>${searchBox(f.search)}</div><div class="script-card-grid" data-library-grid>${currentScripts().map((item, index) => scriptPosterCard(item, index)).join("")}</div></div></div>`;
 }
 
-function scriptLibraryCard(item, index) {
-  return `<article class="novel-card script-library-card" tabindex="0" data-script="${index}" data-library-card data-title="${esc(item[0] + item[1])}" data-channel="${item[4]}" data-category="${item[5]}"><div class="card-cover"><img class="cover-img" src="${A}${item[2]}" alt="${esc(item[0])}"></div><div class="card-content"><h3 class="card-title">${item[0]}</h3><div class="card-tags"><span class="tag tag-source">${item[4]}</span><span class="tag tag-type">${item[5]}</span><span class="tag tag-count">${item[3]}</span></div><p class="card-desc">${item[6]}</p><p class="card-author">${state.edition === "cn" ? "作者" : "Author"}：${item[1]}</p></div></article>`;
+function scriptPosterCard(item, index) {
+  return `<article class="script-card" tabindex="0" data-script="${index}" data-library-card data-title="${esc(item[0] + item[1])}" data-channel="${item[4]}" data-category="${item[5]}"><div class="script-card__cover"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div class="script-card__overlay"><span>${item[1]}</span><div><strong>${item[0]}</strong><b>${item[3]}</b></div></div></div></article>`;
 }
 
 function featureCards(features) {
@@ -254,7 +300,7 @@ function assetsPage() {
 
 function agentsPage() {
   const t = copy[state.edition].agent;
-  return `<div class="tools-page"><div class="tools-content"><header class="tools-header"><h1>${t.title}<span class="title-glow glow-left"></span><span class="title-glow glow-right"></span></h1><p><span>${state.edition === "cn" ? "AI驱动" : "AI-powered"}</span>${t.sub.replace(state.edition === "cn" ? "AI驱动" : "AI-powered", "")}</p></header><div class="tool-cards">${agentTools.map((item, index) => `<article class="tool-card"><div class="tool-cover">${item[2] ? `<img src="${A}${item[2]}" alt="">` : `<span class="tool-placeholder tool-placeholder-${index}">${icon(item[3])}</span>`}</div><div class="tool-body"><h2>${item[0]}</h2><p>${item[1]}</p><button type="button" data-agent="${item[0]}">${icon(item[3])}<span>${t.action}</span></button></div></article>`).join("")}</div></div></div>`;
+  return `<div class="tools-page"><div class="tools-content"><header class="tools-header"><h1>${t.title}<span class="title-glow glow-left"></span><span class="title-glow glow-right"></span></h1><p>${t.sub}</p></header><div class="tool-cards">${agentTools.map((item, index) => { const title = item[0][state.edition]; const desc = item[1][state.edition]; const building = item[4]; return `<article class="tool-card ${building ? "is-building" : ""}">${building ? `<span class="tool-status">${t.building}</span>` : ""}<div class="tool-cover">${item[2] ? `<img src="${A}${item[2]}" alt="">` : `<span class="tool-placeholder tool-placeholder-${index}">${icon(item[3])}</span>`}</div><div class="tool-body"><h2>${title}</h2><p>${desc}</p><button type="button" ${building ? "disabled" : `data-agent="${title}"`}>${icon(item[3])}<span>${building ? t.building : t.action}</span></button></div></article>`; }).join("")}</div></div></div>`;
 }
 
 function render() {
@@ -269,15 +315,18 @@ function render() {
 
 function bindPage() {
   document.querySelectorAll("[data-route]").forEach(link => link.addEventListener("click", event => { event.preventDefault(); state.route = link.dataset.route; location.hash = state.route; render(); }));
-  document.querySelectorAll("[data-studio-launch]").forEach(button => button.addEventListener("click", () => showToast(state.edition === "cn" ? "漫剧制作平台即将打开" : "Opening the production studio")));
-  document.querySelectorAll("[data-quick]").forEach(button => button.addEventListener("click", () => showToast(`${button.querySelector("strong").textContent}${state.edition === "cn" ? "入口已打开" : " opened"}`)));
+  document.querySelectorAll("[data-studio-launch]").forEach(button => button.addEventListener("click", () => openLogin(copy[state.edition].studio)));
+  document.querySelectorAll("[data-quick]").forEach(button => button.addEventListener("click", () => openLogin(button.querySelector("strong").textContent)));
+  document.querySelectorAll("[data-home-route]").forEach(button => button.addEventListener("click", () => { state.route = button.dataset.homeRoute; location.hash = state.route; render(); }));
   bindCarousel();
   bindFilterSelects();
   document.querySelectorAll("[data-library-search]").forEach(input => input.addEventListener("input", applyLibraryFilters));
   document.querySelectorAll("[data-work]").forEach(card => bindKeyboardClick(card, () => openWork(Number(card.dataset.work))));
   document.querySelectorAll("[data-novel]").forEach(card => bindKeyboardClick(card, () => openNovel(Number(card.dataset.novel))));
   document.querySelectorAll("[data-script]").forEach(card => bindKeyboardClick(card, () => openScript(Number(card.dataset.script))));
-  document.querySelectorAll("[data-capability]").forEach(card => card.addEventListener("click", () => showToast(state.edition === "cn" ? `正在进入「${card.dataset.capability}」` : `Opening ${card.dataset.capability}`)));
+  document.querySelectorAll("[data-home-novel]").forEach(card => bindKeyboardClick(card, () => openNovel(Number(card.dataset.homeNovel))));
+  document.querySelectorAll("[data-home-script]").forEach(card => bindKeyboardClick(card, () => openScript(Number(card.dataset.homeScript))));
+  document.querySelectorAll("[data-capability]").forEach(card => card.addEventListener("click", () => openLogin(card.dataset.capability)));
   document.querySelectorAll("[data-agent]").forEach(button => button.addEventListener("click", () => showToast(state.edition === "cn" ? `${button.dataset.agent}工具已打开` : `Opening ${button.dataset.agent}`)));
   document.querySelectorAll("[data-asset-tab]").forEach(button => button.addEventListener("click", () => { state.assetTab = button.dataset.assetTab; state.assetFilters = ["全部", "全部", "全部", "全部"]; render(); }));
   document.querySelectorAll("[data-asset-filter]").forEach(button => button.addEventListener("click", () => { const group = Number(button.dataset.assetGroup); state.assetFilters[group] = button.dataset.assetFilter; button.parentElement.querySelectorAll("button").forEach(item => item.classList.toggle("is-active", item === button)); applyAssetFilters(); }));
@@ -336,23 +385,48 @@ function applyAssetFilters() {
 }
 
 function openWork(index) {
-  const item = copy[state.edition].home.works[index];
+  const item = currentWorks()[index];
   openModal(`<div class="media-dialog"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div><p class="modal-kicker">${state.edition === "cn" ? "优质作品" : "SELECTED PRODUCTION"}</p><h2 id="dialogTitle">${item[0]}</h2><p>${item[1]}</p><button type="button" class="modal-primary" data-modal-close>${state.edition === "cn" ? "关闭" : "Close"}</button></div></div>`, "wide");
 }
 
 function openNovel(index) {
-  const item = novels[index];
+  const item = currentNovels()[index];
   openModal(`<div class="media-dialog"><img src="${A}${item[3]}" alt="${esc(item[0])}"><div><p class="modal-kicker">NOVEL IP</p><h2 id="dialogTitle">${item[0]}</h2><div class="modal-tags"><span>${item[4]}</span><span>${item[5]}</span><span>${item[6]}</span></div><p>${item[2]}</p><small>${state.edition === "cn" ? "作者" : "Author"}：${item[1]}</small><button type="button" class="modal-primary" data-modal-action>${state.edition === "cn" ? "阅读试读章节" : "Read preview"}</button></div></div>`, "wide");
 }
 
 function openScript(index) {
-  const item = scripts[index];
+  const item = currentScripts()[index];
   openModal(`<div class="media-dialog"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div><p class="modal-kicker">SCRIPT</p><h2 id="dialogTitle">${item[0]}</h2><div class="modal-tags"><span>${item[4]}</span><span>${item[5]}</span><span>${item[3]}</span></div><p>${state.edition === "cn" ? "围绕完整漫剧生产流程构建的标准化分集剧本，可用于角色、分镜和成片制作。" : "A structured episodic script ready for character, storyboard and production workflows."}</p><small>${state.edition === "cn" ? "作者" : "Author"}：${item[1]}</small><button type="button" class="modal-primary" data-modal-action>${state.edition === "cn" ? "查看试读" : "Preview script"}</button></div></div>`, "wide");
 }
 
 function openAsset(index) {
   const item = assets[state.assetTab][index];
   openModal(`<div class="asset-dialog"><img src="${A}${item[1]}" alt="${esc(item[0])}"><div><p class="modal-kicker">ASSET PREVIEW</p><h2 id="dialogTitle">${item[0]}</h2><p>${state.edition === "cn" ? "点击图片可查看完整素材，支持在漫剧创作项目中调用。" : "Preview and use this asset in a production project."}</p><button type="button" class="modal-primary" data-modal-action>${state.edition === "cn" ? "使用资产" : "Use asset"}</button></div></div>`, "asset");
+}
+
+function openLogin(source = "") {
+  if (state.loggedIn) {
+    showToast(state.edition === "cn" ? `正在进入「${source}」` : `Opening ${source}`);
+    return;
+  }
+  const cn = state.edition === "cn";
+  openModal(`<form id="loginForm" class="login-form"><div class="login-brand"><img src="${A}qa-logo.png" alt=""><h2 id="dialogTitle">容量万相</h2><p>${cn ? "登录后继续使用专业漫剧创作能力" : "Sign in to continue with professional creation tools"}</p></div><label><span>${cn ? "账号" : "Account"}</span><div>${icon("user-round")}<input name="account" autocomplete="username" required placeholder="${cn ? "请输入账号" : "Enter your account"}"></div></label><label><span>${cn ? "密码" : "Password"}</span><div>${icon("lock-keyhole")}<input name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="${cn ? "请输入密码" : "Enter your password"}"></div></label><button class="login-submit" type="submit">${cn ? "登录" : "Sign in"}</button><p class="login-help">${cn ? "没有账号密码？" : "Need an account?"}<button type="button" data-open-business>${cn ? "联系商务" : "Contact business"}</button></p></form>`, "login");
+  const form = document.getElementById("loginForm");
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    state.loggedIn = true;
+    localStorage.setItem("rlwx-login", "true");
+    closeModal();
+    renderNav();
+    refreshIcons();
+    showToast(cn ? "登录成功" : "Signed in successfully");
+  });
+}
+
+function openAccount() {
+  if (!state.loggedIn) return openLogin(state.edition === "cn" ? "个人中心" : "Account");
+  const cn = state.edition === "cn";
+  openModal(`<div class="account-panel"><span class="account-avatar">RL</span><p class="modal-kicker">${cn ? "个人中心" : "ACCOUNT"}</p><h2 id="dialogTitle">${cn ? "容量万相用户" : "WanXiang User"}</h2><p>${cn ? "账号体系将逐步打通漫剧制作及其他业务平台。" : "One account will connect production and other business platforms."}</p><button class="account-logout" type="button" data-logout>${cn ? "退出登录" : "Sign out"}</button></div>`, "login");
 }
 
 function openBusiness() {
@@ -375,6 +449,8 @@ function openModal(html, variant = "") {
 function bindModalButtons() {
   dialogContent.querySelectorAll("[data-modal-close]").forEach(button => button.addEventListener("click", closeModal));
   dialogContent.querySelectorAll("[data-modal-action]").forEach(button => button.addEventListener("click", () => showToast(state.edition === "cn" ? "功能已打开" : "Opened")));
+  dialogContent.querySelectorAll("[data-open-business]").forEach(button => button.addEventListener("click", () => { closeModal(); openBusiness(); }));
+  dialogContent.querySelectorAll("[data-logout]").forEach(button => button.addEventListener("click", () => { state.loggedIn = false; localStorage.removeItem("rlwx-login"); closeModal(); renderNav(); refreshIcons(); showToast(state.edition === "cn" ? "已退出登录" : "Signed out"); }));
 }
 
 function closeModal() { modal.hidden = true; document.body.style.overflow = ""; }
@@ -382,7 +458,9 @@ function closeModal() { modal.hidden = true; document.body.style.overflow = ""; 
 document.addEventListener("click", event => {
   if (!event.target.closest(".filter-select")) document.querySelectorAll(".filter-select__menu").forEach(menu => { menu.hidden = true; });
 });
-document.querySelectorAll("[data-edition]").forEach(button => button.addEventListener("click", () => { state.edition = button.dataset.edition; localStorage.setItem("rlwx-edition", state.edition); state.banner = 0; render(); }));
+document.querySelectorAll("[data-market]").forEach(button => button.addEventListener("click", () => { state.market = button.dataset.market; localStorage.setItem("rlwx-market", state.market); state.banner = 0; render(); }));
+document.getElementById("languageToggle").addEventListener("click", () => { state.edition = state.edition === "cn" ? "global" : "cn"; localStorage.setItem("rlwx-edition", state.edition); render(); });
+document.getElementById("accountButton").addEventListener("click", openAccount);
 document.getElementById("businessButton").addEventListener("click", openBusiness);
 document.getElementById("dialogClose").addEventListener("click", closeModal);
 modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });

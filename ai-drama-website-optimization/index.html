@@ -17,9 +17,15 @@
       <div class="navbar-list" id="primaryNav"></div>
       <div class="navbar-actions">
         <div class="market-switch" role="group" aria-label="业务版本切换">
-          <button type="button" data-edition="cn" aria-pressed="true">国内</button>
-          <button type="button" data-edition="global" aria-pressed="false">海外</button>
+          <button type="button" data-market="domestic" aria-pressed="true">国内</button>
+          <button type="button" data-market="overseas" aria-pressed="false">海外</button>
         </div>
+        <button class="language-toggle" id="languageToggle" type="button" aria-label="切换中英文">
+          <i data-lucide="languages" aria-hidden="true"></i><span>简体中文</span>
+        </button>
+        <button class="account-button" id="accountButton" type="button">
+          <i data-lucide="circle-user-round" aria-hidden="true"></i><span>登录</span>
+        </button>
         <button class="navbar-action-business" id="businessButton" type="button">商务合作</button>
         <button class="mobile-menu" id="mobileMenu" type="button" aria-label="打开菜单" aria-expanded="false">
           <i data-lucide="menu" aria-hidden="true"></i>
