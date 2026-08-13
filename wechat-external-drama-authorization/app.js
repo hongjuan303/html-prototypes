@@ -32,7 +32,7 @@ function getFilteredRecords() {
   const name = $("#filterName").value.trim().toLowerCase();
   const collectionId = $("#filterCollectionId").value.trim();
   const externalId = $("#filterExternalId").value.trim().toLowerCase();
-  return records.filter((record) => (!name || record.collectionName.toLowerCase().includes(name)) && (!collectionId || record.collectionId.includes(collectionId)) && (!externalId || record.externalId.toLowerCase().includes(externalId)));
+  return records.filter((record) => (!name || record.collectionName.toLowerCase().includes(name)) && (!collectionId || record.collectionId === collectionId) && (!externalId || record.externalId.toLowerCase() === externalId));
 }
 
 function renderRows() {
