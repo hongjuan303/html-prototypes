@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="微信外部剧授权管理高保真交互原型" />
+    <title>微信外部剧授权</title>
+    <link rel="stylesheet" href="/html-prototypes/wechat-external-drama-authorization/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <div class="brand"><span class="brand-mark">◉</span><strong>合集列表</strong></div>
+        <nav>
+          <button><span>◉</span>合集标签分类管理</button>
+          <button><span>◉</span>投放推荐剧</button>
+          <button><span>◉</span>腾讯投放商品库</button>
+          <button><span>◉</span>快手自建站剧集管理</button>
+          <button><span>◉</span>端上投放剧集映射</button>
+          <button class="active"><span>◉</span>内容审核库</button>
+          <button><span>◉</span>项目管理</button>
+          <button><span>◉</span>合集定价池</button>
+          <button><span>◉</span>合集组</button>
+          <button><span>◉</span>平台内容爬虫看板</button>
+          <button><span>◉</span>重点合集池</button>
+          <button><span>◉</span>淘豆合集列表</button>
+        </nav>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <button class="menu-icon" title="收起导航" aria-label="收起导航">☰</button>
+          <div class="breadcrumb"><b>内容管理</b><i>/</i><span>内容审核库</span></div>
+          <div class="challenge">百日0故障挑战 第345天</div>
+          <label class="top-search"><span>⌕</span><input placeholder="请输入搜索内容" /></label>
+          <button class="plain-icon" title="全屏">⛶</button><span>全屏</span>
+          <button class="user"><span>洪</span>洪娟⌄</button>
+        </header>
+
+        <div class="route-tabs" aria-label="已打开页面">
+          <span>首页（新）<button>×</button></span>
+          <span>合集列表<button>×</button></span>
+          <span>修改合集<button>×</button></span>
+          <span class="current">内容审核库<button>×</button></span>
+          <span>腾讯投放商品库<button>×</button></span>
+          <span>供应商数据（真人剧）<button>×</button></span>
+        </div>
+
+        <main>
+          <section class="content-panel">
+            <div class="library-tabs" role="tablist">
+              <button role="tab">抖音送审库</button>
+              <button role="tab">快手送审库</button>
+              <button role="tab">微信送审库</button>
+              <button role="tab">B站送审库</button>
+              <button role="tab">抖音商品库送审库</button>
+              <button role="tab" class="active" aria-selected="true">微信外部剧授权</button>
+            </div>
+
+            <div class="filters" aria-label="授权记录筛选">
+              <label><span>合集名称</span><input id="filterName" placeholder="录入" /></label>
+              <label><span>合集ID</span><input id="filterCollectionId" inputmode="numeric" placeholder="录入" /></label>
+              <label><span>外部剧目ID</span><input id="filterExternalId" placeholder="录入" /></label>
+              <div class="filter-actions">
+                <button class="primary" id="queryButton">查询</button>
+                <button class="secondary" id="resetButton">重置</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="table-panel">
+            <div class="table-toolbar">
+              <div><b>微信外部剧授权</b><span id="countText">共 6 条</span></div>
+              <button class="primary" id="createButton">新增</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>ID</th><th>合集ID</th><th>合集名称</th><th>外部剧目ID</th><th>创建时间</th><th>操作</th></tr></thead>
+                <tbody id="recordRows"></tbody>
+              </table>
+              <div class="empty-state" id="emptyState" hidden>暂无符合条件的数据</div>
+            </div>
+            <div class="pagination">
+              <span id="totalText">共 6 条</span><select aria-label="每页条数"><option>10条/页</option><option>20条/页</option></select>
+              <button disabled>‹</button><b>1</b><button disabled>›</button><span>前往</span><input value="1" aria-label="前往页码" /><span>页</span>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="overlay" id="recordModal" hidden>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <header><h1 id="dialogTitle">新增微信外部剧授权</h1><button class="close" id="closeRecordModal" aria-label="关闭">×</button></header>
+        <div class="dialog-body">
+          <label class="form-row required">
+            <span>选择合集</span>
+            <div>
+              <select id="collectionSelect"><option value="">请选择合集</option></select>
+              <small>请选择需要关联微信外部剧目的合集</small>
+            </div>
+          </label>
+          <label class="form-row required">
+            <span>外部剧目ID</span>
+            <div><input id="externalIdInput" maxlength="64" placeholder="请输入微信外部剧目ID" /><small>请输入对方平台提供的唯一剧目ID</small></div>
+          </label>
+          <p class="form-error" id="formError" hidden></p>
+        </div>
+        <footer><button class="secondary" id="cancelRecordModal">取消</button><button class="primary" id="saveRecordButton">确定</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay confirm-overlay" id="deleteModal" hidden>
+      <section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="deleteTitle">
+        <header><h1 id="deleteTitle">删除确认</h1><button class="close" id="closeDeleteModal" aria-label="关闭">×</button></header>
+        <div class="confirm-content"><span class="warning-icon">!</span><div><b>确定删除这条授权记录吗？</b><p id="deleteDescription"></p><small>删除后无法恢复，请谨慎操作。</small></div></div>
+        <footer><button class="secondary" id="cancelDeleteButton">取消</button><button class="danger" id="confirmDeleteButton">确定删除</button></footer>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+    <script src="/html-prototypes/wechat-external-drama-authorization/app.js"></script>
+  </body>
+</html>
