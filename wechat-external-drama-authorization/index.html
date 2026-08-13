@@ -71,7 +71,10 @@
           <section class="table-panel">
             <div class="table-toolbar">
               <div><b>微信外部剧授权</b><span id="countText">共 6 条</span></div>
-              <button class="primary" id="createButton">新增</button>
+              <div class="toolbar-actions">
+                <button class="secondary" id="importButton">导入</button>
+                <button class="primary" id="createButton">新增</button>
+              </div>
             </div>
             <div class="table-wrap">
               <table>
@@ -93,13 +96,17 @@
       <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
         <header><h1 id="dialogTitle">新增微信外部剧授权</h1><button class="close" id="closeRecordModal" aria-label="关闭">×</button></header>
         <div class="dialog-body">
-          <label class="form-row required">
+          <div class="form-row required">
             <span>选择合集</span>
-            <div>
-              <select id="collectionSelect"><option value="">请选择合集</option></select>
-              <small>请选择需要关联微信外部剧目的合集</small>
+            <div id="newCollectionControl">
+              <button class="select-collection-button" id="openCollectionPicker" type="button"><span id="selectedCollectionText">请选择合集</span><i>›</i></button>
+              <small>点击按钮选择需要关联微信外部剧目的合集</small>
             </div>
-          </label>
+            <div id="editCollectionControl" hidden>
+              <div class="readonly-field" id="editCollectionText"></div>
+              <small>编辑时不可更换合集</small>
+            </div>
+          </div>
           <label class="form-row required">
             <span>外部剧目ID</span>
             <div><input id="externalIdInput" maxlength="64" placeholder="请输入微信外部剧目ID" /><small>请输入对方平台提供的唯一剧目ID</small></div>
@@ -107,6 +114,45 @@
           <p class="form-error" id="formError" hidden></p>
         </div>
         <footer><button class="secondary" id="cancelRecordModal">取消</button><button class="primary" id="saveRecordButton">确定</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay upper-overlay" id="collectionModal" hidden>
+      <section class="dialog collection-dialog" role="dialog" aria-modal="true" aria-labelledby="collectionTitle">
+        <header><h1 id="collectionTitle">选择合集</h1><button class="close" id="closeCollectionModal" aria-label="关闭选择合集">×</button></header>
+        <div class="collection-body">
+          <div class="collection-search">
+            <input id="collectionKeyword" placeholder="请输入合集名称或合集ID" />
+            <button class="primary" id="collectionQueryButton">查询</button>
+            <button class="secondary" id="collectionResetButton">重置</button>
+          </div>
+          <div class="collection-table-wrap">
+            <table><thead><tr><th>选择</th><th>合集ID</th><th>合集名称</th></tr></thead><tbody id="collectionRows"></tbody></table>
+          </div>
+        </div>
+        <footer><button class="secondary" id="cancelCollectionModal">取消</button><button class="primary" id="confirmCollectionButton">确定</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay" id="importModal" hidden>
+      <section class="dialog import-dialog" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+        <header><h1 id="importTitle">导入微信外部剧授权</h1><button class="close" id="closeImportModal" aria-label="关闭导入">×</button></header>
+        <div class="import-body">
+          <div class="template-line">
+            <div><b>1. 下载导入模板</b><p>模板字段：合集ID、外部剧目ID。请勿修改表头。</p></div>
+            <button class="secondary" id="downloadTemplateButton">下载模板</button>
+          </div>
+          <div class="upload-section">
+            <b>2. 上传填写后的文件</b>
+            <label class="upload-zone" id="uploadZone"><input id="excelFileInput" type="file" accept=".xlsx,.xls" hidden /><span class="upload-icon">⇧</span><strong>点击上传 Excel 文件</strong><small>支持 .xlsx、.xls，单个文件不超过 10MB</small></label>
+          </div>
+          <div class="file-card" id="fileCard" hidden><div><b id="fileName"></b><span id="fileSize"></span></div><button class="link-button delete" id="removeFileButton">移除</button></div>
+          <div class="import-result" id="importResult" hidden>
+            <div class="result-title"><span id="resultIcon">!</span><div><b id="resultHeading"></b><p id="resultSummary"></p></div></div>
+            <table id="errorTable" hidden><thead><tr><th>行号</th><th>合集ID</th><th>失败原因</th></tr></thead><tbody id="errorRows"></tbody></table>
+          </div>
+        </div>
+        <footer><button class="secondary" id="cancelImportModal">取消</button><button class="primary" id="confirmImportButton" disabled>确认导入</button></footer>
       </section>
     </div>
 
@@ -119,6 +165,7 @@
     </div>
 
     <div class="toast" id="toast" hidden></div>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="/html-prototypes/wechat-external-drama-authorization/app.js"></script>
   </body>
 </html>
