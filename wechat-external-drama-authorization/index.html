@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="/html-prototypes/wechat-external-drama-authorization/styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <div class="review-canvas">
+      <div class="prototype-stage">
+        <div class="app-shell">
       <aside class="sidebar" aria-label="主导航">
         <div class="brand"><span class="brand-mark">◉</span><strong>合集列表</strong></div>
         <nav>
@@ -90,6 +92,57 @@
           </section>
         </main>
       </div>
+        </div>
+      </div>
+
+      <aside class="prd-panel" aria-label="PRD文档说明">
+        <div class="prd-heading">
+          <span>PRD</span>
+          <div><strong>微信外部剧授权</strong><small>页面及交互说明</small></div>
+        </div>
+
+        <section>
+          <h2># 页面说明</h2>
+          <ul>
+            <li><b>页面名称：</b>微信外部剧授权</li>
+            <li><b>菜单路径：</b>内容管理 ＞ 内容审核库 ＞ 微信外部剧授权</li>
+            <li><b>使用对象：</b>内容运营、媒资运营</li>
+            <li><b>页面用途：</b>维护内部合集与微信外部剧目ID的授权关联关系。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 原型说明</h2>
+          <h3>筛选</h3>
+          <ul>
+            <li><b>合集名称：</b>支持按名称关键字查询。</li>
+            <li><b>合集ID：</b>支持输入完整或部分ID查询。</li>
+            <li><b>外部剧目ID：</b>支持按微信侧剧目ID查询。</li>
+            <li><b>查询：</b>按已填写条件组合筛选列表。</li>
+            <li><b>重置：</b>清空全部筛选条件并恢复完整列表。</li>
+          </ul>
+
+          <h3>列表</h3>
+          <ul>
+            <li><b>ID：</b>授权关系记录ID。</li>
+            <li><b>合集ID、合集名称：</b>展示已关联的内部合集信息。</li>
+            <li><b>外部剧目ID：</b>展示微信侧对应的剧目ID。</li>
+            <li><b>创建时间：</b>展示授权关系首次创建时间。</li>
+            <li><b>分页：</b>展示总条数，支持切换每页条数及页码。</li>
+          </ul>
+
+          <h3>操作</h3>
+          <ul>
+            <li><b>新增：</b>点击“选择合集”打开合集选择弹窗；选择合集并填写外部剧目ID后提交，两个字段均必填。</li>
+            <li><b>编辑：</b>回显合集名称与合集ID且不可修改，仅允许修改外部剧目ID。</li>
+            <li><b>删除：</b>删除前二次确认；确认后删除记录，且不可恢复。</li>
+            <li><b>导入：</b>下载并填写Excel模板，模板字段为“合集ID、外部剧目ID”，支持上传 .xlsx、.xls 文件。</li>
+            <li><b>导入校验：</b>合集ID不存在、文件内合集ID重复，或合集ID已存在授权记录时，整批导入失败并展示失败明细。</li>
+          </ul>
+        </section>
+
+        <div class="prd-note"><b>交互提示</b><span>左侧原型可直接点击体验新增、编辑、删除、筛选及导入流程。</span></div>
+      </aside>
     </div>
 
     <div class="overlay" id="recordModal" hidden>
