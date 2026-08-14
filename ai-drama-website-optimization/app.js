@@ -2,7 +2,7 @@ const A = "./assets/";
 
 const copy = {
   cn: {
-    nav: [["home", "首页"], ["novels", "小说IP库"], ["scripts", "剧本库"], ["assets", "资产库"], ["agents", "Agent工具"]],
+    nav: [["home", "首页"], ["novels", "小说IP库"], ["scripts", "剧本库"], ["assets", "资产库"], ["agents", "Agent工具"], ["ecology", "生态创新中心"]],
     studio: "漫剧制作",
     business: "商务合作",
     home: {
@@ -37,7 +37,7 @@ const copy = {
     agent: { title: "AI驱动的创作工具", sub: "AI驱动的漫剧创作工具集，让视频、图像与声音高效协同。", action: "去创作", building: "建设中" }
   },
   global: {
-    nav: [["home", "Home"], ["novels", "Novel IP Library"], ["scripts", "Script Library"], ["assets", "Creative Library"], ["agents", "Agent Tools"]],
+    nav: [["home", "Home"], ["novels", "Novel IP Library"], ["scripts", "Script Library"], ["assets", "Creative Library"], ["agents", "Agent Tools"], ["ecology", "Innovation Hub"]],
     studio: "Drama Production",
     business: "Business Partnership",
     home: {
@@ -142,6 +142,30 @@ const agentTools = [
   [{ cn: "角色一致性", global: "Character Consistency" }, { cn: "跨场景保持角色外观、服装与视觉特征统一。", global: "Keep character identity and styling consistent across scenes." }, null, "scan-face", true],
   [{ cn: "动作生成", global: "Motion Generation" }, { cn: "根据剧情与镜头要求生成自然连贯的角色动作。", global: "Generate coherent character motion from story direction." }, null, "person-standing", true],
   [{ cn: "多语种配音", global: "Multilingual Dubbing" }, { cn: "智能适配多语种台词、口型与角色音色。", global: "Adapt dialogue, lip sync and voices across languages." }, null, "languages", true]
+];
+
+const ecologyProjects = [
+  ["《马年限定之新春有约》", "浙江省杭州市富阳区", "文旅短剧", "容量短剧出品的春节年俗轻喜剧，在富阳龙门古镇实地取景，以中外文化碰撞展现年味新表达。"],
+  ["《漓江仙子的人间烟火》", "广西壮族自治区桂林市", "文旅短剧", "广西重点扶持项目，讲述亲情守护与励志成长的修仙题材短剧。"],
+  ["《上元欢·宋》", "浙江省杭州市余杭区", "文旅短剧", "由容量短剧出品，杭州径山旅游度假区、咪咕悦看联合支持，以AIGC技术呈现宋韵文化的文旅短剧。"],
+  ["《约等于100岁》", "浙江省舟山市", "公益短剧", "容量短剧独家出品的公益短剧，以柴山岛上的海岛岁月治愈展现青春成长。入选国家广播电视总局“微短剧精品创作传播计划‘五个一批工程’”第一批拟扶持项目。"],
+  ["《我见过你的征途》", "浙江省杭州市淳安县", "红色短剧", "由浙江省委党史和文献研究室、浙江广播电视集团、杭州市委党史研究室、容量短剧共同出品的红色短剧，该剧是国家广播电视总局“长征：我们的故事”主题微短剧首批入选作品，以跨时空对话致敬长征精神。"],
+  ["《寻天记》之和合圣境", "浙江省台州市天台县", "文旅短剧", "浙江文化“新三样”战略重点作品，融合天台山·和合文化与奇幻喜剧的文旅出海短剧。"],
+  ["《海屿岛之恋》", "浙江省台州市玉环市", "文旅短剧", "容量短剧出品的时空穿越题材文旅短剧，以高糖情感点亮海岛风光。"],
+  ["《我在巴黎当侠客》", "浙江省杭州市西湖区", "文旅短剧", "容量短剧与央视网联合出品，以奥运为背景的跨国寻亲文旅短剧。"],
+  ["《面若桃花》第二季", "江苏省苏州市", "文旅短剧", "容量短剧与苏州广电联合出品，以穿越宋韵文化塑造城市品牌的文旅短剧。"],
+  ["《甬忆南侨梦归人》", "浙江省宁波市", "文旅短剧", "宁波市文广旅游局指导，讲述马来西亚华侨寻根与抗战历史的红色文旅短剧。"],
+  ["《水韵风情梦塘栖》", "浙江省杭州市临平区", "乡村振兴短剧", "临平区委宣传部指导，聚焦塘栖村乡村振兴与基层党建的短剧。"],
+  ["《宋朝来的小贵人》", "浙江省杭州市上城区", "文旅短剧", "上城区委宣传部指导，以AIGC赋能南宋文化穿越的非遗文旅短剧。"],
+  ["《香格里拉下雪了吗》", "云南省迪庆藏族自治州香格里拉市", "文旅短剧", "容量短剧出品，展现藏族风情与治愈旅行的民族文旅短剧。"],
+  ["《G331号秘境来信》", "吉林省延边朝鲜族自治州", "乡村振兴短剧", "浙江驻吉林对口合作工作组指导，以边境振兴为主题的青春采风短剧。"],
+  ["《辣妈回村》", "浙江省磐安县", "乡村振兴短剧", "容量短剧出品，讲述驻村第一书记带领乡村振兴的女性励志短剧。"],
+  ["《我在荔乡当冼夫人合伙人》", "广东省茂名市高州市", "乡村振兴短剧", "容量短剧出品，融合冼夫人文化与荔枝产业的乡村振兴非遗短剧。"],
+  ["《带你去个好地方》", "浙江省金华市武义县", "乡村振兴短剧", "容量短剧出品的乡村振兴短剧，以旅行视角展现乡村风貌与共同富裕。"],
+  ["《临平，向幸福出发》", "浙江省杭州市临平区", "文旅短剧", "临平区委宣传部指导，在塘栖古镇取景，以创业励志和非遗传承为亮点的文旅短剧。"],
+  ["《我在张家港遇到河神》", "江苏省苏州市张家港市", "文旅短剧", "张家港市委宣传部指导，融合奇幻元素与江南文化的文旅短剧。"],
+  ["《宋服嫁到》", "浙江省台州市黄岩区", "文旅短剧", "黄岩区委宣传部指导，以宋服文化与宋韵非遗为特色的乡村振兴文旅短剧。"],
+  ["雁荡山杯文旅OPC技能大赛", "浙江省温州市乐清市", "文旅赛事", "容量短剧作为支持单位参与的文旅赛事，以\"仙侠秘境·筑梦雁荡\"为主题，设短视频和微短剧两大赛道，以高额奖金和流量扶持激发创作者打造雁荡山年轻化文旅IP。"]
 ];
 
 const state = {
@@ -303,11 +327,30 @@ function agentsPage() {
   return `<div class="tools-page"><div class="tools-content"><header class="tools-header"><h1>${t.title}<span class="title-glow glow-left"></span><span class="title-glow glow-right"></span></h1><p>${t.sub}</p></header><div class="tool-cards">${agentTools.map((item, index) => { const title = item[0][state.edition]; const desc = item[1][state.edition]; const building = item[4]; return `<article class="tool-card ${building ? "is-building" : ""}">${building ? `<span class="tool-status">${t.building}</span>` : ""}<div class="tool-cover">${item[2] ? `<img src="${A}${item[2]}" alt="">` : `<span class="tool-placeholder tool-placeholder-${index}">${icon(item[3])}</span>`}</div><div class="tool-body"><h2>${title}</h2><p>${desc}</p><button type="button" ${building ? "disabled" : `data-agent="${title}"`}>${icon(item[3])}<span>${building ? t.building : t.action}</span></button></div></article>`; }).join("")}</div></div></div>`;
 }
 
+function ecologyPage() {
+  const cn = state.edition === "cn";
+  const types = cn ? ["全部项目", "文旅短剧", "乡村振兴短剧", "公益短剧", "红色短剧", "文旅赛事"] : ["All projects", "Culture & Tourism", "Rural Revitalization", "Public Welfare", "Red Culture", "Creator Events"];
+  const capabilities = cn ? [
+    ["network", "产业生态建设", "联动AI创作中心与OPC社区，共享技术、版权、发行与合作资源。"],
+    ["clapperboard", "“微短剧+”精品内容", "联动城市文旅、非遗、科普与公益主题，共创地域文化精品。"],
+    ["trophy", "微短剧创作大赛", "联合产业伙伴发起创作赛事，为创作者提供命题、流量和优秀作品扶持。"],
+    ["graduation-cap", "产教融合实践", "联合高校打造AIGC实训与创作实验室，面向师生开放工具与项目资源。"]
+  ] : [
+    ["network", "Industry Ecosystem", "Connect AI studios and OPC communities with shared technology, rights and distribution resources."],
+    ["clapperboard", "Premium Local Stories", "Co-create distinctive stories across culture, tourism, heritage, science and public welfare."],
+    ["trophy", "Creator Programs", "Launch creative competitions with partners and support creators with briefs, reach and production resources."],
+    ["graduation-cap", "Industry-Academia Practice", "Build AIGC labs and practical programs that connect education with real production projects."]
+  ];
+  const projectLabels = ["文旅短剧", "乡村振兴短剧", "公益短剧", "红色短剧", "文旅赛事"];
+  const typeLabel = type => cn ? type : ({ "文旅短剧": "Culture & Tourism", "乡村振兴短剧": "Rural Revitalization", "公益短剧": "Public Welfare", "红色短剧": "Red Culture", "文旅赛事": "Creator Event" })[type];
+  return `<div class="ecology-page"><section class="ecology-hero"><img src="${A}ecology-hero.png" alt=""><div class="ecology-hero__shade"></div><div class="ecology-hero__copy"><span>ECOSYSTEM INNOVATION CENTER</span><h1>${cn ? "让内容创新，在真实场景中发生" : "Innovation Built Around Real Stories"}</h1><p>${cn ? "连接地方文化、产业伙伴与创作者，以AI驱动内容共创，让每一个地域故事被看见。" : "Connecting local culture, industry partners and creators through AI-powered content collaboration."}</p><button type="button" data-scroll-projects>${cn ? "探索生态项目" : "Explore projects"}${icon("arrow-down")}</button></div><div class="ecology-hero__stats"><div><strong>21</strong><span>${cn ? "生态项目" : "Projects"}</span></div><div><strong>6</strong><span>${cn ? "覆盖省份" : "Provinces"}</span></div><div><strong>5</strong><span>${cn ? "合作类型" : "Project types"}</span></div></div></section><main class="ecology-main"><section class="ecology-capabilities"><div class="ecology-section-heading"><span>CO-CREATION NETWORK</span><h2>${cn ? "从一个故事，连接一个生态" : "One Story, Connected to an Ecosystem"}</h2><p>${cn ? "围绕内容、人才、技术与发行，打造可持续的区域内容创新网络。" : "A sustainable regional network spanning content, talent, technology and distribution."}</p></div><div class="ecology-capability-grid">${capabilities.map((item, index) => `<article class="ecology-capability"><span>${icon(item[0])}</span><em>0${index + 1}</em><h3>${item[1]}</h3><p>${item[2]}</p></article>`).join("")}</div></section><section class="ecology-projects" id="ecologyProjects"><div class="ecology-section-heading ecology-section-heading--row"><div><span>PROJECT MAP</span><h2>${cn ? "生态项目" : "Ecosystem Projects"}</h2></div><p>${cn ? "源自《容量短剧内容地图汇总表》，共 21 个项目。" : "21 projects across regional culture and creative industries."}</p></div><div class="ecology-toolbar"><div class="ecology-types">${types.map((label, index) => `<button type="button" class="${index === 0 ? "is-active" : ""}" data-ecology-type="${index === 0 ? "全部" : projectLabels[index - 1]}">${label}</button>`).join("")}</div>${searchBox(cn ? "搜索项目名称、地点" : "Search projects", "data-ecology-search")}</div><div class="ecology-project-grid">${ecologyProjects.map((item, index) => `<article class="ecology-project-card" tabindex="0" data-ecology-project="${index}" data-ecology-card data-type="${item[2]}" data-search="${esc(item[0] + item[1] + item[2])}"><div class="ecology-project-card__top"><span>${typeLabel(item[2])}</span><em>${String(index + 1).padStart(2, "0")}</em></div><h3>${item[0]}</h3><p>${item[3]}</p><footer><span>${icon("map-pin")}${item[1]}</span><button type="button" tabindex="-1">${cn ? "查看项目" : "View project"}${icon("arrow-up-right")}</button></footer></article>`).join("")}</div><p class="ecology-empty" data-ecology-empty hidden>${cn ? "暂未找到匹配的生态项目" : "No matching projects found"}</p></section><section class="ecology-join"><div><span>JOIN THE ECOSYSTEM</span><h2>${cn ? "把你的场景，变成下一个好故事" : "Turn Your Local Story into the Next Production"}</h2><p>${cn ? "面向政企、园区、高校与创作团队，开放AI影视OPC社区、AI创新应用中心与联合赛事合作。" : "Open collaboration for governments, enterprises, campuses and creator teams."}</p></div><button type="button" data-ecology-join>${cn ? "申请加入生态" : "Join the ecosystem"}${icon("arrow-right")}</button></section></main>${homeFooter()}</div>`;
+}
+
 function render() {
   clearInterval(bannerTimer);
-  if (!["home", "novels", "scripts", "assets", "agents"].includes(state.route)) state.route = "home";
+  if (!["home", "novels", "scripts", "assets", "agents", "ecology"].includes(state.route)) state.route = "home";
   renderNav();
-  app.innerHTML = ({ home: homePage, novels: novelsPage, scripts: scriptsPage, assets: assetsPage, agents: agentsPage })[state.route]();
+  app.innerHTML = ({ home: homePage, novels: novelsPage, scripts: scriptsPage, assets: assetsPage, agents: agentsPage, ecology: ecologyPage })[state.route]();
   bindPage();
   refreshIcons();
   window.scrollTo(0, 0);
@@ -328,6 +371,11 @@ function bindPage() {
   document.querySelectorAll("[data-home-script]").forEach(card => bindKeyboardClick(card, () => openScript(Number(card.dataset.homeScript))));
   document.querySelectorAll("[data-capability]").forEach(card => card.addEventListener("click", () => openLogin(card.dataset.capability)));
   document.querySelectorAll("[data-agent]").forEach(button => button.addEventListener("click", () => showToast(state.edition === "cn" ? `${button.dataset.agent}工具已打开` : `Opening ${button.dataset.agent}`)));
+  document.querySelector("[data-scroll-projects]")?.addEventListener("click", () => document.getElementById("ecologyProjects")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  document.querySelector("[data-ecology-join]")?.addEventListener("click", openBusiness);
+  document.querySelectorAll("[data-ecology-type]").forEach(button => button.addEventListener("click", () => { document.querySelectorAll("[data-ecology-type]").forEach(item => item.classList.toggle("is-active", item === button)); applyEcologyFilters(); }));
+  document.querySelector("[data-ecology-search]")?.addEventListener("input", applyEcologyFilters);
+  document.querySelectorAll("[data-ecology-project]").forEach(card => bindKeyboardClick(card, () => openEcologyProject(Number(card.dataset.ecologyProject))));
   document.querySelectorAll("[data-asset-tab]").forEach(button => button.addEventListener("click", () => { state.assetTab = button.dataset.assetTab; state.assetFilters = ["全部", "全部", "全部", "全部"]; render(); }));
   document.querySelectorAll("[data-asset-filter]").forEach(button => button.addEventListener("click", () => { const group = Number(button.dataset.assetGroup); state.assetFilters[group] = button.dataset.assetFilter; button.parentElement.querySelectorAll("button").forEach(item => item.classList.toggle("is-active", item === button)); applyAssetFilters(); }));
   const assetSearch = document.querySelector("[data-asset-search]");
@@ -384,9 +432,28 @@ function applyAssetFilters() {
   document.querySelectorAll("[data-asset]").forEach(card => { const matchText = card.dataset.title.toLowerCase().includes(query); const matchFilters = state.assetFilters.every((value, index) => value === "全部" || card.dataset[keys[index]] === value); card.hidden = !(matchText && matchFilters); });
 }
 
+function applyEcologyFilters() {
+  const type = document.querySelector("[data-ecology-type].is-active")?.dataset.ecologyType || "全部";
+  const query = (document.querySelector("[data-ecology-search]")?.value || "").trim().toLowerCase();
+  let visible = 0;
+  document.querySelectorAll("[data-ecology-card]").forEach(card => {
+    const match = (type === "全部" || card.dataset.type === type) && card.dataset.search.toLowerCase().includes(query);
+    card.hidden = !match;
+    if (match) visible += 1;
+  });
+  const empty = document.querySelector("[data-ecology-empty]");
+  if (empty) empty.hidden = visible !== 0;
+}
+
 function openWork(index) {
   const item = currentWorks()[index];
   openModal(`<div class="media-dialog"><img src="${A}${item[2]}" alt="${esc(item[0])}"><div><p class="modal-kicker">${state.edition === "cn" ? "优质作品" : "SELECTED PRODUCTION"}</p><h2 id="dialogTitle">${item[0]}</h2><p>${item[1]}</p><button type="button" class="modal-primary" data-modal-close>${state.edition === "cn" ? "关闭" : "Close"}</button></div></div>`, "wide");
+}
+
+function openEcologyProject(index) {
+  const item = ecologyProjects[index];
+  const cn = state.edition === "cn";
+  openModal(`<div class="ecology-dialog"><div class="ecology-dialog__visual"><img src="${A}ecology-hero.png" alt=""><span>${String(index + 1).padStart(2, "0")}</span></div><div><p class="modal-kicker">${cn ? "生态项目" : "ECOSYSTEM PROJECT"}</p><h2 id="dialogTitle">${item[0]}</h2><div class="modal-tags"><span>${item[2]}</span><span>${item[1]}</span></div><p>${item[3]}</p><button type="button" class="modal-primary" data-open-business>${cn ? "洽谈合作" : "Discuss partnership"}</button></div></div>`, "wide");
 }
 
 function openNovel(index) {
