@@ -377,10 +377,19 @@ html[lang="en"] .navbar-action-business { padding: 0 12px; font-size: 13px; }
 .ecology-province-point.is-active > i { border-color: #67f3f5; box-shadow: 0 0 0 6px rgba(0, 222, 226, .14), 0 0 22px rgba(0, 222, 226, .8); }
 .ecology-province-point.is-active strong { border-color: rgba(103, 243, 245, .48); color: #e7ffff; background: rgba(4, 28, 30, .92); }
 .ecology-province-point.is-active span { border-color: rgba(103, 243, 245, .38); color: #b8feff; background: rgba(4, 28, 30, .92); }
+.ecology-city-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.ecology-city-point { position: absolute; left: var(--city-x); top: var(--city-y); padding: 0; display: flex; align-items: center; border: 0; color: rgba(219, 255, 255, .78); background: transparent; cursor: pointer; pointer-events: auto; transform: translate(-50%, -50%); transition: transform .18s ease, color .18s ease; }
+.ecology-city-point > i { width: 6px; height: 6px; flex: none; border-radius: 50%; background: #67f3f5; box-shadow: 0 0 0 4px rgba(103, 243, 245, .12), 0 0 12px rgba(103, 243, 245, .8); }
+.ecology-city-point strong { margin-left: 6px; padding: 4px 6px; border: 1px solid rgba(103, 243, 245, .26); border-radius: 5px 0 0 5px; background: rgba(4, 20, 23, .88); font-size: 10px; font-weight: 500; white-space: nowrap; backdrop-filter: blur(8px); }
+.ecology-city-point span { min-width: 20px; padding: 4px 5px; border: 1px solid rgba(103, 243, 245, .26); border-left: 0; border-radius: 0 5px 5px 0; color: #9ffeff; background: rgba(4, 20, 23, .88); font-size: 9px; }
+.ecology-city-point:hover, .ecology-city-point:focus-visible, .ecology-city-point.is-active { z-index: 7; outline: 0; color: #fff; transform: translate(-50%, -50%) translateY(-2px); }
+.ecology-city-point.is-active strong, .ecology-city-point.is-active span { border-color: rgba(255, 225, 168, .55); background: rgba(24, 19, 9, .94); }
+.ecology-city-point.is-active > i { background: #ffe1a8; box-shadow: 0 0 0 4px rgba(255, 225, 168, .14), 0 0 14px rgba(255, 225, 168, .85); }
 @keyframes map-pulse { from { opacity: .9; transform: scale(.7); } to { opacity: 0; transform: scale(1.8); } }
 .ecology-map-legend { position: absolute; right: 16px; bottom: 14px; z-index: 2; display: flex; gap: 16px; color: rgba(255, 255, 255, .48); font-size: 10px; }
 .ecology-map-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .ecology-map-legend i { width: 7px; height: 7px; border-radius: 50%; background: #ffe1a8; box-shadow: 0 0 10px rgba(255, 225, 168, .8); }
+.ecology-map-legend .is-city i { width: 6px; height: 6px; background: #67f3f5; box-shadow: 0 0 9px rgba(103, 243, 245, .8); }
 .ecology-location-panel { min-width: 0; min-height: 0; height: 100%; display: flex; flex-direction: column; background: rgba(255, 255, 255, .02); }
 .ecology-location-panel > header { height: 86px; padding: 18px 18px; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, .09); }
 .ecology-location-panel > header > span { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border: 1px solid rgba(103, 243, 245, .24); border-radius: 8px; color: #67f3f5; background: rgba(0, 222, 226, .06); }

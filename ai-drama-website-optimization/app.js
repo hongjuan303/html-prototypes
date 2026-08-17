@@ -334,19 +334,47 @@ const ecologyProvincePoints = [
   ["吉林省", "吉林", "Jilin", 83, 26], ["广东省", "广东", "Guangdong", 66, 82]
 ];
 
+const ecologyCityPoints = [
+  ["浙江省", "杭州", "Hangzhou", "浙江省杭州市", 69, 56],
+  ["浙江省", "宁波", "Ningbo", "浙江省宁波市", 82, 58],
+  ["浙江省", "舟山", "Zhoushan", "浙江省舟山市", 89, 52],
+  ["浙江省", "台州", "Taizhou", "浙江省台州市", 86, 68],
+  ["浙江省", "金华", "Jinhua", "浙江省金华市", 67, 69],
+  ["浙江省", "磐安", "Pan'an", "浙江省磐安县", 74, 66],
+  ["浙江省", "温州", "Wenzhou", "浙江省温州市", 80, 78],
+  ["江苏省", "苏州", "Suzhou", "江苏省苏州市", 74, 53],
+  ["江苏省", "张家港", "Zhangjiagang", "江苏省苏州市张家港市", 84, 47],
+  ["广西壮族自治区", "桂林", "Guilin", "广西壮族自治区桂林市", 57, 70],
+  ["云南省", "香格里拉", "Shangri-La", "云南省迪庆藏族自治州香格里拉市", 45, 69],
+  ["吉林省", "延边州", "Yanbian", "吉林省延边朝鲜族自治州", 83, 31],
+  ["广东省", "茂名·高州", "Maoming", "广东省茂名市高州市", 66, 77]
+];
+
 function projectProvince(location) {
   return ecologyProvincePoints.find(item => location.startsWith(item[0]))?.[0] || "其他";
 }
 
-function ecologyMapProjectList(province) {
+function ecologyMapEntries(province, locationPrefix = "") {
+  return ecologyProjects.map((item, index) => ({ item, index })).filter(entry => projectProvince(entry.item[1]) === province && (!locationPrefix || entry.item[1].startsWith(locationPrefix)));
+}
+
+function ecologyMapProjectList(province, locationPrefix = "") {
   const cn = state.edition === "cn";
-  return ecologyProjects.map((item, index) => ({ item, index })).filter(entry => projectProvince(entry.item[1]) === province).map(({ item, index }) => `<button class="ecology-location-item" type="button" data-ecology-map-project="${index}"><span>${icon("map-pin")}</span><span><strong>${item[1]}</strong><small>${item[0]}</small></span><em>${cn ? "查看" : "View"}${icon("arrow-up-right")}</em></button>`).join("");
+  return ecologyMapEntries(province, locationPrefix).map(({ item, index }) => `<button class="ecology-location-item" type="button" data-ecology-map-project="${index}"><span>${icon("map-pin")}</span><span><strong>${item[1]}</strong><small>${item[0]}</small></span><em>${cn ? "查看" : "View"}${icon("arrow-up-right")}</em></button>`).join("");
+}
+
+function ecologyCityMarkerList(province) {
+  const cn = state.edition === "cn";
+  return ecologyCityPoints.map((point, index) => ({ point, index })).filter(({ point }) => point[0] === province).map(({ point, index }) => {
+    const count = ecologyMapEntries(province, point[3]).length;
+    return `<button class="ecology-city-point" type="button" data-ecology-city-index="${index}" style="--city-x:${point[4]}%;--city-y:${point[5]}%"><i></i><strong>${cn ? point[1] : point[2]}</strong><span>${count}</span></button>`;
+  }).join("");
 }
 
 function ecologyMapSection(cn) {
   const selected = state.ecologyProvince;
   const selectedPoint = ecologyProvincePoints.find(item => item[0] === selected) || ecologyProvincePoints[0];
-  return `<section class="ecology-map-section"><div class="ecology-section-heading ecology-section-heading--row"><div><span>COLLABORATION MAP</span><h2>${cn ? "全国合作地图" : "Collaboration Map"}</h2></div><p>${cn ? "点击省份查看合作市县，移入项目查看封面与简介。" : "Select a province, then hover over a location to preview its project."}</p></div><div class="ecology-map-shell"><div class="ecology-map-canvas"><img src="${A}ecology-hero.png" alt="${cn ? "全国生态合作地图" : "National ecosystem collaboration map"}"><div class="ecology-map-dim"></div>${ecologyProvincePoints.map(point => { const count = ecologyProjects.filter(item => projectProvince(item[1]) === point[0]).length; return `<button class="ecology-province-point ${selected === point[0] ? "is-active" : ""}" type="button" data-ecology-province="${point[0]}" style="--map-x:${point[3]}%;--map-y:${point[4]}%"><i></i><strong>${cn ? point[1] : point[2]}</strong><span>${count}</span></button>`; }).join("")}<aside class="ecology-map-preview" data-ecology-map-preview hidden></aside><div class="ecology-map-legend"><span><i></i>${cn ? "已合作区域" : "Partner region"}</span><span>${cn ? "数字为项目数" : "Number = projects"}</span></div></div><aside class="ecology-location-panel"><header><span>${icon("map")}</span><div><small>${cn ? "当前省份" : "Selected province"}</small><h3 data-ecology-province-title>${cn ? selectedPoint[1] : selectedPoint[2]}</h3></div><em data-ecology-province-count>${ecologyProjects.filter(item => projectProvince(item[1]) === selected).length} ${cn ? "个项目" : "projects"}</em></header><div class="ecology-location-list" data-ecology-location-list>${ecologyMapProjectList(selected)}</div></aside></div></section>`;
+  return `<section class="ecology-map-section"><div class="ecology-section-heading ecology-section-heading--row"><div><span>COLLABORATION MAP</span><h2>${cn ? "全国合作地图" : "Collaboration Map"}</h2></div><p>${cn ? "点击省份展开合作市县，点击城市筛选项目，移入项目查看封面与简介。" : "Select a province to reveal its cities, then choose a city or hover over a project."}</p></div><div class="ecology-map-shell"><div class="ecology-map-canvas"><img src="${A}ecology-hero.png" alt="${cn ? "全国生态合作地图" : "National ecosystem collaboration map"}"><div class="ecology-map-dim"></div>${ecologyProvincePoints.map(point => { const count = ecologyMapEntries(point[0]).length; return `<button class="ecology-province-point ${selected === point[0] ? "is-active" : ""}" type="button" data-ecology-province="${point[0]}" style="--map-x:${point[3]}%;--map-y:${point[4]}%"><i></i><strong>${cn ? point[1] : point[2]}</strong><span>${count}</span></button>`; }).join("")}<div class="ecology-city-layer" data-ecology-city-layer>${ecologyCityMarkerList(selected)}</div><aside class="ecology-map-preview" data-ecology-map-preview hidden></aside><div class="ecology-map-legend"><span><i></i>${cn ? "省级合作区域" : "Partner province"}</span><span class="is-city"><i></i>${cn ? "合作市县" : "Partner city"}</span><span>${cn ? "数字为项目数" : "Number = projects"}</span></div></div><aside class="ecology-location-panel"><header><span>${icon("map")}</span><div><small data-ecology-scope-label>${cn ? "当前省份" : "Selected province"}</small><h3 data-ecology-province-title>${cn ? selectedPoint[1] : selectedPoint[2]}</h3></div><em data-ecology-province-count>${ecologyMapEntries(selected).length} ${cn ? "个项目" : "projects"}</em></header><div class="ecology-location-list" data-ecology-location-list>${ecologyMapProjectList(selected)}</div></aside></div></section>`;
 }
 
 function ecologyPage() {
@@ -424,18 +452,45 @@ function bindEcologyMap() {
       button.addEventListener("click", () => openEcologyProject(index));
     });
   };
+  const bindCities = () => {
+    document.querySelectorAll("[data-ecology-city-index]").forEach(button => {
+      const point = ecologyCityPoints[Number(button.dataset.ecologyCityIndex)];
+      const projects = ecologyMapEntries(point[0], point[3]);
+      const previewIndex = projects[0]?.index;
+      button.addEventListener("mouseenter", () => { if (previewIndex !== undefined) showEcologyMapPreview(previewIndex); });
+      button.addEventListener("mouseleave", hideEcologyMapPreview);
+      button.addEventListener("focus", () => { if (previewIndex !== undefined) showEcologyMapPreview(previewIndex); });
+      button.addEventListener("blur", hideEcologyMapPreview);
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-ecology-city-index]").forEach(item => item.classList.toggle("is-active", item === button));
+        document.querySelector("[data-ecology-scope-label]").textContent = state.edition === "cn" ? "当前市县" : "Selected city";
+        const province = ecologyProvincePoints.find(item => item[0] === point[0]);
+        document.querySelector("[data-ecology-province-title]").textContent = state.edition === "cn" ? `${province[1]} · ${point[1]}` : `${province[2]} · ${point[2]}`;
+        document.querySelector("[data-ecology-province-count]").textContent = `${projects.length} ${state.edition === "cn" ? "个项目" : "projects"}`;
+        list.innerHTML = ecologyMapProjectList(point[0], point[3]);
+        hideEcologyMapPreview();
+        bindLocations();
+        refreshIcons();
+      });
+    });
+  };
   document.querySelectorAll("[data-ecology-province]").forEach(button => button.addEventListener("click", () => {
     state.ecologyProvince = button.dataset.ecologyProvince;
     document.querySelectorAll("[data-ecology-province]").forEach(item => item.classList.toggle("is-active", item === button));
     const point = ecologyProvincePoints.find(item => item[0] === state.ecologyProvince);
-    const projects = ecologyProjects.filter(item => projectProvince(item[1]) === state.ecologyProvince);
+    const projects = ecologyMapEntries(state.ecologyProvince);
+    document.querySelector("[data-ecology-scope-label]").textContent = state.edition === "cn" ? "当前省份" : "Selected province";
     document.querySelector("[data-ecology-province-title]").textContent = state.edition === "cn" ? point[1] : point[2];
     document.querySelector("[data-ecology-province-count]").textContent = `${projects.length} ${state.edition === "cn" ? "个项目" : "projects"}`;
     list.innerHTML = ecologyMapProjectList(state.ecologyProvince);
+    document.querySelector("[data-ecology-city-layer]").innerHTML = ecologyCityMarkerList(state.ecologyProvince);
+    hideEcologyMapPreview();
     bindLocations();
+    bindCities();
     refreshIcons();
   }));
   bindLocations();
+  bindCities();
 }
 
 function showEcologyMapPreview(index) {
