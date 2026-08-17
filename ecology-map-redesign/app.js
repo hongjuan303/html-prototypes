@@ -24,8 +24,11 @@ const svg = document.querySelector(".china-map");
 const shapeLayer = document.querySelector("[data-map-shapes]");
 const routeLayer = document.querySelector("[data-map-routes]");
 const markerLayer = document.querySelector("[data-map-markers]");
+const mapShell = document.querySelector(".map-shell");
+const storyPanel = document.querySelector("[data-story-panel]");
 const NS = "http://www.w3.org/2000/svg";
 const bounds = { minLon: 72, maxLon: 136, minLat: 17, maxLat: 54 };
+let pinnedCity = null;
 
 function project(lon, lat) {
   const x = 38 + ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 844;
@@ -62,7 +65,7 @@ function renderMap(geo) {
   projectData.forEach((city, index) => {
     const [x, y] = project(city[2], city[3]);
     if (index > 0) routeLayer.appendChild(createSvg("path", { d: `M${hubX},${hubY} Q${(hubX + x) / 2},${Math.min(hubY, y) - 28} ${x},${y}`, class: "route-line" }));
-    const group = createSvg("g", { class: `city-marker ${index === 0 ? "is-active" : ""}`, tabindex: "0", role: "button", "data-index": index });
+    const group = createSvg("g", { class: "city-marker", tabindex: "0", role: "button", "data-index": index });
     const line = createSvg("line", { x1: x, y1: y, x2: x + city[4], y2: y + city[5], class: "city-leader" });
     const dot = createSvg("circle", { cx: x, cy: y, r: 4.5, class: "city-dot" });
     const pulse = createSvg("circle", { cx: x, cy: y, r: 10, class: "city-pulse" });
@@ -75,16 +78,20 @@ function renderMap(geo) {
     text.textContent = city[0];
     label.appendChild(text);
     group.append(line, pulse, dot, label);
-    group.addEventListener("mouseenter", () => selectCity(index));
-    group.addEventListener("focus", () => selectCity(index));
-    group.addEventListener("click", () => selectCity(index));
+    group.addEventListener("mouseenter", () => { if (pinnedCity === null) showCity(index); });
+    group.addEventListener("mouseleave", () => { if (pinnedCity === null) hideCity(); });
+    group.addEventListener("focus", () => { if (pinnedCity === null) showCity(index); });
+    group.addEventListener("blur", () => { if (pinnedCity === null) hideCity(); });
+    group.addEventListener("click", () => {
+      pinnedCity = index;
+      showCity(index, true);
+    });
     markerLayer.appendChild(group);
   });
 }
 
-function selectCity(index) {
+function populateCity(index) {
   const city = projectData[index];
-  document.querySelectorAll(".city-marker").forEach(marker => marker.classList.toggle("is-active", Number(marker.dataset.index) === index));
   document.querySelector("[data-region]").textContent = city[1];
   document.querySelector("[data-city]").textContent = city[0];
   document.querySelector("[data-project-count]").textContent = `${city[6]} 个合作项目`;
@@ -97,7 +104,24 @@ function selectCity(index) {
   document.querySelector("[data-work-list]").innerHTML = works.map((work, workIndex) => `<button type="button"><span>0${workIndex + 1}</span><div><strong>${work[0]}</strong><small>${work[1]}</small></div><em>↗</em></button>`).join("");
 }
 
+function showCity(index, pinned = false) {
+  populateCity(index);
+  mapShell.classList.add("is-detail-visible");
+  storyPanel.setAttribute("aria-hidden", "false");
+  document.querySelectorAll(".city-marker").forEach(marker => {
+    const selected = Number(marker.dataset.index) === index;
+    marker.classList.toggle("is-preview", selected && !pinned);
+    marker.classList.toggle("is-active", selected && (pinned || pinnedCity === index));
+  });
+}
+
+function hideCity() {
+  mapShell.classList.remove("is-detail-visible");
+  storyPanel.setAttribute("aria-hidden", "true");
+  document.querySelectorAll(".city-marker").forEach(marker => marker.classList.remove("is-preview"));
+}
+
 fetch("china.geo.json").then(response => response.json()).then(renderMap).catch(() => {
   document.querySelector(".map-meta strong").textContent = "地图数据加载失败，请刷新重试";
 });
-selectCity(0);
+populateCity(0);
