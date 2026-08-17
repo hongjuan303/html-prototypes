@@ -373,10 +373,8 @@ html[lang="en"] .navbar-action-business { padding: 0 12px; font-size: 13px; }
 .ecology-province-point > i::after { content: ""; position: absolute; inset: -6px; border: 1px solid rgba(255, 225, 168, .45); border-radius: 50%; animation: map-pulse 2.2s ease-out infinite; }
 .ecology-province-point strong { margin-left: 9px; padding: 5px 8px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 6px 0 0 6px; background: rgba(5, 10, 13, .86); font-size: 12px; font-weight: 500; white-space: nowrap; backdrop-filter: blur(8px); }
 .ecology-province-point span { min-width: 26px; padding: 5px 7px; border: 1px solid rgba(255, 225, 168, .24); border-left: 0; border-radius: 0 6px 6px 0; color: #ffe1a8; background: rgba(18, 15, 9, .9); font-size: 11px; }
-.ecology-province-point:hover, .ecology-province-point.is-active { z-index: 5; color: #fff; }
-.ecology-province-point.is-active > i { border-color: #67f3f5; box-shadow: 0 0 0 6px rgba(0, 222, 226, .14), 0 0 22px rgba(0, 222, 226, .8); }
-.ecology-province-point.is-active strong { border-color: rgba(103, 243, 245, .48); color: #e7ffff; background: rgba(4, 28, 30, .92); }
-.ecology-province-point.is-active span { border-color: rgba(103, 243, 245, .38); color: #b8feff; background: rgba(4, 28, 30, .92); }
+.ecology-province-point:hover { z-index: 5; color: #fff; }
+.ecology-province-point.is-expanded { visibility: hidden; opacity: 0; pointer-events: none; }
 .ecology-city-layer { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .ecology-city-point { position: absolute; left: var(--city-x); top: var(--city-y); padding: 0; display: flex; align-items: center; border: 0; color: rgba(219, 255, 255, .78); background: transparent; cursor: pointer; pointer-events: auto; transform: translate(-50%, -50%); transition: transform .18s ease, color .18s ease; }
 .ecology-city-point > i { width: 6px; height: 6px; flex: none; border-radius: 50%; background: #67f3f5; box-shadow: 0 0 0 4px rgba(103, 243, 245, .12), 0 0 12px rgba(103, 243, 245, .8); }
