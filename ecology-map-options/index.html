@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>容量万相｜合作地图样式提案</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="proposal-header">
+    <div class="brand"><span class="brand-mark"></span><strong>容量·万相</strong></div>
+    <div class="proposal-title"><span>ECOSYSTEM MAP OPTIONS</span><h1>合作地图样式提案</h1></div>
+    <div class="proposal-note">4 套可交互方向 · 点击下方方案切换</div>
+  </header>
+
+  <nav class="option-tabs" aria-label="地图样式方案">
+    <button class="is-active" type="button" data-option="a"><span>方案 A</span><strong>科技星链</strong><small>品牌感强 · 推荐</small></button>
+    <button type="button" data-option="b"><span>方案 B</span><strong>行政图谱</strong><small>层级清晰 · 易读</small></button>
+    <button type="button" data-option="c"><span>方案 C</span><strong>数据指挥舱</strong><small>数据密集 · 专业</small></button>
+    <button type="button" data-option="d"><span>方案 D</span><strong>作品沉浸式</strong><small>内容突出 · 视觉化</small></button>
+  </nav>
+
+  <main class="stage">
+    <section class="map-option option-a is-active" data-panel="a">
+      <div class="section-copy"><span>OPTION A · DIGITAL NETWORK</span><h2>科技星链</h2><p>以发光节点与连接网络强化“全国生态协作”概念，兼顾品牌氛围与地点识别。</p></div>
+      <div class="map-frame map-frame-a">
+        <div class="map-visual"><img src="../ai-drama-website-optimization/assets/ecology-hero.png" alt="科技星链合作地图"><div class="map-shade"></div><div class="map-lines"></div><div class="marker-layer" data-markers="a"></div><div class="hover-card" data-card="a"></div></div>
+        <aside class="location-panel"><header><span>当前区域</span><h3 data-title="a">浙江 · 杭州</h3><em data-count="a">7 个项目</em></header><div data-list="a"></div></aside>
+      </div>
+    </section>
+
+    <section class="map-option option-b" data-panel="b">
+      <div class="section-copy"><span>OPTION B · REGIONAL ATLAS</span><h2>行政图谱</h2><p>采用规整的行政层级与固定城市索引，弱化装饰，适合快速查找和业务汇报。</p></div>
+      <div class="map-frame map-frame-b">
+        <aside class="region-index"><header><span>合作区域</span><strong>6 省 · 13 市县</strong></header><button class="is-active" data-region="浙江"><span>01</span><strong>浙江省</strong><em>15 项</em></button><button data-region="江苏"><span>02</span><strong>江苏省</strong><em>2 项</em></button><button data-region="广西"><span>03</span><strong>广西壮族自治区</strong><em>1 项</em></button><button data-region="云南"><span>04</span><strong>云南省</strong><em>1 项</em></button><button data-region="吉林"><span>05</span><strong>吉林省</strong><em>1 项</em></button><button data-region="广东"><span>06</span><strong>广东省</strong><em>1 项</em></button></aside>
+        <div class="atlas-map"><img src="../ai-drama-website-optimization/assets/ecology-hero.png" alt="行政图谱合作地图"><div class="atlas-grid"></div><div class="marker-layer" data-markers="b"></div><div class="atlas-footer"><span><i></i>合作省份</span><span><i></i>合作市县</span><strong>数据更新至 2026.08</strong></div></div>
+      </div>
+    </section>
+
+    <section class="map-option option-c" data-panel="c">
+      <div class="section-copy"><span>OPTION C · COMMAND CENTER</span><h2>数据指挥舱</h2><p>地图与项目指标、类型分布、区域排行联动，适合对外展示生态规模与运营能力。</p></div>
+      <div class="command-shell">
+        <div class="metrics"><article><span>合作项目</span><strong>21</strong><em>PROJECTS</em></article><article><span>覆盖省份</span><strong>6</strong><em>PROVINCES</em></article><article><span>覆盖市县</span><strong>13</strong><em>CITIES</em></article><article><span>合作类型</span><strong>5</strong><em>CATEGORIES</em></article></div>
+        <div class="command-body"><div class="command-map"><img src="../ai-drama-website-optimization/assets/ecology-hero.png" alt="数据指挥舱合作地图"><div class="command-scan"></div><div class="marker-layer" data-markers="c"></div><div class="command-legend"><span>文旅短剧 13</span><span>乡村振兴 5</span><span>公益/红色 2</span><span>赛事 1</span></div></div><aside class="ranking"><header><span>区域合作排行</span><em>PROJECT RANKING</em></header><ol><li><strong>浙江省</strong><span><i style="--w:100%"></i></span><em>15</em></li><li><strong>江苏省</strong><span><i style="--w:32%"></i></span><em>2</em></li><li><strong>广西</strong><span><i style="--w:21%"></i></span><em>1</em></li><li><strong>云南省</strong><span><i style="--w:21%"></i></span><em>1</em></li><li><strong>吉林省</strong><span><i style="--w:21%"></i></span><em>1</em></li><li><strong>广东省</strong><span><i style="--w:21%"></i></span><em>1</em></li></ol></aside></div>
+      </div>
+    </section>
+
+    <section class="map-option option-d" data-panel="d">
+      <div class="section-copy"><span>OPTION D · STORY JOURNEY</span><h2>作品沉浸式</h2><p>用作品封面替代传统数据点，让用户先感知内容，再理解作品与地域之间的关联。</p></div>
+      <div class="story-map"><img class="story-bg" src="../ai-drama-website-optimization/assets/ecology-hero.png" alt="作品沉浸式合作地图"><div class="story-shade"></div><div class="story-heading"><span>从一座城，到一个好故事</span><h3>全国生态合作作品地图</h3><p>探索真实地域与精品内容共同生长的轨迹</p></div><div class="story-pins"><button class="story-pin pin-hz is-active" data-story="0"><img src="../ai-drama-website-optimization/assets/qa-script-1.jpg" alt=""><span>杭州</span></button><button class="story-pin pin-tz" data-story="1"><img src="../ai-drama-website-optimization/assets/qa-script-2.jpg" alt=""><span>台州</span></button><button class="story-pin pin-sz" data-story="2"><img src="../ai-drama-website-optimization/assets/qa-script-3.jpg" alt=""><span>苏州</span></button><button class="story-pin pin-gl" data-story="3"><img src="../ai-drama-website-optimization/assets/qa-script-4.jpg" alt=""><span>桂林</span></button></div><article class="story-detail" data-story-detail></article><div class="story-progress"><span>01</span><i></i><em>04</em></div></div>
+    </section>
+  </main>
+
+  <footer class="page-footer"><span>本页面仅用于地图视觉方案评审，不影响正式官网。</span><strong>请选择 A / B / C / D 方案</strong></footer>
+  <script src="app.js"></script>
+</body>
+</html>
