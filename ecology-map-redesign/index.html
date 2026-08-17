@@ -22,7 +22,27 @@
     <section class="map-shell">
       <div class="map-stage">
         <div class="map-meta"><span>全国生态合作网络</span><strong>21 个项目 · 13 个市县</strong></div>
+        <div class="network-status"><i></i><span>ECOSYSTEM NETWORK</span><em>ONLINE</em></div>
+        <div class="tech-orbit orbit-one"></div>
+        <div class="tech-orbit orbit-two"></div>
+        <div class="map-scan"></div>
         <svg class="china-map" viewBox="0 0 920 590" aria-label="中国生态合作城市地图">
+          <defs>
+            <linearGradient id="mapSurface" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#172425"></stop>
+              <stop offset=".56" stop-color="#101a1b"></stop>
+              <stop offset="1" stop-color="#0b1314"></stop>
+            </linearGradient>
+            <filter id="edgeGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2.4" result="blur"></feGaussianBlur>
+              <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+            </filter>
+            <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="3.2" result="blur"></feGaussianBlur>
+              <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+            </filter>
+          </defs>
+          <g data-map-glow></g>
           <g data-map-shapes></g>
           <g data-map-routes></g>
           <g data-map-markers></g>

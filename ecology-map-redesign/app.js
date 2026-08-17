@@ -21,6 +21,7 @@ const extraHangzhouWorks = [
 ];
 
 const svg = document.querySelector(".china-map");
+const glowLayer = document.querySelector("[data-map-glow]");
 const shapeLayer = document.querySelector("[data-map-shapes]");
 const routeLayer = document.querySelector("[data-map-routes]");
 const markerLayer = document.querySelector("[data-map-markers]");
@@ -58,7 +59,10 @@ function createSvg(tag, attrs = {}) {
 
 function renderMap(geo) {
   geo.features.forEach(feature => {
-    const path = createSvg("path", { d: featurePath(feature), class: "province-shape" });
+    const d = featurePath(feature);
+    const glow = createSvg("path", { d, class: "province-glow" });
+    const path = createSvg("path", { d, class: "province-shape" });
+    glowLayer.appendChild(glow);
     shapeLayer.appendChild(path);
   });
   const [hubX, hubY] = project(120.15, 30.28);
