@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="北疆九日自驾路线交互地图" />
+    <title>北疆环线 · 9日自驾地图</title>
+    <link rel="stylesheet" href="/html-prototypes/xinjiang-road-trip-map/vendor/leaflet.css" />
+    <link rel="stylesheet" href="/html-prototypes/xinjiang-road-trip-map/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <span class="route-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div>
+            <p>新疆北疆环线</p>
+            <h1>9日自驾行程地图</h1>
+          </div>
+        </div>
+        <div class="trip-facts" aria-label="行程概览">
+          <span><b>9</b> 天</span>
+          <span><b>8</b> 晚</span>
+          <span>乌鲁木齐往返</span>
+          <span>阿勒泰 · 伊犁</span>
+        </div>
+        <div class="view-actions">
+          <label class="hotel-toggle"><input id="hotelToggle" type="checkbox" checked /><span></span>显示住宿</label>
+          <button id="overviewButton" type="button">全程总览</button>
+        </div>
+      </header>
+
+      <div class="day-tabs" id="dayTabs" aria-label="选择行程日期"></div>
+
+      <main class="journey-layout">
+        <aside class="itinerary-panel">
+          <div class="panel-title">
+            <div><p>ROAD TRIP PLAN</p><h2>每日行程</h2></div>
+            <span>点击查看当天路线</span>
+          </div>
+          <div class="day-list" id="dayList"></div>
+        </aside>
+
+        <section class="map-panel" aria-label="北疆自驾路线地图">
+          <div id="map"></div>
+          <div class="map-summary" id="mapSummary">
+            <span id="summaryDay">全程</span>
+            <div><strong id="summaryTitle">乌鲁木齐出发 · 北疆环线</strong><small id="summaryMeta">9天8晚 · 9月26日—10月4日</small></div>
+          </div>
+          <div class="map-legend">
+            <b>线路图例</b>
+            <span><i class="line north"></i>阿勒泰段</span>
+            <span><i class="line west"></i>伊犁段</span>
+            <span><i class="dot"></i>行程节点</span>
+            <span><i class="hotel"></i>当晚住宿</span>
+          </div>
+          <div class="route-notice"><b>行程示意</b> 实际道路、用时及景区换乘请以出发当日导航和官方通知为准；独库公路需提前确认开放及预约要求。</div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/html-prototypes/xinjiang-road-trip-map/vendor/leaflet.js"></script>
+    <script src="/html-prototypes/xinjiang-road-trip-map/app.js"></script>
+  </body>
+</html>
