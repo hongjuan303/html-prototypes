@@ -175,7 +175,8 @@ const state = {
   route: location.hash.slice(1) || "home",
   banner: 0,
   assetTab: "characters",
-  assetFilters: ["全部", "全部", "全部", "全部"]
+  assetFilters: ["全部", "全部", "全部", "全部"],
+  ecologyProvince: "浙江省"
 };
 
 const app = document.getElementById("app");
@@ -327,6 +328,27 @@ function agentsPage() {
   return `<div class="tools-page"><div class="tools-content"><header class="tools-header"><h1>${t.title}<span class="title-glow glow-left"></span><span class="title-glow glow-right"></span></h1><p>${t.sub}</p></header><div class="tool-cards">${agentTools.map((item, index) => { const title = item[0][state.edition]; const desc = item[1][state.edition]; const building = item[4]; return `<article class="tool-card ${building ? "is-building" : ""}">${building ? `<span class="tool-status">${t.building}</span>` : ""}<div class="tool-cover">${item[2] ? `<img src="${A}${item[2]}" alt="">` : `<span class="tool-placeholder tool-placeholder-${index}">${icon(item[3])}</span>`}</div><div class="tool-body"><h2>${title}</h2><p>${desc}</p><button type="button" ${building ? "disabled" : `data-agent="${title}"`}>${icon(item[3])}<span>${building ? t.building : t.action}</span></button></div></article>`; }).join("")}</div></div></div>`;
 }
 
+const ecologyProvincePoints = [
+  ["浙江省", "浙江", "Zhejiang", 78, 62], ["江苏省", "江苏", "Jiangsu", 77, 51],
+  ["广西壮族自治区", "广西", "Guangxi", 57, 76], ["云南省", "云南", "Yunnan", 45, 74],
+  ["吉林省", "吉林", "Jilin", 83, 26], ["广东省", "广东", "Guangdong", 66, 82]
+];
+
+function projectProvince(location) {
+  return ecologyProvincePoints.find(item => location.startsWith(item[0]))?.[0] || "其他";
+}
+
+function ecologyMapProjectList(province) {
+  const cn = state.edition === "cn";
+  return ecologyProjects.map((item, index) => ({ item, index })).filter(entry => projectProvince(entry.item[1]) === province).map(({ item, index }) => `<button class="ecology-location-item" type="button" data-ecology-map-project="${index}"><span>${icon("map-pin")}</span><span><strong>${item[1]}</strong><small>${item[0]}</small></span><em>${cn ? "查看" : "View"}${icon("arrow-up-right")}</em></button>`).join("");
+}
+
+function ecologyMapSection(cn) {
+  const selected = state.ecologyProvince;
+  const selectedPoint = ecologyProvincePoints.find(item => item[0] === selected) || ecologyProvincePoints[0];
+  return `<section class="ecology-map-section"><div class="ecology-section-heading ecology-section-heading--row"><div><span>COLLABORATION MAP</span><h2>${cn ? "全国合作地图" : "Collaboration Map"}</h2></div><p>${cn ? "点击省份查看合作市县，移入项目查看封面与简介。" : "Select a province, then hover over a location to preview its project."}</p></div><div class="ecology-map-shell"><div class="ecology-map-canvas"><img src="${A}ecology-hero.png" alt="${cn ? "全国生态合作地图" : "National ecosystem collaboration map"}"><div class="ecology-map-dim"></div>${ecologyProvincePoints.map(point => { const count = ecologyProjects.filter(item => projectProvince(item[1]) === point[0]).length; return `<button class="ecology-province-point ${selected === point[0] ? "is-active" : ""}" type="button" data-ecology-province="${point[0]}" style="--map-x:${point[3]}%;--map-y:${point[4]}%"><i></i><strong>${cn ? point[1] : point[2]}</strong><span>${count}</span></button>`; }).join("")}<aside class="ecology-map-preview" data-ecology-map-preview hidden></aside><div class="ecology-map-legend"><span><i></i>${cn ? "已合作区域" : "Partner region"}</span><span>${cn ? "数字为项目数" : "Number = projects"}</span></div></div><aside class="ecology-location-panel"><header><span>${icon("map")}</span><div><small>${cn ? "当前省份" : "Selected province"}</small><h3 data-ecology-province-title>${cn ? selectedPoint[1] : selectedPoint[2]}</h3></div><em data-ecology-province-count>${ecologyProjects.filter(item => projectProvince(item[1]) === selected).length} ${cn ? "个项目" : "projects"}</em></header><div class="ecology-location-list" data-ecology-location-list>${ecologyMapProjectList(selected)}</div></aside></div></section>`;
+}
+
 function ecologyPage() {
   const cn = state.edition === "cn";
   const types = cn ? ["全部项目", "文旅短剧", "乡村振兴短剧", "公益短剧", "红色短剧", "文旅赛事"] : ["All projects", "Culture & Tourism", "Rural Revitalization", "Public Welfare", "Red Culture", "Creator Events"];
@@ -343,7 +365,7 @@ function ecologyPage() {
   ];
   const projectLabels = ["文旅短剧", "乡村振兴短剧", "公益短剧", "红色短剧", "文旅赛事"];
   const typeLabel = type => cn ? type : ({ "文旅短剧": "Culture & Tourism", "乡村振兴短剧": "Rural Revitalization", "公益短剧": "Public Welfare", "红色短剧": "Red Culture", "文旅赛事": "Creator Event" })[type];
-  return `<div class="ecology-page"><section class="ecology-hero"><img src="${A}ecology-hero.png" alt=""><div class="ecology-hero__shade"></div><div class="ecology-hero__copy"><span>ECOSYSTEM INNOVATION CENTER</span><h1>${cn ? "让内容创新，在真实场景中发生" : "Innovation Built Around Real Stories"}</h1><p>${cn ? "连接地方文化、产业伙伴与创作者，以AI驱动内容共创，让每一个地域故事被看见。" : "Connecting local culture, industry partners and creators through AI-powered content collaboration."}</p><button type="button" data-scroll-projects>${cn ? "探索生态项目" : "Explore projects"}${icon("arrow-down")}</button></div><div class="ecology-hero__stats"><div><strong>21</strong><span>${cn ? "生态项目" : "Projects"}</span></div><div><strong>6</strong><span>${cn ? "覆盖省份" : "Provinces"}</span></div><div><strong>5</strong><span>${cn ? "合作类型" : "Project types"}</span></div></div></section><main class="ecology-main"><section class="ecology-capabilities"><div class="ecology-section-heading"><span>CO-CREATION NETWORK</span><h2>${cn ? "从一个故事，连接一个生态" : "One Story, Connected to an Ecosystem"}</h2><p>${cn ? "围绕内容、人才、技术与发行，打造可持续的区域内容创新网络。" : "A sustainable regional network spanning content, talent, technology and distribution."}</p></div><div class="ecology-capability-grid">${capabilities.map((item, index) => `<article class="ecology-capability"><span>${icon(item[0])}</span><em>0${index + 1}</em><h3>${item[1]}</h3><p>${item[2]}</p></article>`).join("")}</div></section><section class="ecology-projects" id="ecologyProjects"><div class="ecology-section-heading ecology-section-heading--row"><div><span>PROJECT MAP</span><h2>${cn ? "生态项目" : "Ecosystem Projects"}</h2></div><p>${cn ? "源自《容量短剧内容地图汇总表》，共 21 个项目。" : "21 projects across regional culture and creative industries."}</p></div><div class="ecology-toolbar"><div class="ecology-types">${types.map((label, index) => `<button type="button" class="${index === 0 ? "is-active" : ""}" data-ecology-type="${index === 0 ? "全部" : projectLabels[index - 1]}">${label}</button>`).join("")}</div>${searchBox(cn ? "搜索项目名称、地点" : "Search projects", "data-ecology-search")}</div><div class="ecology-project-grid">${ecologyProjects.map((item, index) => `<article class="ecology-project-card" tabindex="0" data-ecology-project="${index}" data-ecology-card data-type="${item[2]}" data-search="${esc(item[0] + item[1] + item[2])}"><div class="ecology-project-card__top"><span>${typeLabel(item[2])}</span><em>${String(index + 1).padStart(2, "0")}</em></div><h3>${item[0]}</h3><p>${item[3]}</p><footer><span>${icon("map-pin")}${item[1]}</span><button type="button" tabindex="-1">${cn ? "查看项目" : "View project"}${icon("arrow-up-right")}</button></footer></article>`).join("")}</div><p class="ecology-empty" data-ecology-empty hidden>${cn ? "暂未找到匹配的生态项目" : "No matching projects found"}</p></section><section class="ecology-join"><div><span>JOIN THE ECOSYSTEM</span><h2>${cn ? "把你的场景，变成下一个好故事" : "Turn Your Local Story into the Next Production"}</h2><p>${cn ? "面向政企、园区、高校与创作团队，开放AI影视OPC社区、AI创新应用中心与联合赛事合作。" : "Open collaboration for governments, enterprises, campuses and creator teams."}</p></div><button type="button" data-ecology-join>${cn ? "申请加入生态" : "Join the ecosystem"}${icon("arrow-right")}</button></section></main>${homeFooter()}</div>`;
+  return `<div class="ecology-page"><section class="ecology-hero"><img src="${A}ecology-hero.png" alt=""><div class="ecology-hero__shade"></div><div class="ecology-hero__copy"><span>ECOSYSTEM INNOVATION CENTER</span><h1>${cn ? "让内容创新，在真实场景中发生" : "Innovation Built Around Real Stories"}</h1><p>${cn ? "连接地方文化、产业伙伴与创作者，以AI驱动内容共创，让每一个地域故事被看见。" : "Connecting local culture, industry partners and creators through AI-powered content collaboration."}</p><button type="button" data-scroll-projects>${cn ? "探索生态项目" : "Explore projects"}${icon("arrow-down")}</button></div><div class="ecology-hero__stats"><div><strong>21</strong><span>${cn ? "生态项目" : "Projects"}</span></div><div><strong>6</strong><span>${cn ? "覆盖省份" : "Provinces"}</span></div><div><strong>5</strong><span>${cn ? "合作类型" : "Project types"}</span></div></div></section><main class="ecology-main"><section class="ecology-capabilities"><div class="ecology-section-heading"><span>CO-CREATION NETWORK</span><h2>${cn ? "从一个故事，连接一个生态" : "One Story, Connected to an Ecosystem"}</h2><p>${cn ? "围绕内容、人才、技术与发行，打造可持续的区域内容创新网络。" : "A sustainable regional network spanning content, talent, technology and distribution."}</p></div><div class="ecology-capability-grid">${capabilities.map((item, index) => `<article class="ecology-capability"><span>${icon(item[0])}</span><em>0${index + 1}</em><h3>${item[1]}</h3><p>${item[2]}</p></article>`).join("")}</div></section>${ecologyMapSection(cn)}<section class="ecology-projects" id="ecologyProjects"><div class="ecology-section-heading ecology-section-heading--row"><div><span>PROJECT MAP</span><h2>${cn ? "生态项目" : "Ecosystem Projects"}</h2></div><p>${cn ? "源自《容量短剧内容地图汇总表》，共 21 个项目。" : "21 projects across regional culture and creative industries."}</p></div><div class="ecology-toolbar"><div class="ecology-types">${types.map((label, index) => `<button type="button" class="${index === 0 ? "is-active" : ""}" data-ecology-type="${index === 0 ? "全部" : projectLabels[index - 1]}">${label}</button>`).join("")}</div>${searchBox(cn ? "搜索项目名称、地点" : "Search projects", "data-ecology-search")}</div><div class="ecology-project-grid">${ecologyProjects.map((item, index) => `<article class="ecology-project-card" tabindex="0" data-ecology-project="${index}" data-ecology-card data-type="${item[2]}" data-search="${esc(item[0] + item[1] + item[2])}"><div class="ecology-project-card__top"><span>${typeLabel(item[2])}</span><em>${String(index + 1).padStart(2, "0")}</em></div><h3>${item[0]}</h3><p>${item[3]}</p><footer><span>${icon("map-pin")}${item[1]}</span><button type="button" tabindex="-1">${cn ? "查看项目" : "View project"}${icon("arrow-up-right")}</button></footer></article>`).join("")}</div><p class="ecology-empty" data-ecology-empty hidden>${cn ? "暂未找到匹配的生态项目" : "No matching projects found"}</p></section><section class="ecology-join"><div><span>JOIN THE ECOSYSTEM</span><h2>${cn ? "把你的场景，变成下一个好故事" : "Turn Your Local Story into the Next Production"}</h2><p>${cn ? "面向政企、园区、高校与创作团队，开放AI影视OPC社区、AI创新应用中心与联合赛事合作。" : "Open collaboration for governments, enterprises, campuses and creator teams."}</p></div><button type="button" data-ecology-join>${cn ? "申请加入生态" : "Join the ecosystem"}${icon("arrow-right")}</button></section></main>${homeFooter()}</div>`;
 }
 
 function render() {
@@ -376,6 +398,7 @@ function bindPage() {
   document.querySelectorAll("[data-ecology-type]").forEach(button => button.addEventListener("click", () => { document.querySelectorAll("[data-ecology-type]").forEach(item => item.classList.toggle("is-active", item === button)); applyEcologyFilters(); }));
   document.querySelector("[data-ecology-search]")?.addEventListener("input", applyEcologyFilters);
   document.querySelectorAll("[data-ecology-project]").forEach(card => bindKeyboardClick(card, () => openEcologyProject(Number(card.dataset.ecologyProject))));
+  bindEcologyMap();
   document.querySelectorAll("[data-asset-tab]").forEach(button => button.addEventListener("click", () => { state.assetTab = button.dataset.assetTab; state.assetFilters = ["全部", "全部", "全部", "全部"]; render(); }));
   document.querySelectorAll("[data-asset-filter]").forEach(button => button.addEventListener("click", () => { const group = Number(button.dataset.assetGroup); state.assetFilters[group] = button.dataset.assetFilter; button.parentElement.querySelectorAll("button").forEach(item => item.classList.toggle("is-active", item === button)); applyAssetFilters(); }));
   const assetSearch = document.querySelector("[data-asset-search]");
@@ -386,6 +409,47 @@ function bindPage() {
 function bindKeyboardClick(element, handler) {
   element.addEventListener("click", handler);
   element.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") handler(); });
+}
+
+function bindEcologyMap() {
+  const list = document.querySelector("[data-ecology-location-list]");
+  if (!list) return;
+  const bindLocations = () => {
+    list.querySelectorAll("[data-ecology-map-project]").forEach(button => {
+      const index = Number(button.dataset.ecologyMapProject);
+      button.addEventListener("mouseenter", () => showEcologyMapPreview(index));
+      button.addEventListener("mouseleave", hideEcologyMapPreview);
+      button.addEventListener("focus", () => showEcologyMapPreview(index));
+      button.addEventListener("blur", hideEcologyMapPreview);
+      button.addEventListener("click", () => openEcologyProject(index));
+    });
+  };
+  document.querySelectorAll("[data-ecology-province]").forEach(button => button.addEventListener("click", () => {
+    state.ecologyProvince = button.dataset.ecologyProvince;
+    document.querySelectorAll("[data-ecology-province]").forEach(item => item.classList.toggle("is-active", item === button));
+    const point = ecologyProvincePoints.find(item => item[0] === state.ecologyProvince);
+    const projects = ecologyProjects.filter(item => projectProvince(item[1]) === state.ecologyProvince);
+    document.querySelector("[data-ecology-province-title]").textContent = state.edition === "cn" ? point[1] : point[2];
+    document.querySelector("[data-ecology-province-count]").textContent = `${projects.length} ${state.edition === "cn" ? "个项目" : "projects"}`;
+    list.innerHTML = ecologyMapProjectList(state.ecologyProvince);
+    bindLocations();
+    refreshIcons();
+  }));
+  bindLocations();
+}
+
+function showEcologyMapPreview(index) {
+  const preview = document.querySelector("[data-ecology-map-preview]");
+  if (!preview) return;
+  const item = ecologyProjects[index];
+  preview.innerHTML = `<div class="ecology-map-preview__cover"><img src="${A}ecology-hero.png" alt=""><span>${item[2]}</span><strong>${item[0]}</strong></div><div><small>${icon("map-pin")}${item[1]}</small><h4>${item[0]}</h4><p>${item[3]}</p></div>`;
+  preview.hidden = false;
+  refreshIcons();
+}
+
+function hideEcologyMapPreview() {
+  const preview = document.querySelector("[data-ecology-map-preview]");
+  if (preview) preview.hidden = true;
 }
 
 function bindCarousel() {
