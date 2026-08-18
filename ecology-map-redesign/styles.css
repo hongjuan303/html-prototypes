@@ -261,4 +261,70 @@ main { width: min(1400px, calc(100% - 64px)); margin: 0 auto; }
 .toast[hidden] { display:none; }
 .page-note { height:70px; padding:0 8px; display:flex; align-items:center; justify-content:space-between; color:rgba(255,255,255,.25); font-size:9px; }
 .page-note strong { color:rgba(255,255,255,.52); font-weight:500; }
+
+/* Readability pass for conference screens and standard desktop displays. */
+.site-header nav a { color:rgba(255,255,255,.72); font-size:13px; }
+.site-header > button { color:rgba(255,255,255,.9); font-size:13px; }
+.intro span,.section-heading > span,.section-heading > div > span,.opc-promise .eyebrow,.academy-block > div:last-child > span,.event-block header > span,.join-ecosystem > span { font-size:11px; }
+.intro p { color:rgba(255,255,255,.68); font-size:14px; }
+.achievement-stats span { color:rgba(255,255,255,.62); font-size:12px; }
+.map-meta span { color:rgba(255,255,255,.64); font-size:11px; }
+.map-meta strong { color:rgba(255,255,255,.9); font-size:13px; }
+.network-status { color:rgba(210,250,249,.68); font-size:9px; }
+.map-filters button { color:rgba(255,255,255,.68); font-size:10px; }
+.city-label text { fill:rgba(239,252,252,.92); font-size:11px; }
+.special-label text { fill:rgba(245,252,252,.9); font-size:10.5px; }
+.map-tip { color:rgba(255,255,255,.66); font-size:10px; }
+.map-tip em { color:rgba(255,255,255,.54); }
+.detail-hint span { color:rgba(255,255,255,.72); font-size:13px; }
+.detail-hint strong { color:rgba(255,255,255,.48); font-size:11px; }
+.story-panel header span { color:rgba(255,255,255,.62); font-size:11px; }
+.story-panel header em { font-size:11px; }
+.featured-work small { color:rgba(255,255,255,.72); font-size:11px; }
+.featured-work h3 { font-size:17px; }
+.work-intro { color:rgba(255,255,255,.68); font-size:12px; line-height:1.7; }
+.work-list strong { font-size:12px; }
+.work-list small { color:rgba(255,255,255,.52); font-size:10px; }
+.detail-button { font-size:12px; }
+.section-heading p,.section-heading--split > p { color:rgba(255,255,255,.66); font-size:13px; }
+.opc-promise > p { color:rgba(255,255,255,.67); font-size:13px; }
+.opc-live span { color:rgba(255,255,255,.78); font-size:12px; }
+.opc-live em { color:rgba(255,255,255,.52); font-size:10px; }
+.opc-benefits em { color:rgba(99,239,237,.72); font-size:10px; }
+.opc-benefits h4 { font-size:16px; }
+.opc-benefits p { color:rgba(255,255,255,.64); font-size:12px; line-height:1.75; }
+.opc-flow > span { color:rgba(255,255,255,.68); font-size:12px; }
+.opc-flow li { color:rgba(255,255,255,.72); font-size:11px; }
+.opc-member-wall header span { color:rgba(99,239,237,.72); font-size:10px; }
+.opc-member-wall header p { color:rgba(255,255,255,.55); font-size:11px; }
+.opc-member-wall article span,.opc-member-wall article p,.opc-member-wall article em { font-size:11px; }
+.opc-member-wall article p { color:rgba(255,255,255,.58); }
+.opc-member-wall article em { color:rgba(255,255,255,.7); }
+.policy-note { color:rgba(255,255,255,.62); font-size:11px; }
+.result-card span { color:rgba(255,255,255,.72); font-size:11px; }
+.result-card strong { font-size:15px; }
+.result-card em { font-size:11px; }
+.space-copy > span { font-size:11px; }
+.space-copy > p { color:rgba(255,255,255,.67); font-size:13px; }
+.space-copy dt { color:rgba(255,255,255,.56); font-size:11px; }
+.space-copy dd { color:rgba(255,255,255,.8); font-size:12px; }
+.academy-block p { color:rgba(255,255,255,.65); font-size:12px; }
+.event-block em { font-size:10px; }
+.event-block a span,.event-block > div span { color:rgba(255,255,255,.58); font-size:11px; }
+.event-block b { color:rgba(255,255,255,.72); font-size:11px; }
+.coming-projects article span,.coming-projects article em { font-size:11px; }
+.coming-projects article em { color:rgba(255,255,255,.62); }
+.network-grid em { color:rgba(99,239,237,.7); font-size:10px; }
+.network-grid h3 { font-size:17px; }
+.network-grid p { color:rgba(255,255,255,.64); font-size:12px; line-height:1.8; }
+.join-ecosystem p { color:rgba(255,255,255,.66); font-size:13px; }
+.modal-dialog > span { font-size:10px; }
+.modal-dialog > p { color:rgba(255,255,255,.64); font-size:12px; }
+.form-grid label > span { color:rgba(255,255,255,.72); font-size:11px; }
+.form-grid input,.form-grid select,.form-grid textarea { font-size:12px; }
+.privacy-check { color:rgba(255,255,255,.62); font-size:11px; }
+.trailer-player > button b,.trailer-player > div { font-size:10px; }
+.toast { font-size:12px; }
+.page-note { color:rgba(255,255,255,.52); font-size:11px; }
+.page-note strong { color:rgba(255,255,255,.72); }
 @media (max-width:1280px) { main { width:calc(100% - 40px); }.china-map { width:calc(100% - 370px); }.story-panel,.detail-hint { width:340px; }.site-header nav { gap:18px; }.map-filters { left:205px; }.map-filters button { padding:0 7px; }.map-tip { gap:9px; }.opc-lead { grid-template-columns:380px 1fr; gap:38px; }.opc-benefits article { padding:18px 16px; }.academy-events { grid-template-columns:1.6fr .9fr; } }
