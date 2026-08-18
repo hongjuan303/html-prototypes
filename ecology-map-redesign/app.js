@@ -20,14 +20,14 @@ const extraHangzhouWorks = [
 ];
 
 const specialProjects = [
-  { type: "space", name: "云谷中心OPC社区", lon: 120.08, lat: 30.31, dx: -92, dy: 38, target: "#spaces" },
-  { type: "space", name: "永嘉AI创新中心", lon: 120.69, lat: 28.15, dx: 88, dy: 80, target: "#spaces" },
-  { type: "school", name: "浙传AIGC实验班", lon: 120.35, lat: 30.32, dx: -96, dy: -104, target: ".academy-events" },
-  { type: "event", name: "雁荡山杯", lon: 121.08, lat: 28.37, dx: 87, dy: 36, href: "https://www.data0086.com" },
-  { type: "event", name: "大广赛·即将开启", lon: 116.4, lat: 39.9, dx: 80, dy: -38, message: "大广赛营销创客单元竞赛即将开启" },
-  { type: "coming", name: "新疆·即将呈现", lon: 87.6, lat: 43.8, dx: -22, dy: -34, target: ".coming-projects" },
-  { type: "coming", name: "三星堆·即将呈现", lon: 104.23, lat: 31.0, dx: -79, dy: -50, target: ".coming-projects" },
-  { type: "coming", name: "武夷山·即将呈现", lon: 118.0, lat: 27.75, dx: -94, dy: 68, target: ".coming-projects" }
+  { type: "space", name: "云谷中心OPC社区", lon: 120.08, lat: 30.31, dx: -92, dy: 38, region: "浙江省 · 杭州市", city: "西湖区", count: "产业空间", category: "OPC社区", location: "云谷中心", title: "容量互娱（云谷中心）人工智能影视OPC社区", description: "面向影视OPC团队开放的线下创作社区，提供办公场地、制作工具、算力、版权、发行和产业项目资源。", image: "assets/opc-community.png", items: [["创作场地", "团队办公与协同制作"], ["生产支持", "工具、算力与内容版权"], ["商业服务", "发行、出海与产业订单"]], action: "查看空间详情", target: "#spaces" },
+  { type: "space", name: "永嘉创新应用中心", lon: 120.69, lat: 28.15, dx: 88, dy: 80, region: "浙江省 · 温州市", city: "永嘉县", count: "产业空间", category: "创新中心", location: "温州 · 永嘉", title: "容量互娱（永嘉）人工智能创新应用中心", description: "联动地方产业、城市文化与创作人才，承接人工智能内容共创、产业培训和区域项目孵化。", image: "assets/innovation-center.png", items: [["区域共创", "城市文化内容开发"], ["产业培训", "人工智能影视实践课程"], ["项目孵化", "创作团队与产业资源对接"]], action: "查看中心详情", target: "#spaces" },
+  { type: "school", name: "浙传创新实验班", lon: 120.35, lat: 30.32, dx: -96, dy: -104, region: "浙江省 · 杭州市", city: "钱塘区", count: "校企合作", category: "产教融合", location: "浙江传媒学院", title: "容量短剧 × 浙江传媒学院人工智能创新实验班", description: "联合高校建设人工智能影视实践专班，面向师生开放创作工具、真实项目、算力支持与创业孵化资源。", image: "assets/aigc-class-graduation.png", items: [["实践专班", "真实项目进入课堂"], ["创作支持", "工具与算力开放"], ["成长通道", "实训、就业与创业孵化"]], action: "查看结业成果", target: ".academy-events" },
+  { type: "event", name: "雁荡山杯", lon: 121.08, lat: 28.37, dx: 87, dy: 36, region: "浙江省 · 温州市", city: "乐清市", count: "创作赛事", category: "技能大赛", location: "温州 · 雁荡山", title: "雁荡山杯文旅OPC技能大赛", description: "聚焦文旅内容与OPC创作能力，面向全国创作团队开放主题赛题、产业资源与成果展示机会。", image: "../ai-drama-website-optimization/assets/qa-banner-2.jpg", items: [["赛事方向", "文旅内容与漫剧创作"], ["参赛对象", "OPC团队与专业创作者"], ["赛事状态", "报名进行中"]], action: "访问赛事官网", href: "https://www.data0086.com" },
+  { type: "event", name: "大广赛·即将开启", lon: 116.4, lat: 39.9, dx: 80, dy: -38, region: "北京市", city: "北京", count: "创作赛事", category: "营销创作", location: "北京", title: "大广赛营销创客单元竞赛", description: "连接高校创意人才与产业真实命题，探索人工智能内容创作、品牌表达与青年创新实践。", image: "../ai-drama-website-optimization/assets/qa-banner-1.jpg", items: [["赛事方向", "品牌营销与内容创新"], ["参赛对象", "高校学生与青年创作者"], ["赛事状态", "即将开启"]], action: "敬请期待", message: "大广赛营销创客单元竞赛即将开启" },
+  { type: "coming", name: "新疆·即将呈现", lon: 87.6, lat: 43.8, dx: -22, dy: -34, region: "新疆维吾尔自治区", city: "新疆", count: "筹备项目", category: "即将呈现", location: "新疆维吾尔自治区", title: "辽阔边疆与多元文化，等待被镜头重新发现", description: "围绕地域文化、自然景观与多民族生活展开内容调研，新的城市故事正在筹备中。", image: "assets/coming-regions.jpg", items: [["内容方向", "地域文化与自然人文"], ["当前阶段", "前期调研与合作洽谈"], ["合作机会", "面向本地机构与创作者开放"]], action: "查看筹备方向", target: ".coming-projects" },
+  { type: "coming", name: "三星堆·即将呈现", lon: 104.23, lat: 31.0, dx: -79, dy: -50, region: "四川省 · 德阳市", city: "广汉市", count: "筹备项目", category: "即将呈现", location: "四川 · 三星堆", title: "让古蜀文明穿越时间，在人工智能影像中焕发新生", description: "以古蜀文明、考古发现与东方想象为内容源头，探索传统文化的年轻化影像表达。", image: "assets/coming-regions.jpg", items: [["内容方向", "古蜀文明与东方想象"], ["当前阶段", "创意策划与资源连接"], ["合作机会", "文化机构与制作团队共创"]], action: "查看筹备方向", target: ".coming-projects" },
+  { type: "coming", name: "武夷山·即将呈现", lon: 118.0, lat: 27.75, dx: -94, dy: 68, region: "福建省 · 南平市", city: "武夷山市", count: "筹备项目", category: "即将呈现", location: "福建 · 武夷山", title: "从山水茶韵到东方故事，一场影像共创正在酝酿", description: "围绕武夷山水、茶文化与非遗技艺，策划兼具地域辨识度和传播潜力的精品内容。", image: "assets/coming-regions.jpg", items: [["内容方向", "山水茶韵与非遗文化"], ["当前阶段", "项目策划与伙伴招募"], ["合作机会", "文旅机构与创作者共创"]], action: "查看筹备方向", target: ".coming-projects" }
 ];
 
 const svg = document.querySelector(".china-map");
@@ -41,6 +41,9 @@ const storyPanel = document.querySelector("[data-story-panel]");
 const NS = "http://www.w3.org/2000/svg";
 const bounds = { minLon: 72, maxLon: 136, minLat: 17, maxLat: 54 };
 let pinnedCity = null;
+let pinnedSpecial = null;
+let currentPanelAction = null;
+let currentFeaturedAction = null;
 
 function project(lon, lat) {
   const x = 38 + ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 844;
@@ -105,16 +108,16 @@ function renderSpecialMarkers() {
     text.textContent = item.name;
     label.appendChild(text);
     group.append(leader, icon, label);
-    const activate = () => group.classList.add("is-active");
-    const deactivate = () => group.classList.remove("is-active");
-    group.addEventListener("mouseenter", activate);
-    group.addEventListener("mouseleave", deactivate);
-    group.addEventListener("focus", activate);
-    group.addEventListener("blur", deactivate);
+    const preview = () => { if (pinnedCity === null && pinnedSpecial === null) showSpecial(index); };
+    const clearPreview = () => { if (pinnedCity === null && pinnedSpecial === null) hidePanel(); };
+    group.addEventListener("mouseenter", preview);
+    group.addEventListener("mouseleave", clearPreview);
+    group.addEventListener("focus", preview);
+    group.addEventListener("blur", clearPreview);
     group.addEventListener("click", () => {
-      if (item.href) window.open(item.href, "_blank", "noopener,noreferrer");
-      else if (item.message) showToast(item.message);
-      else document.querySelector(item.target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      pinnedCity = null;
+      pinnedSpecial = index;
+      showSpecial(index, true);
     });
     specialMarkerLayer.appendChild(group);
   });
@@ -145,12 +148,13 @@ function renderMap(geo) {
     text.textContent = city[0];
     label.appendChild(text);
     group.append(line, pulse, dot, label);
-    group.addEventListener("mouseenter", () => { if (pinnedCity === null) showCity(index); });
-    group.addEventListener("mouseleave", () => { if (pinnedCity === null) hideCity(); });
-    group.addEventListener("focus", () => { if (pinnedCity === null) showCity(index); });
-    group.addEventListener("blur", () => { if (pinnedCity === null) hideCity(); });
+    group.addEventListener("mouseenter", () => { if (pinnedCity === null && pinnedSpecial === null) showCity(index); });
+    group.addEventListener("mouseleave", () => { if (pinnedCity === null && pinnedSpecial === null) hidePanel(); });
+    group.addEventListener("focus", () => { if (pinnedCity === null && pinnedSpecial === null) showCity(index); });
+    group.addEventListener("blur", () => { if (pinnedCity === null && pinnedSpecial === null) hidePanel(); });
     group.addEventListener("click", () => {
       pinnedCity = index;
+      pinnedSpecial = null;
       showCity(index, true);
     });
     markerLayer.appendChild(group);
@@ -168,8 +172,29 @@ function populateCity(index) {
   document.querySelector("[data-location]").textContent = city[8];
   document.querySelector("[data-work]").textContent = city[7];
   document.querySelector("[data-description]").textContent = city[10];
+  document.querySelector("[data-panel-action]").innerHTML = "查看该城市全部项目 <span>↗</span>";
+  currentPanelAction = { type: "toast", message: `${city[0]}合作项目已展开` };
+  currentFeaturedAction = { type: "trailer", title: city[7], image: `../ai-drama-website-optimization/assets/${city[11]}` };
   const works = index === 0 ? extraHangzhouWorks : [[city[7], `${city[0]} · ${city[9]}`]];
   document.querySelector("[data-work-list]").innerHTML = works.map((work, workIndex) => `<button type="button" data-map-trailer data-trailer-name="${work[0]}"><span>0${workIndex + 1}</span><div><strong>${work[0]}</strong><small>${work[1]}</small></div><em>↗</em></button>`).join("");
+}
+
+function populateSpecial(index) {
+  const item = specialProjects[index];
+  document.querySelector("[data-region]").textContent = item.region;
+  document.querySelector("[data-city]").textContent = item.city;
+  document.querySelector("[data-project-count]").textContent = item.count;
+  document.querySelector("[data-cover]").src = item.image;
+  document.querySelector("[data-category]").textContent = item.category;
+  document.querySelector("[data-location]").textContent = item.location;
+  document.querySelector("[data-work]").textContent = item.title;
+  document.querySelector("[data-description]").textContent = item.description;
+  document.querySelector("[data-panel-action]").innerHTML = `${item.action} <span>↗</span>`;
+  document.querySelector("[data-work-list]").innerHTML = item.items.map((detail, detailIndex) => `<div class="detail-row"><span>0${detailIndex + 1}</span><div><strong>${detail[0]}</strong><small>${detail[1]}</small></div></div>`).join("");
+  if (item.href) currentPanelAction = { type: "href", value: item.href };
+  else if (item.target) currentPanelAction = { type: "target", value: item.target };
+  else currentPanelAction = { type: "toast", message: item.message || `${item.title}正在筹备中` };
+  currentFeaturedAction = currentPanelAction;
 }
 
 function showCity(index, pinned = false) {
@@ -181,12 +206,26 @@ function showCity(index, pinned = false) {
     marker.classList.toggle("is-preview", selected && !pinned);
     marker.classList.toggle("is-active", selected && (pinned || pinnedCity === index));
   });
+  document.querySelectorAll(".special-marker").forEach(marker => marker.classList.remove("is-active", "is-preview"));
 }
 
-function hideCity() {
+function showSpecial(index, pinned = false) {
+  populateSpecial(index);
+  mapShell.classList.add("is-detail-visible");
+  storyPanel.setAttribute("aria-hidden", "false");
+  document.querySelectorAll(".city-marker").forEach(marker => marker.classList.remove("is-active", "is-preview"));
+  document.querySelectorAll(".special-marker").forEach(marker => {
+    const selected = Number(marker.dataset.specialIndex) === index;
+    marker.classList.toggle("is-preview", selected && !pinned);
+    marker.classList.toggle("is-active", selected && (pinned || pinnedSpecial === index));
+  });
+}
+
+function hidePanel() {
   mapShell.classList.remove("is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "true");
   document.querySelectorAll(".city-marker").forEach(marker => marker.classList.remove("is-preview"));
+  document.querySelectorAll(".special-marker").forEach(marker => marker.classList.remove("is-preview"));
 }
 
 fetch("china.geo.json").then(response => response.json()).then(renderMap).catch(() => {
@@ -201,10 +240,18 @@ document.querySelectorAll("[data-map-filter]").forEach(button => {
     document.querySelectorAll("[data-map-type]").forEach(marker => {
       marker.classList.toggle("is-filtered-out", type !== "all" && marker.dataset.mapType !== type);
     });
-    if (type !== "all" && type !== "drama") {
-      pinnedCity = null;
-      hideCity();
-    }
+    pinnedCity = null;
+    pinnedSpecial = null;
+    if (type === "drama") {
+      pinnedCity = 0;
+      showCity(0, true);
+    } else if (type !== "all") {
+      const specialIndex = specialProjects.findIndex(projectItem => projectItem.type === type);
+      if (specialIndex >= 0) {
+        pinnedSpecial = specialIndex;
+        showSpecial(specialIndex, true);
+      }
+    } else hidePanel();
   });
 });
 
@@ -223,6 +270,13 @@ const formSuccess = document.querySelector("[data-form-success]");
 const submitButton = document.querySelector("[data-submit-form]");
 const trailerModal = document.querySelector("[data-trailer-modal]");
 const toast = document.querySelector("[data-toast]");
+const opcCitySelect = document.querySelector("[data-opc-city]");
+const opcActionButton = document.querySelector("[data-opc-action]");
+const opcCommunities = {
+  "杭州": { scale: 38, copy: "聚合本地漫剧制作团队，共享剧本、算力、项目协作与发行资源。" },
+  "成都": { scale: 27, copy: "连接都市剧情与动态分镜团队，协同承接制作和发行项目。" },
+  "广州": { scale: 21, copy: "聚焦科幻视觉与出海内容制作，连接海外发行合作机会。" }
+};
 let toastTimer;
 let videoTimer;
 let videoSeconds = 0;
@@ -234,7 +288,7 @@ function showToast(message) {
   toastTimer = setTimeout(() => { toast.hidden = true; }, 2800);
 }
 
-function openJoinModal(direction) {
+function openJoinModal(direction, options = {}) {
   const isSpace = direction.includes("云谷") || direction.includes("永嘉");
   joinForm.reset();
   joinForm.hidden = false;
@@ -242,7 +296,7 @@ function openJoinModal(direction) {
   submitButton.disabled = false;
   submitButton.textContent = "提交申请";
   joinDialog.classList.toggle("is-space-form", isSpace);
-  document.querySelector("[data-form-title]").textContent = `申请加入${direction}`;
+  document.querySelector("[data-form-title]").textContent = options.title || (direction === "商务合作" ? "提交商务合作申请" : `申请加入${direction}`);
   document.querySelector("[data-form-subtitle]").textContent = isSpace
     ? "请留下团队信息，空间运营人员将在审核后与您联系。"
     : "提交申请后，我们将在审核后与您联系。";
@@ -252,9 +306,29 @@ function openJoinModal(direction) {
     field.disabled = isSpace;
     if (name === "city") field.required = !isSpace;
   });
+  if (options.city) {
+    joinForm.elements.city.disabled = false;
+    joinForm.elements.city.required = true;
+    joinForm.elements.city.value = options.city;
+    joinForm.elements.city.readOnly = true;
+  } else joinForm.elements.city.readOnly = false;
   joinModal.hidden = false;
   document.body.classList.add("has-modal");
   setTimeout(() => joinForm.elements.company.focus(), 30);
+}
+
+function updateOpcCommunity(city) {
+  const community = opcCommunities[city];
+  const exists = Boolean(community);
+  document.querySelector("[data-opc-city-name]").textContent = city;
+  document.querySelector("[data-opc-state]").textContent = exists ? "社群已建立" : "等待首位发起人";
+  document.querySelector("[data-opc-scale]").textContent = exists ? community.scale : 0;
+  document.querySelector("[data-opc-city-copy]").textContent = exists
+    ? community.copy
+    : "该城市尚未建立官方线上社群。提交创建申请并通过审核后，你将成为首批共建成员。";
+  opcActionButton.innerHTML = `${exists ? "申请加入" : "申请创建"}${city}社群 <b>→</b>`;
+  opcActionButton.dataset.mode = exists ? "join" : "create";
+  document.querySelector("[data-opc-city-result]").classList.toggle("is-create", !exists);
 }
 
 function closeModal(layer) {
@@ -287,7 +361,13 @@ function openTrailer(title, image) {
 }
 
 document.querySelectorAll("[data-join]").forEach(button => button.addEventListener("click", () => openJoinModal(button.dataset.join)));
-document.querySelector("[data-scroll-join]").addEventListener("click", () => document.querySelector("#join").scrollIntoView({ behavior: "smooth" }));
+opcCitySelect.addEventListener("change", () => updateOpcCommunity(opcCitySelect.value));
+opcActionButton.addEventListener("click", () => {
+  const city = opcCitySelect.value;
+  const action = opcActionButton.dataset.mode === "create" ? "创建" : "加入";
+  openJoinModal(`${city}线上OPC社群`, { city, title: `申请${action}${city}线上OPC社群` });
+});
+updateOpcCommunity(opcCitySelect.value);
 
 document.addEventListener("click", event => {
   const trigger = event.target.closest("[data-trailer], [data-map-trailer]");
@@ -297,12 +377,22 @@ document.addEventListener("click", event => {
   openTrailer(title, image);
 });
 
-document.querySelector("[data-map-trailer]").addEventListener("keydown", event => {
+function runPanelAction(action) {
+  if (!action) return;
+  if (action.type === "trailer") openTrailer(action.title, action.image);
+  else if (action.type === "href") window.open(action.value, "_blank", "noopener,noreferrer");
+  else if (action.type === "target") document.querySelector(action.value)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  else showToast(action.message);
+}
+
+document.querySelector("[data-featured-work]").addEventListener("click", () => runPanelAction(currentFeaturedAction));
+document.querySelector("[data-featured-work]").addEventListener("keydown", event => {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
-    openTrailer(document.querySelector("[data-work]").textContent, document.querySelector("[data-cover]").src);
+    runPanelAction(currentFeaturedAction);
   }
 });
+document.querySelector("[data-panel-action]").addEventListener("click", () => runPanelAction(currentPanelAction));
 
 document.querySelectorAll("[data-modal-close]").forEach(button => button.addEventListener("click", () => closeModal(button.closest(".modal-layer"))));
 [joinModal, trailerModal].forEach(layer => layer.addEventListener("click", event => { if (event.target === layer) closeModal(layer); }));
@@ -347,4 +437,3 @@ document.querySelector("[data-video-toggle]").addEventListener("click", event =>
 });
 
 document.querySelector("[data-gallery]").addEventListener("click", () => showToast("结业成果画廊已打开"));
-document.querySelector(".detail-button").addEventListener("click", () => showToast(`${document.querySelector("[data-city]").textContent}合作项目已展开`));
