@@ -1,27 +1,36 @@
 const projectData = [
-  ["杭州", "浙江省", 120.15, 30.28, -66, -54, 7, "《马年限定之新春有约》", "浙江省杭州市富阳区", "文旅短剧", "容量短剧出品的春节年俗轻喜剧，在富阳龙门古镇实地取景，以中外文化碰撞展现年味新表达。", "qa-script-1.jpg"],
-  ["宁波", "浙江省", 121.55, 29.87, 44, -36, 1, "《甬忆南侨梦归人》", "浙江省宁波市", "文旅短剧", "讲述马来西亚华侨寻根与抗战历史的红色文旅短剧。", "qa-script-2.jpg"],
-  ["舟山", "浙江省", 122.2, 30.0, 79, -6, 1, "《约等于100岁》", "浙江省舟山市", "公益短剧", "以柴山岛上的海岛岁月治愈展现青春成长。", "qa-script-3.jpg"],
-  ["台州", "浙江省", 121.42, 28.66, 66, 20, 3, "《寻天记》之和合圣境", "浙江省台州市天台县", "文旅短剧", "融合天台山和合文化与奇幻喜剧，呈现富有辨识度的地域故事。", "qa-script-4.jpg"],
-  ["金华", "浙江省", 119.65, 29.08, -78, 24, 1, "《带你去个好地方》", "浙江省金华市武义县", "乡村振兴短剧", "以旅行视角展现乡村风貌与共同富裕。", "qa-script-5.jpg"],
-  ["磐安", "浙江省", 120.45, 29.05, -25, 58, 1, "《辣妈回村》", "浙江省磐安县", "乡村振兴短剧", "讲述驻村第一书记带领乡村振兴的女性励志故事。", "qa-script-6.jpg"],
-  ["苏州", "江苏省", 120.62, 31.3, -72, -84, 2, "《面若桃花》第二季", "江苏省苏州市", "文旅短剧", "以穿越宋韵文化塑造城市品牌的精品文旅短剧。", "qa-script-8.jpg"],
-  ["张家港", "江苏省", 120.55, 31.87, 12, -104, 1, "《我在张家港遇到河神》", "江苏省苏州市张家港市", "文旅短剧", "融合奇幻元素与江南文化，讲述具有城市气质的年轻故事。", "qa-script-9.jpg"],
-  ["桂林", "广西壮族自治区", 110.29, 25.27, -46, 27, 1, "《漓江仙子的人间烟火》", "广西壮族自治区桂林市", "文旅短剧", "广西重点扶持项目，讲述亲情守护与励志成长的修仙题材短剧。", "qa-script-10.jpg"],
-  ["香格里拉", "云南省", 99.7, 27.83, -80, -8, 1, "《香格里拉下雪了吗》", "云南省迪庆藏族自治州香格里拉市", "文旅短剧", "展现藏族风情与治愈旅行的民族文旅短剧。", "qa-script-11.jpg"],
-  ["延边州", "吉林省", 129.5, 42.9, 24, -28, 1, "《G331号秘境来信》", "吉林省延边朝鲜族自治州", "乡村振兴短剧", "以边境振兴为主题，呈现东北边境的青春采风故事。", "qa-script-12.jpg"],
-  ["茂名·高州", "广东省", 110.85, 21.9, 34, 36, 1, "《我在荔乡当冼夫人合伙人》", "广东省茂名市高州市", "乡村振兴短剧", "融合冼夫人文化与荔枝产业的乡村振兴非遗短剧。", "qa-script-1.jpg"]
+  ["杭州", "浙江省", 120.15, 30.28, -66, -54, 7, "《马年限定之新春有约》", "浙江省杭州市富阳区", "文旅短剧", "容量短剧出品的春节年俗轻喜剧，在富阳龙门古镇实地取景，以中外文化碰撞展现年味新表达。", "assets/posters/ma-nian.jpg"],
+  ["宁波", "浙江省", 121.55, 29.87, 44, -36, 1, "《甬忆南侨梦归人》", "浙江省宁波市", "文旅短剧", "讲述马来西亚华侨寻根与抗战历史的红色文旅短剧。", "assets/posters/yong-yi.jpg"],
+  ["舟山", "浙江省", 122.2, 30.0, 79, -6, 1, "《约等于一百岁》", "浙江省舟山市", "公益短剧", "以海岛生活与银发群体为切口，讲述温暖治愈的地域故事。", "assets/posters/yi-bai-sui.jpg"],
+  ["台州", "浙江省", 121.42, 28.66, 66, 20, 3, "《寻天记》之和合圣境", "浙江省台州市天台县", "文旅短剧", "融合天台山和合文化与奇幻喜剧，呈现富有辨识度的地域故事。", "assets/posters/xun-tian-ji.jpg"],
+  ["金华", "浙江省", 119.65, 29.08, -78, 24, 1, "《带你去个好地方》", "浙江省金华市武义县", "乡村振兴短剧", "以旅行视角展现乡村风貌与共同富裕。", "assets/posters/hao-di-fang.jpg"],
+  ["磐安", "浙江省", 120.45, 29.05, -25, 58, 1, "《辣妈回村》", "浙江省磐安县", "乡村振兴短剧", "讲述驻村第一书记带领乡村振兴的女性励志故事。", "assets/posters/la-ma-hui-cun.jpg"],
+  ["苏州", "江苏省", 120.62, 31.3, -72, -84, 2, "《面若桃花》第二季", "江苏省苏州市", "文旅短剧", "以穿越宋韵文化塑造城市品牌的精品文旅短剧。", "assets/posters/mian-ruo-tao-hua.jpg"],
+  ["张家港", "江苏省", 120.55, 31.87, 12, -104, 1, "《我在张家港遇到河神》", "江苏省苏州市张家港市", "文旅短剧", "融合奇幻元素与江南文化，讲述具有城市气质的年轻故事。", "assets/posters/zhang-jia-gang.jpg"],
+  ["桂林", "广西壮族自治区", 110.29, 25.27, -46, 27, 1, "《漓江仙子的人间烟火》", "广西壮族自治区桂林市", "文旅短剧", "广西重点扶持项目，讲述亲情守护与励志成长的修仙题材短剧。", "assets/posters/li-jiang-xian-zi.jpg"],
+  ["香格里拉", "云南省", 99.7, 27.83, -80, -8, 1, "《香格里拉下雪了吗》", "云南省迪庆藏族自治州香格里拉市", "文旅短剧", "展现藏族风情与治愈旅行的民族文旅短剧。", "assets/posters/xiang-ge-li-la.jpg"],
+  ["延边州", "吉林省", 129.5, 42.9, 24, -28, 1, "《G331号秘境来信》", "吉林省延边朝鲜族自治州", "乡村振兴短剧", "以边境振兴为主题，呈现东北边境的青春采风故事。", "assets/posters/g331.jpg"],
+  ["茂名·高州", "广东省", 110.85, 21.9, 34, 36, 1, "《我在荔乡当冼夫人合伙人》", "广东省茂名市高州市", "乡村振兴短剧", "融合冼夫人文化与荔枝产业的乡村振兴非遗短剧。", "assets/posters/li-xiang.jpg"]
 ];
 
-const extraHangzhouWorks = [
-  ["《上元欢·宋》", "余杭区 · 文旅短剧"],
-  ["《我见过你的征途》", "淳安县 · 红色短剧"],
-  ["《我在巴黎当侠客》", "西湖区 · 文旅短剧"]
-];
+const additionalCityWorks = {
+  0: [
+    { title: "《上元欢》", location: "余杭区 · 文旅短剧", description: "以宋韵上元灯会为背景，呈现杭州传统节俗与年轻情感。", image: "assets/posters/shang-yuan-huan.jpg" },
+    { title: "《我在巴黎当侠客》", location: "西湖区 · 文旅短剧", description: "连接杭州文化与国际视野，讲述东方侠义的当代表达。", image: "assets/posters/paris-xiake.jpg" },
+    { title: "《我见过你的征途》", location: "淳安县 · 红色短剧", description: "以真实地域与红色记忆为线索，讲述跨越时代的青春征途。", image: "assets/posters/zheng-tu.jpg" },
+    { title: "《水韵风情梦塘栖》", location: "临平区 · 文旅短剧", description: "沿塘栖水乡展开人文故事，展现江南古镇的生活气息。", image: "assets/posters/meng-tang-qi.jpg" },
+    { title: "《临平，向幸福出发》", location: "临平区 · 城市短剧", description: "从普通人的幸福生活出发，描绘城市发展与温暖日常。", image: "assets/posters/lin-ping.jpg" },
+    { title: "《临安秘史·缉妖传》", location: "临安区 · 奇幻短剧", description: "融合临安地域文化与东方奇幻元素，打造年轻化城市故事。", image: "assets/posters/lin-an-mi-shi.jpg" }
+  ],
+  3: [
+    { title: "《宋服嫁到》", location: "黄岩区 · 文旅短剧", description: "以宋服文化与年轻人的情感故事，呈现传统美学新表达。", image: "assets/posters/song-fu-jia-dao.jpg" },
+    { title: "《海屿岛之恋》", location: "玉环市 · 文旅短剧", description: "以海岛风光与青春爱情为主线，呈现台州滨海城市气质。", image: "assets/posters/hai-yu-dao.jpg" }
+  ]
+};
 
 const specialProjects = [
-  { type: "space", name: "云谷中心OPC社区", lon: 120.08, lat: 30.31, dx: -92, dy: 38, region: "浙江省 · 杭州市", city: "西湖区", count: "产业空间", category: "OPC社区", location: "云谷中心", title: "容量互娱（云谷中心）人工智能影视OPC社区", description: "面向影视OPC团队开放的线下创作社区，提供办公场地、制作工具、算力、版权、发行和产业项目资源。", image: "assets/opc-community.png", items: [["创作场地", "团队办公与协同制作"], ["生产支持", "工具、算力与内容版权"], ["商业服务", "发行、出海与产业订单"]], action: "查看空间详情", target: "#spaces" },
-  { type: "space", name: "永嘉创新应用中心", lon: 120.69, lat: 28.15, dx: 88, dy: 80, region: "浙江省 · 温州市", city: "永嘉县", count: "产业空间", category: "创新中心", location: "温州 · 永嘉", title: "容量互娱（永嘉）人工智能创新应用中心", description: "联动地方产业、城市文化与创作人才，承接人工智能内容共创、产业培训和区域项目孵化。", image: "assets/innovation-center.png", items: [["区域共创", "城市文化内容开发"], ["产业培训", "人工智能影视实践课程"], ["项目孵化", "创作团队与产业资源对接"]], action: "查看中心详情", target: "#spaces" },
+  { type: "space", name: "云谷中心OPC社区", lon: 120.08, lat: 30.31, dx: -92, dy: 38, region: "浙江省 · 杭州市", city: "西湖区", count: "产业空间", category: "OPC社区", location: "云谷中心", title: "容量短剧（云谷中心）人工智能影视OPC社区", description: "面向影视OPC团队开放的线下创作社区，提供办公场地、制作工具、算力、版权、发行和产业项目资源。", image: "assets/opc-community.png", items: [["创作场地", "团队办公与协同制作"], ["生产支持", "工具、算力与内容版权"], ["商业服务", "发行、出海与产业订单"]], action: "查看空间详情", target: "#spaces" },
+  { type: "space", name: "永嘉创新应用中心", lon: 120.69, lat: 28.15, dx: 88, dy: 80, region: "浙江省 · 温州市", city: "永嘉县", count: "产业空间", category: "创新中心", location: "温州 · 永嘉", title: "容量短剧（永嘉）人工智能创新应用中心", description: "联动地方产业、城市文化与创作人才，承接人工智能内容共创、产业培训和区域项目孵化。", image: "assets/innovation-center.png", items: [["区域共创", "城市文化内容开发"], ["产业培训", "人工智能影视实践课程"], ["项目孵化", "创作团队与产业资源对接"]], action: "查看中心详情", target: "#spaces" },
   { type: "school", name: "浙传创新实验班", lon: 120.35, lat: 30.32, dx: -96, dy: -104, region: "浙江省 · 杭州市", city: "钱塘区", count: "校企合作", category: "产教融合", location: "浙江传媒学院", title: "容量短剧 × 浙江传媒学院人工智能创新实验班", description: "联合高校建设人工智能影视实践专班，面向师生开放创作工具、真实项目、算力支持与创业孵化资源。", image: "assets/aigc-class-graduation.png", items: [["实践专班", "真实项目进入课堂"], ["创作支持", "工具与算力开放"], ["成长通道", "实训、就业与创业孵化"]], action: "查看结业成果", target: ".academy-events" },
   { type: "event", name: "雁荡山杯", lon: 121.08, lat: 28.37, dx: 87, dy: 36, region: "浙江省 · 温州市", city: "乐清市", count: "创作赛事", category: "技能大赛", location: "温州 · 雁荡山", title: "雁荡山杯文旅OPC技能大赛", description: "聚焦文旅内容与OPC创作能力，面向全国创作团队开放主题赛题、产业资源与成果展示机会。", image: "../ai-drama-website-optimization/assets/qa-banner-2.jpg", items: [["赛事方向", "文旅内容与漫剧创作"], ["参赛对象", "OPC团队与专业创作者"], ["赛事状态", "报名进行中"]], action: "访问赛事官网", href: "https://www.data0086.com" },
   { type: "event", name: "大广赛·即将开启", lon: 116.4, lat: 39.9, dx: 80, dy: -38, region: "北京市", city: "北京", count: "创作赛事", category: "营销创作", location: "北京", title: "大广赛营销创客单元竞赛", description: "连接高校创意人才与产业真实命题，探索人工智能内容创作、品牌表达与青年创新实践。", image: "../ai-drama-website-optimization/assets/qa-banner-1.jpg", items: [["赛事方向", "品牌营销与内容创新"], ["参赛对象", "高校学生与青年创作者"], ["赛事状态", "即将开启"]], action: "敬请期待", message: "大广赛营销创客单元竞赛即将开启" },
@@ -167,16 +176,17 @@ function populateCity(index) {
   document.querySelector("[data-region]").textContent = city[1];
   document.querySelector("[data-city]").textContent = city[0];
   document.querySelector("[data-project-count]").textContent = `${city[6]} 个合作项目`;
-  document.querySelector("[data-cover]").src = `../ai-drama-website-optimization/assets/${city[11]}`;
+  document.querySelector("[data-cover]").src = city[11];
   document.querySelector("[data-category]").textContent = city[9];
   document.querySelector("[data-location]").textContent = city[8];
   document.querySelector("[data-work]").textContent = city[7];
   document.querySelector("[data-description]").textContent = city[10];
   document.querySelector("[data-panel-action]").innerHTML = "查看该城市全部项目 <span>↗</span>";
   currentPanelAction = { type: "toast", message: `${city[0]}合作项目已展开` };
-  currentFeaturedAction = { type: "trailer", title: city[7], image: `../ai-drama-website-optimization/assets/${city[11]}` };
-  const works = index === 0 ? extraHangzhouWorks : [[city[7], `${city[0]} · ${city[9]}`]];
-  document.querySelector("[data-work-list]").innerHTML = works.map((work, workIndex) => `<button type="button" data-map-trailer data-trailer-name="${work[0]}"><span>0${workIndex + 1}</span><div><strong>${work[0]}</strong><small>${work[1]}</small></div><em>↗</em></button>`).join("");
+  currentFeaturedAction = { type: "trailer", title: city[7], image: city[11] };
+  const works = additionalCityWorks[index] || [];
+  document.querySelector("[data-work-list]").classList.toggle("has-work-cards", works.length > 0);
+  document.querySelector("[data-work-list]").innerHTML = works.map((work, workIndex) => `<button class="city-work-card" type="button" data-map-trailer data-trailer-name="${work.title}"><img src="${work.image}" alt="${work.title}海报"><span>0${workIndex + 2}</span><div><strong>${work.title}</strong><small>${work.location}</small><p>${work.description}</p></div><em>↗</em></button>`).join("");
 }
 
 function populateSpecial(index) {
@@ -190,6 +200,7 @@ function populateSpecial(index) {
   document.querySelector("[data-work]").textContent = item.title;
   document.querySelector("[data-description]").textContent = item.description;
   document.querySelector("[data-panel-action]").innerHTML = `${item.action} <span>↗</span>`;
+  document.querySelector("[data-work-list]").classList.remove("has-work-cards");
   document.querySelector("[data-work-list]").innerHTML = item.items.map((detail, detailIndex) => `<div class="detail-row"><span>0${detailIndex + 1}</span><div><strong>${detail[0]}</strong><small>${detail[1]}</small></div></div>`).join("");
   if (item.href) currentPanelAction = { type: "href", value: item.href };
   else if (item.target) currentPanelAction = { type: "target", value: item.target };
