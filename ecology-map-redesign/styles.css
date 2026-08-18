@@ -327,4 +327,51 @@ main { width: min(1400px, calc(100% - 64px)); margin: 0 auto; }
 .toast { font-size:12px; }
 .page-note { color:rgba(255,255,255,.52); font-size:11px; }
 .page-note strong { color:rgba(255,255,255,.72); }
+
+/* Brighter visual system with richer photographic storytelling. */
+:root { background:#172627; }
+body { background:radial-gradient(circle at 50% 3%,#3a5a5e 0,#243a3d 21%,#1a2b2d 51%,#142224 100%); }
+.site-header { border-color:rgba(218,255,253,.18); background:rgba(26,38,39,.92); box-shadow:0 12px 34px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.04); }
+.intro { position:relative; height:330px; margin:28px 0 26px; padding:44px; overflow:hidden; flex-direction:column; align-items:flex-start; justify-content:center; border:1px solid rgba(220,255,254,.25); border-radius:10px; background-image:linear-gradient(90deg,rgba(10,37,41,.92) 0%,rgba(11,46,50,.75) 29%,rgba(10,46,49,.22) 58%,rgba(9,34,37,.06) 100%),url("assets/ecosystem-hero.jpg"); background-size:cover; background-position:center; box-shadow:0 24px 70px rgba(3,14,15,.24); }
+.intro::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(0deg,rgba(5,24,26,.35),transparent 45%); }
+.intro > * { position:relative; z-index:2; }
+.intro h1 { max-width:600px; margin-top:14px; color:#fff; font-size:38px; font-weight:600; text-shadow:0 2px 18px rgba(0,0,0,.3); }
+.intro p { max-width:440px; margin-top:20px; color:rgba(244,255,255,.86); text-align:left; text-shadow:0 1px 10px rgba(0,0,0,.32); }
+.achievement-stats { margin:0 0 32px; border-color:rgba(215,255,253,.2); background:rgba(224,255,254,.075); }
+.map-shell { border-color:rgba(164,237,234,.22); background:#122022; box-shadow:0 24px 70px rgba(0,0,0,.18); }
+.map-stage { background:radial-gradient(circle at 53% 58%,rgba(51,180,181,.22),transparent 32%),radial-gradient(circle at 75% 40%,rgba(67,143,151,.16),transparent 24%),linear-gradient(145deg,#1a2b2d,#0d1819 72%); }
+.province-shape { fill:rgba(23,40,42,.94); stroke:rgba(145,239,236,.46); }
+.detail-hint { color:rgba(255,255,255,.34); }
+.story-panel { background:linear-gradient(180deg,rgba(24,35,36,.98),rgba(15,25,26,.99)); }
+.opc-community { padding-top:104px; background:linear-gradient(180deg,rgba(116,200,198,.055),transparent 72%); }
+.opc-visual { position:relative; height:330px; margin:8px 0 18px; overflow:hidden; border:1px solid rgba(225,255,254,.18); border-radius:9px; background:#1a2829; }
+.opc-visual::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(12,34,36,.86) 0%,rgba(12,34,36,.52) 30%,rgba(12,34,36,.05) 65%); }
+.opc-visual img { width:100%; height:100%; object-fit:cover; object-position:center; filter:brightness(.98) saturate(.9); }
+.opc-visual > div { position:absolute; left:38px; bottom:36px; z-index:2; }
+.opc-visual span { color:#8bfffc; font-size:10px; letter-spacing:1.5px; }
+.opc-visual strong { display:block; margin-top:13px; color:#fff; font-size:23px; font-weight:500; line-height:1.5; text-shadow:0 2px 14px rgba(0,0,0,.36); }
+.opc-lead { padding-top:40px; }
+.opc-benefits article,.opc-member-wall article { border-color:rgba(222,255,254,.18); background:linear-gradient(145deg,rgba(231,255,254,.095),rgba(255,255,255,.045)); }
+.opc-benefits article:hover { border-color:rgba(110,255,252,.5); background:rgba(120,240,237,.09); }
+.result-card { border-color:rgba(230,255,254,.2); box-shadow:0 14px 34px rgba(0,0,0,.2); }
+.result-card img { filter:brightness(1.04) saturate(.94); }
+.space-row { border-color:rgba(221,255,253,.19); background:rgba(255,255,255,.035); }
+.space-image img { filter:saturate(.9) brightness(.94); }
+.academy-block,.event-block { border-color:rgba(226,255,254,.2); background:rgba(255,255,255,.05); }
+.academy-image img { filter:saturate(.86) brightness(.96); }
+.coming-projects .coming-grid { gap:12px; }
+.coming-projects .coming-grid article { border-color:rgba(237,255,254,.32); background-image:url("assets/coming-regions.jpg"); background-repeat:no-repeat; background-size:300% 100%; box-shadow:0 18px 44px rgba(0,0,0,.2); }
+.coming-projects .coming-grid article::before { opacity:1; background:linear-gradient(180deg,rgba(7,22,23,.08),rgba(5,19,20,.83) 88%) !important; }
+.coming-projects .coming-xj { background-position:left center; }
+.coming-projects .coming-sc { background-position:center center; }
+.coming-projects .coming-fj { background-position:right center; }
+.coming-projects h3 { color:#fff; text-shadow:0 2px 14px rgba(0,0,0,.5); }
+.coming-projects article span { color:#b5fffd; text-shadow:0 1px 8px rgba(0,0,0,.55); }
+.coming-projects article em { color:rgba(255,255,255,.86); }
+.network-grid { border-color:rgba(220,255,253,.16); }
+.network-grid article { border-color:rgba(220,255,253,.16); background:linear-gradient(160deg,rgba(98,224,220,.11),rgba(255,255,255,.045)); }
+.network-grid article:nth-child(2) { background:linear-gradient(160deg,rgba(237,188,119,.12),rgba(255,255,255,.045)); }
+.network-grid article:nth-child(3) { background:linear-gradient(160deg,rgba(111,171,235,.12),rgba(255,255,255,.045)); }
+.network-grid article:nth-child(4) { background:linear-gradient(160deg,rgba(112,207,155,.12),rgba(255,255,255,.045)); }
+.join-ecosystem { border-color:rgba(216,255,253,.18); background:radial-gradient(circle at 50% 100%,rgba(60,220,216,.23),transparent 52%),rgba(255,255,255,.018); }
 @media (max-width:1280px) { main { width:calc(100% - 40px); }.china-map { width:calc(100% - 370px); }.story-panel,.detail-hint { width:340px; }.site-header nav { gap:18px; }.map-filters { left:205px; }.map-filters button { padding:0 7px; }.map-tip { gap:9px; }.opc-lead { grid-template-columns:380px 1fr; gap:38px; }.opc-benefits article { padding:18px 16px; }.academy-events { grid-template-columns:1.6fr .9fr; } }
