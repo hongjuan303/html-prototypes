@@ -40,6 +40,10 @@
           <button type="button" data-map-filter="event">创作赛事</button>
           <button type="button" data-map-filter="coming">即将呈现</button>
         </div>
+        <div class="map-view-switch" aria-label="地图视图">
+          <button class="is-active" type="button" data-map-view="national">全国视图</button>
+          <button type="button" data-map-view="east">华东重点</button>
+        </div>
         <div class="tech-orbit orbit-one"></div>
         <div class="tech-orbit orbit-two"></div>
         <div class="map-scan"></div>
@@ -96,12 +100,12 @@
       <div class="opc-lead">
         <div class="opc-promise"><span class="eyebrow">FOR OPC CREATORS</span><h3>从一支制作团队，<br>走向稳定的内容生意</h3><p>容量万相提供剧本、漫剧制作工具、算力优惠与全域发行支持，通过保底加分成、收益分成或版权买断等方式，与创作者共享内容价值。</p><div class="opc-live"><i></i><strong data-opc-count>128</strong><span>支团队已加入</span><em>审核通过后实时计入</em></div><button class="primary-action" type="button" data-join="线上OPC创作社群">申请加入社群 <b>→</b></button></div>
         <div class="opc-benefits">
-          <article><em>01</em><h4>剧本持续供给</h4><p>提供经过评估的小说IP与漫剧剧本，减少选题和开发成本。</p></article>
-          <article><em>02</em><h4>工具与算力支持</h4><p>开放漫剧制作工具，为合作团队提供专属算力折扣。</p></article>
-          <article><em>03</em><h4>专注内容生产</h4><p>OPC专注制作，渠道发行、运营和商业化由平台承接。</p></article>
-          <article><em>04</em><h4>全域代发行</h4><p>覆盖投流、平台、端上与海外市场，延长作品商业周期。</p></article>
-          <article><em>05</em><h4>多种合作模式</h4><p>支持保底加分成、收益分成或版权买断，按项目灵活合作。</p></article>
-          <article><em>06</em><h4>政府资源协同</h4><p>区域团队形成规模后，协助对接园区与创业扶持政策。</p></article>
+          <article><h4>剧本持续供给</h4><p>精选小说IP与漫剧剧本，降低选题开发成本。</p></article>
+          <article><h4>工具与算力支持</h4><p>开放漫剧制作工具与合作团队算力折扣。</p></article>
+          <article><h4>专注内容生产</h4><p>OPC专注制作，平台承接发行与商业化。</p></article>
+          <article><h4>全域代发行</h4><p>覆盖投流、平台、端上与海外市场。</p></article>
+          <article><h4>多种合作模式</h4><p>支持保底分成、收益分成与版权买断。</p></article>
+          <article><h4>政府资源协同</h4><p>协助对接园区和创业扶持资源。</p></article>
         </div>
       </div>
       <div class="opc-flow"><span>合作流程</span><ol><li><i>01</i>提交申请</li><li><i>02</i>团队审核</li><li><i>03</i>开通权益</li><li><i>04</i>领取剧本</li><li><i>05</i>完成制作</li><li><i>06</i>平台发行</li><li><i>07</i>收益结算</li></ol></div>
@@ -145,9 +149,9 @@
     <footer class="page-note"><span>容量万相 · AI影视内容生产与发行生态</span><strong>联系邮箱：heyuqing@rongliang.cn</strong></footer>
   </main>
 
-  <div class="modal-layer" data-join-modal hidden><div class="modal-dialog join-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><span>JOIN THE ECOSYSTEM</span><h2 data-form-title>申请加入线上OPC创作社群</h2><p data-form-subtitle>提交申请后，我们将在审核后与您联系。</p><form data-join-form><input type="hidden" name="direction" data-form-direction><div class="form-grid"><label><span>团队或公司名称 *</span><input name="company" required placeholder="请输入名称"></label><label data-field="city"><span>所在城市 *</span><input name="city" required placeholder="请选择或输入城市"></label><label><span>团队人数 *</span><input name="teamSize" required type="number" min="1" placeholder="请输入人数"></label><label><span>联系人 *</span><input name="contact" required placeholder="请输入联系人姓名"></label><label><span>联系电话 *</span><input name="phone" required type="tel" placeholder="请输入手机号"></label><label data-field="model"><span>意向合作模式</span><select name="model"><option>暂不确定</option><option>保底加分成</option><option>收益分成</option><option>版权买断</option></select></label><label class="form-wide"><span>业务范围 *</span><textarea name="scope" required maxlength="300" placeholder="请介绍团队擅长方向、制作能力或合作诉求"></textarea></label><label class="form-wide" data-field="portfolio"><span>代表作品</span><input name="portfolio" placeholder="请输入作品链接"></label></div><label class="privacy-check"><input type="checkbox" required><span>我已阅读并同意隐私政策，授权平台用于本次合作联系。</span></label><footer><button type="button" data-modal-close>取消</button><button type="submit">提交申请</button></footer></form></div></div>
+  <div class="modal-layer" data-join-modal hidden><div class="modal-dialog join-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><span>JOIN THE ECOSYSTEM</span><h2 data-form-title>申请加入线上OPC创作社群</h2><p data-form-subtitle>提交申请后，我们将在审核后与您联系。</p><form data-join-form><input type="hidden" name="direction" data-form-direction><div class="form-grid"><label><span>团队或公司名称 *</span><input name="company" required placeholder="请输入名称"></label><label data-field="city"><span>所在城市 *</span><input name="city" required placeholder="请选择或输入城市"></label><label><span>团队人数 *</span><input name="teamSize" required type="number" min="1" placeholder="请输入人数"></label><label><span>联系人 *</span><input name="contact" required placeholder="请输入联系人姓名"></label><label><span>联系电话 *</span><input name="phone" required type="tel" inputmode="numeric" pattern="1[3-9][0-9]{9}" maxlength="11" placeholder="请输入11位手机号"></label><label data-field="model"><span>意向合作模式</span><select name="model"><option>暂不确定</option><option>保底加分成</option><option>收益分成</option><option>版权买断</option></select></label><label class="form-wide"><span>业务范围 *</span><textarea name="scope" required maxlength="300" placeholder="请介绍团队擅长方向、制作能力或合作诉求"></textarea></label><label class="form-wide" data-field="portfolio"><span>代表作品</span><input name="portfolio" placeholder="请输入作品链接"></label></div><label class="privacy-check"><input type="checkbox" required><span>我已阅读并同意隐私政策，授权平台用于本次合作联系。</span></label><footer><button type="button" data-modal-close>取消</button><button type="submit" data-submit-form>提交申请</button></footer></form><div class="form-success" data-form-success hidden><i>✓</i><h3>申请已提交</h3><p>我们将在审核后与您联系，审核通过的OPC团队将实时计入社群人数。</p><button type="button" data-success-close>完成</button></div></div></div>
 
-  <div class="modal-layer trailer-layer" data-trailer-modal hidden><div class="modal-dialog trailer-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><span>HIGHLIGHT TRAILER</span><h2 data-trailer-title>高光片花</h2><div class="trailer-player"><img src="../ai-drama-website-optimization/assets/qa-banner-1.jpg" alt="片花预览画面"><button type="button" data-video-toggle><i></i><b>播放片花</b></button><div><span>00:00</span><i></i><em>00:45</em></div></div><p>当前为高光片花交互示意，正式版本将接入项目视频素材。</p></div></div>
+  <div class="modal-layer trailer-layer" data-trailer-modal hidden><div class="modal-dialog trailer-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><span>HIGHLIGHT TRAILER</span><h2 data-trailer-title>高光片花</h2><div class="trailer-player"><img src="../ai-drama-website-optimization/assets/qa-banner-1.jpg" alt="片花预览画面"><button type="button" data-video-toggle><i></i><b>播放片花</b></button><div><span data-video-time>00:00</span><i><b data-video-progress></b></i><em>00:45</em></div></div><p>当前展示播放器完整交互，正式版本需接入对应项目的高光片花视频素材。</p></div></div>
 
   <div class="toast" data-toast hidden>申请已提交</div>
   <script src="app.js"></script>

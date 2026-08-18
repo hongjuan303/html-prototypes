@@ -208,12 +208,24 @@ document.querySelectorAll("[data-map-filter]").forEach(button => {
   });
 });
 
+document.querySelectorAll("[data-map-view]").forEach(button => {
+  button.addEventListener("click", () => {
+    const isEast = button.dataset.mapView === "east";
+    document.querySelectorAll("[data-map-view]").forEach(item => item.classList.toggle("is-active", item === button));
+    mapShell.classList.toggle("is-east-focus", isEast);
+  });
+});
+
 const joinModal = document.querySelector("[data-join-modal]");
 const joinDialog = joinModal.querySelector(".join-dialog");
 const joinForm = document.querySelector("[data-join-form]");
+const formSuccess = document.querySelector("[data-form-success]");
+const submitButton = document.querySelector("[data-submit-form]");
 const trailerModal = document.querySelector("[data-trailer-modal]");
 const toast = document.querySelector("[data-toast]");
 let toastTimer;
+let videoTimer;
+let videoSeconds = 0;
 
 function showToast(message) {
   toast.textContent = message;
@@ -225,6 +237,10 @@ function showToast(message) {
 function openJoinModal(direction) {
   const isSpace = direction.includes("云谷") || direction.includes("永嘉");
   joinForm.reset();
+  joinForm.hidden = false;
+  formSuccess.hidden = true;
+  submitButton.disabled = false;
+  submitButton.textContent = "提交申请";
   joinDialog.classList.toggle("is-space-form", isSpace);
   document.querySelector("[data-form-title]").textContent = `申请加入${direction}`;
   document.querySelector("[data-form-subtitle]").textContent = isSpace
@@ -243,15 +259,29 @@ function openJoinModal(direction) {
 
 function closeModal(layer) {
   layer.hidden = true;
+  if (layer === trailerModal) resetVideoPlayer();
   if (joinModal.hidden && trailerModal.hidden) document.body.classList.remove("has-modal");
+}
+
+function updateVideoPlayer() {
+  const progress = Math.min(100, (videoSeconds / 45) * 100);
+  document.querySelector("[data-video-progress]").style.width = `${progress}%`;
+  document.querySelector("[data-video-time]").textContent = `00:${String(videoSeconds).padStart(2, "0")}`;
+}
+
+function resetVideoPlayer() {
+  clearInterval(videoTimer);
+  videoSeconds = 0;
+  updateVideoPlayer();
+  const toggle = document.querySelector("[data-video-toggle]");
+  toggle.classList.remove("is-playing");
+  toggle.querySelector("b").textContent = "播放片花";
 }
 
 function openTrailer(title, image) {
   document.querySelector("[data-trailer-title]").textContent = `${title} · 高光片花`;
   if (image) document.querySelector(".trailer-player > img").src = image;
-  const toggle = document.querySelector("[data-video-toggle]");
-  toggle.classList.remove("is-playing");
-  toggle.querySelector("b").textContent = "播放片花";
+  resetVideoPlayer();
   trailerModal.hidden = false;
   document.body.classList.add("has-modal");
 }
@@ -284,15 +314,36 @@ document.addEventListener("keydown", event => {
 
 joinForm.addEventListener("submit", event => {
   event.preventDefault();
+  submitButton.disabled = true;
+  submitButton.textContent = "提交中...";
+  setTimeout(() => {
+    joinForm.hidden = true;
+    formSuccess.hidden = false;
+    submitButton.disabled = false;
+    submitButton.textContent = "提交申请";
+  }, 900);
+});
+
+document.querySelector("[data-success-close]").addEventListener("click", () => {
   closeModal(joinModal);
   showToast("申请已提交，审核通过后将计入社群人数");
-  joinForm.reset();
 });
 
 document.querySelector("[data-video-toggle]").addEventListener("click", event => {
   const button = event.currentTarget;
   const playing = button.classList.toggle("is-playing");
   button.querySelector("b").textContent = playing ? "播放中" : "播放片花";
+  clearInterval(videoTimer);
+  if (playing) {
+    videoTimer = setInterval(() => {
+      videoSeconds += 1;
+      if (videoSeconds >= 45) {
+        resetVideoPlayer();
+        return;
+      }
+      updateVideoPlayer();
+    }, 1000);
+  }
 });
 
 document.querySelector("[data-gallery]").addEventListener("click", () => showToast("结业成果画廊已打开"));
