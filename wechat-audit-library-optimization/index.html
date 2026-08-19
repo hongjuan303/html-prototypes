@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微信送审库功能优化原型</title>
+  <link rel="stylesheet" href="/html-prototypes/wechat-audit-library-optimization/styles.css">
+</head>
+<body>
+  <main class="review-canvas">
+    <section class="prototype" aria-label="微信送审库原型">
+      <aside class="side-nav">
+        <button class="nav-toggle" title="展开菜单">☰</button>
+        <div class="nav-dot">◆</div>
+        <div class="nav-dot">◆</div>
+        <div class="nav-dot active">◆</div>
+        <div class="nav-dot">◆</div>
+        <div class="nav-dot">◆</div>
+        <div class="nav-dot">◆</div>
+        <div class="nav-dot">◆</div>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <div class="breadcrumb"><strong>内容管理</strong><span>/</span><span>内容审核库</span></div>
+          <div class="topbar-center">百日0故障挑战 第351天</div>
+          <div class="top-actions">
+            <label class="global-search"><span>⌕</span><input placeholder="请输入搜索内容"></label>
+            <button class="icon-btn" title="全屏">⛶</button><span>全屏</span>
+            <span class="avatar">洪</span><span>洪娟</span><span>⌄</span>
+          </div>
+        </header>
+
+        <div class="page-tabs-strip">
+          <span>首页（新）</span><span>合集列表</span><span>修改合集</span><span class="active">内容审核库</span><span>腾讯投放商品库</span>
+        </div>
+
+        <div class="page-body">
+          <nav class="channel-tabs" aria-label="送审平台">
+            <button>抖音送审库</button>
+            <button>快手送审库</button>
+            <button class="active">微信送审库</button>
+            <button>B站送审库</button>
+            <button>抖音商品库送审库</button>
+          </nav>
+
+          <section class="filters">
+            <div class="filter-row">
+              <label>合集名称<input id="collectionName" type="text" placeholder="录入"></label>
+              <label>合集ID<input id="collectionId" type="text" placeholder="录入"></label>
+              <label>剧目ID<input id="dramaId" type="text" placeholder="录入"></label>
+              <label class="new-field"><span class="callout">1</span>制作方<input id="producerSearch" type="text" placeholder="支持模糊搜索"></label>
+              <label class="wide">创建日期<span class="range-input">▣　开始日期　 至　 结束日期</span></label>
+              <label>剧目审核状态<select><option>全部</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
+            </div>
+            <div class="filter-row">
+              <label>媒资审核状态<select><option>全部</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
+              <label>替换状态<select><option>全部</option><option>未替换</option><option>替换中</option><option>替换完成</option></select></label>
+              <label>剧目审核资质<select><option>全部</option><option>已提交</option><option>未提交</option></select></label>
+              <label class="new-field"><span class="callout">2</span>剧目信息修改状态<select id="modifyStatusFilter"><option>全部</option><option>审核中</option><option>审核失败</option><option>审核通过</option></select></label>
+              <label class="new-field"><span class="callout">3</span>版权保护<select id="copyrightFilter"><option>全部</option><option>是</option><option>否</option></select></label>
+              <label>送审小程序<select><option>请选择</option><option>蜻蜓剧场</option><option>青柠短剧</option></select></label>
+            </div>
+            <div class="filter-actions">
+              <button class="btn primary" id="queryBtn">查询</button>
+              <button class="btn" id="resetBtn">重置</button>
+              <button class="btn light">导出</button>
+              <span class="filter-result" id="filterResult"></span>
+            </div>
+          </section>
+
+          <section class="list-section">
+            <div class="list-actions">
+              <span class="list-title">微信送审记录</span>
+              <div><button class="btn light">版权授权</button><button class="btn primary">提交审核</button></div>
+            </div>
+
+            <div class="batch-bar" id="batchBar">
+              <div class="batch-summary"><span class="callout">4</span><strong id="selectedCount">已选择 0 条</strong><span id="batchHint">请选择需要批量处理的记录</span></div>
+              <div class="batch-actions">
+                <button class="btn batch-action" data-action="modify" disabled>批量修改剧目信息</button>
+                <button class="btn batch-action" data-action="replace" disabled>批量替换剧集</button>
+                <button class="btn danger-outline batch-action" data-action="delete" disabled>批量删除</button>
+                <button class="btn batch-action" data-action="sync" disabled>批量同步状态</button>
+              </div>
+            </div>
+
+            <div class="table-scroller">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="check-col"><input id="selectAll" type="checkbox" aria-label="全选"></th>
+                    <th>ID</th><th>合集ID</th><th class="name-col">合集名称</th><th>剧目ID</th><th>创建日期</th>
+                    <th>剧集替换状态</th><th>媒资审核状态</th><th>剧目审核状态</th><th class="new-col">剧目信息修改状态 <span class="callout small">2</span></th>
+                    <th class="new-col">版权保护 <span class="callout small">3</span></th><th>制作方</th><th>送审小程序</th><th class="operation-col">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <tr data-id="3467" data-cid="42879" data-producer="果然映像" data-modify="审核中" data-copyright="否">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3467"></td><td>3467</td><td>42879</td><td>她从山海归来</td><td>6227994627813402</td><td>2026-08-18 14:32</td><td><span class="status blue">替换完成</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status orange">审核中</span></td><td><span class="status gray">否</span></td><td>果然映像</td><td>蜻蜓剧场</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3467">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  </tr>
+                  <tr data-id="3466" data-cid="42879" data-producer="果然映像" data-modify="审核通过" data-copyright="是">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3466"></td><td>3466</td><td>42879</td><td>她从山海归来（高清版）</td><td>6227994627813403</td><td>2026-08-18 14:21</td><td><span class="status blue">替换完成</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">是</span></td><td>果然映像</td><td>蜻蜓剧场</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3466">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  </tr>
+                  <tr data-id="3461" data-cid="43121" data-producer="青禾文化" data-modify="审核失败" data-copyright="否">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3461"></td><td>3461</td><td>43121</td><td>风起时再次遇见你</td><td>6227981330057298</td><td>2026-08-17 11:08</td><td><span class="status orange">替换中</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status red">审核失败</span></td><td><span class="status gray">否</span></td><td>青禾文化</td><td>青柠短剧</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3461">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  </tr>
+                  <tr data-id="3458" data-cid="42766" data-producer="星河制作" data-modify="审核通过" data-copyright="是">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3458"></td><td>3458</td><td>42766</td><td>月光落在旧信上</td><td>6227968412327088</td><td>2026-08-16 18:46</td><td><span class="status gray">未替换</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">是</span></td><td>星河制作</td><td>蜻蜓剧场</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3458">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination"><span>共 4 条</span><button class="page-btn active">1</button><span>20 条/页</span></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <aside class="prd-panel">
+      <h1>微信送审库功能优化</h1>
+      <div class="prd-meta"><span>需求类型：功能优化</span><span>使用对象：内容业务</span></div>
+
+      <section>
+        <h2># 页面说明</h2>
+        <p><strong>菜单路径：</strong>绿台 ＞ 内容管理 ＞ 内容审核库 ＞ 微信送审库</p>
+        <p><strong>优化目标：</strong>提升同一合集下多条送审记录的批量处理效率，并补充剧目信息修改与版权保护状态追踪。</p>
+      </section>
+
+      <section>
+        <h2># 原型说明</h2>
+        <h3><span>1</span> 筛选项新增「制作方」</h3>
+        <p>文本输入，支持制作方名称模糊搜索；点击查询后刷新列表，重置后清空条件。</p>
+
+        <h3><span>2</span> 剧目信息修改状态</h3>
+        <p>筛选及列表均新增该字段，枚举：审核中、审核失败、审核通过。数据来源为微信侧剧目信息修改审核结果。</p>
+
+        <h3><span>3</span> 版权保护</h3>
+        <p>筛选及列表均新增该字段，枚举：是、否。</p>
+        <div class="rule-box">
+          <strong>判定为「是」：</strong>已申请版权保护，且剧目审核通过，且剧目信息修改审核通过。<br>
+          <strong>判定为「否」：</strong>未申请版权保护，或剧目审核未通过，或剧目信息修改审核未通过。
+        </div>
+
+        <h3><span>4</span> 批量操作</h3>
+        <p>列表支持多选，系统实时校验所选记录的合集ID。</p>
+        <ul>
+          <li>合集ID一致：批量按钮高亮，可继续操作。</li>
+          <li>合集ID不一致：批量按钮禁用，并提示“所选记录合集ID不一致”。</li>
+          <li>批量功能：修改剧目信息、替换剧集、删除、同步状态。</li>
+          <li>点击后复用单条操作的字段、校验与提交逻辑，弹窗展示所选数量及合集ID。</li>
+        </ul>
+
+        <h3><span>5</span> 更多操作新增「历史」</h3>
+        <p>点击后弹出“修改历史”，展示日期、修改类型、状态、操作；点击详情查看当次提交的剧名、剧目ID、总集数、提审时间、审核状态及审核反馈。</p>
+      </section>
+
+      <section>
+        <h2># 交互验收</h2>
+        <ol>
+          <li>勾选前两条同合集数据，4个批量按钮均可用。</li>
+          <li>再勾选任一不同合集数据，4个批量按钮立即禁用。</li>
+          <li>取消不同合集数据后，按钮恢复可用。</li>
+          <li>点击“更多操作 ＞ 历史”，可查看历史列表与详情。</li>
+        </ol>
+      </section>
+    </aside>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header"><h2 id="modalTitle"></h2><button id="modalClose" class="modal-close" title="关闭">×</button></header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer" id="modalFooter"></footer>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/html-prototypes/wechat-audit-library-optimization/app.js"></script>
+</body>
+</html>
