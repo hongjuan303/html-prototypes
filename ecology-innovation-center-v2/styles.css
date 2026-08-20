@@ -619,3 +619,140 @@ main { display:flex; flex-direction:column; }
   .slide-copy h2 { font-size:39px; }
   .map-shell { height:790px; }
 }
+
+/* v2.1 exhibition layout: stronger hierarchy for conference presentation. */
+.intro { position:relative; height:360px; margin:18px 0 26px; padding:0 64px; display:flex; align-items:center; overflow:hidden; border:1px solid rgba(255,255,255,.11); border-radius:12px; background-position:center 45%; background-size:cover; }
+.intro::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(3,7,9,.98) 0,rgba(3,8,10,.9) 39%,rgba(4,10,12,.38) 72%,rgba(4,8,10,.18)),linear-gradient(0deg,rgba(3,7,9,.6),transparent 55%); }
+.intro::after { content:""; position:absolute; right:30%; top:-80px; width:340px; height:520px; border-left:1px solid rgba(79,231,226,.22); transform:rotate(28deg); box-shadow:-70px 0 130px rgba(49,210,205,.08); }
+.intro-copy { position:relative; z-index:2; width:min(720px,66%); }
+.intro > .intro-copy > span { display:flex; align-items:center; gap:12px; margin:0 0 18px; color:#56e7e2; font-size:12px; }
+.intro > .intro-copy > span::before { content:""; width:28px; height:1px; background:#56e7e2; }
+.intro h1 { margin:0; font-size:54px; line-height:1.16; font-weight:650; }
+.intro p { max-width:560px; margin:22px 0 0; color:rgba(255,255,255,.7); font-size:15px; line-height:1.85; }
+.intro-signals { margin-top:28px; display:flex; gap:9px; }
+.intro-signals b { height:31px; padding:0 13px; display:inline-flex; align-items:center; border:1px solid rgba(95,230,225,.23); border-radius:3px; color:rgba(229,255,253,.75); background:rgba(37,123,121,.11); font-size:10px; font-weight:400; }
+.intro-caption { position:absolute; right:44px; bottom:36px; z-index:2; display:flex; align-items:flex-start; gap:13px; color:rgba(255,255,255,.62); font-size:11px; line-height:1.7; text-align:right; }
+.intro-caption i { width:7px; height:7px; margin-top:6px; border-radius:50%; background:#5ee9e4; box-shadow:0 0 16px #42d8d3; }
+
+.eco-carousel { height:440px; border-radius:12px; }
+.carousel-slide { grid-template-columns:minmax(0,47%) minmax(0,53%); }
+.carousel-slide::before,.carousel-slide.slide-event::before,.carousel-slide.slide-city::before { background:linear-gradient(90deg,#0a0e11 0 45%,rgba(10,14,17,.72) 53%,rgba(10,14,17,.08) 77%),linear-gradient(0deg,rgba(4,7,9,.5),transparent 50%); }
+.carousel-slide.slide-event::before { background:linear-gradient(90deg,#11100e 0 45%,rgba(17,16,14,.7) 53%,rgba(17,16,14,.07) 77%),linear-gradient(0deg,rgba(8,6,3,.5),transparent 50%); }
+.carousel-slide.slide-city::before { background:linear-gradient(90deg,#100c0f 0 45%,rgba(16,12,15,.7) 53%,rgba(16,12,15,.06) 77%),linear-gradient(0deg,rgba(8,4,7,.5),transparent 50%); }
+.slide-copy { padding:0 72px; }
+.slide-copy h2 { margin-top:18px; font-size:36px; line-height:1.3; }
+.slide-copy p { max-width:480px; font-size:13px; }
+.slide-visual { grid-column:2; }
+.slide-visual::after { background:linear-gradient(90deg,#0b0e11 0,transparent 33%),linear-gradient(0deg,rgba(4,6,7,.45),transparent 38%); }
+.slide-visual img { object-position:center 24%; }
+
+.collaboration-network { padding-top:116px; }
+.collaboration-network .section-heading { align-items:end; }
+.collaboration-network .section-heading h2 { max-width:700px; font-size:34px; }
+.collaboration-network .network-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.collaboration-network .network-grid article { min-height:260px; padding:36px 45% 34px 32px; overflow:hidden; border-radius:12px; background-color:#0b0e10; background-position:right center; background-size:48% 100%; background-repeat:no-repeat; }
+.collaboration-network .network-grid article:nth-child(1) { background-image:linear-gradient(90deg,#0b0e10 0 52%,rgba(11,14,16,.72) 70%,rgba(11,14,16,.18)),url("assets/opc-community.png"); }
+.collaboration-network .network-grid article:nth-child(2) { background-image:linear-gradient(90deg,#0b0e10 0 52%,rgba(11,14,16,.72) 70%,rgba(11,14,16,.18)),url("assets/posters/ma-nian.jpg"); }
+.collaboration-network .network-grid article:nth-child(3) { background-image:linear-gradient(90deg,#0b0e10 0 52%,rgba(11,14,16,.72) 70%,rgba(11,14,16,.18)),url("assets/posters/xun-tian-ji.jpg"); }
+.collaboration-network .network-grid article:nth-child(4) { background-image:linear-gradient(90deg,#0b0e10 0 52%,rgba(11,14,16,.72) 70%,rgba(11,14,16,.18)),url("assets/aigc-class-graduation.png"); }
+.collaboration-network .network-grid article::before { inset:auto 0 0; height:3px; border:0; background:linear-gradient(90deg,rgba(var(--accent-rgb),.9),rgba(var(--accent-rgb),.08) 62%,transparent); }
+.collaboration-network .network-grid article::after { right:24px; bottom:16px; color:rgba(255,255,255,.24); text-shadow:0 4px 22px rgba(0,0,0,.45); }
+.collaboration-network .network-grid h3 { font-size:22px; }
+.collaboration-network .network-grid p { color:rgba(255,255,255,.64); font-size:12px; }
+
+.map-intro { order:4; padding:122px 4px 30px; display:flex; justify-content:space-between; align-items:end; border-bottom:1px solid rgba(255,255,255,.09); }
+.map-intro span { color:#52e3de; font-size:11px; }
+.map-intro h2 { margin:10px 0 0; color:#fff; font-size:34px; font-weight:560; }
+.map-intro p { margin:0; color:rgba(255,255,255,.5); font-size:12px; line-height:1.8; text-align:right; }
+.map-shell { order:5; margin-top:24px; height:760px; border-radius:12px; }
+.opc-community { order:6; }
+.academy-events { order:7; }
+.page-note { order:8; }
+
+@media (max-width:1280px) {
+  .intro { height:320px; padding:0 48px; }
+  .intro h1 { font-size:46px; }
+  .intro-caption { right:32px; }
+  .eco-carousel { height:400px; }
+  .slide-copy { padding:0 58px; }
+  .slide-copy h2 { font-size:30px; }
+  .collaboration-network .network-grid article { min-height:244px; padding:30px 43% 28px 26px; }
+}
+@media (max-width:900px) {
+  .intro { height:390px; padding:38px 28px; align-items:flex-start; }
+  .intro-copy { width:100%; }
+  .intro h1 { font-size:38px; }
+  .intro-caption { display:none; }
+  .intro-signals { flex-wrap:wrap; }
+  .carousel-slide { grid-template-columns:1fr; }
+  .slide-copy { padding:0 44px; }
+  .slide-visual { position:absolute; inset:0; grid-column:auto; opacity:.3; }
+  .collaboration-network .network-grid { grid-template-columns:1fr; }
+  .map-intro { display:block; }
+  .map-intro p { margin-top:16px; text-align:left; }
+}
+
+/* Deep-blue digital atlas treatment. */
+.map-shell { border-color:#203e59; background:#06111f; box-shadow:0 24px 80px rgba(0,10,24,.48),inset 0 0 0 1px rgba(71,142,192,.05); }
+.map-stage { background:radial-gradient(circle at 68% 56%,rgba(23,91,139,.24),transparent 33%),radial-gradient(circle at 25% 72%,rgba(10,127,143,.1),transparent 28%),linear-gradient(145deg,#091b2d,#050d19 72%); }
+.map-stage::before { opacity:.58; background-image:linear-gradient(rgba(74,139,183,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(74,139,183,.055) 1px,transparent 1px); background-size:32px 32px; }
+.map-stage::after { content:""; position:absolute; inset:0; display:block; pointer-events:none; background:linear-gradient(90deg,rgba(39,125,177,.08) 1px,transparent 1px),linear-gradient(rgba(39,125,177,.08) 1px,transparent 1px); background-size:160px 160px; mask-image:linear-gradient(to bottom,transparent,black 18%,black 82%,transparent); }
+.map-filters { border-color:rgba(106,175,221,.2); color:#cfdfed; background:rgba(5,17,30,.9); box-shadow:0 12px 34px rgba(0,6,16,.34); backdrop-filter:blur(14px); }
+.map-filters button { color:#8ea7ba; }
+.map-filters button:hover { color:#e7f6ff; border-color:rgba(69,188,206,.28); }
+.map-filters button.is-active { border-color:#1db8c2; color:#031117; background:#55e0dc; }
+.province-shape { fill:#0d2135; stroke:#3b6684; stroke-width:.72; filter:drop-shadow(0 0 5px rgba(37,119,169,.08)); }
+.city-dot { fill:#ff6f61; stroke:#fff1e8; filter:drop-shadow(0 0 6px rgba(255,93,79,.8)); }
+.city-pulse { fill:rgba(255,106,91,.12); stroke:rgba(255,117,101,.7); }
+.city-marker:hover .city-dot,.city-marker.is-active .city-dot { fill:#ffb36e; }
+.special-shell { fill:#071522; }
+.map-type-space .special-shell { stroke:#47ddd4; filter:drop-shadow(0 0 7px rgba(71,221,212,.55)); }
+.map-type-space .special-glyph { stroke:#64eee6; }
+.map-type-school .special-shell { stroke:#8aa8ff; filter:drop-shadow(0 0 7px rgba(116,151,255,.55)); }
+.map-type-school .special-glyph,.map-type-school .special-stroke { stroke:#a3baff; }
+.map-type-event .special-shell { stroke:#ffc36f; filter:drop-shadow(0 0 7px rgba(255,177,79,.55)); }
+.map-type-event .special-glyph { stroke:#ffd294; }
+.special-coming { fill:#0a1826; stroke:#7992a4; }
+.special-coming-dot { fill:#c2d6e4; }
+.story-panel { border-left-color:#24435d; color:#eaf6ff; background:linear-gradient(180deg,rgba(8,24,39,.99),rgba(5,15,27,.995)); box-shadow:-24px 0 60px rgba(0,8,20,.48); }
+.map-panel-close { color:#8fa8ba; }
+.story-panel header span { color:#7f9eb4; }
+.story-panel header h2 { color:#f3f9fd; }
+.story-panel header em { color:#66ddd9; }
+.work-intro { color:#9eb2c1; }
+.work-list button,.detail-row { border-color:rgba(103,157,194,.18); color:#dcebf4; }
+.work-list button > span,.detail-row > span { color:#55ddd8; }
+.work-list strong,.detail-row strong { color:#ecf7fd; }
+.work-list small,.detail-row small { color:#829cad; }
+.work-list .city-work-card { border-color:rgba(80,145,187,.2); color:#eaf6ff; background:rgba(8,28,45,.72); }
+.work-list .city-work-card:hover { border-color:rgba(81,220,214,.48); background:rgba(12,42,61,.82); }
+.work-list .city-work-card strong { color:#f0f9ff; }
+.work-list .city-work-card small { color:#8ea8b9; }
+.work-list .city-work-card p { color:#7891a2; }
+.detail-button { border-color:#4bd7d2; color:#06151c; background:#53ddd8; }
+.detail-button:hover { background:#72ebe7; }
+
+/* Purpose-built 2.23:1 carousel artwork with a protected copy area. */
+.eco-carousel { width:100%; height:auto; min-height:470px; max-height:620px; aspect-ratio:2.23/1; }
+.carousel-slide { display:block; }
+.slide-copy { position:relative; z-index:3; width:50%; height:100%; padding:0 72px; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
+.slide-visual { position:absolute; inset:0; z-index:1; width:100%; height:100%; }
+.slide-visual::after { background:linear-gradient(90deg,rgba(4,8,14,.2),transparent 52%),linear-gradient(0deg,rgba(3,7,12,.22),transparent 42%); }
+.slide-visual img { object-fit:cover; object-position:center; filter:none; }
+.carousel-arrow { top:auto; bottom:22px; width:36px; height:36px; transform:none; }
+.carousel-arrow.is-prev { left:auto; right:72px; }
+.carousel-arrow.is-next { right:26px; }
+.carousel-dots { bottom:36px; }
+
+/* Project selection zooms into the city/county coordinate level. */
+.map-shell.is-detail-visible .china-map { width:calc(100% - 420px); transform:scale(8); }
+.city-icon,.special-icon { transform-box:fill-box; transform-origin:center; }
+.map-shell.is-detail-visible .city-icon,.map-shell.is-detail-visible .special-icon { transform:scale(.125); }
+.academy-events { display:none; }
+.intro-copy p { text-align:left; }
+
+@media (max-width:1280px) {
+  .eco-carousel { min-height:500px; }
+  .map-shell.is-detail-visible .china-map { width:calc(100% - 370px); transform:scale(7.2); }
+  .map-shell.is-detail-visible .city-icon,.map-shell.is-detail-visible .special-icon { transform:scale(.139); }
+}

@@ -146,8 +146,12 @@ function renderMap(geo) {
     if (index > 0) routeLayer.appendChild(createSvg("path", { d: `M${hubX},${hubY} Q${(hubX + x) / 2},${Math.min(hubY, y) - 28} ${x},${y}`, class: "route-line" }));
     const group = createSvg("g", { class: "city-marker map-type-drama", tabindex: "0", role: "button", "data-index": index, "data-map-type": "drama" });
     const line = createSvg("line", { x1: x, y1: y, x2: x + city[4], y2: y + city[5], class: "city-leader" });
-    const dot = createSvg("circle", { cx: x, cy: y, r: 4.5, class: "city-dot" });
-    const pulse = createSvg("circle", { cx: x, cy: y, r: 10, class: "city-pulse" });
+    const iconWrap = createSvg("g", { transform: `translate(${x} ${y})` });
+    const icon = createSvg("g", { class: "city-icon" });
+    const dot = createSvg("circle", { cx: 0, cy: 0, r: 4.5, class: "city-dot" });
+    const pulse = createSvg("circle", { cx: 0, cy: 0, r: 10, class: "city-pulse" });
+    icon.append(pulse, dot);
+    iconWrap.appendChild(icon);
     const labelX = x + city[4];
     const labelY = y + city[5];
     const label = createSvg("g", { class: "city-label" });
@@ -156,7 +160,7 @@ function renderMap(geo) {
     const text = createSvg("text", { x: labelX, y: labelY + 4, "text-anchor": "middle" });
     text.textContent = city[0];
     label.appendChild(text);
-    group.append(line, pulse, dot, label);
+    group.append(line, iconWrap, label);
     group.addEventListener("click", () => {
       pinnedCity = index;
       pinnedSpecial = null;
