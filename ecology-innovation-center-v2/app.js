@@ -393,7 +393,11 @@ function runPanelAction(action) {
   if (action.type === "trailer") openTrailer(action.title, action.image);
   else if (action.type === "href") window.open(action.value, "_blank", "noopener,noreferrer");
   else if (action.type === "join") openJoinModal(action.direction, { title: action.title });
-  else if (action.type === "target") document.querySelector(action.value)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  else if (action.type === "target") {
+    const target = document.querySelector(action.value);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    else showToast("项目正在筹备中，合作信息将持续更新");
+  }
   else showToast(action.message);
 }
 
@@ -484,4 +488,4 @@ document.querySelector("[data-video-toggle]").addEventListener("click", event =>
   }
 });
 
-document.querySelector("[data-gallery]").addEventListener("click", () => showToast("结业成果画廊已打开"));
+document.querySelector("[data-gallery]")?.addEventListener("click", () => showToast("结业成果画廊已打开"));

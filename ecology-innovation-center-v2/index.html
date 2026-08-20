@@ -3,160 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#060a10">
   <title>容量万相｜生态创新中心</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#"><i></i><strong>容量·万相</strong></a>
-    <nav><a href="#">首页</a><a href="#">小说IP库</a><a href="#">剧本库</a><a href="#">资产库</a><a href="#">智能工具</a><a class="is-active" href="#map">生态创新中心</a><span></span><a href="#">漫剧制作</a></nav>
-    <button type="button" data-join="商务合作">商务合作</button>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="容量万相首页"><i></i><strong>容量·万相</strong></a>
+    <nav aria-label="主导航">
+      <a href="#">首页</a><a href="#">小说IP库</a><a href="#">剧本库</a><a href="#">资产库</a><a href="#">智能工具</a>
+      <a class="is-active" href="#map">生态创新中心</a><span></span><a class="production-link" href="#">漫剧制作</a>
+    </nav>
+    <button class="header-action" type="button" data-join="商务合作">商务合作</button>
   </header>
 
-  <main>
-    <section class="intro">
-      <div class="intro-copy">
-        <span>生态创新中心</span>
+  <main id="top">
+    <section class="hero">
+      <img src="assets/ecosystem-hero.jpg" alt="容量万相生态合作与内容创制场景">
+      <div class="hero-shade"></div>
+      <div class="hero-copy">
+        <span class="eyebrow">生态创新中心</span>
         <h1>容量万相，<br>让创作不止于想象</h1>
-        <p>连接政府、产业伙伴、高校与创作者，<br>让内容创意转化为真实的产业成果。</p>
-        <div class="intro-signals" aria-label="生态能力"><b>城市内容共创</b><b>产业空间共建</b><b>创作者成长网络</b></div>
+        <p>连接政府、产业伙伴、高校与创作者，推动城市文化、内容生产与产业资源协同落地。</p>
+        <a href="#map">探索全国合作网络 <b>↓</b></a>
       </div>
-      <div class="intro-caption"><i></i><span>从一个项目开始<br>连接一座城市的内容新生态</span></div>
+      <div class="hero-proof" aria-label="生态能力">
+        <span><b>内容</b>城市故事共创</span><span><b>空间</b>产业生态共建</span><span><b>人才</b>创作者成长</span>
+      </div>
     </section>
 
-    <section class="eco-carousel" data-carousel aria-label="生态项目推荐">
-      <div class="carousel-track">
-        <a class="carousel-slide is-active slide-event" data-slide href="https://www.data0086.com" target="_blank" rel="noreferrer">
-          <div class="slide-copy"><span>创作赛事</span><h2>雁荡山杯文旅OPC技能大赛</h2><p>汇聚全国创作力量，用人工智能影像讲好雁荡山文旅故事。</p><strong>进入赛事官网 <b>↗</b></strong></div>
-          <div class="slide-visual"><img src="assets/banner-yandang-competition-v2.png" alt="雁荡山杯文旅OPC技能大赛宣传视觉"></div>
-        </a>
-        <button class="carousel-slide slide-drama" data-slide data-banner-city="3" type="button">
-          <div class="slide-copy"><span>政企文旅共创</span><h2>台州天台 ·《寻天记》之和合圣境</h2><p>以和合文化连接奇幻叙事，让城市人文成为年轻人愿意分享的故事。</p><strong>查看合作项目 <b>→</b></strong></div>
-          <div class="slide-visual"><img src="assets/banner-city-drama-v2.png" alt="寻天记之和合圣境城市文旅共创视觉"></div>
-        </button>
-        <button class="carousel-slide slide-city" data-slide data-banner-city="0" type="button">
-          <div class="slide-copy"><span>城市内容合作</span><h2>杭州富阳 ·《马年限定之新春有约》</h2><p>在龙门古镇实景取景，以中外文化碰撞打开城市年味的新表达。</p><strong>查看合作项目 <b>→</b></strong></div>
-          <div class="slide-visual"><img src="assets/banner-ecosystem-v2.png" alt="马年限定之新春有约城市内容合作视觉"></div>
-        </button>
-      </div>
-      <button class="carousel-arrow is-prev" type="button" data-carousel-prev aria-label="上一张">‹</button>
-      <button class="carousel-arrow is-next" type="button" data-carousel-next aria-label="下一张">›</button>
-      <div class="carousel-dots"><button class="is-active" type="button" data-carousel-dot="0" aria-label="第1张"></button><button type="button" data-carousel-dot="1" aria-label="第2张"></button><button type="button" data-carousel-dot="2" aria-label="第3张"></button></div>
-    </section>
-
-    <section class="map-shell" id="map">
-      <div class="map-stage">
-        <div class="map-filters" aria-label="合作类型筛选">
-          <button class="is-active" type="button" data-map-filter="all">全部</button>
-          <button type="button" data-map-filter="drama">精品短剧</button>
-          <button type="button" data-map-filter="space">产业空间</button>
-          <button type="button" data-map-filter="school">校企合作</button>
-          <button type="button" data-map-filter="event">创作赛事</button>
-          <button type="button" data-map-filter="coming">即将呈现</button>
+    <section class="showcase" aria-labelledby="showcase-title">
+      <div class="section-head compact-head"><div><span>近期动态</span><h2 id="showcase-title">项目与赛事</h2></div><p>聚焦正在发生的城市共创、文旅内容与产业赛事。</p></div>
+      <div class="eco-carousel" data-carousel aria-label="生态项目轮播">
+        <div class="carousel-track">
+          <a class="carousel-slide is-active" data-slide href="https://www.data0086.com" target="_blank" rel="noreferrer">
+            <img src="assets/banner-yandang-competition-v2.png" alt="雁荡山杯文旅OPC技能大赛宣传视觉">
+            <div class="slide-shade"></div>
+            <div class="slide-copy"><span>创作赛事</span><h3>雁荡山杯文旅OPC技能大赛</h3><p>汇聚全国创作力量，用人工智能影像讲好雁荡山文旅故事。</p><strong>我要参赛 <b>↗</b></strong></div>
+          </a>
+          <button class="carousel-slide" data-slide data-banner-city="3" type="button">
+            <img src="assets/banner-city-drama-v2.png" alt="台州天台城市文旅共创视觉">
+            <div class="slide-shade"></div>
+            <div class="slide-copy"><span>政企文旅共创</span><h3>台州天台 ·《寻天记》之和合圣境</h3><p>以和合文化连接奇幻叙事，让城市人文成为年轻人愿意分享的故事。</p><strong>查看合作项目 <b>→</b></strong></div>
+          </button>
+          <button class="carousel-slide" data-slide data-banner-city="0" type="button">
+            <img src="assets/banner-ecosystem-v2.png" alt="杭州富阳城市内容合作视觉">
+            <div class="slide-shade"></div>
+            <div class="slide-copy"><span>城市内容合作</span><h3>杭州富阳 ·《马年限定之新春有约》</h3><p>以城市文化为内容源头，贯通策划、制作与发行，让地域故事持续生长。</p><strong>查看合作项目 <b>→</b></strong></div>
+          </button>
         </div>
-        <svg class="china-map" viewBox="0 0 920 590" aria-label="中国生态合作城市地图">
-          <defs>
-            <linearGradient id="mapSurface" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#172425"></stop>
-              <stop offset=".56" stop-color="#101a1b"></stop>
-              <stop offset="1" stop-color="#0b1314"></stop>
-            </linearGradient>
-            <filter id="edgeGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="2.4" result="blur"></feGaussianBlur>
-              <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
-            </filter>
-            <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="3.2" result="blur"></feGaussianBlur>
-              <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
-            </filter>
-          </defs>
-          <g data-map-glow></g>
-          <g data-map-shapes></g>
-          <g data-map-routes></g>
-          <g data-map-markers></g>
-          <g data-special-markers></g>
-        </svg>
-      </div>
-
-      <aside class="story-panel" aria-hidden="true" data-story-panel>
-        <button class="map-panel-close" type="button" data-panel-close aria-label="关闭项目详情">×</button>
-        <header><div><span data-region>浙江省</span><h2 data-city>杭州</h2></div><em data-project-count>7 个合作项目</em></header>
-        <div class="featured-work" data-featured-work role="button" tabindex="0" aria-label="查看当前合作项目">
-          <img data-cover src="assets/posters/ma-nian.jpg" alt="作品封面">
-          <div class="featured-shade"></div>
-          <span data-category>文旅短剧</span>
-          <div><small data-location>浙江省杭州市富阳区</small><h3 data-work>《马年限定之新春有约》</h3></div>
-        </div>
-        <p class="work-intro" data-description>容量短剧出品的春节年俗轻喜剧，在富阳龙门古镇实地取景，以中外文化碰撞展现年味新表达。</p>
-        <div class="work-list" data-work-list></div>
-        <button class="detail-button" type="button" data-panel-action>查看该城市全部项目 <span>↗</span></button>
-      </aside>
-    </section>
-
-    <section class="collaboration-network">
-      <div class="section-heading section-heading--split"><div><h2>容量短剧产业协同网络建设</h2></div><p>连接内容、人才、技术与发行，<br>让合作从单个项目走向长期生态。</p></div>
-      <div class="network-grid"><article><h3>产业生态建设</h3><p>布局“人工智能+OPC+大视听”生态创新中心，提供场地、内容创制平台、算力、内容版权库、发行、出海与产业订单。</p></article><article><h3>“微短剧+”精品内容</h3><p>联动城市文旅、非遗、科普与公益项目，开放内容分包订单，支持创作者承接地域精品内容创制。</p></article><article><h3>微短剧创作大赛</h3><p>联合产业伙伴发起主题内容赛事，提供创作命题、流量发行扶持与作品奖励。</p></article><article><h3>产教融合实践</h3><p>联合高校开设人工智能影视实践专班，开放轻量化创作订单、算力支持与创业孵化资源。</p></article></div>
-    </section>
-
-    <section class="map-intro">
-      <div><span>全国协同网络</span><h2>生态合作地图</h2></div>
-      <p>不同图标对应精品短剧、产业空间、校企合作、创作赛事与筹备项目。<br>点击地图项目点，查看城市合作成果与参与方式。</p>
-    </section>
-
-    <section class="opc-community" id="opc">
-      <div class="section-heading section-heading--split"><div><h2>加入容量万相线上OPC创作社群</h2></div><p>你只管把漫剧做好，<br>剧本、算力和发行交给我们。</p></div>
-      <div class="opc-visual"><img src="assets/opc-creator-studio.jpg" alt="OPC创作团队协作制作漫剧"><div><strong>连接剧本、制作与发行，<br>让小团队拥有完整生产力。</strong></div></div>
-      <div class="opc-lead">
-        <div class="opc-promise"><h3>从一支制作团队，<br>走向稳定的内容生意</h3><p>容量万相提供剧本、漫剧制作工具、算力优惠与全域发行支持，通过保底加分成、收益分成或版权买断等方式，与创作者共享内容价值。</p><div class="opc-live"><i></i><strong data-opc-count>128</strong><span>支团队已加入</span><em>审核通过后实时计入</em></div></div>
-        <div class="opc-benefits">
-          <article><h4>剧本持续供给</h4><p>精选小说IP与漫剧剧本，降低选题开发成本。</p></article>
-          <article><h4>工具与算力支持</h4><p>开放漫剧制作工具与合作团队算力折扣。</p></article>
-          <article><h4>专注内容生产</h4><p>OPC专注制作，平台承接发行与商业化。</p></article>
-          <article><h4>全域代发行</h4><p>覆盖投流、平台、端上与海外市场。</p></article>
-          <article><h4>多种合作模式</h4><p>支持保底分成、收益分成与版权买断。</p></article>
-          <article><h4>政府资源协同</h4><p>协助对接园区和创业扶持资源。</p></article>
+        <div class="carousel-controls">
+          <div class="carousel-dots"><button class="is-active" type="button" data-carousel-dot="0" aria-label="第1张"></button><button type="button" data-carousel-dot="1" aria-label="第2张"></button><button type="button" data-carousel-dot="2" aria-label="第3张"></button></div>
+          <button type="button" data-carousel-prev aria-label="上一张">←</button><button type="button" data-carousel-next aria-label="下一张">→</button>
         </div>
       </div>
-      <div class="opc-flow"><span>合作流程</span><ol><li><i>01</i>提交申请</li><li><i>02</i>团队审核</li><li><i>03</i>开通权益</li><li><i>04</i>领取剧本</li><li><i>05</i>完成制作</li><li><i>06</i>平台发行</li><li><i>07</i>收益结算</li></ol></div>
-      <div class="opc-city-console"><div><h3>查找你所在城市的线上OPC社群</h3><p>每座城市仅开放一个官方线上社群。已有社群可直接申请加入，尚未建立则可提交创建申请。</p></div><label><span>选择城市</span><select data-opc-city><option value="杭州">杭州</option><option value="成都">成都</option><option value="广州">广州</option><option value="北京">北京</option><option value="深圳">深圳</option></select></label><article data-opc-city-result><span data-opc-state>社群已建立</span><h4><b data-opc-city-name>杭州</b>线上OPC社群</h4><strong><b data-opc-scale>38</b> 位社群成员</strong><p data-opc-city-copy>聚合本地漫剧制作团队，共享剧本、算力、项目协作与发行资源。</p><button class="primary-action" type="button" data-opc-action>申请加入杭州社群 <b>→</b></button></article></div>
-      <div class="opc-member-wall"><header><div><h3>已建立的城市社群</h3></div><p>一个城市，一个共创入口</p></header><div><article><span>杭州</span><strong>38 位成员</strong><p>文旅漫剧与古风内容共创</p><em>开放加入</em></article><article><span>成都</span><strong>27 位成员</strong><p>都市剧情与动态分镜共创</p><em>开放加入</em></article><article><span>广州</span><strong>21 位成员</strong><p>科幻视觉与出海内容共创</p><em>开放加入</em></article></div></div>
-      <p class="policy-note">当区域内形成一定规模的OPC团队且符合当地政策条件，平台可协助对接政府、产业园区与创业扶持资源。具体资格及结果以当地政府审核为准。</p>
     </section>
 
-    <section class="featured-results" id="results">
-      <div class="section-heading section-heading--split"><div><h2>精品内容成果</h2></div><p>从真实地域出发，<br>让城市文化成为可传播的内容资产。</p></div>
-      <div class="result-grid">
-        <button class="result-card" type="button" data-trailer="《马年限定之新春有约》"><img src="assets/posters/ma-nian.jpg" alt="马年限定之新春有约"><span>杭州 · 富阳区</span><strong>《马年限定之新春有约》</strong><em>播放高光片花</em></button>
-        <button class="result-card" type="button" data-trailer="《寻天记》之和合圣境"><img src="assets/posters/xun-tian-ji.jpg" alt="寻天记之和合圣境"><span>台州 · 天台县</span><strong>《寻天记》之和合圣境</strong><em>播放高光片花</em></button>
-        <button class="result-card" type="button" data-trailer="《面若桃花》第二季"><img src="assets/posters/mian-ruo-tao-hua.jpg" alt="面若桃花第二季"><span>苏州</span><strong>《面若桃花》第二季</strong><em>播放高光片花</em></button>
-        <button class="result-card" type="button" data-trailer="《漓江仙子的人间烟火》"><img src="assets/posters/li-jiang-xian-zi.jpg" alt="漓江仙子的人间烟火"><span>桂林</span><strong>《漓江仙子的人间烟火》</strong><em>播放高光片花</em></button>
+    <section class="network" aria-labelledby="network-title">
+      <div class="section-head"><div><span>产业协同</span><h2 id="network-title">容量短剧产业协同网络建设</h2></div><p>让内容、人才、技术与发行围绕真实项目持续协同，形成能够长期运转的区域内容生态。</p></div>
+      <div class="network-grid">
+        <article class="network-card is-wide"><img src="assets/opc-community.png" alt="人工智能影视OPC社区创作空间"><div class="network-shade"></div><div><span>生态基座</span><h3>产业生态建设</h3><p>布局“人工智能+OPC+大视听”生态创新中心，提供场地、内容创制平台、算力、内容版权库、发行、出海与产业订单。</p></div></article>
+        <article class="network-card"><img src="assets/posters/ma-nian.jpg" alt="城市文旅精品短剧"><div class="network-shade"></div><div><span>城市共创</span><h3>“微短剧+”精品内容</h3><p>联动城市文旅、非遗、科普与公益项目，开放内容分包订单。</p></div></article>
+        <article class="network-card"><img src="assets/posters/xun-tian-ji.jpg" alt="微短剧创作赛事"><div class="network-shade"></div><div><span>创作者连接</span><h3>微短剧创作大赛</h3><p>联合产业伙伴发起主题赛事，提供创作命题、发行扶持与作品奖励。</p></div></article>
+        <article class="network-card is-wide"><img src="assets/aigc-class-graduation.png" alt="人工智能影视产教融合实践"><div class="network-shade"></div><div><span>人才共育</span><h3>产教融合实践</h3><p>联合高校开设人工智能影视实践专班，开放真实项目、创作工具、算力支持与创业孵化资源。</p></div></article>
       </div>
     </section>
 
-    <section class="industry-spaces" id="spaces">
-      <div class="section-heading section-heading--split"><div><h2>产业空间</h2></div><p>让创作者在真实空间中连接工具、项目与伙伴。</p></div>
-      <article class="space-row"><div class="space-image"><img src="assets/opc-community.png" alt="云谷中心人工智能影视OPC社区场景"></div><div class="space-copy"><span>杭州 · 西湖区</span><h3>容量短剧（云谷中心）<br>人工智能影视OPC社区</h3><p>面向影视OPC团队开放的线下创作社区，提供办公场地、制作工具、算力、版权、发行和产业项目资源。</p><dl><div><dt>空间定位</dt><dd>影视OPC协同创作</dd></div><div><dt>开放对象</dt><dd>OPC团队、工作室、产业伙伴</dd></div></dl><button type="button" data-join="云谷中心人工智能影视OPC社区">我要加入社区 <b>→</b></button></div></article>
-      <article class="space-row is-reverse"><div class="space-image"><img src="assets/innovation-center.png" alt="永嘉人工智能创新应用中心场景"></div><div class="space-copy"><span>温州 · 永嘉</span><h3>容量短剧（永嘉）<br>人工智能创新应用中心</h3><p>联动地方产业、城市文化与创作人才，承接人工智能内容共创、产业培训和区域项目孵化。</p><dl><div><dt>空间定位</dt><dd>区域人工智能创新应用枢纽</dd></div><div><dt>开放对象</dt><dd>企业、创作团队、产业机构</dd></div></dl><button type="button" data-join="永嘉人工智能创新应用中心">我要加入中心 <b>→</b></button></div></article>
+    <section class="map-section" id="map" aria-labelledby="map-title">
+      <div class="section-head map-head"><div><span>全国协同网络</span><h2 id="map-title">生态合作地图</h2></div><p>不同标识对应精品短剧、产业空间、校企合作、创作赛事与筹备项目。<br>点击项目点，地图将聚焦至对应区县并展开项目详情。</p></div>
+      <div class="map-shell">
+        <div class="map-stage">
+          <div class="map-filters" aria-label="合作类型筛选">
+            <button class="is-active" type="button" data-map-filter="all">全部</button><button type="button" data-map-filter="drama">精品短剧</button><button type="button" data-map-filter="space">产业空间</button><button type="button" data-map-filter="school">校企合作</button><button type="button" data-map-filter="event">创作赛事</button><button type="button" data-map-filter="coming">即将呈现</button>
+          </div>
+          <div class="map-caption"><i></i><span>合作项目持续更新</span></div>
+          <svg class="china-map" viewBox="0 0 920 590" aria-label="中国生态合作城市地图">
+            <g data-map-glow></g><g data-map-shapes></g><g data-map-routes></g><g data-map-markers></g><g data-special-markers></g>
+          </svg>
+        </div>
+        <aside class="story-panel" aria-hidden="true" data-story-panel>
+          <button class="panel-close" type="button" data-panel-close aria-label="关闭项目详情">×</button>
+          <header><div><span data-region>浙江省</span><h3 data-city>杭州</h3></div><em data-project-count>7 个合作项目</em></header>
+          <div class="featured-work" data-featured-work role="button" tabindex="0" aria-label="查看当前合作项目"><img data-cover src="assets/posters/ma-nian.jpg" alt="作品封面"><div></div><span data-category>文旅短剧</span><section><small data-location>浙江省杭州市富阳区</small><h4 data-work>《马年限定之新春有约》</h4></section></div>
+          <p class="work-intro" data-description>容量短剧出品的春节年俗轻喜剧，在富阳龙门古镇实地取景，以中外文化碰撞展现年味新表达。</p>
+          <div class="work-list" data-work-list></div>
+          <button class="panel-action" type="button" data-panel-action>我要合作 <span>↗</span></button>
+        </aside>
+      </div>
     </section>
 
-    <section class="academy-events">
-      <article class="academy-block"><div class="academy-image"><img src="assets/aigc-class-graduation.png" alt="浙江传媒学院人工智能创新实验班结业合影"></div><div><h2>容量短剧 × 浙江传媒学院<br>人工智能创新实验班</h2><p>联合高校建设人工智能影视实践专班，面向师生开放创作工具、真实项目、算力支持与创业孵化资源。</p><button type="button" data-gallery>查看结业成果 <b>↗</b></button></div></article>
-      <aside class="event-block"><header><h2>创作赛事</h2></header><a href="https://www.data0086.com" target="_blank" rel="noreferrer"><em>报名进行中</em><strong>雁荡山杯文旅OPC技能大赛</strong><span>温州 · 雁荡山</span><b>访问赛事官网 ↗</b></a><div><em>即将开启</em><strong>大广赛营销创客单元竞赛</strong><span>北京</span><b>敬请期待</b></div></aside>
+    <section class="opc" id="opc" aria-labelledby="opc-title">
+      <div class="section-head"><div><span>创作者网络</span><h2 id="opc-title">加入容量万相线上OPC创作社群</h2></div><p>你只管把漫剧做好，剧本、算力和发行交给我们。</p></div>
+      <div class="opc-stage">
+        <figure><img src="assets/opc-creator-studio.jpg" alt="OPC创作团队协作制作漫剧"><figcaption>让小团队拥有完整的内容生产力</figcaption></figure>
+        <div class="opc-copy">
+          <span>从制作团队，走向稳定的内容生意</span>
+          <h3>专注创作，<br>其余环节由平台协同完成</h3>
+          <p>容量万相提供剧本、漫剧制作工具、算力优惠与全域发行支持，并通过保底加分成、收益分成或版权买断等方式，与创作者共享内容价值。</p>
+          <div class="opc-benefits"><div><b>剧本</b><span>精选IP持续供给</span></div><div><b>制作</b><span>工具与算力支持</span></div><div><b>发行</b><span>投流、端上与出海</span></div><div><b>收益</b><span>多种合作模式</span></div></div>
+        </div>
+      </div>
+      <div class="city-community">
+        <div><span>城市社群</span><h3>查找你所在城市的线上OPC社群</h3><p>每座城市仅开放一个官方线上社群。已有社群可直接申请加入，尚未建立则可提交创建申请。</p></div>
+        <label><span>所在城市</span><select data-opc-city><option>杭州</option><option>成都</option><option>广州</option><option>北京</option><option>上海</option><option>深圳</option><option>南京</option></select></label>
+        <article data-opc-city-result><span data-opc-state>社群已建立</span><h4><b data-opc-city-name>杭州</b>线上OPC社群</h4><strong><b data-opc-scale>38</b> 支团队已加入</strong><p data-opc-city-copy>聚合本地漫剧制作团队，共享剧本、算力、项目协作与发行资源。</p><button type="button" data-opc-action>申请加入杭州社群 <b>→</b></button></article>
+      </div>
     </section>
-
-    <section class="coming-projects">
-      <div class="section-heading"><h2>更多地域故事，即将呈现</h2><p>生态网络仍在生长，下一批城市内容共创正在发生。</p></div>
-      <div class="coming-grid"><article class="coming-xj"><span>新疆维吾尔自治区</span><h3>辽阔边疆与多元文化，<br>等待被镜头重新发现。</h3><em>规划中</em></article><article class="coming-sc"><span>四川 · 三星堆</span><h3>让古蜀文明穿越时间，<br>在AI影像中焕发新生。</h3><em>即将呈现</em></article><article class="coming-fj"><span>福建 · 武夷山</span><h3>从山水茶韵到东方故事，<br>一场影像共创正在酝酿。</h3><em>即将呈现</em></article></div>
-    </section>
-
-    <footer class="page-note"><span>容量万相 · 人工智能影视内容生产与发行生态</span><strong>联系邮箱：heyuqing@rongliang.cn</strong></footer>
   </main>
 
-  <div class="modal-layer" data-join-modal hidden><div class="modal-dialog join-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><h2 data-form-title>申请加入线上OPC创作社群</h2><p data-form-subtitle>提交申请后，我们将在审核后与您联系。</p><form data-join-form><input type="hidden" name="direction" data-form-direction><div class="form-grid"><label><span>团队或公司名称 *</span><input name="company" required placeholder="请输入名称"></label><label data-field="city"><span>所在城市 *</span><input name="city" required placeholder="请选择或输入城市"></label><label><span>团队人数 *</span><input name="teamSize" required type="number" min="1" placeholder="请输入人数"></label><label><span>联系人 *</span><input name="contact" required placeholder="请输入联系人姓名"></label><label><span>联系电话 *</span><input name="phone" required type="tel" inputmode="numeric" pattern="1[3-9][0-9]{9}" maxlength="11" placeholder="请输入11位手机号"></label><label data-field="model"><span>意向合作模式</span><select name="model"><option>暂不确定</option><option>保底加分成</option><option>收益分成</option><option>版权买断</option></select></label><label class="form-wide"><span>业务范围 *</span><textarea name="scope" required maxlength="300" placeholder="请介绍团队擅长方向、制作能力或合作诉求"></textarea></label><label class="form-wide" data-field="portfolio"><span>代表作品</span><input name="portfolio" placeholder="请输入作品链接"></label></div><label class="privacy-check"><input type="checkbox" required><span>我已阅读并同意隐私政策，授权平台用于本次合作联系。</span></label><footer><button type="button" data-modal-close>取消</button><button type="submit" data-submit-form>提交申请</button></footer></form><div class="form-success" data-form-success hidden><i>✓</i><h3>申请已提交</h3><p>我们将在审核后与您联系，审核通过的OPC团队将实时计入社群人数。</p><button type="button" data-success-close>完成</button></div></div></div>
+  <footer class="footer"><a class="brand" href="#top"><i></i><strong>容量·万相</strong></a><p>让内容创新，在真实产业协同中持续发生。</p><button type="button" data-join="商务合作">开启合作 <span>↗</span></button></footer>
 
-  <div class="modal-layer trailer-layer" data-trailer-modal hidden><div class="modal-dialog trailer-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><h2 data-trailer-title>高光片花</h2><div class="trailer-player"><img src="../ai-drama-website-optimization/assets/qa-banner-1.jpg" alt="片花预览画面"><button type="button" data-video-toggle><i></i><b>播放片花</b></button><div><span data-video-time>00:00</span><i><b data-video-progress></b></i><em>00:45</em></div></div><p>当前展示播放器完整交互，正式版本需接入对应项目的高光片花视频素材。</p></div></div>
+  <div class="modal-layer" data-join-modal hidden><div class="modal-dialog join-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><h2 data-form-title>申请加入线上OPC创作社群</h2><p data-form-subtitle>提交申请后，我们将在审核后与您联系。</p><form data-join-form><input type="hidden" name="direction" data-form-direction><div class="form-grid"><label><span>团队或公司名称 *</span><input name="company" required placeholder="请输入名称"></label><label data-field="city"><span>所在城市 *</span><input name="city" required placeholder="请输入城市"></label><label><span>团队人数 *</span><input name="teamSize" required type="number" min="1" placeholder="请输入人数"></label><label><span>联系人 *</span><input name="contact" required placeholder="请输入联系人姓名"></label><label><span>联系电话 *</span><input name="phone" required type="tel" inputmode="numeric" pattern="1[3-9][0-9]{9}" maxlength="11" placeholder="请输入11位手机号"></label><label data-field="model"><span>意向合作模式</span><select name="model"><option>暂不确定</option><option>保底加分成</option><option>收益分成</option><option>版权买断</option></select></label><label class="form-wide"><span>业务范围 *</span><textarea name="scope" required maxlength="300" placeholder="请介绍团队擅长方向、制作能力或合作诉求"></textarea></label><label class="form-wide" data-field="portfolio"><span>代表作品</span><input name="portfolio" placeholder="请输入作品链接"></label></div><label class="privacy-check"><input type="checkbox" required><span>我已阅读并同意隐私政策，授权平台用于本次合作联系。</span></label><footer><button type="button" data-modal-close>取消</button><button type="submit" data-submit-form>提交申请</button></footer></form><div class="form-success" data-form-success hidden><i>✓</i><h3>申请已提交</h3><p>我们将在审核后与您联系。</p><button type="button" data-success-close>完成</button></div></div></div>
 
-  <div class="toast" data-toast hidden>申请已提交</div>
+  <div class="modal-layer" data-trailer-modal hidden><div class="modal-dialog trailer-dialog"><button class="modal-close" type="button" data-modal-close aria-label="关闭">×</button><h2 data-trailer-title>高光片花</h2><div class="trailer-player"><img src="assets/posters/ma-nian.jpg" alt="片花预览画面"><button type="button" data-video-toggle><i></i><b>播放片花</b></button><div><span data-video-time>00:00</span><i><b data-video-progress></b></i><em>00:45</em></div></div><p>当前展示播放器完整交互，正式版本需接入对应项目的高光片花视频素材。</p></div></div>
+  <div class="toast" data-toast hidden></div>
   <script src="app.js"></script>
 </body>
 </html>
