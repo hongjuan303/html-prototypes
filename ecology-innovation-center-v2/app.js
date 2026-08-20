@@ -39,20 +39,37 @@ const specialProjects = [
   { type: "coming", name: "武夷山·即将呈现", lon: 118.0, lat: 27.75, dx: -94, dy: 68, region: "福建省 · 南平市", city: "武夷山市", count: "筹备项目", category: "即将呈现", location: "福建 · 武夷山", title: "从山水茶韵到东方故事，一场影像共创正在酝酿", description: "围绕武夷山水、茶文化与非遗技艺，策划兼具地域辨识度和传播潜力的精品内容。", image: "assets/coming-regions.jpg", items: [["内容方向", "山水茶韵与非遗文化"], ["当前阶段", "项目策划与伙伴招募"], ["合作机会", "文旅机构与创作者共创"]], action: "查看筹备方向", target: ".coming-projects" }
 ];
 
+const projectAreaCodes = ["330100", "330200", "330900", "331000", "330700", "330700", "320500", "320500", "450300", "533400", "222400", "440900"];
+const projectDistrictNames = ["富阳区", "宁波市", "舟山市", "天台县", "武义县", "磐安县", "苏州市", "张家港市", "桂林市", "香格里拉市", "延边州", "高州市"];
+const specialAreaCodes = ["330100", "330300", "330100", "330300", "110000", "650000", "510600", "350700"];
+const areaDisplayNames = {
+  "110000": "北京市区县", "222400": "延边朝鲜族自治州", "320500": "苏州市", "330100": "杭州市", "330200": "宁波市", "330300": "温州市",
+  "330700": "金华市", "330900": "舟山市", "331000": "台州市", "350700": "南平市", "440900": "茂名市", "450300": "桂林市",
+  "510600": "德阳市", "533400": "迪庆藏族自治州", "650000": "新疆维吾尔自治区"
+};
+
 const svg = document.querySelector(".china-map");
 const glowLayer = document.querySelector("[data-map-glow]");
 const shapeLayer = document.querySelector("[data-map-shapes]");
 const routeLayer = document.querySelector("[data-map-routes]");
 const markerLayer = document.querySelector("[data-map-markers]");
 const specialMarkerLayer = document.querySelector("[data-special-markers]");
+const districtGlowLayer = document.querySelector("[data-district-glow]");
+const districtShapeLayer = document.querySelector("[data-district-shapes]");
+const districtLabelLayer = document.querySelector("[data-district-labels]");
+const districtMarkerLayer = document.querySelector("[data-district-markers]");
 const mapShell = document.querySelector(".map-shell");
 const storyPanel = document.querySelector("[data-story-panel]");
+const mapBackButton = document.querySelector("[data-map-back]");
 const NS = "http://www.w3.org/2000/svg";
 const bounds = { minLon: 72, maxLon: 136, minLat: 17, maxLat: 54 };
 let pinnedCity = null;
 let pinnedSpecial = null;
 let currentPanelAction = null;
 let currentFeaturedAction = null;
+let currentAreaCode = null;
+let currentMapFilter = "all";
+const districtCache = new Map();
 
 function project(lon, lat) {
   const x = 38 + ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 844;
@@ -71,6 +88,42 @@ function featurePath(feature) {
   const { type, coordinates } = feature.geometry;
   if (type === "Polygon") return coordinates.map(ringPath).join(" ");
   if (type === "MultiPolygon") return coordinates.flatMap(polygon => polygon.map(ringPath)).join(" ");
+  return "";
+}
+
+function geometryPoints(geometry) {
+  if (geometry.type === "Polygon") return geometry.coordinates.flat();
+  if (geometry.type === "MultiPolygon") return geometry.coordinates.flat(2);
+  return [];
+}
+
+function getGeoBounds(geo) {
+  const points = geo.features.flatMap(feature => geometryPoints(feature.geometry));
+  return points.reduce((result, point) => ({
+    minLon: Math.min(result.minLon, point[0]), maxLon: Math.max(result.maxLon, point[0]),
+    minLat: Math.min(result.minLat, point[1]), maxLat: Math.max(result.maxLat, point[1])
+  }), { minLon: Infinity, maxLon: -Infinity, minLat: Infinity, maxLat: -Infinity });
+}
+
+function createDetailProjector(geoBounds) {
+  const width = geoBounds.maxLon - geoBounds.minLon;
+  const height = geoBounds.maxLat - geoBounds.minLat;
+  const scale = Math.min(710 / width, 440 / height);
+  const drawWidth = width * scale;
+  const drawHeight = height * scale;
+  const offsetX = 455 - drawWidth / 2;
+  const offsetY = 305 - drawHeight / 2;
+  return (lon, lat) => [offsetX + (lon - geoBounds.minLon) * scale, offsetY + (geoBounds.maxLat - lat) * scale];
+}
+
+function detailFeaturePath(feature, detailProject) {
+  const makeRing = ring => ring.map((point, index) => {
+    const [x, y] = detailProject(point[0], point[1]);
+    return `${index ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ") + " Z";
+  const { type, coordinates } = feature.geometry;
+  if (type === "Polygon") return coordinates.map(makeRing).join(" ");
+  if (type === "MultiPolygon") return coordinates.flatMap(polygon => polygon.map(makeRing)).join(" ");
   return "";
 }
 
@@ -215,9 +268,155 @@ function populateSpecial(index) {
   currentFeaturedAction = currentPanelAction;
 }
 
+function populateAdditionalWork(cityIndex, workIndex) {
+  const city = projectData[cityIndex];
+  const work = additionalCityWorks[cityIndex][workIndex];
+  const district = work.location.split("·")[0].trim();
+  document.querySelector("[data-region]").textContent = `${city[1]} · ${city[0]}`;
+  document.querySelector("[data-city]").textContent = district;
+  document.querySelector("[data-project-count]").textContent = "精品短剧";
+  document.querySelector("[data-cover]").src = work.image;
+  document.querySelector("[data-category]").textContent = work.location.split("·")[1]?.trim() || "合作短剧";
+  document.querySelector("[data-location]").textContent = `${city[1]}${city[0]}${district}`;
+  document.querySelector("[data-work]").textContent = work.title;
+  document.querySelector("[data-description]").textContent = work.description;
+  document.querySelector("[data-work-list]").classList.remove("has-work-cards");
+  document.querySelector("[data-work-list]").innerHTML = "";
+  document.querySelector("[data-panel-action]").innerHTML = "我要合作 <span>↗</span>";
+  currentPanelAction = { type: "join", direction: `${district}精品短剧合作`, title: `申请合作${work.title}` };
+  currentFeaturedAction = { type: "trailer", title: work.title, image: work.image };
+}
+
+function getDetailPoints(areaCode) {
+  const points = [];
+  projectData.forEach((city, cityIndex) => {
+    if (projectAreaCodes[cityIndex] !== areaCode) return;
+    points.push({ type: "drama", target: projectDistrictNames[cityIndex], name: city[7], lon: city[2], lat: city[3], kind: "city", cityIndex });
+    (additionalCityWorks[cityIndex] || []).forEach((work, workIndex) => {
+      points.push({ type: "drama", target: work.location.split("·")[0].trim(), name: work.title, kind: "work", cityIndex, workIndex });
+    });
+  });
+  specialProjects.forEach((item, specialIndex) => {
+    if (specialAreaCodes[specialIndex] !== areaCode) return;
+    points.push({ type: item.type, target: item.city, name: item.title, lon: item.lon, lat: item.lat, kind: "special", specialIndex });
+  });
+  return points;
+}
+
+function activateDetailPoint(point) {
+  if (point.kind === "city") populateCity(point.cityIndex);
+  else if (point.kind === "work") populateAdditionalWork(point.cityIndex, point.workIndex);
+  else populateSpecial(point.specialIndex);
+  mapShell.classList.add("is-detail-visible");
+  storyPanel.setAttribute("aria-hidden", "false");
+  document.querySelectorAll(".detail-project-marker").forEach(marker => marker.classList.toggle("is-active", marker.dataset.pointKey === point.key));
+}
+
+function renderDistrictMarker(point, detailProject, featureByName, duplicateIndex) {
+  const feature = featureByName.get(point.target);
+  const fallback = feature?.properties?.centroid || feature?.properties?.center;
+  const coordinates = fallback || (point.lon && point.lat ? [point.lon, point.lat] : null);
+  if (!coordinates) return;
+  const [baseX, baseY] = detailProject(coordinates[0], coordinates[1]);
+  const angle = duplicateIndex * 1.9;
+  const offset = duplicateIndex ? 11 + duplicateIndex * 2 : 0;
+  const x = baseX + Math.cos(angle) * offset;
+  const y = baseY + Math.sin(angle) * offset;
+  const group = createSvg("g", { class: `detail-project-marker map-type-${point.type}`, transform: `translate(${x} ${y})`, tabindex: "0", role: "button", "data-map-type": point.type, "data-point-key": point.key });
+  group.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 7, class: "district-project-ring" }));
+  group.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 4.5, class: "district-project-core" }));
+  const label = createSvg("g", { class: "district-marker-label", transform: "translate(0 20)" });
+  const labelText = point.target.length > 7 ? point.target.slice(0, 7) : point.target;
+  const width = Math.max(48, labelText.length * 11 + 16);
+  label.appendChild(createSvg("rect", { x: -width / 2, y: -12, width, height: 24, rx: 3 }));
+  const text = createSvg("text", { x: 0, y: 4 });
+  text.textContent = labelText;
+  label.appendChild(text);
+  group.appendChild(label);
+  group.addEventListener("click", () => activateDetailPoint(point));
+  group.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      activateDetailPoint(point);
+    }
+  });
+  districtMarkerLayer.appendChild(group);
+}
+
+async function renderDistrictMap(areaCode, activePoint) {
+  currentAreaCode = areaCode;
+  document.querySelector("[data-map-status]").textContent = "正在加载区县级行政边界";
+  let geo = districtCache.get(areaCode);
+  if (!geo) {
+    const response = await fetch(`maps/${areaCode}.json`);
+    if (!response.ok) throw new Error("district map unavailable");
+    geo = await response.json();
+    districtCache.set(areaCode, geo);
+  }
+  if (currentAreaCode !== areaCode) return;
+  districtGlowLayer.replaceChildren();
+  districtShapeLayer.replaceChildren();
+  districtLabelLayer.replaceChildren();
+  districtMarkerLayer.replaceChildren();
+  const detailProject = createDetailProjector(getGeoBounds(geo));
+  const detailPoints = getDetailPoints(areaCode).map((point, index) => ({ ...point, key: `${point.kind}-${point.cityIndex ?? point.specialIndex}-${point.workIndex ?? 0}-${index}` }));
+  const featureByName = new Map(geo.features.map(feature => [feature.properties.name, feature]));
+  const relatedNames = new Set(detailPoints.map(point => point.target));
+  geo.features.forEach(feature => {
+    const name = feature.properties.name;
+    const d = detailFeaturePath(feature, detailProject);
+    districtGlowLayer.appendChild(createSvg("path", { d, class: "district-glow" }));
+    const path = createSvg("path", { d, class: `district-shape${relatedNames.has(name) ? " is-related" : ""}`, "data-district-name": name });
+    const matchingPoint = detailPoints.find(point => point.target === name);
+    if (matchingPoint) path.addEventListener("click", () => activateDetailPoint(matchingPoint));
+    districtShapeLayer.appendChild(path);
+    const center = feature.properties.centroid || feature.properties.center;
+    if (center) {
+      const [x, y] = detailProject(center[0], center[1]);
+      const label = createSvg("text", { x, y: y + 4, class: "district-label" });
+      label.textContent = name;
+      districtLabelLayer.appendChild(label);
+    }
+  });
+  const duplicateCounter = new Map();
+  detailPoints.forEach(point => {
+    const count = duplicateCounter.get(point.target) || 0;
+    duplicateCounter.set(point.target, count + 1);
+    renderDistrictMarker(point, detailProject, featureByName, count);
+  });
+  mapShell.classList.add("is-district-view");
+  mapBackButton.hidden = false;
+  document.querySelector("[data-map-level]").textContent = "区县级合作视图";
+  document.querySelector("[data-map-area]").textContent = areaDisplayNames[areaCode] || "项目区域";
+  document.querySelector("[data-map-status]").textContent = `${geo.features.length} 个区县边界 · ${detailPoints.length} 个合作项目`;
+  applyMapFilter(currentMapFilter);
+  if (activePoint) {
+    const keyPoint = detailPoints.find(point => point.kind === activePoint.kind && point.cityIndex === activePoint.cityIndex && point.specialIndex === activePoint.specialIndex);
+    if (keyPoint) document.querySelectorAll(".detail-project-marker").forEach(marker => marker.classList.toggle("is-active", marker.dataset.pointKey === keyPoint.key));
+  }
+}
+
+function returnToNationalMap() {
+  currentAreaCode = null;
+  mapShell.classList.remove("is-district-view", "is-detail-visible");
+  storyPanel.setAttribute("aria-hidden", "true");
+  mapBackButton.hidden = true;
+  document.querySelector("[data-map-level]").textContent = "全国合作网络";
+  document.querySelector("[data-map-area]").textContent = "中国";
+  document.querySelector("[data-map-status]").textContent = "全国合作项目持续更新";
+}
+
+function applyMapFilter(type, syncPanel = false) {
+  currentMapFilter = type;
+  document.querySelectorAll("[data-map-type]").forEach(marker => marker.classList.toggle("is-filtered-out", type !== "all" && marker.dataset.mapType !== type));
+  if (!syncPanel || !currentAreaCode || type === "all") return;
+  const firstMatch = document.querySelector(`.detail-project-marker[data-map-type="${type}"]`);
+  if (firstMatch) firstMatch.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  else hidePanel();
+}
+
 function showCity(index, pinned = false) {
   populateCity(index);
-  focusMap(projectData[index][2], projectData[index][3]);
   mapShell.classList.add("is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "false");
   document.querySelectorAll(".city-marker").forEach(marker => {
@@ -226,11 +425,11 @@ function showCity(index, pinned = false) {
     marker.classList.toggle("is-active", selected && (pinned || pinnedCity === index));
   });
   document.querySelectorAll(".special-marker").forEach(marker => marker.classList.remove("is-active", "is-preview"));
+  renderDistrictMap(projectAreaCodes[index], { kind: "city", cityIndex: index }).catch(() => showToast("区县地图加载失败，请稍后重试"));
 }
 
 function showSpecial(index, pinned = false) {
   populateSpecial(index);
-  focusMap(specialProjects[index].lon, specialProjects[index].lat);
   mapShell.classList.add("is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "false");
   document.querySelectorAll(".city-marker").forEach(marker => marker.classList.remove("is-active", "is-preview"));
@@ -239,21 +438,14 @@ function showSpecial(index, pinned = false) {
     marker.classList.toggle("is-preview", selected && !pinned);
     marker.classList.toggle("is-active", selected && (pinned || pinnedSpecial === index));
   });
+  renderDistrictMap(specialAreaCodes[index], { kind: "special", specialIndex: index }).catch(() => showToast("区县地图加载失败，请稍后重试"));
 }
 
 function hidePanel() {
   mapShell.classList.remove("is-detail-visible");
-  mapShell.classList.remove("is-city-focus");
   storyPanel.setAttribute("aria-hidden", "true");
   document.querySelectorAll(".city-marker").forEach(marker => marker.classList.remove("is-preview", "is-active"));
   document.querySelectorAll(".special-marker").forEach(marker => marker.classList.remove("is-preview", "is-active"));
-}
-
-function focusMap(lon, lat) {
-  const [x, y] = project(lon, lat);
-  svg.style.setProperty("--focus-x", `${(x / 920) * 100}%`);
-  svg.style.setProperty("--focus-y", `${(y / 590) * 100}%`);
-  mapShell.classList.add("is-city-focus");
 }
 
 fetch("china.geo.json").then(response => response.json()).then(renderMap).catch(() => {
@@ -265,14 +457,13 @@ document.querySelectorAll("[data-map-filter]").forEach(button => {
   button.addEventListener("click", () => {
     const type = button.dataset.mapFilter;
     document.querySelectorAll("[data-map-filter]").forEach(item => item.classList.toggle("is-active", item === button));
-    document.querySelectorAll("[data-map-type]").forEach(marker => {
-      marker.classList.toggle("is-filtered-out", type !== "all" && marker.dataset.mapType !== type);
-    });
+    applyMapFilter(type, true);
     pinnedCity = null;
     pinnedSpecial = null;
-    hidePanel();
   });
 });
+
+mapBackButton.addEventListener("click", returnToNationalMap);
 
 const joinModal = document.querySelector("[data-join-modal]");
 const joinDialog = joinModal.querySelector(".join-dialog");
@@ -332,12 +523,12 @@ function updateOpcCommunity(city) {
   const community = opcCommunities[city];
   const exists = Boolean(community);
   document.querySelector("[data-opc-city-name]").textContent = city;
-  document.querySelector("[data-opc-state]").textContent = exists ? "社群已建立" : "等待首位发起人";
+  document.querySelector("[data-opc-state]").textContent = exists ? "社区已建立" : "等待首位发起人";
   document.querySelector("[data-opc-scale]").textContent = exists ? community.scale : 0;
   document.querySelector("[data-opc-city-copy]").textContent = exists
     ? community.copy
-    : "该城市尚未建立官方线上社群。提交创建申请并通过审核后，你将成为首批共建成员。";
-  opcActionButton.innerHTML = `${exists ? "申请加入" : "申请创建"}${city}社群 <b>→</b>`;
+    : "该城市尚未建立官方线上社区。提交创建申请并通过审核后，你将成为首批共建成员。";
+  opcActionButton.innerHTML = `${exists ? "申请加入" : "申请创建"}${city}社区 <b>→</b>`;
   opcActionButton.dataset.mode = exists ? "join" : "create";
   document.querySelector("[data-opc-city-result]").classList.toggle("is-create", !exists);
 }
@@ -376,7 +567,7 @@ opcCitySelect.addEventListener("change", () => updateOpcCommunity(opcCitySelect.
 opcActionButton.addEventListener("click", () => {
   const city = opcCitySelect.value;
   const action = opcActionButton.dataset.mode === "create" ? "创建" : "加入";
-  openJoinModal(`${city}线上OPC社群`, { city, title: `申请${action}${city}线上OPC社群` });
+  openJoinModal(`${city}线上OPC社区`, { city, title: `申请${action}${city}线上OPC社区` });
 });
 updateOpcCommunity(opcCitySelect.value);
 
@@ -423,7 +614,11 @@ let carouselTimer;
 
 function showCarouselSlide(index) {
   carouselIndex = (index + carouselSlides.length) % carouselSlides.length;
-  carouselSlides.forEach((slide, slideIndex) => slide.classList.toggle("is-active", slideIndex === carouselIndex));
+  carouselSlides.forEach((slide, slideIndex) => {
+    slide.classList.toggle("is-current", slideIndex === carouselIndex);
+    slide.classList.toggle("is-prev", slideIndex === (carouselIndex - 1 + carouselSlides.length) % carouselSlides.length);
+    slide.classList.toggle("is-next", slideIndex === (carouselIndex + 1) % carouselSlides.length);
+  });
   carouselDots.forEach((dot, dotIndex) => dot.classList.toggle("is-active", dotIndex === carouselIndex));
 }
 
@@ -444,6 +639,10 @@ document.querySelectorAll("[data-banner-city]").forEach(banner => banner.addEven
   showCity(index, true);
   document.querySelector("#map").scrollIntoView({ behavior: "smooth", block: "center" });
 }));
+document.querySelectorAll("[data-banner-target]").forEach(banner => banner.addEventListener("click", () => {
+  document.querySelector(banner.dataset.bannerTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}));
+showCarouselSlide(0);
 startCarousel();
 
 document.querySelectorAll("[data-modal-close]").forEach(button => button.addEventListener("click", () => closeModal(button.closest(".modal-layer"))));
