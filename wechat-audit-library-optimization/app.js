@@ -40,7 +40,7 @@ function updateBatchState() {
   } else if (sameCollection) {
     batchHint.classList.add('same');
     batchHint.textContent = `合集ID ${ids[0]}，全部批量操作可用`;
-    batchMenuHint.textContent = `合集ID ${ids[0]} 校验通过`;
+    batchMenuHint.textContent = '全部批量操作可用';
   } else {
     batchHint.classList.add('mixed');
     batchHint.textContent = '已跨合集选择，修改/替换不可用';
@@ -132,7 +132,7 @@ function openModifyModal(single = false) {
         <div class="form-row"><div class="form-label">备用片名</div><div class="form-control"><input type="text" placeholder="请填写备用片名" maxlength="50"><span class="text-counter">0/50</span></div></div>
         <div class="form-row"><div class="form-label">送审小程序</div><div class="form-control"><select disabled><option>蜻蜓剧场</option></select></div></div>
         <div class="form-row"><div class="form-label">剧目制作方</div><div class="form-control inline-fields"><select><option>剧目制作方</option></select><input type="text" value="杭州容量互娱科技有限公司"></div></div>
-        <div class="form-row"><div class="form-label"><i class="required">*</i> 版权保护</div><div class="form-control radio-line"><label><input type="radio" name="copyright" disabled>不申请</label><label><input type="radio" name="copyright" checked>申请</label></div></div>
+        <div class="form-row"><div class="form-label"><i class="required">*</i> 版权保护</div><div class="form-control radio-line"><label><input type="radio" name="copyright" checked>不申请</label><label><input type="radio" name="copyright">申请</label></div></div>
         <div class="form-row"><div class="form-label"><i class="required">*</i> 版权验证方式</div><div class="form-control radio-line"><label><input type="radio" name="verify" checked>基于版权证明材料</label><label><input type="radio" name="verify">基于版权授权关系</label></div></div>
         <div class="form-row"><div class="form-label"><i class="required">*</i> 剧目制作证明材料</div><div class="form-control"><button class="btn primary">选择图片</button>${proofThumbs()}</div></div>
         <div class="form-row"><div class="form-label"><i class="required">*</i> 编剧</div><div class="form-control"><input type="text" value="宾世强"></div></div>
@@ -252,9 +252,9 @@ function historyTable() {
     <table class="history-table">
       <thead><tr><th>日期</th><th>修改类型</th><th>状态</th><th>操作</th></tr></thead>
       <tbody>
-        <tr><td>2026-08-18 16:24</td><td>剧目基础信息</td><td><span class="status orange">审核中</span></td><td><button class="link-btn history-detail" data-state="审核中">详情</button></td></tr>
-        <tr><td>2026-08-15 11:06</td><td>简介、推荐语</td><td><span class="status red">审核失败</span></td><td><button class="link-btn history-detail" data-state="审核失败">详情</button></td></tr>
-        <tr><td>2026-08-10 09:38</td><td>剧名、总集数</td><td><span class="status green">审核通过</span></td><td><button class="link-btn history-detail" data-state="审核通过">详情</button></td></tr>
+        <tr><td>2026-08-18 16:24</td><td>剧目信息修改</td><td><span class="status orange">审核中</span></td><td><button class="link-btn history-detail" data-state="审核中">详情</button></td></tr>
+        <tr><td>2026-08-15 11:06</td><td>剧目信息修改</td><td><span class="status red">审核失败</span></td><td><button class="link-btn history-detail" data-state="审核失败">详情</button></td></tr>
+        <tr><td>2026-08-10 09:38</td><td>剧目信息修改</td><td><span class="status green">审核通过</span></td><td><button class="link-btn history-detail" data-state="审核通过">详情</button></td></tr>
       </tbody>
     </table>`;
 }
