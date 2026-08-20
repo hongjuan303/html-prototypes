@@ -23,7 +23,7 @@
       <div class="app-main">
         <header class="topbar">
           <div class="breadcrumb"><strong>内容管理</strong><span>/</span><span>内容审核库</span></div>
-          <div class="topbar-center">百日0故障挑战 第351天</div>
+          <div class="topbar-center">百日0故障挑战 第352天</div>
           <div class="top-actions">
             <label class="global-search"><span>⌕</span><input placeholder="请输入搜索内容"></label>
             <button class="icon-btn" title="全屏">⛶</button><span>全屏</span>
@@ -71,17 +71,24 @@
 
           <section class="list-section">
             <div class="list-actions">
-              <span class="list-title">微信送审记录</span>
-              <div><button class="btn light">版权授权</button><button class="btn primary">提交审核</button></div>
-            </div>
-
-            <div class="batch-bar" id="batchBar">
-              <div class="batch-summary"><span class="callout">4</span><strong id="selectedCount">已选择 0 条</strong><span id="batchHint">请选择需要批量处理的记录</span></div>
-              <div class="batch-actions">
-                <button class="btn batch-action" data-action="modify" disabled>批量修改剧目信息</button>
-                <button class="btn batch-action" data-action="replace" disabled>批量替换剧集</button>
-                <button class="btn danger-outline batch-action" data-action="delete" disabled>批量删除</button>
-                <button class="btn batch-action" data-action="sync" disabled>批量同步状态</button>
+              <div class="list-heading">
+                <span class="list-title">微信送审记录</span>
+                <strong id="selectedCount">已选择 0 条</strong>
+                <span id="batchHint">请选择需要批量处理的记录</span>
+              </div>
+              <div class="action-group">
+                <div class="batch-dropdown">
+                  <button class="btn primary" id="batchMenuBtn" disabled><span class="callout small">4</span>批量操作⌄</button>
+                  <div class="batch-menu" id="batchMenu" role="menu">
+                    <button class="batch-action same-collection" data-action="modify" disabled>批量修改剧目信息</button>
+                    <button class="batch-action same-collection" data-action="replace" disabled>批量替换剧集</button>
+                    <button class="batch-action danger-text" data-action="delete" disabled>批量删除</button>
+                    <button class="batch-action" data-action="sync" disabled>批量同步状态</button>
+                    <p id="batchMenuHint">请先勾选送审记录</p>
+                  </div>
+                </div>
+                <button class="btn light">版权授权</button>
+                <button class="btn primary">提交审核</button>
               </div>
             </div>
 
@@ -128,7 +135,7 @@
       <section>
         <h2># 页面说明</h2>
         <p><strong>菜单路径：</strong>绿台 ＞ 内容管理 ＞ 内容审核库 ＞ 微信送审库</p>
-        <p><strong>优化目标：</strong>提升同一合集下多条送审记录的批量处理效率，并补充剧目信息修改与版权保护状态追踪。</p>
+        <p><strong>优化目标：</strong>提升微信送审记录的批量处理效率，并补充剧目信息修改与版权保护状态追踪。</p>
       </section>
 
       <section>
@@ -147,12 +154,13 @@
         </div>
 
         <h3><span>4</span> 批量操作</h3>
-        <p>列表支持多选，系统实时校验所选记录的合集ID。</p>
+        <p>在“版权授权”前新增“批量操作”下拉按钮，与版权授权、提交审核处于同一级。</p>
         <ul>
-          <li>合集ID一致：批量按钮高亮，可继续操作。</li>
-          <li>合集ID不一致：批量按钮禁用，并提示“所选记录合集ID不一致”。</li>
-          <li>批量功能：修改剧目信息、替换剧集、删除、同步状态。</li>
-          <li>点击后复用单条操作的字段、校验与提交逻辑，弹窗展示所选数量及合集ID。</li>
+          <li>未勾选记录：“批量操作”按钮禁用。</li>
+          <li>批量修改剧目信息、批量替换剧集：仅所选数据合集ID一致时可用。</li>
+          <li>批量删除、批量同步状态：勾选任意记录后即可使用，不校验合集ID。</li>
+          <li>修改剧目信息、替换剧集弹窗与对应单条操作完全一致。</li>
+          <li>同步提示：将从微信侧拉取最新剧目审核、媒资审核、剧目信息修改审核的状态。</li>
         </ul>
 
         <h3><span>5</span> 更多操作新增「历史」</h3>
@@ -162,10 +170,11 @@
       <section>
         <h2># 交互验收</h2>
         <ol>
-          <li>勾选前两条同合集数据，4个批量按钮均可用。</li>
-          <li>再勾选任一不同合集数据，4个批量按钮立即禁用。</li>
-          <li>取消不同合集数据后，按钮恢复可用。</li>
-          <li>点击“更多操作 ＞ 历史”，可查看历史列表与详情。</li>
+          <li>未勾选数据时，“批量操作”按钮不可用。</li>
+          <li>勾选前两条同合集数据，4项批量操作均可用。</li>
+          <li>再勾选任一不同合集数据，仅修改剧目信息、替换剧集禁用。</li>
+          <li>批量删除、批量同步状态在跨合集选择时仍可点击。</li>
+          <li>点击“更多操作 ＞ 历史”，菜单不被表格裁切，可查看历史列表与详情。</li>
         </ol>
       </section>
     </aside>
