@@ -74,6 +74,7 @@ const districtLabelLayer = document.querySelector("[data-district-labels]");
 const districtMarkerLayer = document.querySelector("[data-district-markers]");
 const mapShell = document.querySelector(".map-shell");
 const storyPanel = document.querySelector("[data-story-panel]");
+const featuredWork = document.querySelector("[data-featured-work]");
 const mapBackButton = document.querySelector("[data-map-back]");
 const mapZoomInButton = document.querySelector("[data-map-zoom-in]");
 const mapZoomOutButton = document.querySelector("[data-map-zoom-out]");
@@ -98,6 +99,19 @@ let districtSummary = null;
 let mapViewAnimation = null;
 let mapPointerState = null;
 const districtCache = new Map();
+
+function setFeaturedCoverMode(isDrama) {
+  featuredWork.classList.toggle("is-portrait-cover", isDrama);
+  if (isDrama) {
+    featuredWork.style.width = "216px";
+    featuredWork.style.height = "384px";
+    featuredWork.style.aspectRatio = "9 / 16";
+    featuredWork.style.marginLeft = "auto";
+    featuredWork.style.marginRight = "auto";
+  } else {
+    ["width", "height", "aspect-ratio", "margin-left", "margin-right"].forEach(property => featuredWork.style.removeProperty(property));
+  }
+}
 
 function project(lon, lat) {
   const x = 38 + ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 844;
@@ -352,6 +366,7 @@ function populateCity(index) {
   const city = projectData[index];
   const location = projectLocations[index];
   storyPanel.classList.add("is-drama-panel");
+  setFeaturedCoverMode(true);
   document.querySelector("[data-region]").textContent = city[1];
   document.querySelector("[data-city]").textContent = location.name;
   document.querySelector("[data-project-count]").textContent = "1 个合作项目";
@@ -370,6 +385,7 @@ function populateCity(index) {
 function populateSpecial(index) {
   const item = specialProjects[index];
   storyPanel.classList.remove("is-drama-panel");
+  setFeaturedCoverMode(false);
   document.querySelector("[data-region]").textContent = item.region;
   document.querySelector("[data-city]").textContent = item.city;
   document.querySelector("[data-project-count]").textContent = item.count;
@@ -395,6 +411,7 @@ function populateAdditionalWork(cityIndex, workIndex) {
   const district = work.location.split("·")[0].trim();
   const parentCity = /(?:市|州|盟)$/.test(city[0]) ? city[0] : `${city[0]}市`;
   storyPanel.classList.add("is-drama-panel");
+  setFeaturedCoverMode(true);
   document.querySelector("[data-region]").textContent = `${city[1]} · ${parentCity}`;
   document.querySelector("[data-city]").textContent = district;
   document.querySelector("[data-project-count]").textContent = "精品短剧";
