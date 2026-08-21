@@ -415,27 +415,31 @@ function activateDetailPoint(point) {
   document.querySelectorAll(".detail-project-marker").forEach(marker => marker.classList.toggle("is-active", marker.dataset.pointKey === point.key));
 }
 
-function renderDistrictMarker(point, detailProject, featureByName, duplicateIndex) {
+function renderDistrictMarker(point, detailProject, featureByName, duplicateIndex, labelSlots, markerSlots) {
   const feature = featureByName.get(point.target);
   const fallback = feature?.properties?.centroid || feature?.properties?.center;
   const coordinates = fallback || (point.lon && point.lat ? [point.lon, point.lat] : null);
   if (!coordinates) return;
   const [baseX, baseY] = detailProject(coordinates[0], coordinates[1]);
-  const angle = duplicateIndex * 1.9;
-  const offset = duplicateIndex ? 11 + duplicateIndex * 2 : 0;
-  const x = baseX + Math.cos(angle) * offset;
-  const y = baseY + Math.sin(angle) * offset;
+  const markerOffsets = [[9, -8], [10, 8], [-10, 8], [-9, -8], [14, 0], [-14, 0], [0, 13], [0, -13], [15, -11], [-15, -11], [15, 11], [-15, 11], [19, 0], [-19, 0], [0, 18], [0, -18]];
+  const orderedOffsets = markerOffsets.map((_, index) => markerOffsets[(index + duplicateIndex * 3) % markerOffsets.length]);
+  const chosenOffset = orderedOffsets.find(([dx, dy]) => {
+    const x = baseX + dx;
+    const y = baseY + dy;
+    const clearsLabels = !labelSlots.some(slot => Math.abs(x - slot.x) < slot.width / 2 + 2.6 && Math.abs(y - slot.y) < slot.height / 2 + 2.6);
+    const clearsMarkers = !markerSlots.some(slot => Math.hypot(x - slot.x, y - slot.y) < 5.5);
+    return clearsLabels && clearsMarkers;
+  }) || markerOffsets[(duplicateIndex * 3) % markerOffsets.length];
+  const x = baseX + chosenOffset[0];
+  const y = baseY + chosenOffset[1];
+  markerSlots.push({ x, y });
+  districtMarkerLayer.appendChild(createSvg("line", { x1: baseX, y1: baseY, x2: x, y2: y, class: "district-project-leader" }));
   const group = createSvg("g", { class: `detail-project-marker map-type-${point.type}`, transform: `translate(${x} ${y}) scale(.24)`, tabindex: "0", role: "button", "data-map-type": point.type, "data-point-key": point.key });
+  const title = createSvg("title");
+  title.textContent = point.title || point.target;
+  group.appendChild(title);
   group.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 7, class: "district-project-ring" }));
   group.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 4.5, class: "district-project-core" }));
-  const label = createSvg("g", { class: "district-marker-label", transform: "translate(0 20)" });
-  const labelText = point.target.length > 7 ? point.target.slice(0, 7) : point.target;
-  const width = Math.max(48, labelText.length * 11 + 16);
-  label.appendChild(createSvg("rect", { x: -width / 2, y: -12, width, height: 24, rx: 3 }));
-  const text = createSvg("text", { x: 0, y: 4 });
-  text.textContent = labelText;
-  label.appendChild(text);
-  group.appendChild(label);
   group.addEventListener("click", () => activateDetailPoint(point));
   group.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
@@ -488,24 +492,26 @@ async function renderDistrictMap(areaCode, activePoint) {
     const center = feature.properties.centroid || feature.properties.center;
     if (center) {
       const [x, y] = detailProject(center[0], center[1]);
-      const labelWidth = Math.max(7, name.length * 2.15);
-      const labelHeight = 3.6;
+      const labelWidth = Math.max(8, name.length * 2.8);
+      const labelHeight = 4.2;
       const offset = labelOffsets.find(([dx, dy]) => !labelSlots.some(slot => Math.abs((x + dx) - slot.x) < (labelWidth + slot.width) / 2 + 1 && Math.abs((y + dy) - slot.y) < (labelHeight + slot.height) / 2 + .8));
       if (!offset) return;
       const labelX = x + offset[0];
       const labelY = y + offset[1];
-      labelSlots.push({ x: labelX, y: labelY, width: labelWidth, height: labelHeight });
       if (offset[0] || offset[1]) districtLabelLayer.appendChild(createSvg("line", { x1: x, y1: y, x2: labelX, y2: labelY, class: "district-label-guide" }));
       const label = createSvg("text", { x: labelX, y: labelY + .8, class: "district-label" });
       label.textContent = name;
       districtLabelLayer.appendChild(label);
+      const actualBounds = label.getBBox();
+      labelSlots.push({ x: actualBounds.x + actualBounds.width / 2, y: actualBounds.y + actualBounds.height / 2, width: actualBounds.width, height: actualBounds.height });
     }
   });
   const duplicateCounter = new Map();
+  const markerSlots = [];
   detailPoints.forEach(point => {
     const count = duplicateCounter.get(point.target) || 0;
     duplicateCounter.set(point.target, count + 1);
-    renderDistrictMarker(point, detailProject, featureByName, count);
+    renderDistrictMarker(point, detailProject, featureByName, count, labelSlots, markerSlots);
   });
   districtSummary = { featureCount: geo.features.length, projectCount: detailPoints.length };
   mapBackButton.hidden = false;
