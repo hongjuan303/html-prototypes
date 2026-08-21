@@ -350,20 +350,20 @@ function renderMap(geo) {
 
 function populateCity(index) {
   const city = projectData[index];
+  const location = projectLocations[index];
   document.querySelector("[data-region]").textContent = city[1];
-  document.querySelector("[data-city]").textContent = city[0];
-  document.querySelector("[data-project-count]").textContent = `${city[6]} 个合作项目`;
+  document.querySelector("[data-city]").textContent = location.name;
+  document.querySelector("[data-project-count]").textContent = "1 个合作项目";
   document.querySelector("[data-cover]").src = city[11];
   document.querySelector("[data-category]").textContent = city[9];
   document.querySelector("[data-location]").textContent = city[8];
   document.querySelector("[data-work]").textContent = city[7];
   document.querySelector("[data-description]").textContent = city[10];
   document.querySelector("[data-panel-action]").innerHTML = "我要合作 <span>↗</span>";
-  currentPanelAction = { type: "join", direction: `${city[0]}精品短剧合作`, title: `申请合作${city[7]}` };
+  currentPanelAction = { type: "join", direction: `${location.name}精品短剧合作`, title: `申请合作${city[7]}` };
   currentFeaturedAction = { type: "trailer", title: city[7], image: city[11] };
-  const works = additionalCityWorks[index] || [];
-  document.querySelector("[data-work-list]").classList.toggle("has-work-cards", works.length > 0);
-  document.querySelector("[data-work-list]").innerHTML = works.map((work, workIndex) => `<button class="city-work-card" type="button" data-map-trailer data-trailer-name="${work.title}"><img src="${work.image}" alt="${work.title}海报"><span>0${workIndex + 2}</span><div><strong>${work.title}</strong><small>${work.location}</small><p>${work.description}</p></div><em>↗</em></button>`).join("");
+  document.querySelector("[data-work-list]").classList.remove("has-work-cards");
+  document.querySelector("[data-work-list]").innerHTML = "";
 }
 
 function populateSpecial(index) {
@@ -391,12 +391,13 @@ function populateAdditionalWork(cityIndex, workIndex) {
   const city = projectData[cityIndex];
   const work = additionalCityWorks[cityIndex][workIndex];
   const district = work.location.split("·")[0].trim();
-  document.querySelector("[data-region]").textContent = `${city[1]} · ${city[0]}`;
+  const parentCity = /(?:市|州|盟)$/.test(city[0]) ? city[0] : `${city[0]}市`;
+  document.querySelector("[data-region]").textContent = `${city[1]} · ${parentCity}`;
   document.querySelector("[data-city]").textContent = district;
   document.querySelector("[data-project-count]").textContent = "精品短剧";
   document.querySelector("[data-cover]").src = work.image;
   document.querySelector("[data-category]").textContent = work.location.split("·")[1]?.trim() || "合作短剧";
-  document.querySelector("[data-location]").textContent = `${city[1]}${city[0]}${district}`;
+  document.querySelector("[data-location]").textContent = `${city[1]}${parentCity}${district}`;
   document.querySelector("[data-work]").textContent = work.title;
   document.querySelector("[data-description]").textContent = work.description;
   document.querySelector("[data-work-list]").classList.remove("has-work-cards");
