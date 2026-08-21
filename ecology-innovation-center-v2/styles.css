@@ -100,7 +100,11 @@ body.has-modal{overflow:hidden}
 .city-pulse{fill:rgba(255,113,101,.08);stroke:rgba(255,128,112,.46);stroke-width:1;animation:pulse 2.2s ease-in-out infinite}
 .city-dot{fill:#ff796c;stroke:#ffe7d8;stroke-width:2}
 @keyframes pulse{50%{r:15;opacity:.14}}
-.city-leader,.special-leader{stroke:rgba(129,194,226,.38);stroke-width:.65}.city-label,.special-label{display:none}
+.city-leader,.special-leader{stroke:rgba(129,194,226,.38);stroke-width:.65;stroke-dasharray:2 3}.city-label{display:none}
+.city-anchor-ring{fill:rgba(6,25,40,.9);stroke:rgba(255,193,178,.72);stroke-width:1}.city-anchor-dot{fill:#ffd8c8}
+.special-anchor-ring{fill:rgba(6,25,40,.92);stroke:rgba(139,211,241,.75);stroke-width:1}.special-anchor-dot{fill:#d8f5ff}
+.special-label{opacity:0;pointer-events:none;transition:opacity .18s ease}.special-marker:hover .special-label,.special-marker.is-active .special-label,.special-marker:focus .special-label{opacity:1}.special-label rect{fill:rgba(4,18,31,.96);stroke:rgba(135,202,234,.42);stroke-width:.7}.special-label text{fill:#e9f7fd;font-size:8.5px}
+.special-icon{transition:filter .2s ease}.special-marker:hover .special-icon,.special-marker:focus .special-icon{filter:brightness(1.18) drop-shadow(0 0 8px rgba(104,255,249,.25))}
 .special-shell{fill:#0b2537;stroke:var(--teal);stroke-width:2}.special-glyph,.special-stroke{fill:none;stroke:var(--teal);stroke-width:1.6}.special-window{fill:var(--teal)}
 .map-type-school .special-shell{stroke:#86aaff}.map-type-school .special-glyph,.map-type-school .special-stroke{stroke:#86aaff}
 .map-type-event .special-shell{stroke:#eabf78}.map-type-event .special-glyph{stroke:#eabf78}

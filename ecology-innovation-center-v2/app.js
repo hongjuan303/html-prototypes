@@ -161,15 +161,19 @@ function renderSpecialMarkers() {
       "data-special-index": index
     });
     const leader = createSvg("line", { x1: 0, y1: 0, x2: item.dx, y2: item.dy, class: "special-leader" });
-    const icon = createSvg("g", { class: "special-icon" });
+    const anchor = createSvg("g", { class: "special-anchor" });
+    anchor.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 4.6, class: "special-anchor-ring" }));
+    anchor.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 1.8, class: "special-anchor-dot" }));
+    const icon = createSvg("g", { class: "special-icon", transform: `translate(${item.dx} ${item.dy})` });
     addSpecialIcon(icon, item.type);
-    const label = createSvg("g", { class: "special-label", transform: `translate(${item.dx} ${item.dy})` });
+    const labelOffsetY = item.dy >= 0 ? item.dy + 28 : item.dy - 28;
+    const label = createSvg("g", { class: "special-label", transform: `translate(${item.dx} ${labelOffsetY})` });
     const width = Math.max(78, item.name.length * 10 + 18);
     label.appendChild(createSvg("rect", { x: -width / 2, y: -14, width, height: 28, rx: 4 }));
     const text = createSvg("text", { x: 0, y: 4, "text-anchor": "middle" });
     text.textContent = item.name;
     label.appendChild(text);
-    group.append(leader, icon, label);
+    group.append(leader, anchor, icon, label);
     group.addEventListener("click", () => {
       pinnedCity = null;
       pinnedSpecial = index;
@@ -199,7 +203,10 @@ function renderMap(geo) {
     if (index > 0) routeLayer.appendChild(createSvg("path", { d: `M${hubX},${hubY} Q${(hubX + x) / 2},${Math.min(hubY, y) - 28} ${x},${y}`, class: "route-line" }));
     const group = createSvg("g", { class: "city-marker map-type-drama", tabindex: "0", role: "button", "data-index": index, "data-map-type": "drama" });
     const line = createSvg("line", { x1: x, y1: y, x2: x + city[4], y2: y + city[5], class: "city-leader" });
-    const iconWrap = createSvg("g", { transform: `translate(${x} ${y})` });
+    const anchor = createSvg("g", { class: "city-anchor", transform: `translate(${x} ${y})` });
+    anchor.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 3.8, class: "city-anchor-ring" }));
+    anchor.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 1.5, class: "city-anchor-dot" }));
+    const iconWrap = createSvg("g", { transform: `translate(${x + city[4]} ${y + city[5]})` });
     const icon = createSvg("g", { class: "city-icon" });
     const dot = createSvg("circle", { cx: 0, cy: 0, r: 4.5, class: "city-dot" });
     const pulse = createSvg("circle", { cx: 0, cy: 0, r: 10, class: "city-pulse" });
@@ -213,7 +220,7 @@ function renderMap(geo) {
     const text = createSvg("text", { x: labelX, y: labelY + 4, "text-anchor": "middle" });
     text.textContent = city[0];
     label.appendChild(text);
-    group.append(line, iconWrap, label);
+    group.append(line, anchor, iconWrap, label);
     group.addEventListener("click", () => {
       pinnedCity = index;
       pinnedSpecial = null;
