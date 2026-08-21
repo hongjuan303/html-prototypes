@@ -145,9 +145,6 @@ function applicationsPage() {
   const filter = filterItems.join("");
 
   return `${applicationTabs()}
-    <section class="queue-strip" aria-label="待办概览">
-      <div><span>OPC待审核</span><strong>1</strong></div><div><span>待跟进</span><strong>3</strong></div><div><span>今日新增</span><strong>3</strong></div><div><span>本月已转化</span><strong>12</strong></div>
-    </section>
     ${filterPanel(filter)}
     <section class="content-card">
       <div class="toolbar"><button class="button" type="button" data-action="export">${icon("download")}导出</button><span class="toolbar-note">手机号默认脱敏，查看完整信息需进入详情</span></div>
@@ -156,7 +153,7 @@ function applicationsPage() {
         <thead><tr><th>申请ID</th><th>申请类型</th><th>申请对象</th><th>团队/公司</th><th>联系人</th><th>联系电话</th><th>提交时间</th><th>审核状态</th><th>跟进状态</th><th>审核人</th><th class="sticky-operation">操作</th></tr></thead>
         <tbody>${rows.map(row => `<tr>
           <td>${row.id}</td><td><span class="type-tag">${row.type}</span></td><td class="text-left ellipsis" title="${row.subject}">${row.subject}</td><td class="text-left ellipsis" title="${row.organization}">${row.organization}</td><td>${row.contact}</td><td>${row.phone}</td><td>${row.submitTime}</td><td>${statusTag(row.review)}</td><td>${statusTag(row.follow)}</td><td>${row.reviewer}</td>
-          <td class="sticky-operation"><div class="operations"><button class="button text" data-action="application-detail" data-id="${row.id}">详情</button>${row.type === "OPC社区" && row.review === "待审核" ? `<button class="button text" data-action="application-review" data-id="${row.id}">审核</button>` : ""}<button class="button text" data-action="application-follow" data-id="${row.id}">跟进</button></div></td>
+          <td class="sticky-operation"><div class="operations"><button class="button text" data-action="application-detail" data-id="${row.id}">详情</button>${row.type === "OPC社区" && row.review === "待审核" ? `<button class="button text" data-action="application-review" data-id="${row.id}">审核</button>` : ""}</div></td>
         </tr>`).join("")}</tbody>
       </table></div>${pagination(state.applicationType === "全部" ? 64 : Math.max(rows.length, 8))}
     </section>`;
@@ -186,7 +183,7 @@ const docs = {
     <h4>○ 申请类型</h4><ul><li><code>OPC社区</code>：申请加入或创建城市社区，展示团队、城市、人数、业务范围和代表作品。</li><li><code>精品短剧</code>：承接精准项目“我要合作”，展示项目名称、合作主体、项目介绍及合作诉求。</li><li><code>产业空间</code>：展示空间名称、城市、可承载规模和产业资源。</li><li><code>校企合作</code>：展示院校、合作方向、覆盖人数及课程/项目诉求。</li></ul>
     <h4>○ 筛选项</h4><ul><li>申请ID为精确搜索；申请对象为模糊搜索。</li><li>申请类型、OPC审核状态、跟进状态均为下拉单选。</li><li>OPC审核状态仅在“全部、OPC社区”视图展示；切换至其他申请类型时隐藏。</li><li>提交时间支持开始日期与结束日期组合查询。</li></ul>
     <h4>○ 列表项</h4><ul><li>列表展示申请ID、申请类型、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态、跟进状态和审核人。</li><li>联系电话默认脱敏，进入详情且具备权限后才展示完整号码。</li></ul>
-    <h4>○ 操作项</h4><ul><li><code>详情</code>：展示本次提交的完整信息、来源入口及隐私授权状态。</li><li><code>审核</code>：仅OPC社区的待审核记录展示；支持审核通过或拒绝，拒绝时必填原因。</li><li><code>跟进</code>：四类申请均可维护跟进状态、负责人、跟进记录及下次跟进时间。</li><li><code>导出</code>：按当前筛选结果导出，需校验导出权限并记录操作日志。</li></ul>
+    <h4>○ 操作项</h4><ul><li><code>详情</code>：展示本次提交的完整信息、来源入口及隐私授权状态。</li><li><code>审核</code>：仅OPC社区的待审核记录展示；支持审核通过或拒绝，拒绝时必填原因。</li><li><code>导出</code>：按当前筛选结果导出，需校验导出权限并记录操作日志。</li></ul>
     <h4>○ 数据与权限</h4><ul><li>申请数据写入后台数据库，不以浏览器缓存作为正式数据源。</li><li>详情、审核、导出分开配置权限；手机号等个人信息应脱敏展示、加密存储。</li><li>记录查看、审核、导出等关键操作日志，便于问题追溯。</li></ul>`,
   waterfall: `<h2>#页面说明</h2>
     <ul><li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; 瀑布流轮播图。</li><li><b>使用对象：</b>内容业务及产品运营。</li><li>本次在现有页面增加生态创新中心Banner配置能力，不新增独立Banner菜单。</li></ul>
@@ -254,7 +251,6 @@ function handleAction(action, id) {
   const row = applicationRows.find(item => item.id === id);
   if (action === "application-detail") return openApplicationDetail(row);
   if (action === "application-review") return openReview(row);
-  if (action === "application-follow") return openFollow(row);
   if (action === "export") return showToast("已按当前筛选条件生成导出任务");
   if (action === "banner-add" || action === "banner-edit") return openBannerForm(action === "banner-edit", id);
   if (action === "banner-delete") return confirmModal("删除轮播图配置", `确认删除ID ${id} 的轮播图配置？删除后不可恢复。`, "danger", () => showToast("删除成功"));
@@ -300,23 +296,6 @@ function openReview(row) {
     closeModal();
     render();
     showToast(`申请已${result === "审核通过" ? "通过" : "拒绝"}`);
-  });
-}
-
-function openFollow(row) {
-  const body = `<div class="review-subject"><span>${row.type}</span><strong>${row.subject}</strong><small>${row.organization} · ${row.contact} · ${row.phone}</small></div>
-    <div class="form-grid">
-      <div class="form-item"><label class="required">跟进状态</label><select class="control" data-follow-status>${["未跟进", "跟进中", "已转化", "无效"].map(item => `<option ${row.follow === item ? "selected" : ""}>${item}</option>`).join("")}</select></div>
-      <div class="form-item"><label class="required">跟进负责人</label><select class="control"><option>洪娟</option><option>周敏</option><option>林楠</option></select></div>
-      <div class="form-item"><label>下次跟进时间</label><input class="control" type="datetime-local"></div>
-      <div class="form-item full"><label class="required">跟进记录</label><textarea class="control" maxlength="1000" placeholder="记录沟通结论、合作意向及下一步动作"></textarea><p class="hint">保存后追加至跟进历史，不覆盖原记录</p></div>
-    </div>`;
-  openModal("新增跟进记录", body, `<button class="button" data-modal-cancel>取消</button><button class="button primary" data-follow-submit>保存记录</button>`, "wide");
-  modalFooter.querySelector("[data-follow-submit]").addEventListener("click", () => {
-    row.follow = modalBody.querySelector("[data-follow-status]").value;
-    closeModal();
-    render();
-    showToast("跟进记录已保存");
   });
 }
 

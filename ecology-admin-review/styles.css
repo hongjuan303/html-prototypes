@@ -132,11 +132,6 @@ tbody tr:hover td { background: #fbfdff; }
 .section-tab:hover, .section-tab.active { color: var(--blue); }
 .section-tab.active { font-weight: 500; }
 .section-tab.active::after { background: var(--blue); }
-.queue-strip { margin-top: 10px; padding: 0 20px; min-height: 68px; display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; border: 1px solid #e3e8ee; background: #fff; }
-.queue-strip div { height: 34px; display: flex; align-items: center; justify-content: center; gap: 16px; border-right: 1px solid #e7ebef; }
-.queue-strip div:last-child { border-right: 0; }
-.queue-strip span { color: #7a8794; }
-.queue-strip strong { color: #2f3a46; font-size: 24px; font-weight: 600; }
 .filter-card { margin-top: 10px; }
 .date-field { grid-column: span 2; }
 .date-range { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
