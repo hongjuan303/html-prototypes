@@ -351,6 +351,7 @@ function renderMap(geo) {
 function populateCity(index) {
   const city = projectData[index];
   const location = projectLocations[index];
+  storyPanel.classList.add("is-drama-panel");
   document.querySelector("[data-region]").textContent = city[1];
   document.querySelector("[data-city]").textContent = location.name;
   document.querySelector("[data-project-count]").textContent = "1 个合作项目";
@@ -368,6 +369,7 @@ function populateCity(index) {
 
 function populateSpecial(index) {
   const item = specialProjects[index];
+  storyPanel.classList.remove("is-drama-panel");
   document.querySelector("[data-region]").textContent = item.region;
   document.querySelector("[data-city]").textContent = item.city;
   document.querySelector("[data-project-count]").textContent = item.count;
@@ -392,6 +394,7 @@ function populateAdditionalWork(cityIndex, workIndex) {
   const work = additionalCityWorks[cityIndex][workIndex];
   const district = work.location.split("·")[0].trim();
   const parentCity = /(?:市|州|盟)$/.test(city[0]) ? city[0] : `${city[0]}市`;
+  storyPanel.classList.add("is-drama-panel");
   document.querySelector("[data-region]").textContent = `${city[1]} · ${parentCity}`;
   document.querySelector("[data-city]").textContent = district;
   document.querySelector("[data-project-count]").textContent = "精品短剧";
