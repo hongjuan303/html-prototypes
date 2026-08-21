@@ -769,6 +769,10 @@ function openTrailer(title, image) {
 }
 
 document.querySelectorAll("[data-join]").forEach(button => button.addEventListener("click", () => openJoinModal(button.dataset.join)));
+document.querySelectorAll("[data-opc-member-join]").forEach(button => button.addEventListener("click", () => {
+  const city = button.dataset.city;
+  openJoinModal(`${city}线上OPC社区`, { city, title: `申请加入${city}线上OPC社区` });
+}));
 opcCitySelect.addEventListener("change", () => updateOpcCommunity(opcCitySelect.value));
 opcActionButton.addEventListener("click", () => {
   const city = opcCitySelect.value;
