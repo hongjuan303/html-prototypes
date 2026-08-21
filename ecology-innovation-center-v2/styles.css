@@ -90,7 +90,7 @@ body.has-modal{overflow:hidden}
 .map-filters{max-width:650px;padding:4px;display:flex;gap:3px;border:1px solid rgba(115,188,229,.2);border-radius:4px;background:rgba(4,17,29,.72);backdrop-filter:blur(9px)}
 .map-filters button{height:30px;padding:0 14px;border:0;border-radius:3px;color:#7f9cad;background:transparent;font-size:10px;cursor:pointer;white-space:nowrap}
 .map-filters button:hover{color:#e9f8fe}.map-filters button.is-active{color:#032328;background:var(--teal)}
-.china-map{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;transform-origin:center;transition:opacity .3s ease}
+.china-map{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;cursor:grab;touch-action:none;user-select:none;transition:opacity .3s ease}.china-map.is-panning{cursor:grabbing}
 .province-glow{fill:rgba(18,83,122,.28);stroke:rgba(89,188,236,.22);stroke-width:6;filter:blur(4px)}
 .province-shape{fill:#102d46;stroke:#4d7795;stroke-width:1.05;vector-effect:non-scaling-stroke;transition:.2s ease}
 .province-shape:hover{fill:#153d5d;stroke:#75b6dc}
@@ -111,15 +111,16 @@ body.has-modal{overflow:hidden}
 .map-type-coming .special-shell{stroke:#a8b2bd}.special-coming{fill:none;stroke:#a8b2bd;stroke-dasharray:2 2}.special-coming-dot{fill:#a8b2bd}
 .map-type-space .special-shell,.map-type-school .special-shell,.map-type-event .special-shell{filter:drop-shadow(0 0 8px rgba(var(--teal-rgb),.34))}
 .is-filtered-out{opacity:.08;pointer-events:none}
-.map-shell.is-district-view .national-map-layer{display:none}.district-map-layer{display:none}.map-shell.is-district-view .district-map-layer{display:block}
-.district-glow{fill:rgba(24,107,149,.26);stroke:rgba(78,188,234,.3);stroke-width:7;filter:blur(5px)}
-.district-shape{fill:rgba(18,57,84,.88);stroke:#5b91b2;stroke-width:1.15;vector-effect:non-scaling-stroke;transition:.2s ease}
+.district-map-layer{opacity:0;pointer-events:none;transition:opacity .24s ease}.map-shell.is-district-visible .district-map-layer{opacity:1;pointer-events:auto}.map-shell.is-district-visible [data-map-routes],.map-shell.is-district-visible [data-map-markers],.map-shell.is-district-visible [data-special-markers]{opacity:.12;pointer-events:none}
+.district-glow{fill:rgba(24,107,149,.18);stroke:rgba(78,188,234,.32);stroke-width:2;vector-effect:non-scaling-stroke;filter:blur(2px)}
+.district-shape{fill:rgba(18,72,102,.38);stroke:#74b5d5;stroke-width:1.05;vector-effect:non-scaling-stroke;transition:.2s ease}
 .district-shape:hover,.district-shape.is-related{fill:rgba(24,84,116,.95);stroke:#8fd6f6}
-.district-label{fill:#a9c7d8;font-size:10px;text-anchor:middle;pointer-events:none;text-shadow:0 1px 4px #00101e}
+.district-label{fill:#c2dfed;font-size:2.35px;text-anchor:middle;pointer-events:none;text-shadow:0 1px 4px #00101e}.district-label-guide{stroke:rgba(167,215,237,.42);stroke-width:.65;vector-effect:non-scaling-stroke}
 .district-project-core{fill:#ff7668;stroke:#fff0dd;stroke-width:2}.detail-project-marker.map-type-space .district-project-core{fill:var(--teal)}.detail-project-marker.map-type-school .district-project-core{fill:#82aaff}.detail-project-marker.map-type-event .district-project-core{fill:var(--amber)}.detail-project-marker.map-type-coming .district-project-core{fill:#a8b2bd}
 .district-project-ring{fill:none;stroke:currentColor;stroke-width:1.2;opacity:.65;animation:district-ring 2.2s ease-out infinite}
 @keyframes district-ring{from{r:6;opacity:.75}to{r:15;opacity:0}}
 .district-marker-label{opacity:0;pointer-events:none;transition:opacity .18s ease}.detail-project-marker:hover .district-marker-label,.detail-project-marker.is-active .district-marker-label{opacity:1}.district-marker-label rect{fill:rgba(4,18,31,.94);stroke:rgba(135,202,234,.4)}.district-marker-label text{fill:#e9f7fd;font-size:9px;text-anchor:middle}
+.map-zoom-tools{position:absolute;right:22px;bottom:22px;z-index:22;display:grid;grid-template-columns:38px 38px 38px auto;align-items:center;border:1px solid rgba(115,188,229,.22);border-radius:4px;overflow:hidden;color:#9db8c7;background:rgba(4,17,29,.84);backdrop-filter:blur(9px)}.map-zoom-tools button{width:38px;height:36px;border:0;border-right:1px solid rgba(255,255,255,.1);color:#d8edf7;background:transparent;font-size:20px;cursor:pointer}.map-zoom-tools button:hover{color:#061b20;background:var(--teal)}.map-zoom-tools button:disabled{color:#4d6877;background:rgba(255,255,255,.02);cursor:not-allowed}.map-zoom-tools span{min-width:58px;padding:0 11px;text-align:center;font-size:9px}.map-gesture-tip{position:absolute;right:24px;bottom:68px;z-index:20;color:#6f93a7;font-size:9px;pointer-events:none}
 .map-status{position:absolute;left:26px;bottom:22px;z-index:20;display:flex;align-items:center;gap:9px;color:#77a3ba;font-size:10px}.map-status i{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal)}
 .map-scanline{position:absolute;left:0;right:0;top:0;z-index:3;height:1px;background:linear-gradient(90deg,transparent,rgba(104,219,255,.35),transparent);animation:scan 8s linear infinite}@keyframes scan{to{transform:translateY(748px)}}
 .map-corner{position:absolute;z-index:4;width:48px;height:48px;border-top:1px solid rgba(104,219,255,.42)}.map-corner.is-left{left:12px;top:12px;border-left:1px solid rgba(104,219,255,.42)}.map-corner.is-right{right:12px;bottom:12px;border-right:1px solid rgba(104,219,255,.42);border-top:0;border-bottom:1px solid rgba(104,219,255,.42)}

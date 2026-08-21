@@ -61,20 +61,127 @@ const districtMarkerLayer = document.querySelector("[data-district-markers]");
 const mapShell = document.querySelector(".map-shell");
 const storyPanel = document.querySelector("[data-story-panel]");
 const mapBackButton = document.querySelector("[data-map-back]");
+const mapZoomInButton = document.querySelector("[data-map-zoom-in]");
+const mapZoomOutButton = document.querySelector("[data-map-zoom-out]");
+const mapResetButton = document.querySelector("[data-map-reset]");
+const mapZoomLevel = document.querySelector("[data-map-zoom-level]");
 const NS = "http://www.w3.org/2000/svg";
 const bounds = { minLon: 72, maxLon: 136, minLat: 17, maxLat: 54 };
+const baseMapView = { x: 0, y: 0, width: 920, height: 590 };
+const minMapZoom = 1;
+const maxMapZoom = 8;
+const districtZoomThreshold = 2.2;
 let pinnedCity = null;
 let pinnedSpecial = null;
 let currentPanelAction = null;
 let currentFeaturedAction = null;
 let currentAreaCode = null;
 let currentMapFilter = "all";
+let currentMapView = { ...baseMapView };
+let currentMapZoom = 1;
+let selectedMapFocus = null;
+let districtSummary = null;
+let mapViewAnimation = null;
+let mapPointerState = null;
 const districtCache = new Map();
 
 function project(lon, lat) {
   const x = 38 + ((lon - bounds.minLon) / (bounds.maxLon - bounds.minLon)) * 844;
   const y = 30 + ((bounds.maxLat - lat) / (bounds.maxLat - bounds.minLat)) * 510;
   return [x, y];
+}
+
+function clampMapView(view) {
+  const width = Math.min(baseMapView.width, Math.max(baseMapView.width / maxMapZoom, view.width));
+  const height = width * (baseMapView.height / baseMapView.width);
+  return {
+    x: Math.min(baseMapView.width - width, Math.max(0, view.x)),
+    y: Math.min(baseMapView.height - height, Math.max(0, view.y)),
+    width,
+    height
+  };
+}
+
+function updateMapContext() {
+  const districtVisible = Boolean(currentAreaCode && districtSummary && currentMapZoom >= districtZoomThreshold);
+  mapShell.classList.toggle("is-district-visible", districtVisible);
+  mapBackButton.hidden = !currentAreaCode && currentMapZoom <= 1.001;
+  mapZoomLevel.textContent = `${Math.round(currentMapZoom * 100)}%`;
+  mapZoomInButton.disabled = currentMapZoom >= maxMapZoom - .01;
+  mapZoomOutButton.disabled = currentMapZoom <= minMapZoom + .01;
+  if (districtVisible) {
+    document.querySelector("[data-map-level]").textContent = "区县级合作视图";
+    document.querySelector("[data-map-area]").textContent = areaDisplayNames[currentAreaCode] || "项目区域";
+    document.querySelector("[data-map-status]").textContent = `${districtSummary.featureCount} 个区县边界 · ${districtSummary.projectCount} 个合作项目`;
+  } else if (currentAreaCode) {
+    document.querySelector("[data-map-level]").textContent = "全国合作网络";
+    document.querySelector("[data-map-area]").textContent = areaDisplayNames[currentAreaCode] || "已选项目";
+    document.querySelector("[data-map-status]").textContent = districtSummary
+      ? `已选择项目区域 · 继续放大查看 ${districtSummary.featureCount} 个区县边界`
+      : "正在加载区县级行政边界";
+  } else {
+    document.querySelector("[data-map-level]").textContent = "全国合作网络";
+    document.querySelector("[data-map-area]").textContent = "中国";
+    document.querySelector("[data-map-status]").textContent = currentMapZoom > 1.01 ? "拖拽地图继续查看" : "全国合作项目持续更新";
+  }
+}
+
+function renderMapView(view) {
+  currentMapView = clampMapView(view);
+  currentMapZoom = baseMapView.width / currentMapView.width;
+  svg.setAttribute("viewBox", `${currentMapView.x.toFixed(3)} ${currentMapView.y.toFixed(3)} ${currentMapView.width.toFixed(3)} ${currentMapView.height.toFixed(3)}`);
+  updateMapContext();
+}
+
+function animateMapView(targetView, duration = 210) {
+  const target = clampMapView(targetView);
+  const start = { ...currentMapView };
+  const startTime = performance.now();
+  if (mapViewAnimation) cancelAnimationFrame(mapViewAnimation);
+  const step = now => {
+    const progress = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    renderMapView({
+      x: start.x + (target.x - start.x) * eased,
+      y: start.y + (target.y - start.y) * eased,
+      width: start.width + (target.width - start.width) * eased,
+      height: start.height + (target.height - start.height) * eased
+    });
+    if (progress < 1) mapViewAnimation = requestAnimationFrame(step);
+    else mapViewAnimation = null;
+  };
+  mapViewAnimation = requestAnimationFrame(step);
+}
+
+function getMapPoint(clientX, clientY) {
+  const rect = svg.getBoundingClientRect();
+  return {
+    ratioX: Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)),
+    ratioY: Math.min(1, Math.max(0, (clientY - rect.top) / rect.height))
+  };
+}
+
+function zoomMap(nextZoom, pointer = null) {
+  const zoom = Math.min(maxMapZoom, Math.max(minMapZoom, nextZoom));
+  const width = baseMapView.width / zoom;
+  const height = baseMapView.height / zoom;
+  let focusX;
+  let focusY;
+  let ratioX = .5;
+  let ratioY = .5;
+  if (pointer) {
+    const ratio = getMapPoint(pointer.clientX, pointer.clientY);
+    ratioX = ratio.ratioX;
+    ratioY = ratio.ratioY;
+    focusX = currentMapView.x + currentMapView.width * ratioX;
+    focusY = currentMapView.y + currentMapView.height * ratioY;
+  } else if (selectedMapFocus) {
+    [focusX, focusY] = selectedMapFocus;
+  } else {
+    focusX = currentMapView.x + currentMapView.width / 2;
+    focusY = currentMapView.y + currentMapView.height / 2;
+  }
+  animateMapView({ x: focusX - width * ratioX, y: focusY - height * ratioY, width, height });
 }
 
 function ringPath(ring) {
@@ -103,17 +210,6 @@ function getGeoBounds(geo) {
     minLon: Math.min(result.minLon, point[0]), maxLon: Math.max(result.maxLon, point[0]),
     minLat: Math.min(result.minLat, point[1]), maxLat: Math.max(result.maxLat, point[1])
   }), { minLon: Infinity, maxLon: -Infinity, minLat: Infinity, maxLat: -Infinity });
-}
-
-function createDetailProjector(geoBounds) {
-  const width = geoBounds.maxLon - geoBounds.minLon;
-  const height = geoBounds.maxLat - geoBounds.minLat;
-  const scale = Math.min(710 / width, 440 / height);
-  const drawWidth = width * scale;
-  const drawHeight = height * scale;
-  const offsetX = 455 - drawWidth / 2;
-  const offsetY = 305 - drawHeight / 2;
-  return (lon, lat) => [offsetX + (lon - geoBounds.minLon) * scale, offsetY + (geoBounds.maxLat - lat) * scale];
 }
 
 function detailFeaturePath(feature, detailProject) {
@@ -329,7 +425,7 @@ function renderDistrictMarker(point, detailProject, featureByName, duplicateInde
   const offset = duplicateIndex ? 11 + duplicateIndex * 2 : 0;
   const x = baseX + Math.cos(angle) * offset;
   const y = baseY + Math.sin(angle) * offset;
-  const group = createSvg("g", { class: `detail-project-marker map-type-${point.type}`, transform: `translate(${x} ${y})`, tabindex: "0", role: "button", "data-map-type": point.type, "data-point-key": point.key });
+  const group = createSvg("g", { class: `detail-project-marker map-type-${point.type}`, transform: `translate(${x} ${y}) scale(.24)`, tabindex: "0", role: "button", "data-map-type": point.type, "data-point-key": point.key });
   group.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 7, class: "district-project-ring" }));
   group.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 4.5, class: "district-project-core" }));
   const label = createSvg("g", { class: "district-marker-label", transform: "translate(0 20)" });
@@ -352,7 +448,9 @@ function renderDistrictMarker(point, detailProject, featureByName, duplicateInde
 
 async function renderDistrictMap(areaCode, activePoint) {
   currentAreaCode = areaCode;
+  districtSummary = null;
   document.querySelector("[data-map-status]").textContent = "正在加载区县级行政边界";
+  updateMapContext();
   let geo = districtCache.get(areaCode);
   if (!geo) {
     const response = await fetch(`maps/${areaCode}.json`);
@@ -365,7 +463,9 @@ async function renderDistrictMap(areaCode, activePoint) {
   districtShapeLayer.replaceChildren();
   districtLabelLayer.replaceChildren();
   districtMarkerLayer.replaceChildren();
-  const detailProject = createDetailProjector(getGeoBounds(geo));
+  const geoBounds = getGeoBounds(geo);
+  selectedMapFocus = project((geoBounds.minLon + geoBounds.maxLon) / 2, (geoBounds.minLat + geoBounds.maxLat) / 2);
+  const detailProject = project;
   const detailPoints = getDetailPoints(areaCode).map((point, index) => ({ ...point, key: `${point.kind}-${point.cityIndex ?? point.specialIndex}-${point.workIndex ?? 0}-${index}` }));
   const featureByName = new Map(geo.features.map(feature => [feature.properties.name, feature]));
   const relatedNames = new Set(detailPoints.map(point => point.target));
@@ -374,13 +474,29 @@ async function renderDistrictMap(areaCode, activePoint) {
     const d = detailFeaturePath(feature, detailProject);
     districtGlowLayer.appendChild(createSvg("path", { d, class: "district-glow" }));
     const path = createSvg("path", { d, class: `district-shape${relatedNames.has(name) ? " is-related" : ""}`, "data-district-name": name });
+    const title = createSvg("title");
+    title.textContent = name;
+    path.appendChild(title);
     const matchingPoint = detailPoints.find(point => point.target === name);
     if (matchingPoint) path.addEventListener("click", () => activateDetailPoint(matchingPoint));
     districtShapeLayer.appendChild(path);
+  });
+  const labelSlots = [];
+  const labelOffsets = [[0, 0], [0, -5], [6, 0], [-6, 0], [0, 5], [7, -5], [-7, -5], [7, 5], [-7, 5], [0, -10], [10, 0], [-10, 0], [10, -8], [-10, -8]];
+  [...geo.features].sort((a, b) => Number(relatedNames.has(b.properties.name)) - Number(relatedNames.has(a.properties.name))).forEach(feature => {
+    const name = feature.properties.name;
     const center = feature.properties.centroid || feature.properties.center;
     if (center) {
       const [x, y] = detailProject(center[0], center[1]);
-      const label = createSvg("text", { x, y: y + 4, class: "district-label" });
+      const labelWidth = Math.max(7, name.length * 2.15);
+      const labelHeight = 3.6;
+      const offset = labelOffsets.find(([dx, dy]) => !labelSlots.some(slot => Math.abs((x + dx) - slot.x) < (labelWidth + slot.width) / 2 + 1 && Math.abs((y + dy) - slot.y) < (labelHeight + slot.height) / 2 + .8));
+      if (!offset) return;
+      const labelX = x + offset[0];
+      const labelY = y + offset[1];
+      labelSlots.push({ x: labelX, y: labelY, width: labelWidth, height: labelHeight });
+      if (offset[0] || offset[1]) districtLabelLayer.appendChild(createSvg("line", { x1: x, y1: y, x2: labelX, y2: labelY, class: "district-label-guide" }));
+      const label = createSvg("text", { x: labelX, y: labelY + .8, class: "district-label" });
       label.textContent = name;
       districtLabelLayer.appendChild(label);
     }
@@ -391,26 +507,27 @@ async function renderDistrictMap(areaCode, activePoint) {
     duplicateCounter.set(point.target, count + 1);
     renderDistrictMarker(point, detailProject, featureByName, count);
   });
-  mapShell.classList.add("is-district-view");
+  districtSummary = { featureCount: geo.features.length, projectCount: detailPoints.length };
   mapBackButton.hidden = false;
-  document.querySelector("[data-map-level]").textContent = "区县级合作视图";
-  document.querySelector("[data-map-area]").textContent = areaDisplayNames[areaCode] || "项目区域";
-  document.querySelector("[data-map-status]").textContent = `${geo.features.length} 个区县边界 · ${detailPoints.length} 个合作项目`;
   applyMapFilter(currentMapFilter);
   if (activePoint) {
     const keyPoint = detailPoints.find(point => point.kind === activePoint.kind && point.cityIndex === activePoint.cityIndex && point.specialIndex === activePoint.specialIndex);
     if (keyPoint) document.querySelectorAll(".detail-project-marker").forEach(marker => marker.classList.toggle("is-active", marker.dataset.pointKey === keyPoint.key));
   }
+  updateMapContext();
 }
 
 function returnToNationalMap() {
   currentAreaCode = null;
-  mapShell.classList.remove("is-district-view", "is-detail-visible");
+  districtSummary = null;
+  selectedMapFocus = null;
+  mapShell.classList.remove("is-district-visible", "is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "true");
-  mapBackButton.hidden = true;
-  document.querySelector("[data-map-level]").textContent = "全国合作网络";
-  document.querySelector("[data-map-area]").textContent = "中国";
-  document.querySelector("[data-map-status]").textContent = "全国合作项目持续更新";
+  districtGlowLayer.replaceChildren();
+  districtShapeLayer.replaceChildren();
+  districtLabelLayer.replaceChildren();
+  districtMarkerLayer.replaceChildren();
+  animateMapView(baseMapView, 240);
 }
 
 function applyMapFilter(type, syncPanel = false) {
@@ -424,6 +541,7 @@ function applyMapFilter(type, syncPanel = false) {
 
 function showCity(index, pinned = false) {
   populateCity(index);
+  selectedMapFocus = project(projectData[index][2], projectData[index][3]);
   mapShell.classList.add("is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "false");
   document.querySelectorAll(".city-marker").forEach(marker => {
@@ -437,6 +555,7 @@ function showCity(index, pinned = false) {
 
 function showSpecial(index, pinned = false) {
   populateSpecial(index);
+  selectedMapFocus = project(specialProjects[index].lon, specialProjects[index].lat);
   mapShell.classList.add("is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "false");
   document.querySelectorAll(".city-marker").forEach(marker => marker.classList.remove("is-active", "is-preview"));
@@ -471,6 +590,42 @@ document.querySelectorAll("[data-map-filter]").forEach(button => {
 });
 
 mapBackButton.addEventListener("click", returnToNationalMap);
+mapResetButton.addEventListener("click", returnToNationalMap);
+mapZoomInButton.addEventListener("click", () => zoomMap(currentMapZoom * 1.5));
+mapZoomOutButton.addEventListener("click", () => zoomMap(currentMapZoom / 1.5));
+
+svg.addEventListener("wheel", event => {
+  event.preventDefault();
+  zoomMap(currentMapZoom * (event.deltaY < 0 ? 1.28 : 1 / 1.28), event);
+}, { passive: false });
+
+svg.addEventListener("pointerdown", event => {
+  if (event.button !== 0 || event.target.closest(".city-marker,.special-marker,.detail-project-marker")) return;
+  if (mapViewAnimation) cancelAnimationFrame(mapViewAnimation);
+  mapViewAnimation = null;
+  mapPointerState = { id: event.pointerId, x: event.clientX, y: event.clientY, view: { ...currentMapView } };
+  svg.setPointerCapture(event.pointerId);
+  svg.classList.add("is-panning");
+});
+
+svg.addEventListener("pointermove", event => {
+  if (!mapPointerState || mapPointerState.id !== event.pointerId) return;
+  const rect = svg.getBoundingClientRect();
+  const dx = (event.clientX - mapPointerState.x) * (mapPointerState.view.width / rect.width);
+  const dy = (event.clientY - mapPointerState.y) * (mapPointerState.view.height / rect.height);
+  renderMapView({ ...mapPointerState.view, x: mapPointerState.view.x - dx, y: mapPointerState.view.y - dy });
+});
+
+function finishMapPan(event) {
+  if (!mapPointerState || mapPointerState.id !== event.pointerId) return;
+  if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+  mapPointerState = null;
+  svg.classList.remove("is-panning");
+}
+
+svg.addEventListener("pointerup", finishMapPan);
+svg.addEventListener("pointercancel", finishMapPan);
+renderMapView(baseMapView);
 
 const joinModal = document.querySelector("[data-join-modal]");
 const joinDialog = joinModal.querySelector(".join-dialog");

@@ -52,11 +52,11 @@
     </section>
 
     <section class="map-section" id="map" aria-labelledby="map-title">
-      <div class="section-head map-head"><div><span>全国协同网络</span><h2 id="map-title">生态合作地图</h2></div><p>全国查看合作分布，点击项目进入真实市、区、县级行政边界。<br>不同图标对应短剧、产业空间、校企合作、创作赛事与筹备项目。</p></div>
+      <div class="section-head map-head"><div><span>全国协同网络</span><h2 id="map-title">生态合作地图</h2></div><p>点击地图标识，在右侧查看项目说明。<br>滚轮或使用缩放控件放大地图，可查看真实区县级行政边界。</p></div>
       <div class="map-shell">
         <div class="map-stage">
           <div class="map-console">
-            <div class="map-breadcrumb"><button type="button" data-map-back hidden>← 返回全国</button><span data-map-level>全国合作网络</span><strong data-map-area>中国</strong></div>
+            <div class="map-breadcrumb"><button type="button" data-map-back hidden>← 全国视图</button><span data-map-level>全国合作网络</span><strong data-map-area>中国</strong></div>
             <div class="map-filters" aria-label="合作类型筛选"><button class="is-active" type="button" data-map-filter="all">全部</button><button type="button" data-map-filter="drama">精品短剧</button><button type="button" data-map-filter="space">产业空间</button><button type="button" data-map-filter="school">校企合作</button><button type="button" data-map-filter="event">创作赛事</button><button type="button" data-map-filter="coming">即将呈现</button></div>
           </div>
           <div class="map-scanline"></div>
@@ -65,6 +65,13 @@
             <g class="national-map-layer" data-national-map><g data-map-glow></g><g data-map-shapes></g><g data-map-routes></g><g data-map-markers></g><g data-special-markers></g></g>
             <g class="district-map-layer" data-district-map><g data-district-glow></g><g data-district-shapes></g><g data-district-labels></g><g data-district-markers></g></g>
           </svg>
+          <div class="map-zoom-tools" aria-label="地图缩放控件">
+            <button type="button" data-map-zoom-in title="放大地图" aria-label="放大地图">+</button>
+            <button type="button" data-map-zoom-out title="缩小地图" aria-label="缩小地图">−</button>
+            <button type="button" data-map-reset title="重置全国视图" aria-label="重置全国视图">↺</button>
+            <span data-map-zoom-level>100%</span>
+          </div>
+          <div class="map-gesture-tip">滚轮缩放 · 拖拽移动</div>
           <div class="map-status"><i></i><span data-map-status>全国合作项目持续更新</span></div>
         </div>
         <aside class="story-panel" aria-hidden="true" data-story-panel>
