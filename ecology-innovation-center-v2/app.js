@@ -40,7 +40,21 @@ const specialProjects = [
 ];
 
 const projectAreaCodes = ["330100", "330200", "330900", "331000", "330700", "330700", "320500", "320500", "450300", "533400", "222400", "440900"];
-const projectDistrictNames = ["富阳区", "宁波市", "舟山市", "天台县", "武义县", "磐安县", "苏州市", "张家港市", "桂林市", "香格里拉市", "延边州", "高州市"];
+const projectLocations = [
+  { name: "富阳区", level: "district", lon: 119.839599, lat: 29.995217 },
+  { name: "宁波市", level: "city", lon: 121.55, lat: 29.87 },
+  { name: "舟山市", level: "city", lon: 122.2, lat: 30.0 },
+  { name: "天台县", level: "district", lon: 120.977207, lat: 29.145258 },
+  { name: "武义县", level: "district", lon: 119.714529, lat: 28.768287 },
+  { name: "磐安县", level: "district", lon: 120.559672, lat: 29.037893 },
+  { name: "苏州市", level: "city", lon: 120.62, lat: 31.3 },
+  { name: "张家港市", level: "district", lon: 120.62796, lat: 31.903366 },
+  { name: "桂林市", level: "city", lon: 110.29, lat: 25.27 },
+  { name: "香格里拉市", level: "district", lon: 99.822449, lat: 27.902251 },
+  { name: "延边州", level: "city", lon: 129.5, lat: 42.9 },
+  { name: "高州市", level: "district", lon: 110.969672, lat: 22.02936 }
+];
+const projectDistrictNames = projectLocations.map(location => location.name);
 const specialAreaCodes = ["330100", "330300", "330100", "330300", "110000", "650000", "510600", "350700"];
 const areaDisplayNames = {
   "110000": "北京市区县", "222400": "延边朝鲜族自治州", "320500": "苏州市", "330100": "杭州市", "330200": "宁波市", "330300": "温州市",
@@ -295,9 +309,10 @@ function renderMap(geo) {
   });
   const [hubX, hubY] = project(120.15, 30.28);
   projectData.forEach((city, index) => {
-    const [x, y] = project(city[2], city[3]);
+    const location = projectLocations[index];
+    const [x, y] = project(location.lon, location.lat);
     if (index > 0) routeLayer.appendChild(createSvg("path", { d: `M${hubX},${hubY} Q${(hubX + x) / 2},${Math.min(hubY, y) - 28} ${x},${y}`, class: "route-line" }));
-    const group = createSvg("g", { class: "city-marker map-type-drama", tabindex: "0", role: "button", "data-index": index, "data-map-type": "drama" });
+    const group = createSvg("g", { class: "city-marker map-type-drama", tabindex: "0", role: "button", "data-index": index, "data-map-type": "drama", "data-geo-level": location.level });
     const line = createSvg("line", { x1: x, y1: y, x2: x + city[4], y2: y + city[5], class: "city-leader" });
     const anchor = createSvg("g", { class: "city-anchor", transform: `translate(${x} ${y})` });
     anchor.appendChild(createSvg("circle", { cx: 0, cy: 0, r: 3.8, class: "city-anchor-ring" }));
@@ -311,10 +326,10 @@ function renderMap(geo) {
     const labelX = x + city[4];
     const labelY = y + city[5];
     const label = createSvg("g", { class: "city-label" });
-    const width = city[0].length > 4 ? 72 : 52;
+    const width = Math.max(52, location.name.length * 13 + 20);
     label.appendChild(createSvg("rect", { x: labelX - width / 2, y: labelY - 14, width, height: 28, rx: 4 }));
     const text = createSvg("text", { x: labelX, y: labelY + 4, "text-anchor": "middle" });
-    text.textContent = city[0];
+    text.textContent = location.name;
     label.appendChild(text);
     group.append(line, anchor, iconWrap, label);
     group.addEventListener("click", () => {
@@ -362,8 +377,9 @@ function populateSpecial(index) {
   document.querySelector("[data-work]").textContent = item.title;
   document.querySelector("[data-description]").textContent = item.description;
   document.querySelector("[data-panel-action]").innerHTML = `${item.action} <span>↗</span>`;
+  const details = item.type === "coming" ? (item.items || []) : [];
   document.querySelector("[data-work-list]").classList.remove("has-work-cards");
-  document.querySelector("[data-work-list]").innerHTML = item.items.map((detail, detailIndex) => `<div class="detail-row"><span>0${detailIndex + 1}</span><div><strong>${detail[0]}</strong><small>${detail[1]}</small></div></div>`).join("");
+  document.querySelector("[data-work-list]").innerHTML = details.map((detail, detailIndex) => `<div class="detail-row"><span>0${detailIndex + 1}</span><div><strong>${detail[0]}</strong><small>${detail[1]}</small></div></div>`).join("");
   if (item.href) currentPanelAction = { type: "href", value: item.href };
   else if (item.joinDirection) currentPanelAction = { type: "join", direction: item.joinDirection, title: item.joinTitle };
   else if (item.target) currentPanelAction = { type: "target", value: item.target };
@@ -394,7 +410,8 @@ function getDetailPoints(areaCode) {
   const points = [];
   projectData.forEach((city, cityIndex) => {
     if (projectAreaCodes[cityIndex] !== areaCode) return;
-    points.push({ type: "drama", target: projectDistrictNames[cityIndex], name: city[7], lon: city[2], lat: city[3], kind: "city", cityIndex });
+    const location = projectLocations[cityIndex];
+    points.push({ type: "drama", target: location.name, level: location.level, name: city[7], lon: location.lon, lat: location.lat, kind: "city", cityIndex });
     (additionalCityWorks[cityIndex] || []).forEach((work, workIndex) => {
       points.push({ type: "drama", target: work.location.split("·")[0].trim(), name: work.title, kind: "work", cityIndex, workIndex });
     });
@@ -547,7 +564,7 @@ function applyMapFilter(type, syncPanel = false) {
 
 function showCity(index, pinned = false) {
   populateCity(index);
-  selectedMapFocus = project(projectData[index][2], projectData[index][3]);
+  selectedMapFocus = project(projectLocations[index].lon, projectLocations[index].lat);
   mapShell.classList.add("is-detail-visible");
   storyPanel.setAttribute("aria-hidden", "false");
   document.querySelectorAll(".city-marker").forEach(marker => {
