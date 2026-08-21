@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>生态创新中心 · 绿台需求原型</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="admin-brand"><span class="brand-mark">RL</span><strong>容量绿台</strong><small>需求原型</small></div>
+      <nav id="sideNav" aria-label="后台菜单"></nav>
+    </aside>
+    <section class="main-shell">
+      <header class="topbar">
+        <button class="icon-button" type="button" aria-label="折叠菜单"><i data-lucide="panel-left-close"></i></button>
+        <div class="breadcrumb" id="breadcrumb"></div>
+        <div class="top-actions">
+          <label class="top-search"><i data-lucide="search"></i><input type="search" placeholder="请输入搜索内容"></label>
+          <button class="icon-button" type="button" aria-label="全屏"><i data-lucide="maximize"></i></button>
+          <span class="avatar">洪</span><span class="user-name">洪娟</span>
+        </div>
+      </header>
+      <div class="tabbar" id="tabbar"></div>
+      <div class="workspace">
+        <main class="prototype" id="prototype"></main>
+        <aside class="docs-panel" id="docsPanel"></aside>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-layer" id="modalLayer" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header"><h2 id="modalTitle"></h2><button class="icon-button" id="modalClose" type="button" aria-label="关闭"><i data-lucide="x"></i></button></header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer" id="modalFooter"></footer>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
