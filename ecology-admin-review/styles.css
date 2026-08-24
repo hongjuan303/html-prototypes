@@ -30,7 +30,9 @@ svg { width: 17px; height: 17px; stroke-width: 1.8; }
 .menu-title, .submenu-title, .menu-item { width: 100%; min-height: 44px; padding: 0 18px; display: flex; align-items: center; gap: 10px; border: 0; color: inherit; background: transparent; text-align: left; cursor: default; }
 .menu-title { color: #edf4fa; }
 .submenu-title { padding-left: 42px; color: #b9c6d2; font-size: 13px; }
+.submenu-title.nested { min-height: 36px; padding-left: 52px; color: #8497a9; font-size: 12px; }
 .menu-item { padding-left: 58px; color: #9fb0c0; font-size: 13px; cursor: pointer; }
+.menu-item.deep { padding-left: 70px; }
 .menu-item:hover { color: #fff; background: rgba(255,255,255,.05); }
 .menu-item.active { color: #42a5ff; background: #142131; }
 .menu-title .chevron { margin-left: auto; width: 14px; height: 14px; }
@@ -136,7 +138,7 @@ tbody tr:hover td { background: #fbfdff; }
 .date-field { grid-column: span 2; }
 .date-range { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; }
 .date-range span { color: #8995a1; }
-.application-table table { min-width: 1316px; }
+.application-table table { min-width: 1080px; }
 .banner-table { min-width: 1450px; }
 .text-left { text-align: left; }
 .type-tag { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 7px; border-radius: 3px; color: #1677ff; background: #e6f4ff; font-size: 12px; }

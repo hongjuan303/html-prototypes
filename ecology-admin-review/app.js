@@ -1,5 +1,5 @@
 const pages = {
-  applications: { label: "生态合作申请", group: "生态创新中心 / 申请管理" },
+  applications: { label: "生态创新中心", group: "产品运营 / 内容运营 / AI漫剧官网配置" },
   waterfall: { label: "瀑布流轮播图", group: "产品运营 / 内容运营" }
 };
 
@@ -38,12 +38,12 @@ const applicationRows = [
 
 const waterfallRows = [
   {
-    id: "10918", application: "容量万相", type: "生态创新中心", title: "容量短剧产业协同网络",
+    id: "10918", application: "AI漫剧", type: "生态创新中心", title: "容量短剧产业协同网络",
     mediaType: "图片", image: "../ecology-map-redesign/assets/ecosystem-hero.jpg",
     jump: "https://hongjuan303.github.io/html-prototypes/ecology-map-redesign/", start: "2026-08-22 00:00", end: "2026-12-31 23:59", version: "国内"
   },
   {
-    id: "10917", application: "容量万相", type: "生态创新中心", title: "雁荡山杯文旅OPC技能大赛",
+    id: "10917", application: "AI漫剧", type: "生态创新中心", title: "雁荡山杯文旅OPC技能大赛",
     mediaType: "图片", image: "../ecology-innovation-center-v2/assets/banner-yandang-competition-v2.png",
     jump: "https://www.data0086.com", start: "2026-08-22 00:00", end: "2026-10-31 23:59", version: "国内"
   },
@@ -56,8 +56,8 @@ const waterfallRows = [
 
 const state = {
   page: location.hash.slice(1) || "applications",
-  applicationType: "全部",
-  waterfallApplication: "容量万相",
+  applicationType: "OPC社区",
+  waterfallApplication: "AI漫剧",
   waterfallType: "生态创新中心",
   contentVersion: "国内"
 };
@@ -83,14 +83,11 @@ function showToast(message) {
 function renderNav() {
   document.getElementById("sideNav").innerHTML = `
     <section class="menu-group">
-      <div class="menu-title">${icon("network")}生态创新中心${icon("chevron-up").replace('<i ','<i class="chevron" ')}</div>
-      <div class="submenu-title">申请管理</div>
-      <button class="menu-item ${state.page === "applications" ? "active" : ""}" data-page="applications">生态合作申请</button>
-    </section>
-    <section class="menu-group">
       <div class="menu-title">${icon("briefcase-business")}产品运营${icon("chevron-up").replace('<i ','<i class="chevron" ')}</div>
       <div class="submenu-title">内容运营</div>
       <button class="menu-item ${state.page === "waterfall" ? "active" : ""}" data-page="waterfall">瀑布流轮播图</button>
+      <div class="submenu-title nested">AI漫剧官网配置</div>
+      <button class="menu-item deep ${state.page === "applications" ? "active" : ""}" data-page="applications">生态创新中心</button>
     </section>`;
 
   const page = pages[state.page];
@@ -127,35 +124,33 @@ function statusTag(value, type) {
 }
 
 function applicationTabs() {
-  const items = ["全部", "OPC社区", "精品短剧", "产业空间", "校企合作"];
+  const items = ["OPC社区", "精品短剧", "产业空间", "校企合作"];
   return `<div class="section-tabs">${items.map(item => `<button class="section-tab ${state.applicationType === item ? "active" : ""}" type="button" data-application-type="${item}">${item}</button>`).join("")}</div>`;
 }
 
 function applicationsPage() {
-  const rows = applicationRows.filter(row => state.applicationType === "全部" || row.type === state.applicationType);
+  const rows = applicationRows.filter(row => row.type === state.applicationType);
+  const isOpc = state.applicationType === "OPC社区";
   const filterItems = [
-    inputControl("申请ID", "请输入申请ID", true),
-    selectControl("申请类型", ["全部", "OPC社区", "精品短剧", "产业空间", "校企合作"], state.applicationType, "data-application-filter"),
-    inputControl("申请对象", "项目/城市/院校，模糊搜索"),
-    inputControl("联系人", "请输入联系人或手机号")
+    inputControl("联系人", "请输入联系人"),
+    inputControl("联系电话", "请输入联系电话", true),
+    `<div class="field-inline date-field"><label>提交时间</label><div class="date-range"><input class="control" type="text" placeholder="开始日期"><span>至</span><input class="control" type="text" placeholder="结束日期"></div></div>`
   ];
-  if (["全部", "OPC社区"].includes(state.applicationType)) filterItems.push(selectControl("OPC审核状态", ["全部", "待审核", "审核通过", "审核拒绝"], "全部"));
-  filterItems.push(selectControl("跟进状态", ["全部", "未跟进", "跟进中", "已转化", "无效"], "全部"));
-  filterItems.push(`<div class="field-inline date-field"><label>提交时间</label><div class="date-range"><input class="control" type="text" placeholder="开始日期"><span>至</span><input class="control" type="text" placeholder="结束日期"></div></div>`);
+  if (isOpc) filterItems.push(selectControl("审核状态", ["全部", "待审核", "审核通过", "审核拒绝"], "全部"));
   const filter = filterItems.join("");
+  const totals = { "OPC社区": 24, "精品短剧": 16, "产业空间": 12, "校企合作": 9 };
 
   return `${applicationTabs()}
     ${filterPanel(filter)}
     <section class="content-card">
-      <div class="toolbar"><button class="button" type="button" data-action="export">${icon("download")}导出</button><span class="toolbar-note">手机号默认脱敏，查看完整信息需进入详情</span></div>
       <div class="table-wrap application-table"><table>
-        <colgroup><col style="width:104px"><col style="width:110px"><col style="width:190px"><col style="width:170px"><col style="width:82px"><col style="width:112px"><col style="width:136px"><col style="width:92px"><col style="width:88px"><col style="width:74px"><col style="width:158px"></colgroup>
-        <thead><tr><th>申请ID</th><th>申请类型</th><th>申请对象</th><th>团队/公司</th><th>联系人</th><th>联系电话</th><th>提交时间</th><th>审核状态</th><th>跟进状态</th><th>审核人</th><th class="sticky-operation">操作</th></tr></thead>
+        <colgroup><col style="width:110px"><col style="width:220px"><col style="width:190px"><col style="width:90px"><col style="width:125px"><col style="width:150px"><col style="width:105px"><col style="width:140px"></colgroup>
+        <thead><tr><th>ID</th><th>申请对象</th><th>团队/公司</th><th>联系人</th><th>联系电话</th><th>提交时间</th><th>审核状态</th><th class="sticky-operation">操作</th></tr></thead>
         <tbody>${rows.map(row => `<tr>
-          <td>${row.id}</td><td><span class="type-tag">${row.type}</span></td><td class="text-left ellipsis" title="${row.subject}">${row.subject}</td><td class="text-left ellipsis" title="${row.organization}">${row.organization}</td><td>${row.contact}</td><td>${row.phone}</td><td>${row.submitTime}</td><td>${statusTag(row.review)}</td><td>${statusTag(row.follow)}</td><td>${row.reviewer}</td>
-          <td class="sticky-operation"><div class="operations"><button class="button text" data-action="application-detail" data-id="${row.id}">详情</button>${row.type === "OPC社区" && row.review === "待审核" ? `<button class="button text" data-action="application-review" data-id="${row.id}">审核</button>` : ""}</div></td>
+          <td>${row.id}</td><td class="text-left ellipsis" title="${row.subject}">${row.subject}</td><td class="text-left ellipsis" title="${row.organization}">${row.organization}</td><td>${row.contact}</td><td>${row.phone}</td><td>${row.submitTime}</td><td>${statusTag(row.review)}</td>
+          <td class="sticky-operation"><div class="operations"><button class="button text" data-action="application-detail" data-id="${row.id}">详情</button>${isOpc && row.review === "待审核" ? `<button class="button text" data-action="application-review" data-id="${row.id}">审核</button>` : ""}</div></td>
         </tr>`).join("")}</tbody>
-      </table></div>${pagination(state.applicationType === "全部" ? 64 : Math.max(rows.length, 8))}
+      </table></div>${pagination(totals[state.applicationType])}
     </section>`;
 }
 
@@ -164,9 +159,10 @@ function contentVersionTabs() {
 }
 
 function waterfallPage() {
-  const rows = waterfallRows.filter(row => row.version === state.contentVersion && row.type === state.waterfallType && (state.waterfallApplication === "全部" || row.application === state.waterfallApplication));
+  const hideVersionTabs = state.waterfallApplication === "AI漫剧" && state.waterfallType === "生态创新中心";
+  const rows = waterfallRows.filter(row => (hideVersionTabs || row.version === state.contentVersion) && row.type === state.waterfallType && (state.waterfallApplication === "全部" || row.application === state.waterfallApplication));
   const filter = selectControl("选择应用", ["全部", "AI漫剧", "容量万相", "其他"], state.waterfallApplication, "data-waterfall-application") + selectControl("类型", ["其他", "首页轮播", "优质作品", "素材展览", "生态创新中心"], state.waterfallType, "data-waterfall-type");
-  return `${filterPanel(filter)}${contentVersionTabs()}
+  return `${filterPanel(filter)}${hideVersionTabs ? "" : contentVersionTabs()}
     <section class="content-card">
       <div class="toolbar"><button class="button primary" data-action="banner-add">${icon("plus")}添加</button><button class="button" data-action="refresh">${icon("refresh-cw")}刷新缓存</button><button class="button" data-action="sort">${icon("arrow-up-down")}排序</button></div>
       <div class="table-wrap"><table class="banner-table"><colgroup><col style="width:72px"><col style="width:105px"><col style="width:138px"><col style="width:220px"><col style="width:86px"><col style="width:130px"><col style="width:220px"><col style="width:140px"><col style="width:140px"><col style="width:115px"></colgroup>
@@ -177,19 +173,18 @@ function waterfallPage() {
 
 const docs = {
   applications: `<h2>#页面说明</h2>
-    <ul><li><b>菜单路径：</b>绿台 &gt; 生态创新中心 &gt; 申请管理 &gt; 生态合作申请。</li><li><b>使用对象：</b>内容业务、生态合作运营及审核人员。</li><li>承接生态创新中心前台产生的OPC社区、精品短剧、产业空间及校企合作申请。</li></ul>
+    <ul><li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; AI漫剧官网配置 &gt; 生态创新中心。</li><li><b>使用对象：</b>内容业务、生态合作运营及审核人员。</li><li>通过四个Tab分别管理OPC社区、精品短剧、产业空间及校企合作的前台申请。</li></ul>
     <h3>#原型说明</h3>
-    <h4>● 业务规则</h4><ul><li>用户提交成功后，绿台自动生成唯一申请ID，跟进状态默认为“未跟进”。</li><li>仅OPC社区申请需要审核，初始审核状态为“待审核”；审核操作记录审核人、审核时间、审核结论和备注。</li><li>精品短剧、产业空间、校企合作无需审核，审核状态展示“无需审核”，提交后直接进入业务跟进。</li><li>OPC社区审核通过后仍需业务人员发起合作跟进。</li></ul>
-    <h4>○ 申请类型</h4><ul><li><code>OPC社区</code>：申请加入或创建城市社区，展示团队、城市、人数、业务范围和代表作品。</li><li><code>精品短剧</code>：承接精准项目“我要合作”，展示项目名称、合作主体、项目介绍及合作诉求。</li><li><code>产业空间</code>：展示空间名称、城市、可承载规模和产业资源。</li><li><code>校企合作</code>：展示院校、合作方向、覆盖人数及课程/项目诉求。</li></ul>
-    <h4>○ 筛选项</h4><ul><li>申请ID为精确搜索；申请对象为模糊搜索。</li><li>申请类型、OPC审核状态、跟进状态均为下拉单选。</li><li>OPC审核状态仅在“全部、OPC社区”视图展示；切换至其他申请类型时隐藏。</li><li>提交时间支持开始日期与结束日期组合查询。</li></ul>
-    <h4>○ 列表项</h4><ul><li>列表展示申请ID、申请类型、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态、跟进状态和审核人。</li><li>联系电话默认脱敏，进入详情且具备权限后才展示完整号码。</li></ul>
-    <h4>○ 操作项</h4><ul><li><code>详情</code>：展示本次提交的完整信息、来源入口及隐私授权状态。</li><li><code>审核</code>：仅OPC社区的待审核记录展示；支持审核通过或拒绝，拒绝时必填原因。</li><li><code>导出</code>：按当前筛选结果导出，需校验导出权限并记录操作日志。</li></ul>
-    <h4>○ 数据与权限</h4><ul><li>申请数据写入后台数据库，不以浏览器缓存作为正式数据源。</li><li>详情、审核、导出分开配置权限；手机号等个人信息应脱敏展示、加密存储。</li><li>记录查看、审核、导出等关键操作日志，便于问题追溯。</li></ul>`,
+    <h4>● Tab项</h4><ul><li>页面不设置“全部”Tab，默认进入<code>OPC社区</code>。</li><li>Tab枚举为“OPC社区、精品短剧、产业空间、校企合作”。</li></ul>
+    <h4>○ OPC社区</h4><ul><li><b>筛选：</b>联系人、联系电话、提交时间、审核状态。</li><li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li><li><b>操作：</b>详情；待审核记录额外展示审核。</li><li>审核支持“审核通过、审核拒绝”；拒绝时必填拒绝原因。</li></ul>
+    <h4>○ 精品短剧 / 产业空间 / 校企合作</h4><ul><li><b>筛选：</b>联系人、联系电话、提交时间。</li><li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li><li><b>操作：</b>仅详情，不提供审核入口。</li><li>审核状态统一展示“无需审核”。</li></ul>
+    <h4>○ 通用规则</h4><ul><li>联系电话在列表中默认脱敏，进入详情且具备权限后才展示完整号码。</li><li>提交时间支持开始日期与结束日期组合查询。</li><li>详情展示申请人本次提交的完整资料、来源入口及隐私授权状态。</li></ul>
+    <h4>○ 数据与权限</h4><ul><li>申请数据写入后台数据库，不以浏览器缓存作为正式数据源。</li><li>详情和审核分开配置权限；手机号等个人信息应脱敏展示、加密存储。</li><li>记录查看、审核等关键操作日志，便于问题追溯。</li></ul>`,
   waterfall: `<h2>#页面说明</h2>
     <ul><li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; 瀑布流轮播图。</li><li><b>使用对象：</b>内容业务及产品运营。</li><li>本次在现有页面增加生态创新中心Banner配置能力，不新增独立Banner菜单。</li></ul>
     <h3>#原型说明</h3>
-    <h4>● 修改记录</h4><p><span class="change-date">2026-08-21</span> <span class="change-copy">“类型”新增枚举“生态创新中心”，用于配置容量万相生态创新中心前台Banner。</span></p>
-    <h4>○ 筛选项</h4><ul><li><code>选择应用</code>：选择“容量万相”。</li><li><code>类型</code>：原枚举“其他、首页轮播、优质作品、素材展览”基础上新增“生态创新中心”。</li><li><code>国内/海外</code>：按内容版本分别维护；本期生态创新中心仅使用国内配置。</li></ul>
+    <h4>● 修改记录</h4><p><span class="change-date">2026-08-24</span> <span class="change-copy">选择应用为“AI漫剧”且类型为“生态创新中心”时，隐藏“国内、海外”内容版本Tab。</span></p><p><span class="change-date">2026-08-21</span> <span class="change-copy">类型新增枚举“生态创新中心”。</span></p>
+    <h4>○ 筛选项</h4><ul><li><code>选择应用</code>：选择“AI漫剧”。</li><li><code>类型</code>：选择“生态创新中心”。</li><li>满足以上组合时，配置内容不区分国内和海外，页面不展示内容版本Tab。</li><li>切换为其他应用或类型时，仍按原规则展示国内、海外Tab。</li></ul>
     <h4>○ 配置字段</h4><ul><li>标题：必填，最多100字符。</li><li>素材类型：图片或视频；图片建议1920×560，视频需上传可播放文件。</li><li>跳转方式：不跳转或跳转网页；跳转网页时必填完整链接。</li><li>开始时间、结束时间：必填，精确到分钟；结束时间必须晚于开始时间。</li></ul>
     <h4>○ 操作项</h4><ul><li><code>添加/修改</code>：打开轮播配置弹窗，保存后进入当前类型列表。</li><li><code>刷新缓存</code>：配置生效后刷新前台缓存。</li><li><code>排序</code>：调整同类型Banner的轮播顺序。</li><li><code>删除</code>：二次确认后删除，不可恢复。</li></ul>`
 };
@@ -214,11 +209,6 @@ function bindInteractions() {
     state.applicationType = button.dataset.applicationType;
     render();
   }));
-  const applicationFilter = document.querySelector("[data-application-filter]");
-  if (applicationFilter) applicationFilter.addEventListener("change", () => {
-    state.applicationType = applicationFilter.value;
-    render();
-  });
   const waterfallType = document.querySelector("[data-waterfall-type]");
   if (waterfallType) waterfallType.addEventListener("change", () => {
     state.waterfallType = waterfallType.value;
@@ -236,9 +226,8 @@ function bindInteractions() {
   }));
   document.querySelectorAll("[data-search]").forEach(button => button.addEventListener("click", () => showToast("查询完成，列表已更新")));
   document.querySelectorAll("[data-reset]").forEach(button => button.addEventListener("click", () => {
-    if (state.page === "applications") state.applicationType = "全部";
     if (state.page === "waterfall") {
-      state.waterfallApplication = "容量万相";
+      state.waterfallApplication = "AI漫剧";
       state.waterfallType = "生态创新中心";
     }
     render();
@@ -251,7 +240,6 @@ function handleAction(action, id) {
   const row = applicationRows.find(item => item.id === id);
   if (action === "application-detail") return openApplicationDetail(row);
   if (action === "application-review") return openReview(row);
-  if (action === "export") return showToast("已按当前筛选条件生成导出任务");
   if (action === "banner-add" || action === "banner-edit") return openBannerForm(action === "banner-edit", id);
   if (action === "banner-delete") return confirmModal("删除轮播图配置", `确认删除ID ${id} 的轮播图配置？删除后不可恢复。`, "danger", () => showToast("删除成功"));
   if (action === "refresh") return showToast("缓存刷新成功");
@@ -264,7 +252,7 @@ function displayItem(label, value, full = false, html = false) {
 
 function openApplicationDetail(row) {
   const isOpc = row.type === "OPC社区";
-  const body = `<div class="detail-status-line"><div><span>申请ID</span><strong>${row.id}</strong></div><div>${statusTag(row.review)} ${statusTag(row.follow)}</div></div>
+  const body = `<div class="detail-status-line"><div><span>申请ID</span><strong>${row.id}</strong></div><div>${statusTag(row.review)}</div></div>
     <section class="detail-section"><h3>基础信息</h3><div class="detail-grid">
       ${displayItem("申请类型", row.type)}${displayItem("申请对象", row.subject)}${displayItem("团队/公司", row.organization)}${displayItem("所在城市", row.city)}
       ${displayItem("联系人", row.contact)}${displayItem("联系电话", row.phone.replace("****", "2865"))}${displayItem("团队/承载规模", row.teamSize)}${displayItem("意向合作模式", row.model)}
