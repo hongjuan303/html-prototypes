@@ -261,7 +261,7 @@ function openApplicationDetail(row) {
     <section class="detail-section"><h3>${isOpc ? "提交与审核" : "提交信息"}</h3><div class="detail-grid">
       ${displayItem("提交入口", row.source)}${displayItem("提交时间", row.submitTime)}${displayItem("隐私授权", row.consent)}${isOpc ? displayItem("审核人", row.reviewer) : ""}
     </div></section>`;
-  openModal("生态合作申请详情", body, `<button class="button" data-modal-cancel>关闭</button>${isOpc && row.review === "待审核" ? `<button class="button primary" data-detail-review="${row.id}">审核</button>` : ""}`, "extra-wide");
+  openModal("生态创新中心申请详情", body, `<button class="button" data-modal-cancel>关闭</button>${isOpc && row.review === "待审核" ? `<button class="button primary" data-detail-review="${row.id}">审核</button>` : ""}`, "extra-wide");
   const reviewButton = modalFooter.querySelector("[data-detail-review]");
   if (reviewButton) reviewButton.addEventListener("click", () => openReview(row));
 }
