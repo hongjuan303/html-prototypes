@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>容量万相｜生态创新中心 V3.0 评审原型</title>
+  <link rel="stylesheet" href="review.css?v=20260825-1">
+</head>
+<body>
+  <main class="review-shell">
+    <section class="prototype-pane" aria-label="生态创新中心交互原型">
+      <header class="prototype-toolbar">
+        <div>
+          <strong>生态创新中心</strong>
+          <span>V3.0 评审原型</span>
+        </div>
+        <nav aria-label="原型视图工具">
+          <button class="is-active" type="button" data-view-mode="fit">适应窗口</button>
+          <button type="button" data-view-mode="actual">原始尺寸</button>
+          <a href="prototype/" target="_blank" rel="noreferrer">单独预览 <b>↗</b></a>
+        </nav>
+      </header>
+      <div class="prototype-stage is-fit" data-prototype-stage>
+        <iframe data-prototype-frame src="prototype/" title="容量万相生态创新中心 V3.0 原型"></iframe>
+      </div>
+    </section>
+
+    <aside class="prd-pane" data-prd-pane aria-label="需求说明文档">
+      <header class="prd-header">
+        <div>
+          <span>需求评审文档</span>
+          <strong>容量万相 · 生态创新中心</strong>
+        </div>
+        <em>V3.0</em>
+      </header>
+
+      <nav class="prd-outline" aria-label="需求文档目录">
+        <button class="is-active" type="button" data-doc-target="overview">文档概览</button>
+        <button type="button" data-doc-target="home">首页轮播</button>
+        <button type="button" data-doc-target="network">产业协同</button>
+        <button type="button" data-doc-target="map">合作地图</button>
+        <button type="button" data-doc-target="opc">OPC社区</button>
+      </nav>
+
+      <article class="prd-document">
+        <section class="prd-section is-active" id="prd-overview" data-prd-section="overview">
+          <h1># 页面说明</h1>
+          <ul>
+            <li>本页为容量万相官网「生态创新中心」PC端需求评审原型。</li>
+            <li>左侧为完整可操作原型，右侧为对应需求说明；滚动原型时文档目录同步定位。</li>
+          </ul>
+
+          <h2># 变更日志</h2>
+          <table>
+            <thead><tr><th>版本</th><th>日期</th><th>变更内容</th><th>状态</th></tr></thead>
+            <tbody><tr><td>V3.0</td><td class="change-date">2026-08-25</td><td>完整复制V2原型，新增右侧PRD评审文档及模块联动。</td><td><span class="status-review">待评审</span></td></tr></tbody>
+          </table>
+
+          <h2># 原型说明</h2>
+          <ul>
+            <li><b>背景：</b>面向政府、产业伙伴、院校及短剧从业者，集中展示容量万相的城市合作成果与生态服务能力。</li>
+            <li><b>目标：</b>让政府看见落地成果，让创作者看见合作机会，并形成项目合作、社区加入和赛事参与入口。</li>
+            <li><b>适用端：</b>本期仅适配PC端，推荐评审分辨率为1440×900及以上。</li>
+          </ul>
+
+          <h2># 名词解释</h2>
+          <table>
+            <thead><tr><th>名词</th><th>定义</th></tr></thead>
+            <tbody>
+              <tr><td>OPC</td><td>以个人或小团队为核心的内容生产单元。</td></tr>
+              <tr><td>产业空间</td><td>线下AI影视社区、创新应用中心等创作与产业服务载体。</td></tr>
+              <tr><td>精品短剧</td><td>与地方政府、文旅单位或产业伙伴联合落地的短剧项目。</td></tr>
+            </tbody>
+          </table>
+
+          <h2># 需求范围</h2>
+          <table class="scope-table">
+            <thead><tr><th>系统</th><th>模块</th><th>功能</th><th>功能说明</th></tr></thead>
+            <tbody>
+              <tr><td rowspan="4">容量万相官网</td><td>首页轮播</td><td>项目宣传</td><td>3张Banner自动轮播并支持对应跳转。</td></tr>
+              <tr><td>产业协同</td><td>能力展示</td><td>展示四类产业协同能力。</td></tr>
+              <tr><td>生态地图</td><td>项目检索</td><td>按项目类型与行政层级查看合作项目。</td></tr>
+              <tr><td>OPC社区</td><td>社区加入</td><td>按城市申请加入或创建线上OPC社区。</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="prd-section" id="prd-home" data-prd-section="home">
+          <h1># 首页轮播</h1>
+          <h2># 功能说明</h2>
+          <ol>
+            <li><b>轮播规则：</b>默认3秒切换一次；鼠标移入当前Banner时暂停，移出后继续。</li>
+            <li><b>手动切换：</b>支持左右箭头和底部指示器切换。</li>
+            <li><b>Banner 1：</b>点击「探索全国合作网络」，页面定位至生态合作地图。</li>
+            <li><b>Banner 2：</b>点击「我要参赛」，新窗口打开雁荡山杯赛事官网。</li>
+            <li><b>Banner 3：</b>点击「查看合作项目」，地图定位至台州天台项目并打开右侧详情。</li>
+          </ol>
+          <p class="note"><b>交互备注：</b>轮播切换保留视觉过渡；所有可点击区域需有鼠标悬停反馈。</p>
+        </section>
+
+        <section class="prd-section" id="prd-network" data-prd-section="network">
+          <h1># 容量短剧产业协同网络建设</h1>
+          <h2># 展示内容</h2>
+          <ul>
+            <li><b>产业生态建设：</b>场地、内容创制平台、算力、版权库、发行、出海与产业订单。</li>
+            <li><b>“微短剧+”精品内容：</b>联动文旅、非遗、科普和公益项目，开放地域内容订单。</li>
+            <li><b>微短剧创作大赛：</b>联合伙伴发布创作命题、流量扶持及作品奖励。</li>
+            <li><b>产教融合实践：</b>联合高校开设实践专班，提供订单、算力和孵化资源。</li>
+          </ul>
+          <h2># 交互说明</h2>
+          <ul>
+            <li>四个能力卡片固定单行展示，无先后顺序。</li>
+            <li>卡片右上角分别展示「生态基座、城市共创、创作者连接、人才共育」标签。</li>
+            <li>本期卡片仅展示内容，不设置跳转。</li>
+          </ul>
+        </section>
+
+        <section class="prd-section" id="prd-map" data-prd-section="map">
+          <h1># 生态合作地图</h1>
+          <h2># 地图规则</h2>
+          <ol>
+            <li>初始展示全国地图及项目标识，不展示右侧项目详情。</li>
+            <li>支持滚轮、缩放控件和拖拽操作，最大放大至区县级行政边界。</li>
+            <li>不同项目类型使用不同图标：精品短剧、产业空间、校企合作、创作赛事、即将呈现。</li>
+            <li>点击地图标识后地图向左收缩，右侧展示对应城市或区县的项目详情。</li>
+          </ol>
+
+          <h2># 项目层级口径</h2>
+          <ul>
+            <li>精品短剧按最小行政层级展示：区县项目仅显示在区县层级，市级项目仅显示在市级层级。</li>
+            <li>同一地区存在多个项目时，右侧按项目列表展示并支持切换。</li>
+            <li>精品短剧封面统一使用长宽比9:16。</li>
+          </ul>
+
+          <h2># 操作项</h2>
+          <ul>
+            <li><b>精品短剧：</b>点击封面打开高光片花弹窗；点击「我要合作」打开合作申请表单。</li>
+            <li><b>产业空间：</b>点击「我要加入」打开空间加入表单。</li>
+            <li><b>校企合作：</b>点击「我要合作」打开合作申请表单。</li>
+            <li><b>创作赛事：</b>点击「我要参赛」新窗口打开赛事官网。</li>
+            <li><b>即将呈现：</b>展示区域合作预告，不提供提交入口。</li>
+          </ul>
+        </section>
+
+        <section class="prd-section" id="prd-opc" data-prd-section="opc">
+          <h1># 线上OPC创作社区</h1>
+          <h2># 核心权益</h2>
+          <ul>
+            <li>平台提供剧本、漫剧制作工具和合作团队算力折扣。</li>
+            <li>成片后可由平台代发行，支持保底加分成、收益分成或版权买断。</li>
+            <li>社区达到一定规模后，平台可协助对接当地政府及创业扶持资源。</li>
+          </ul>
+
+          <h2># 城市社区规则</h2>
+          <ol>
+            <li>每个城市仅设置一个官方线上OPC社区。</li>
+            <li>已有社区显示「社区已建立」和成员人数，用户可申请加入。</li>
+            <li>未建立社区显示「等待首位发起人」，用户可申请创建。</li>
+            <li>申请通过后，成员人数由正式数据接口实时更新；原型暂使用演示数据。</li>
+          </ol>
+
+          <h2># 申请表单</h2>
+          <table>
+            <thead><tr><th>字段</th><th>形式</th><th>规则</th></tr></thead>
+            <tbody>
+              <tr><td>团队或公司名称</td><td>文本输入</td><td>必填</td></tr>
+              <tr><td>所在城市</td><td>文本输入</td><td>必填；从城市卡片进入时自动带入并锁定</td></tr>
+              <tr><td>团队人数</td><td>数字输入</td><td>必填；正整数</td></tr>
+              <tr><td>联系人</td><td>文本输入</td><td>必填</td></tr>
+              <tr><td>联系电话</td><td>手机号输入</td><td>必填；11位中国大陆手机号</td></tr>
+              <tr><td>业务范围</td><td>多行文本</td><td>必填；最多300字</td></tr>
+              <tr><td>意向合作模式</td><td>下拉单选</td><td>暂不确定、保底加分成、收益分成、版权买断</td></tr>
+              <tr><td>代表作品</td><td>文本输入</td><td>选填；填写作品链接</td></tr>
+            </tbody>
+          </table>
+          <p class="note danger"><b>校验提示：</b>必填项缺失或手机号格式错误时，不允许提交并在对应字段显示校验状态。</p>
+        </section>
+      </article>
+    </aside>
+  </main>
+  <script src="review.js?v=20260825-1"></script>
+</body>
+</html>
