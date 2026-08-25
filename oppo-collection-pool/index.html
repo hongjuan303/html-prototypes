@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="绿台合集池新增OPPO类型高保真原型与PRD" />
+    <title>合集池管理 - OPPO类型</title>
+    <link rel="stylesheet" href="/html-prototypes/oppo-collection-pool/styles.css" />
+  </head>
+  <body>
+    <div class="review-canvas">
+      <div class="prototype-stage">
+        <div class="app-shell">
+          <aside class="sidebar" aria-label="主导航">
+            <nav>
+              <button><i>◉</i><span>抖音号管理</span><b>⌄</b></button>
+              <button><i>◉</i><span>视频号管理</span><b>⌄</b></button>
+              <button><i>◉</i><span>快手号管理</span><b>⌄</b></button>
+              <button class="section"><i>◉</i><span>产品运营</span><b>⌃</b></button>
+              <button class="sub"><i>◉</i><span>用户运营</span><b>⌄</b></button>
+              <button class="sub"><i>◉</i><span>活动运营</span><b>⌄</b></button>
+              <button class="sub"><i>◉</i><span>内容运营</span><b>⌃</b></button>
+              <button class="sub second"><i>◉</i><span>内容频道管理</span></button>
+              <button class="sub second"><i>◉</i><span>瀑布流轮播图</span></button>
+              <button class="sub second active"><i>◉</i><span>合集池管理</span></button>
+            </nav>
+          </aside>
+
+          <div class="workspace">
+            <header class="topbar">
+              <button class="icon-button" title="收起导航" aria-label="收起导航">☰</button>
+              <div class="breadcrumb"><b>产品运营</b><i>/</i><span>合集池管理</span></div>
+              <label class="global-search"><span>⌕</span><input placeholder="请输入搜索内容" /></label>
+              <button class="icon-button" title="全屏" aria-label="全屏">⛶</button><span>全屏</span>
+              <button class="user-button"><span>洪</span>洪娟</button>
+            </header>
+
+            <div class="route-tabs" aria-label="已打开页面">
+              <span>爬虫账号配置<button>×</button></span><span>剧本库配置<button>×</button></span><span>作者管理<button>×</button></span><span>小说管理<button>×</button></span><span>数据权限配置<button>×</button></span><span>瀑布流轮播图<button>×</button></span><span>剧本详情<button>×</button></span><span>帆软BI入口<button>×</button></span><span class="current">合集池管理<button>×</button></span>
+            </div>
+
+            <main>
+              <section class="filter-panel" aria-label="合集池筛选">
+                <label><span>池ID</span><input id="idFilter" /></label>
+                <label><span>池名称</span><input id="nameFilter" /></label>
+                <div class="select-field"><span>池类型</span><button id="typeSelectButton" aria-haspopup="listbox" aria-expanded="true"><em id="typeSelectText">全部</em><i>⌃</i></button>
+                  <div class="select-menu" id="typeMenu" role="listbox">
+                    <button data-value="" class="selected" role="option">全部</button><button data-value="未知" role="option">未知</button><button data-value="抖音" role="option">抖音</button><button data-value="快手" role="option">快手</button><button data-value="微信" role="option">微信</button><button data-value="QQ浏览器" role="option">QQ浏览器</button><button data-value="华为视频百花号" role="option">华为视频百花号</button><button data-value="OPPO" class="new-option" role="option"><span>OPPO</span><b>新增</b></button>
+                  </div>
+                </div>
+                <label><span>状态</span><select id="statusFilter"><option value="">全部</option><option>启用</option><option>停用</option></select></label>
+                <button class="secondary" id="resetButton">重置</button><button class="primary" id="queryButton">查询</button>
+                <div class="toolbar-actions"><button class="primary" id="createPoolButton">新建合集池</button><button class="success" id="batchAddButton">批量添加池元素</button><button class="warning" id="importButton">批量导入</button><button class="danger-light">批量删除</button></div>
+              </section>
+
+              <section class="table-panel">
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th><input type="checkbox" aria-label="全选" /></th><th>池ID</th><th>池名称</th><th>池元素数</th><th>状态</th><th>池类型</th><th>操作</th></tr></thead>
+                    <tbody id="poolRows"></tbody>
+                  </table>
+                  <div class="empty-state" id="emptyState" hidden>暂无符合条件的数据</div>
+                </div>
+                <div class="pagination"><span id="totalText">共 7 条</span><select><option>10条/页</option><option>20条/页</option></select><button disabled>‹</button><b>1</b><button disabled>›</button><span>前往</span><input value="1" /><span>页</span></div>
+              </section>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <aside class="prd-panel" aria-label="PRD文档说明">
+        <div class="prd-heading"><span>PRD</span><div><strong>合集池新增OPPO类型</strong><small>短剧主动推送 · V1.0</small></div></div>
+
+        <section>
+          <h2># 页面说明</h2>
+          <ul>
+            <li><b>菜单路径：</b>绿台 ＞ 产品运营 ＞ 内容运营 ＞ 合集池管理</li>
+            <li><b>使用对象：</b>内容业务、渠道运营</li>
+            <li><b>参考文档：</b><a href="https://ivl58n9swia.feishu.cn/docx/IXuUdIiRSozRBXx6y3Pckir9n1c" target="_blank" rel="noreferrer">OPPO短剧标准接入文档forCP-主动推送</a></li>
+            <li><b>需求背景：</b>绿台需要通过OPPO主动推送接口同步短剧及剧集，合集池新增“OPPO”类型，用于维护待推送内容范围。</li>
+            <li><b>需求目标：</b>完成建池、选剧、校验、推送、结果回查和失败重试闭环。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 页面改动</h2>
+          <h3>筛选与列表</h3>
+          <ul>
+            <li><b>池类型：</b>新增枚举“OPPO”，后端枚举值为<code>oppo</code>。</li>
+            <li><b>OPPO池操作：</b>保留修改名称、修改池元素，新增“OPPO推送、推送记录”。</li>
+            <li><b>池元素数：</b>展示池内有效合集数量，删除或新增元素后实时更新。</li>
+          </ul>
+
+          <h3>新建合集池</h3>
+          <ul>
+            <li><b>池名称：</b>必填，建议体现渠道及内容范围。</li>
+            <li><b>池类型：</b>必填，选择OPPO后创建OPPO专属池。</li>
+            <li><b>状态：</b>默认启用；停用后不允许发起推送。</li>
+          </ul>
+
+          <h3>池元素管理</h3>
+          <ul>
+            <li><b>校验状态：</b>可推送、校验失败、已推送、推送失败。</li>
+            <li><b>推送前校验：</b>检查短剧主信息、全部剧集信息、ID、图片、视频和枚举映射。</li>
+            <li><b>查看问题：</b>展示缺失字段或不符合OPPO规范的具体原因。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 推送流程</h2>
+          <ol>
+            <li>业务维护OPPO合集池及池元素。</li>
+            <li>系统执行推送前校验，仅校验通过的内容可推送。</li>
+            <li>调用“添加或更新短剧”接口推送短剧主信息。</li>
+            <li>主信息成功后调用“添加或更新剧集”，每部短剧每次全量推送全部剧集。</li>
+            <li>解析成功及失败列表，记录到推送批次；失败内容支持单独重试。</li>
+            <li>上下架变更通过短剧状态接口同步；分类接口按全量分类数据同步。</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2># 字段规则</h2>
+          <h3>短剧必填</h3>
+          <p class="field-list">短剧ID、标题、简介、分类、更新状态、总集数、封面、更新时间、短剧类型、内容形态、二级分类、制片人、导演、演员、平均集时长、版权方、投资额、编剧。</p>
+          <h3>短剧非必填</h3>
+          <p class="field-list">上下架状态、跳转链接/跳转数组、标签、节目评分、节目热度。</p>
+          <p class="field-note">节目评分、节目热度、一句话推荐语、跳转数组及三方短剧枚举在接口文档中标记为“即将上线”，研发接入前需与OPPO确认生产环境生效时间。</p>
+          <h3>剧集必填</h3>
+          <p class="field-list">剧集ID、标题、集序、封面、更新时间、播放地址、视频时长、宽度、高度、文件大小。</p>
+          <h3>系统参数</h3>
+          <p class="field-list">partnerId、timeStamp、nonce、sign、reqBody均由服务端生成，业务端不展示、不填写。</p>
+        </section>
+
+        <section>
+          <h2># 校验口径</h2>
+          <ul>
+            <li><b>ID：</b>短剧ID、剧集ID全局唯一，不含特殊符号，长度不超过16位。</li>
+            <li><b>文本：</b>标题不超过64字符，简介不超过2000字符。</li>
+            <li><b>封面：</b>3:4竖图，使用稳定图片地址，不拼接动态参数。</li>
+            <li><b>视频：</b>清晰度不低于720p；使用OPPO承载时需MP4，单集文件不低于50MB。</li>
+            <li><b>集数：</b>总集数必须与全量剧集数量一致，集序从1开始且连续。</li>
+            <li><b>批量：</b>短剧主信息接口单次不超过100部；整体批量不超过300部，系统按100部拆批。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 状态与异常</h2>
+          <ul>
+            <li><b>推送状态：</b>未推送、推送中、推送成功、部分失败、推送失败。</li>
+            <li><b>短剧状态：</b>up上架、down下架、waiting待上架。</li>
+            <li><b>失败处理：</b>保留OPPO返回的失败ID及原因；重试仅提交失败项，剧集重试仍需全量。</li>
+            <li><b>幂等更新：</b>同一短剧ID或剧集ID再次推送视为更新，不新增重复内容。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 本期范围</h2>
+          <ul>
+            <li>本期包含短剧、剧集、分类和状态推送。</li>
+            <li>榜单接口已预留数据结构，是否由合集池顺序直接生成榜单需业务与OPPO确认后另行启用。</li>
+            <li>OPPO鉴权密钥、生产域名及签名逻辑由服务端配置，不进入绿台页面。</li>
+          </ul>
+        </section>
+
+        <div class="prd-note"><b>原型体验</b><span>左侧可体验池类型筛选、新建OPPO池、修改池元素、校验失败详情、发起推送及查看推送记录。</span></div>
+      </aside>
+    </div>
+
+    <div class="overlay" id="createModal" hidden>
+      <section class="dialog create-dialog" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+        <header><h1 id="createTitle">新建合集池</h1><button class="close" data-close="createModal" aria-label="关闭">×</button></header>
+        <div class="dialog-body">
+          <label class="form-row required"><span>池名称</span><div><input id="newPoolName" placeholder="请输入池名称" /><small>建议包含渠道及内容范围，如“OPPO精品短剧推送池”</small></div></label>
+          <label class="form-row required"><span>池类型</span><select id="newPoolType"><option value="">请选择</option><option>抖音</option><option>快手</option><option>微信</option><option>OPPO</option></select></label>
+          <div class="form-row required"><span>状态</span><div class="radio-line"><label><input type="radio" name="newStatus" value="启用" checked />启用</label><label><input type="radio" name="newStatus" value="停用" />停用</label></div></div>
+          <div class="oppo-tip" id="oppoTip" hidden><b>OPPO推送说明</b><span>创建后请先维护池元素并完成字段校验，再发起OPPO推送。鉴权参数由系统自动生成。</span></div>
+          <p class="form-error" id="createError" hidden></p>
+        </div>
+        <footer><button class="secondary" data-close="createModal">取消</button><button class="primary" id="savePoolButton">确定</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay" id="elementsModal" hidden>
+      <section class="dialog elements-dialog" role="dialog" aria-modal="true" aria-labelledby="elementsTitle">
+        <header><div><h1 id="elementsTitle">OPPO池元素管理</h1><small>OPPO精品短剧推送池（池ID：26）</small></div><button class="close" data-close="elementsModal" aria-label="关闭">×</button></header>
+        <div class="elements-toolbar"><label><span>合集ID/名称</span><input id="elementKeyword" placeholder="请输入" /></label><button class="primary" id="elementQueryButton">查询</button><button class="secondary" id="validateButton">全部校验</button><button class="primary" id="pushFromElementsButton">OPPO推送</button></div>
+        <div class="summary-strip"><span>池元素 <b>86</b></span><span>可推送 <b class="green">82</b></span><span>校验失败 <b class="red">4</b></span><span>已推送 <b>64</b></span></div>
+        <div class="element-table"><table><thead><tr><th>合集ID</th><th>合集名称</th><th>总集数</th><th>校验状态</th><th>OPPO推送状态</th><th>最近推送时间</th><th>操作</th></tr></thead><tbody id="elementRows"></tbody></table></div>
+        <footer><button class="secondary" data-close="elementsModal">关闭</button><button class="success" id="addElementButton">添加池元素</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay upper-overlay" id="issueModal" hidden>
+      <section class="dialog issue-dialog" role="dialog" aria-modal="true" aria-labelledby="issueTitle"><header><h1 id="issueTitle">OPPO推送校验问题</h1><button class="close" data-close="issueModal">×</button></header><div class="issue-body"><div class="issue-collection"><b id="issueDramaName"></b><span id="issueDramaId"></span></div><ul id="issueList"></ul><div class="rule-note">修正合集或剧集信息后，请返回池元素管理重新执行校验。</div></div><footer><button class="primary" data-close="issueModal">我知道了</button></footer></section>
+    </div>
+
+    <div class="overlay" id="pushModal" hidden>
+      <section class="dialog push-dialog" role="dialog" aria-modal="true" aria-labelledby="pushTitle">
+        <header><h1 id="pushTitle">OPPO短剧推送</h1><button class="close" data-close="pushModal">×</button></header>
+        <div class="push-body">
+          <div class="push-flow"><span class="active"><b>1</b>短剧主信息</span><i></i><span><b>2</b>全量剧集</span><i></i><span><b>3</b>记录结果</span></div>
+          <div class="push-summary"><div><span>本次池元素</span><b>86</b></div><div><span>校验通过</span><b class="green">82</b></div><div><span>不可推送</span><b class="red">4</b></div></div>
+          <div class="push-options"><b>推送范围</b><label><input type="radio" name="pushScope" checked />推送全部校验通过的短剧（82部）</label><label><input type="radio" name="pushScope" />仅推送未推送及有更新的短剧（18部）</label><p>系统将短剧主信息按每批最多100部发送；每部短剧的剧集信息均全量推送。</p></div>
+          <label class="confirm-check"><input id="pushConfirmCheck" type="checkbox" />我已确认池内内容及OPPO字段校验结果</label>
+          <p class="form-error" id="pushError" hidden></p>
+        </div>
+        <footer><button class="secondary" data-close="pushModal">取消</button><button class="primary" id="confirmPushButton">开始推送</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay upper-overlay" id="pushResultModal" hidden>
+      <section class="dialog result-dialog" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><header><h1 id="resultTitle">推送完成</h1><button class="close" data-close="pushResultModal">×</button></header><div class="result-body"><span class="result-icon">✓</span><h2>OPPO推送任务已完成</h2><p>批次号：OPPO-20260825-001</p><div class="result-stats"><span>成功 <b>80</b></span><span>失败 <b>2</b></span></div><div class="result-note">失败内容已记录，可在“推送记录”中查看原因并重新推送。</div></div><footer><button class="secondary" data-close="pushResultModal">关闭</button><button class="primary" id="viewRecordsFromResult">查看推送记录</button></footer></section>
+    </div>
+
+    <div class="overlay" id="recordsModal" hidden>
+      <section class="dialog records-dialog" role="dialog" aria-modal="true" aria-labelledby="recordsTitle"><header><h1 id="recordsTitle">OPPO推送记录</h1><button class="close" data-close="recordsModal">×</button></header><div class="records-body"><table><thead><tr><th>批次号</th><th>发起时间</th><th>推送数量</th><th>成功/失败</th><th>状态</th><th>操作</th></tr></thead><tbody><tr><td>OPPO-20260825-001</td><td>2026-08-25 16:42</td><td>82</td><td><span class="green">80</span> / <span class="red">2</span></td><td><span class="status-tag partial">部分失败</span></td><td><button class="link-button">失败明细</button><button class="link-button">重试失败项</button></td></tr><tr><td>OPPO-20260821-003</td><td>2026-08-21 11:20</td><td>64</td><td><span class="green">64</span> / 0</td><td><span class="status-tag success-tag">推送成功</span></td><td><button class="link-button">查看详情</button></td></tr></tbody></table></div><footer><button class="secondary" data-close="recordsModal">关闭</button></footer></section>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+    <script src="/html-prototypes/oppo-collection-pool/app.js"></script>
+  </body>
+</html>
