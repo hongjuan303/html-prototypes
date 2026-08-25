@@ -685,6 +685,8 @@ const opcCommunities = {
   "成都": { scale: 27, copy: "连接都市剧情与动态分镜团队，协同承接制作和发行项目。" },
   "广州": { scale: 21, copy: "聚焦科幻视觉与出海内容制作，连接海外发行合作机会。" }
 };
+const opcMemberWall = document.querySelector("[data-opc-member-wall]");
+const opcMemberList = document.querySelector("[data-opc-member-list]");
 let toastTimer;
 let videoTimer;
 let videoSeconds = 0;
@@ -739,6 +741,16 @@ function updateOpcCommunity(city) {
   document.querySelector("[data-opc-city-result]").classList.toggle("is-create", !exists);
 }
 
+function renderOpcCommunities() {
+  const communities = Object.entries(opcCommunities);
+  opcMemberWall.hidden = communities.length === 0;
+  opcMemberList.replaceChildren(...communities.map(([city, community]) => {
+    const card = document.createElement("article");
+    card.innerHTML = `<div><h4>${city}</h4><strong><b>${community.scale}</b> 位成员</strong></div><button type="button" data-opc-member-join data-city="${city}">申请加入</button>`;
+    return card;
+  }));
+}
+
 function closeModal(layer) {
   layer.hidden = true;
   if (layer === trailerModal) resetVideoPlayer();
@@ -769,16 +781,24 @@ function openTrailer(title, image) {
 }
 
 document.querySelectorAll("[data-join]").forEach(button => button.addEventListener("click", () => openJoinModal(button.dataset.join)));
-document.querySelectorAll("[data-opc-member-join]").forEach(button => button.addEventListener("click", () => {
+opcMemberList.addEventListener("click", event => {
+  const button = event.target.closest("[data-opc-member-join]");
+  if (!button) return;
   const city = button.dataset.city;
   openJoinModal(`${city}线上OPC社区`, { city, title: `申请加入${city}线上OPC社区` });
-}));
+});
+opcMemberList.addEventListener("wheel", event => {
+  if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+  event.preventDefault();
+  opcMemberList.scrollLeft += event.deltaY;
+}, { passive: false });
 opcCitySelect.addEventListener("change", () => updateOpcCommunity(opcCitySelect.value));
 opcActionButton.addEventListener("click", () => {
   const city = opcCitySelect.value;
   const action = opcActionButton.dataset.mode === "create" ? "创建" : "加入";
   openJoinModal(`${city}线上OPC社区`, { city, title: `申请${action}${city}线上OPC社区` });
 });
+renderOpcCommunities();
 updateOpcCommunity(opcCitySelect.value);
 
 document.addEventListener("click", event => {

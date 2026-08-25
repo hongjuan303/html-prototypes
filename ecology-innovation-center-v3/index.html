@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>容量万相｜生态创新中心 V3.0 评审原型</title>
-  <link rel="stylesheet" href="review.css?v=20260825-3">
+  <link rel="stylesheet" href="review.css?v=20260825-4">
 </head>
 <body>
   <main class="review-shell">
@@ -33,7 +33,7 @@
           <span>需求评审文档</span>
           <strong>容量万相 · 生态创新中心</strong>
         </div>
-        <em>V3.0</em>
+        <em>V1.0</em>
       </header>
 
       <nav class="prd-outline" aria-label="需求文档目录">
@@ -49,13 +49,12 @@
           <h1># 页面说明</h1>
           <ul>
             <li>本页为容量万相官网「生态创新中心」PC端需求评审原型。</li>
-            <li>原型与PRD位于同一张横向评审画布：首屏展示完整可操作原型并露出右侧文档，左右滑动可连续查看PRD；原型滚动时文档目录同步定位。</li>
           </ul>
 
           <h2># 变更日志</h2>
           <table>
-            <thead><tr><th>版本</th><th>日期</th><th>变更内容</th><th>状态</th></tr></thead>
-            <tbody><tr><td>V3.0</td><td class="change-date">2026-08-25</td><td>完整复制V2原型，新增横向PRD评审画板及模块联动。</td><td><span class="status-review">待评审</span></td></tr></tbody>
+            <thead><tr><th>版本</th><th>日期</th><th>变更内容</th></tr></thead>
+            <tbody><tr><td>V1.0</td><td class="change-date">2026-08-25</td><td>初始原型</td></tr></tbody>
           </table>
 
           <h2># 原型说明</h2>
@@ -72,6 +71,8 @@
               <tr><td>OPC</td><td>以个人或小团队为核心的内容生产单元。</td></tr>
               <tr><td>产业空间</td><td>线下AI影视社区、创新应用中心等创作与产业服务载体。</td></tr>
               <tr><td>精品短剧</td><td>与地方政府、文旅单位或产业伙伴联合落地的短剧项目。</td></tr>
+              <tr><td>校企合作</td><td>平台与高校共同开展的AIGC课程、实践专班、人才培养及成果共创项目。</td></tr>
+              <tr><td>创作赛事</td><td>平台联合政府、文旅单位或产业伙伴发起的主题内容创作比赛。</td></tr>
             </tbody>
           </table>
 
@@ -91,13 +92,14 @@
           <h1># 首页轮播</h1>
           <h2># 功能说明</h2>
           <ol>
-            <li><b>轮播规则：</b>默认3秒切换一次；鼠标移入当前Banner时暂停，移出后继续。</li>
-            <li><b>手动切换：</b>支持左右箭头和底部指示器切换。</li>
-            <li><b>Banner 1：</b>点击「探索全国合作网络」，页面定位至生态合作地图。</li>
-            <li><b>Banner 2：</b>点击「我要参赛」，新窗口打开雁荡山杯赛事官网。</li>
-            <li><b>Banner 3：</b>点击「查看合作项目」，地图定位至台州天台项目并打开右侧详情。</li>
+            <li><b>数据来源：</b>Banner由业务人员在绿台「瀑布流轮播图」中配置，前台按上架状态、有效时间及排序结果展示，不限定固定数量。</li>
+            <li><b>展示内容：</b>支持图片或视频素材；标题、素材类型、素材文件、有效时间及跳转方式均取绿台配置。</li>
+            <li><b>轮播规则：</b>存在多条有效Banner时默认每3秒自动切换；鼠标移入暂停，移出后继续。</li>
+            <li><b>手动切换：</b>存在多条有效Banner时展示左右箭头与底部指示器，数量随有效Banner数量动态生成。</li>
+            <li><b>点击效果：</b>绿台配置跳转链接时，点击Banner按配置地址跳转；未配置跳转链接时，Banner仅展示且不响应点击。</li>
+            <li><b>兜底规则：</b>无有效Banner时隐藏轮播区域，页面后续模块上移展示。</li>
           </ol>
-          <p class="note"><b>交互备注：</b>轮播切换保留视觉过渡；所有可点击区域需有鼠标悬停反馈。</p>
+          <p class="note"><b>交互备注：</b>仅可跳转的Banner展示鼠标悬停反馈；轮播切换保留平滑视觉过渡。</p>
         </section>
 
         <section class="prd-section" id="prd-network" data-prd-section="network">
@@ -156,9 +158,20 @@
           <h2># 城市社区规则</h2>
           <ol>
             <li>每个城市仅设置一个官方线上OPC社区。</li>
-            <li>已有社区显示「社区已建立」和成员人数，用户可申请加入。</li>
+            <li>当前不存在任何线上OPC社区时，隐藏「已建立的城市社区」模块。</li>
+            <li>存在已建立社区时展示「已建立的城市社区」模块；多个城市社区保持单排展示，支持鼠标横向滑动查看。</li>
+            <li>已有社区显示城市名称、成员人数及「申请加入」按钮。</li>
             <li>未建立社区显示「等待首位发起人」，用户可申请创建。</li>
             <li>申请通过后，成员人数由正式数据接口实时更新；原型暂使用演示数据。</li>
+          </ol>
+
+          <h2># 申请加入操作</h2>
+          <ol>
+            <li>点击城市社区卡片中的「申请加入」，打开居中的申请弹窗。</li>
+            <li>弹窗自动带入并锁定所选城市，用户填写团队或公司名称、团队人数、联系人、联系电话、业务范围等信息。</li>
+            <li>点击「取消」或关闭图标，关闭弹窗且不保存本次填写内容。</li>
+            <li>点击「提交申请」时校验必填项及手机号格式；校验失败时保留弹窗并提示对应字段。</li>
+            <li>校验通过后展示「申请已提交」结果，后台生成待审核记录；正式成员人数仅在审核通过后更新。</li>
           </ol>
 
           <h2># 申请表单</h2>
@@ -180,6 +193,6 @@
       </article>
     </aside>
   </main>
-  <script src="review.js?v=20260825-3"></script>
+  <script src="review.js?v=20260825-4"></script>
 </body>
 </html>
