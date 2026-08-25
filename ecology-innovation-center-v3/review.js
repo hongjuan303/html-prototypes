@@ -1,10 +1,11 @@
 const frame = document.querySelector("[data-prototype-frame]");
 const stage = document.querySelector("[data-prototype-stage]");
 const prdPane = document.querySelector("[data-prd-pane]");
-const viewButtons = [...document.querySelectorAll("[data-view-mode]")];
 const docButtons = [...document.querySelectorAll("[data-doc-target]")];
 const docSections = [...document.querySelectorAll("[data-prd-section]")];
-const openPrdButton = document.querySelector("[data-open-prd]");
+const documentButtons = [...document.querySelectorAll("[data-document-view]")];
+const documentPanels = [...document.querySelectorAll("[data-document-panel]")];
+const outlinePanels = [...document.querySelectorAll("[data-outline-view]")];
 const backPrototypeButton = document.querySelector("[data-back-prototype]");
 
 const prototypeTargets = {
@@ -15,12 +16,14 @@ const prototypeTargets = {
   opc: "#opc"
 };
 
-let currentMode = "fit";
+const documentDefaults = { site: "overview", admin: "admin-applications" };
+
+let currentDocument = "site";
 let activeDoc = "overview";
 let frameScrollTimer;
 
 function resizePrototype() {
-  if (!frame.contentWindow || currentMode !== "fit") return;
+  if (!frame.contentWindow) return;
   const scale = Math.min(1, stage.clientWidth / 1440);
   frame.style.transform = `scale(${scale})`;
   frame.style.height = `${Math.ceil(stage.clientHeight / scale)}px`;
@@ -38,6 +41,7 @@ function setActiveDoc(id, syncDocument = true) {
 }
 
 function syncFromPrototype() {
+  if (currentDocument !== "site") return;
   const doc = frame.contentDocument;
   const win = frame.contentWindow;
   if (!doc || !win) return;
@@ -60,12 +64,19 @@ function scrollPrototypeTo(id) {
   frame.contentWindow.scrollTo({ top: target.offsetTop, behavior: "smooth" });
 }
 
-function scrollToPrd() {
-  document.body.scrollTo({ left: document.body.scrollWidth - window.innerWidth, behavior: "smooth" });
-}
-
 function scrollToPrototype() {
   document.body.scrollTo({ left: 0, behavior: "smooth" });
+}
+
+function switchDocument(view) {
+  if (!documentDefaults[view]) return;
+  currentDocument = view;
+  documentButtons.forEach(button => button.classList.toggle("is-active", button.dataset.documentView === view));
+  documentPanels.forEach(panel => { panel.hidden = panel.dataset.documentPanel !== view; });
+  outlinePanels.forEach(panel => { panel.hidden = panel.dataset.outlineView !== view; });
+  activeDoc = "";
+  setActiveDoc(documentDefaults[view], false);
+  prdPane.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 frame.addEventListener("load", () => {
@@ -76,25 +87,13 @@ frame.addEventListener("load", () => {
   }, { passive: true });
 });
 
-viewButtons.forEach(button => button.addEventListener("click", () => {
-  currentMode = button.dataset.viewMode;
-  stage.classList.toggle("is-fit", currentMode === "fit");
-  stage.classList.toggle("is-actual", currentMode === "actual");
-  viewButtons.forEach(item => item.classList.toggle("is-active", item === button));
-  if (currentMode === "fit") resizePrototype();
-  else {
-    frame.style.transform = "none";
-    frame.style.height = "100%";
-  }
-}));
-
 docButtons.forEach(button => button.addEventListener("click", () => {
   const id = button.dataset.docTarget;
   setActiveDoc(id);
-  scrollPrototypeTo(id);
+  if (currentDocument === "site") scrollPrototypeTo(id);
 }));
 
-openPrdButton.addEventListener("click", scrollToPrd);
+documentButtons.forEach(button => button.addEventListener("click", () => switchDocument(button.dataset.documentView)));
 backPrototypeButton.addEventListener("click", scrollToPrototype);
 
 window.addEventListener("resize", resizePrototype);

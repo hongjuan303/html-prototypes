@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>容量万相｜生态创新中心 V3.0 评审原型</title>
-  <link rel="stylesheet" href="review.css?v=20260825-5">
+  <link rel="stylesheet" href="review.css?v=20260825-6">
 </head>
 <body>
   <main class="review-shell">
@@ -14,12 +14,6 @@
           <strong>生态创新中心</strong>
           <span>V3.0 评审原型</span>
         </div>
-        <nav aria-label="原型视图工具">
-          <button class="is-active" type="button" data-view-mode="fit">适应窗口</button>
-          <button type="button" data-view-mode="actual">原始尺寸</button>
-          <a href="prototype/" target="_blank" rel="noreferrer">单独预览 <b>↗</b></a>
-          <button class="review-entry" type="button" data-open-prd>PRD 文档 <b>→</b></button>
-        </nav>
       </header>
       <div class="prototype-stage is-fit" data-prototype-stage>
         <iframe data-prototype-frame src="prototype/" title="容量万相生态创新中心 V3.0 原型"></iframe>
@@ -36,7 +30,12 @@
         <em>V1.0</em>
       </header>
 
-      <nav class="prd-outline" aria-label="需求文档目录">
+      <nav class="prd-doc-switch" aria-label="需求文档切换">
+        <button class="is-active" type="button" data-document-view="site">官网前台 PRD</button>
+        <button type="button" data-document-view="admin">绿台配置 PRD</button>
+      </nav>
+
+      <nav class="prd-outline" data-outline-view="site" aria-label="官网前台需求文档目录">
         <button class="is-active" type="button" data-doc-target="overview">文档概览</button>
         <button type="button" data-doc-target="home">首页轮播</button>
         <button type="button" data-doc-target="network">产业协同</button>
@@ -44,7 +43,12 @@
         <button type="button" data-doc-target="opc">OPC社区</button>
       </nav>
 
-      <article class="prd-document">
+      <nav class="prd-outline" data-outline-view="admin" aria-label="绿台配置需求文档目录" hidden>
+        <button class="is-active" type="button" data-doc-target="admin-applications">申请管理</button>
+        <button type="button" data-doc-target="admin-waterfall">瀑布流轮播图</button>
+      </nav>
+
+      <article class="prd-document" data-document-panel="site">
         <section class="prd-section is-active" id="prd-overview" data-prd-section="overview">
           <h1># 页面说明</h1>
           <ul>
@@ -191,8 +195,102 @@
           <p class="note danger"><b>校验提示：</b>必填项缺失或手机号格式错误时，不允许提交并在对应字段显示校验状态。</p>
         </section>
       </article>
+
+      <article class="prd-document" data-document-panel="admin" hidden>
+        <section class="prd-section is-active" id="prd-admin-applications" data-prd-section="admin-applications">
+          <h1># 生态创新中心申请管理</h1>
+          <h2># 页面说明</h2>
+          <ul>
+            <li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; AI漫剧官网配置 &gt; 生态创新中心。</li>
+            <li><b>使用对象：</b>内容业务、生态合作运营及审核人员。</li>
+            <li>通过四个Tab分别管理OPC社区、精品短剧、产业空间及校企合作的前台申请。</li>
+          </ul>
+
+          <h2># 原型说明</h2>
+          <h3>● Tab项</h3>
+          <ul>
+            <li>页面不设置“全部”Tab，默认进入<code>OPC社区</code>。</li>
+            <li>Tab枚举为“OPC社区、精品短剧、产业空间、校企合作”。</li>
+          </ul>
+
+          <h3>○ OPC社区</h3>
+          <ul>
+            <li><b>筛选：</b>联系人、联系电话、提交时间、审核状态。</li>
+            <li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li>
+            <li><b>操作：</b>详情；待审核记录额外展示审核。</li>
+            <li>审核支持“审核通过、审核拒绝”；拒绝时必填拒绝原因。</li>
+          </ul>
+
+          <h3>○ 精品短剧 / 产业空间 / 校企合作</h3>
+          <ul>
+            <li><b>筛选：</b>联系人、联系电话、提交时间。</li>
+            <li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li>
+            <li><b>操作：</b>仅详情，不提供审核入口。</li>
+            <li>审核状态统一展示“无需审核”。</li>
+          </ul>
+
+          <h3>○ 通用规则</h3>
+          <ul>
+            <li>联系电话在列表中默认脱敏，进入详情且具备权限后才展示完整号码。</li>
+            <li>提交时间支持开始日期与结束日期组合查询。</li>
+            <li>详情展示申请人本次提交的完整资料、来源入口及隐私授权状态。</li>
+          </ul>
+
+          <h3>○ 数据与权限</h3>
+          <ul>
+            <li>申请数据写入后台数据库，不以浏览器缓存作为正式数据源。</li>
+            <li>详情和审核分开配置权限；手机号等个人信息应脱敏展示、加密存储。</li>
+            <li>记录查看、审核等关键操作日志，便于问题追溯。</li>
+          </ul>
+        </section>
+
+        <section class="prd-section" id="prd-admin-waterfall" data-prd-section="admin-waterfall">
+          <h1># 瀑布流轮播图</h1>
+          <h2># 页面说明</h2>
+          <ul>
+            <li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; 瀑布流轮播图。</li>
+            <li><b>使用对象：</b>内容业务及产品运营。</li>
+            <li>本次在现有页面增加生态创新中心Banner配置能力，不新增独立Banner菜单。</li>
+          </ul>
+
+          <h2># 原型说明</h2>
+          <h3>● 修改记录</h3>
+          <p><span class="change-date">2026-08-24</span> <span class="change-copy">选择应用为“AI漫剧”且类型为“生态创新中心”时，隐藏“国内、海外”内容版本Tab。</span></p>
+          <p><span class="change-date">2026-08-21</span> <span class="change-copy">类型新增枚举“生态创新中心”。</span></p>
+
+          <h3>○ 筛选项</h3>
+          <ul>
+            <li><code>选择应用</code>：下拉单选，选择“AI漫剧”。</li>
+            <li><code>类型</code>：下拉单选，选择“生态创新中心”。</li>
+            <li>满足以上组合时，配置内容不区分国内和海外，页面不展示内容版本Tab。</li>
+            <li>切换为其他应用或类型时，仍按原规则展示国内、海外Tab。</li>
+          </ul>
+
+          <h3>○ 配置字段</h3>
+          <ul>
+            <li><b>标题：</b>必填，文本输入，最多100字符。</li>
+            <li><b>素材类型：</b>单选“图片、视频”；图片建议1920×560，视频需上传可播放文件。</li>
+            <li><b>跳转方式：</b>单选“不跳转、跳转网页”；选择跳转网页时必填完整链接。</li>
+            <li><b>有效时间：</b>开始时间、结束时间必填，精确到分钟；结束时间必须晚于开始时间。</li>
+          </ul>
+
+          <h3>○ 列表字段</h3>
+          <ul>
+            <li>ID、选择应用、类型、标题、素材类型、素材、跳转方式、开始时间、结束时间、操作。</li>
+            <li>素材为图片时展示缩略图；素材为视频时展示首帧及播放图标。</li>
+          </ul>
+
+          <h3>○ 操作项</h3>
+          <ul>
+            <li><code>添加 / 修改</code>：打开居中轮播配置弹窗，保存后进入当前类型列表。</li>
+            <li><code>刷新缓存</code>：配置保存并生效后刷新前台缓存。</li>
+            <li><code>排序</code>：进入拖拽排序模式，调整同类型Banner的轮播顺序。</li>
+            <li><code>删除</code>：弹出二次确认弹窗，确认后删除且不可恢复。</li>
+          </ul>
+        </section>
+      </article>
     </aside>
   </main>
-  <script src="review.js?v=20260825-4"></script>
+  <script src="review.js?v=20260825-5"></script>
 </body>
 </html>
