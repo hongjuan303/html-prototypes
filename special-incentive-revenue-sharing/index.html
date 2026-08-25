@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="专项激励配置支持多方收益分成高保真交互原型与PRD" />
+    <title>专项激励配置 - 多方收益分成</title>
+    <link rel="stylesheet" href="/html-prototypes/special-incentive-revenue-sharing/styles.css" />
+  </head>
+  <body>
+    <div class="review-canvas">
+      <div class="prototype-stage">
+        <div class="app-shell">
+          <aside class="sidebar" aria-label="主导航">
+            <div class="nav-group">
+              <button><i>◉</i><span>番茄合同收益明细</span></button>
+              <button><i>◉</i><span>剧集数据概览看板</span></button>
+              <button><i>◉</i><span>红果内容榜单</span></button>
+              <button><i>◉</i><span>红果合同映射</span></button>
+              <button><i>◉</i><span>抖音新平台剧集管理</span></button>
+              <button><i>◉</i><span>批次设置</span></button>
+              <button class="expand"><i>◉</i><span>拼多多平台</span><b>⌄</b></button>
+              <button class="expand"><i>◉</i><span>代发行</span><b>⌄</b></button>
+              <button class="active"><i>◉</i><span>专项激励配置</span></button>
+              <button class="expand"><i>◉</i><span>供应商管理</span><b>⌃</b></button>
+              <button class="sub"><i>◉</i><span>供应商管理</span></button>
+            </div>
+          </aside>
+
+          <div class="workspace">
+            <header class="topbar">
+              <button class="icon-button menu-button" title="收起导航" aria-label="收起导航">☰</button>
+              <div class="breadcrumb"><b>版权管理</b><i>/</i><span>专项激励配置</span></div>
+              <div class="challenge">百日0故障挑战 第357天</div>
+              <label class="global-search"><span>⌕</span><input placeholder="请输入搜索内容" /></label>
+              <button class="icon-button" title="全屏" aria-label="全屏">⛶</button><span class="fullscreen-label">全屏</span>
+              <button class="user-button"><span>洪</span>洪娟<b>⌄</b></button>
+            </header>
+
+            <div class="route-tabs" aria-label="已打开页面">
+              <span>菜单管理<button aria-label="关闭">×</button></span>
+              <span>用户管理<button aria-label="关闭">×</button></span>
+              <span>内容审核库<button aria-label="关闭">×</button></span>
+              <span>合集组<button aria-label="关闭">×</button></span>
+              <span>番茄月收益明细(新)<button aria-label="关闭">×</button></span>
+              <span>格式化<button aria-label="关闭">×</button></span>
+              <span class="current">专项激励配置<button aria-label="关闭">×</button></span>
+            </div>
+
+            <main>
+              <section class="filter-panel" aria-label="专项激励筛选">
+                <label><span>账单月份</span><select id="monthFilter"><option value="">请选择</option><option value="07月" selected>2026-07</option><option value="06月">2026-06</option><option value="05月">2026-05</option></select></label>
+                <label><span>激励类型</span><select id="typeFilter"><option value="">请选择</option><option>高消费短剧激励活动</option><option>重点品类激励活动</option><option>抖音端原生品类激励活动</option><option>合作机构新增短剧激励</option><option>系列剧激励活动</option></select></label>
+                <label><span>收益归属方</span><select id="ownerFilter"><option value="">全部</option><option>番茄</option><option>抖音原生</option></select></label>
+                <div class="filter-actions">
+                  <button class="primary" id="queryButton">查询</button>
+                  <button class="secondary" id="resetButton">重置</button>
+                  <button class="primary" id="exportButton">导出</button>
+                </div>
+              </section>
+
+              <section class="table-panel">
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th>账期</th><th>激励类型</th><th>收益分配</th><th>操作</th></tr></thead>
+                    <tbody id="incentiveRows"></tbody>
+                  </table>
+                  <div class="empty-state" id="emptyState" hidden>暂无符合条件的数据</div>
+                </div>
+                <div class="pagination">
+                  <span id="totalText">共 10 条</span>
+                  <select aria-label="每页条数"><option>10条/页</option><option>20条/页</option></select>
+                  <button disabled>‹</button><b>1</b><button>›</button><span>前往</span><input value="1" aria-label="前往页码" /><span>页</span>
+                </div>
+              </section>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <aside class="prd-panel" aria-label="PRD文档说明">
+        <div class="prd-heading">
+          <span>PRD</span>
+          <div><strong>专项激励配置优化</strong><small>多业务方收益分成 · V1.0</small></div>
+        </div>
+
+        <section>
+          <h2># 页面说明</h2>
+          <ul>
+            <li><b>页面名称：</b>专项激励配置</li>
+            <li><b>菜单路径：</b>绿台 ＞ 版权管理 ＞ 专项激励配置</li>
+            <li><b>使用对象：</b>版权、财务及结算业务</li>
+            <li><b>需求背景：</b>现有专项激励仅能归属一个业务方；新增激励可能由番茄、抖音原生共同享有，需要支持按比例分配。</li>
+            <li><b>需求目标：</b>兼容单方100%归属，同时支持两个业务方按50%/50%、60%/40%等比例分配。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 原型说明</h2>
+          <h3>筛选</h3>
+          <ul>
+            <li><b>账单月份、激励类型：</b>沿用现有筛选逻辑。</li>
+            <li><b>收益归属方：</b>新增下拉筛选；选择业务方后，查询收益分配中包含该业务方的数据。</li>
+            <li><b>导出：</b>导出字段“收益归属”调整为“收益分配明细”，示例：番茄:50%;抖音原生:50%。</li>
+          </ul>
+
+          <h3>列表</h3>
+          <ul>
+            <li><b>收益分配：</b>原“收益归属”字段升级，展示业务方及分成比例；单方历史数据展示为“番茄 100%”。</li>
+            <li><b>编辑：</b>点击打开收益分配弹窗，账期及激励类型只读。</li>
+          </ul>
+
+          <h3>编辑弹窗</h3>
+          <ul>
+            <li><b>收益归属方：</b>下拉单选，枚举为番茄、抖音原生；同一业务方不可重复。</li>
+            <li><b>分成比例：</b>必填，单位%，支持最多2位小数，取值范围为0.01%～100%。</li>
+            <li><b>添加收益归属：</b>本期最多配置2个业务方；新增第二方时默认调整为50%/50%。</li>
+            <li><b>删除：</b>删除第二方后，保留业务方的比例自动恢复为100%。</li>
+            <li><b>合计校验：</b>所有分成比例必须合计100%，否则不能提交。</li>
+            <li><b>保存确认：</b>提交前二次展示账期、激励类型及调整后的收益分配。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 业务规则</h2>
+          <ul>
+            <li><b>计算公式：</b>业务方收益 = 专项激励总收益 × 业务方分成比例。</li>
+            <li><b>金额精度：</b>按分计算并保留2位小数；尾差计入最后一个业务方，保证分配金额合计等于专项激励总收益。</li>
+            <li><b>负向金额：</b>退款、冲销、调账等负向金额沿用原比例反向分配。</li>
+            <li><b>结算限制：</b>已进入结算流程的账期不可修改，后端保存时需再次校验。</li>
+            <li><b>唯一性：</b>同一“账期 + 激励类型”仅保留一套有效收益分配方案。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 数据兼容</h2>
+          <ul>
+            <li><b>历史数据：</b>现有单方归属数据迁移为“原业务方 + 100%”，已结算账期不重新计算。</li>
+            <li><b>数据结构：</b>后端采用收益分配明细数组，不新增固定的“番茄比例、抖音原生比例”字段，为后续增加业务方预留扩展能力。</li>
+            <li><b>操作日志：</b>记录操作人、操作时间、修改前和修改后的分配明细，支持财务追溯。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2># 验收标准</h2>
+          <ol>
+            <li>支持单方100%和双方任意合计100%的分配方案。</li>
+            <li>比例合计不为100%、比例越界或业务方重复时无法保存。</li>
+            <li>列表、筛选、导出及下游结算使用同一份收益分配数据。</li>
+            <li>历史单方配置正常展示，已结算历史账单不受影响。</li>
+          </ol>
+        </section>
+
+        <div class="prd-note"><b>原型体验</b><span>点击左侧列表“编辑”，可体验新增归属方、修改比例、错误校验及保存确认流程。</span></div>
+      </aside>
+    </div>
+
+    <div class="overlay" id="editModal" hidden>
+      <section class="dialog allocation-dialog" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+        <header><h1 id="editTitle">专项激励配置</h1><button class="close" id="closeEditModal" aria-label="关闭">×</button></header>
+        <div class="dialog-body">
+          <div class="readonly-grid">
+            <div><span>账期</span><b id="dialogMonth"></b></div>
+            <div><span>激励类型</span><b id="dialogType"></b></div>
+          </div>
+
+          <div class="allocation-header">
+            <div><b><i>*</i>收益分配</b><small>分成比例合计必须为100%</small></div>
+            <span class="total-badge" id="totalBadge">合计 100%</span>
+          </div>
+
+          <div class="allocation-list" id="allocationList"></div>
+          <button class="add-allocation" id="addAllocationButton"><span>＋</span>添加收益归属</button>
+          <p class="form-error" id="formError" hidden></p>
+
+          <div class="calculation-note">
+            <b>结算口径</b>
+            <span>业务方收益 = 专项激励总收益 × 分成比例</span>
+          </div>
+        </div>
+        <footer><button class="secondary" id="cancelEditModal">取消</button><button class="primary" id="openConfirmButton">确定</button></footer>
+      </section>
+    </div>
+
+    <div class="overlay upper-overlay" id="confirmModal" hidden>
+      <section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <header><h1 id="confirmTitle">确认修改收益分配</h1><button class="close" id="closeConfirmModal" aria-label="关闭">×</button></header>
+        <div class="confirm-content">
+          <span class="warning-icon">!</span>
+          <div><b>确定保存本次收益分配吗？</b><p id="confirmMeta"></p><div class="confirm-allocation" id="confirmAllocation"></div><small>保存后，该配置将用于当前账期的专项激励收益结算。</small></div>
+        </div>
+        <footer><button class="secondary" id="cancelConfirmButton">取消</button><button class="primary" id="saveButton">确认保存</button></footer>
+      </section>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+    <script src="/html-prototypes/special-incentive-revenue-sharing/app.js"></script>
+  </body>
+</html>
