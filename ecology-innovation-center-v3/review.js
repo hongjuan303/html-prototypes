@@ -60,8 +60,12 @@ function scrollPrototypeTo(id) {
   frame.contentWindow.scrollTo({ top: target.offsetTop, behavior: "smooth" });
 }
 
-function showCanvas(index) {
-  document.body.scrollTo({ left: index * window.innerWidth, behavior: "smooth" });
+function scrollToPrd() {
+  document.body.scrollTo({ left: document.body.scrollWidth - window.innerWidth, behavior: "smooth" });
+}
+
+function scrollToPrototype() {
+  document.body.scrollTo({ left: 0, behavior: "smooth" });
 }
 
 frame.addEventListener("load", () => {
@@ -90,8 +94,8 @@ docButtons.forEach(button => button.addEventListener("click", () => {
   scrollPrototypeTo(id);
 }));
 
-openPrdButton.addEventListener("click", () => showCanvas(1));
-backPrototypeButton.addEventListener("click", () => showCanvas(0));
+openPrdButton.addEventListener("click", scrollToPrd);
+backPrototypeButton.addEventListener("click", scrollToPrototype);
 
 window.addEventListener("resize", resizePrototype);
 resizePrototype();
