@@ -4,6 +4,8 @@ const prdPane = document.querySelector("[data-prd-pane]");
 const viewButtons = [...document.querySelectorAll("[data-view-mode]")];
 const docButtons = [...document.querySelectorAll("[data-doc-target]")];
 const docSections = [...document.querySelectorAll("[data-prd-section]")];
+const openPrdButton = document.querySelector("[data-open-prd]");
+const backPrototypeButton = document.querySelector("[data-back-prototype]");
 
 const prototypeTargets = {
   overview: "#top",
@@ -58,6 +60,10 @@ function scrollPrototypeTo(id) {
   frame.contentWindow.scrollTo({ top: target.offsetTop, behavior: "smooth" });
 }
 
+function showCanvas(index) {
+  document.body.scrollTo({ left: index * window.innerWidth, behavior: "smooth" });
+}
+
 frame.addEventListener("load", () => {
   resizePrototype();
   frame.contentWindow.addEventListener("scroll", () => {
@@ -83,6 +89,9 @@ docButtons.forEach(button => button.addEventListener("click", () => {
   setActiveDoc(id);
   scrollPrototypeTo(id);
 }));
+
+openPrdButton.addEventListener("click", () => showCanvas(1));
+backPrototypeButton.addEventListener("click", () => showCanvas(0));
 
 window.addEventListener("resize", resizePrototype);
 resizePrototype();
