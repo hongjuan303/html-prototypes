@@ -114,8 +114,9 @@ frame.addEventListener("load", () => {
   }, { passive: true });
 });
 
-adminFrame.addEventListener("load", () => {
+function initializeAdminFrame() {
   const doc = adminFrame.contentDocument;
+  if (!doc?.head) return;
   if (doc && !doc.getElementById("embedded-review-style")) {
     const style = doc.createElement("style");
     style.id = "embedded-review-style";
@@ -127,9 +128,15 @@ adminFrame.addEventListener("load", () => {
     doc.head.appendChild(style);
   }
   resizePrototype();
-  adminFrame.contentWindow.addEventListener("hashchange", syncFromAdmin);
+  if (!adminFrame.contentWindow.__reviewHashSyncBound) {
+    adminFrame.contentWindow.addEventListener("hashchange", syncFromAdmin);
+    adminFrame.contentWindow.__reviewHashSyncBound = true;
+  }
   syncFromAdmin();
-});
+}
+
+adminFrame.addEventListener("load", initializeAdminFrame);
+initializeAdminFrame();
 
 docButtons.forEach(button => button.addEventListener("click", () => {
   const id = button.dataset.docTarget;
