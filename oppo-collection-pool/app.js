@@ -32,13 +32,11 @@ let toastTimer = null;
 function renderPools(data = pools) {
   poolRows.innerHTML = data.map((pool) => `<tr>
     <td><input type="checkbox" aria-label="选择${pool.name}" /></td><td>${pool.id}</td><td title="${pool.name}">${pool.name}</td><td>${pool.count}</td><td><span class="status-dot ${pool.status === "停用" ? "off" : ""}">${pool.status}</span></td><td><span class="pool-type ${pool.type === "OPPO" ? "oppo" : ""}">${pool.type}</span></td>
-    <td><div class="row-actions"><button class="link-button feedback-button" data-message="已打开修改名称弹窗（原型示意）">修改名称</button><button class="link-button elements-button" data-id="${pool.id}">修改池元素</button>${pool.type === "OPPO" ? `<button class="link-button strong push-button" data-id="${pool.id}">OPPO推送</button><button class="link-button records-button">推送记录</button>` : `<button class="link-button feedback-button" data-message="已开始自动添加池元素（原型示意）">自动添加元素</button><span class="more-wrap"><button class="link-button more-button" data-id="${pool.id}">更多⌄</button><span class="more-menu" data-menu="${pool.id}" hidden><button class="feedback-button" data-message="已打开状态设置（原型示意）">修改状态</button><button class="feedback-button" data-message="删除操作需二次确认（原型示意）">删除合集池</button></span></span>`}</div></td>
+    <td><div class="row-actions"><button class="link-button feedback-button" data-message="已打开修改名称弹窗（原型示意）">修改名称</button><button class="link-button elements-button" data-id="${pool.id}">修改池元素</button><button class="link-button feedback-button" data-message="已开始自动添加池元素（原型示意）">自动添加元素</button><span class="more-wrap"><button class="link-button more-button" data-id="${pool.id}">更多⌄</button><span class="more-menu" data-menu="${pool.id}" hidden><button class="feedback-button" data-message="已打开状态设置（原型示意）">修改状态</button><button class="feedback-button" data-message="删除操作需二次确认（原型示意）">删除合集池</button></span></span></div></td>
   </tr>`).join("");
   emptyState.hidden = data.length > 0;
   totalText.textContent = `共 ${data.length} 条`;
   document.querySelectorAll(".elements-button").forEach((button) => button.addEventListener("click", () => openElements(Number(button.dataset.id))));
-  document.querySelectorAll(".push-button").forEach((button) => button.addEventListener("click", openPush));
-  document.querySelectorAll(".records-button").forEach((button) => button.addEventListener("click", openRecords));
   document.querySelectorAll(".feedback-button").forEach((button) => button.addEventListener("click", () => showToast(button.dataset.message)));
   document.querySelectorAll(".more-button").forEach((button) => button.addEventListener("click", () => {
     const menu = document.querySelector(`[data-menu="${button.dataset.id}"]`);
