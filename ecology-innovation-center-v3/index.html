@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>容量万相｜生态创新中心 V3.0 评审原型</title>
-  <link rel="stylesheet" href="review.css?v=20260825-6">
+  <link rel="stylesheet" href="review.css?v=20260826-7">
 </head>
 <body>
   <main class="review-shell">
@@ -13,10 +13,15 @@
         <div>
           <strong>生态创新中心</strong>
           <span>V3.0 评审原型</span>
+          <nav class="prototype-switch" aria-label="原型切换">
+            <button class="is-active" type="button" data-prototype-tab="site">官网前台原型</button>
+            <button type="button" data-prototype-tab="admin">绿台配置原型</button>
+          </nav>
         </div>
       </header>
       <div class="prototype-stage is-fit" data-prototype-stage>
-        <iframe data-prototype-frame src="prototype/" title="容量万相生态创新中心 V3.0 原型"></iframe>
+        <iframe data-prototype-frame data-prototype-panel="site" src="prototype/" title="容量万相生态创新中心 V3.0 官网前台原型"></iframe>
+        <iframe data-admin-frame data-prototype-panel="admin" src="../ecology-admin-review/" title="容量万相生态创新中心绿台配置原型" hidden></iframe>
       </div>
     </section>
 
@@ -291,6 +296,6 @@
       </article>
     </aside>
   </main>
-  <script src="review.js?v=20260825-5"></script>
+  <script src="review.js?v=20260826-6"></script>
 </body>
 </html>

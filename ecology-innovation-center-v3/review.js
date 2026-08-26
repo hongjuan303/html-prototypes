@@ -1,6 +1,9 @@
 const frame = document.querySelector("[data-prototype-frame]");
+const adminFrame = document.querySelector("[data-admin-frame]");
 const stage = document.querySelector("[data-prototype-stage]");
 const prdPane = document.querySelector("[data-prd-pane]");
+const prototypeButtons = [...document.querySelectorAll("[data-prototype-tab]")];
+const prototypePanels = [...document.querySelectorAll("[data-prototype-panel]")];
 const docButtons = [...document.querySelectorAll("[data-doc-target]")];
 const docSections = [...document.querySelectorAll("[data-prd-section]")];
 const documentButtons = [...document.querySelectorAll("[data-document-view]")];
@@ -19,14 +22,16 @@ const prototypeTargets = {
 const documentDefaults = { site: "overview", admin: "admin-applications" };
 
 let currentDocument = "site";
+let currentPrototype = "site";
 let activeDoc = "overview";
 let frameScrollTimer;
 
 function resizePrototype() {
-  if (!frame.contentWindow) return;
   const scale = Math.min(1, stage.clientWidth / 1440);
-  frame.style.transform = `scale(${scale})`;
-  frame.style.height = `${Math.ceil(stage.clientHeight / scale)}px`;
+  prototypePanels.forEach(panel => {
+    panel.style.transform = `scale(${scale})`;
+    panel.style.height = `${Math.ceil(stage.clientHeight / scale)}px`;
+  });
 }
 
 function setActiveDoc(id, syncDocument = true) {
@@ -41,7 +46,7 @@ function setActiveDoc(id, syncDocument = true) {
 }
 
 function syncFromPrototype() {
-  if (currentDocument !== "site") return;
+  if (currentDocument !== "site" || currentPrototype !== "site") return;
   const doc = frame.contentDocument;
   const win = frame.contentWindow;
   if (!doc || !win) return;
@@ -56,7 +61,18 @@ function syncFromPrototype() {
   setActiveDoc(id);
 }
 
+function syncFromAdmin() {
+  if (currentPrototype !== "admin") return;
+  const id = adminFrame.contentWindow?.location.hash === "#waterfall" ? "admin-waterfall" : "admin-applications";
+  setActiveDoc(id);
+}
+
 function scrollPrototypeTo(id) {
+  if (id.startsWith("admin-")) {
+    const page = id === "admin-waterfall" ? "waterfall" : "applications";
+    if (adminFrame.contentWindow) adminFrame.contentWindow.location.hash = page;
+    return;
+  }
   const doc = frame.contentDocument;
   const selector = prototypeTargets[id];
   const target = doc?.querySelector(selector);
@@ -68,7 +84,17 @@ function scrollToPrototype() {
   document.body.scrollTo({ left: 0, behavior: "smooth" });
 }
 
-function switchDocument(view) {
+function switchPrototype(view, syncDocument = true) {
+  if (!documentDefaults[view]) return;
+  currentPrototype = view;
+  prototypeButtons.forEach(button => button.classList.toggle("is-active", button.dataset.prototypeTab === view));
+  prototypePanels.forEach(panel => { panel.hidden = panel.dataset.prototypePanel !== view; });
+  resizePrototype();
+  if (syncDocument) switchDocument(view, false);
+  if (view === "admin") syncFromAdmin();
+}
+
+function switchDocument(view, syncPrototype = true) {
   if (!documentDefaults[view]) return;
   currentDocument = view;
   documentButtons.forEach(button => button.classList.toggle("is-active", button.dataset.documentView === view));
@@ -77,6 +103,7 @@ function switchDocument(view) {
   activeDoc = "";
   setActiveDoc(documentDefaults[view], false);
   prdPane.scrollTo({ top: 0, behavior: "smooth" });
+  if (syncPrototype) switchPrototype(view, false);
 }
 
 frame.addEventListener("load", () => {
@@ -87,13 +114,31 @@ frame.addEventListener("load", () => {
   }, { passive: true });
 });
 
+adminFrame.addEventListener("load", () => {
+  const doc = adminFrame.contentDocument;
+  if (doc && !doc.getElementById("embedded-review-style")) {
+    const style = doc.createElement("style");
+    style.id = "embedded-review-style";
+    style.textContent = `
+      html, body { min-width: 0 !important; }
+      .workspace { grid-template-columns: minmax(0, 1fr) !important; padding-right: 14px !important; }
+      .docs-panel { display: none !important; }
+    `;
+    doc.head.appendChild(style);
+  }
+  resizePrototype();
+  adminFrame.contentWindow.addEventListener("hashchange", syncFromAdmin);
+  syncFromAdmin();
+});
+
 docButtons.forEach(button => button.addEventListener("click", () => {
   const id = button.dataset.docTarget;
   setActiveDoc(id);
-  if (currentDocument === "site") scrollPrototypeTo(id);
+  scrollPrototypeTo(id);
 }));
 
 documentButtons.forEach(button => button.addEventListener("click", () => switchDocument(button.dataset.documentView)));
+prototypeButtons.forEach(button => button.addEventListener("click", () => switchPrototype(button.dataset.prototypeTab)));
 backPrototypeButton.addEventListener("click", scrollToPrototype);
 
 window.addEventListener("resize", resizePrototype);
