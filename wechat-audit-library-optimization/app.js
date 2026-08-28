@@ -249,10 +249,10 @@ function openSyncModal(single = false) {
 }
 
 const miniPrograms = [
-  { id: 'xingyao', name: '星耀剧场', skip: 0 },
-  { id: 'qingyue', name: '轻阅短剧', skip: 0 },
-  { id: 'qingning', name: '青柠短剧', skip: 1 },
-  { id: 'qingting', name: '蜻蜓剧场', skip: 2 }
+  { id: 'xingyao', name: '星耀剧场' },
+  { id: 'qingyue', name: '轻阅短剧' },
+  { id: 'qingning', name: '青柠短剧' },
+  { id: 'qingting', name: '蜻蜓剧场' }
 ];
 
 function selectedCollections(records) {
@@ -276,38 +276,6 @@ function sourceCollectionRows(records) {
       <td class="source-name" title="${collection.name}">${collection.name}</td>
       <td>${collection.miniProgram}</td>
     </tr>`).join('');
-}
-
-function openBatchMiniProgramResult(ctx, programs) {
-  const collections = selectedCollections(ctx.records);
-  const resultRows = [];
-  let skipped = 0;
-  collections.forEach((collection, collectionIndex) => {
-    programs.forEach((program) => {
-      const isSkipped = collectionIndex < Math.min(program.skip, collections.length);
-      if (isSkipped) skipped += 1;
-      resultRows.push(`
-        <tr><td>${collection.cid}</td><td class="source-name">${collection.name}</td><td>${program.name}</td>
-        <td><span class="status ${isSkipped ? 'orange' : 'green'}">${isSkipped ? '已跳过' : '创建成功'}</span></td>
-        <td>${isSkipped ? '该合集在目标小程序已存在提审任务' : '已生成新的小程序提审任务'}</td></tr>`);
-    });
-  });
-  const total = collections.length * programs.length;
-  const success = total - skipped;
-  openModal({
-    title: '批量送审结果',
-    size: 'wide',
-    footer: false,
-    body: `
-      <div class="result-stats">
-        <div><span>处理组合</span><strong>${total}</strong></div>
-        <div class="success"><span>创建成功</span><strong>${success}</strong></div>
-        <div class="skip"><span>自动跳过</span><strong>${skipped}</strong></div>
-        <div><span>失败</span><strong>0</strong></div>
-      </div>
-      <p class="modal-note">新任务已进入微信小程序送审流程；已存在“合集ID＋送审小程序”提审任务的组合不会重复创建。</p>
-      <div class="source-table-wrap result-table-wrap"><table class="source-review-table result-table"><thead><tr><th>合集ID</th><th>合集名称</th><th>目标小程序</th><th>处理结果</th><th>说明</th></tr></thead><tbody>${resultRows.join('')}</tbody></table></div>`
-  });
 }
 
 function openBatchMiniProgramModal() {
@@ -360,7 +328,9 @@ function openBatchMiniProgramModal() {
     const selectedPrograms = programChecks
       .filter((check) => check.checked)
       .map((check) => miniPrograms.find((program) => program.id === check.value));
-    if (selectedPrograms.length > 0) openBatchMiniProgramResult(ctx, selectedPrograms);
+    if (selectedPrograms.length === 0) return;
+    closeModal();
+    showToast('批量送审任务已提交');
   });
 }
 
