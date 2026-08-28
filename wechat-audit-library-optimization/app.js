@@ -278,19 +278,21 @@ function sourceCollectionRows(records) {
     </tr>`).join('');
 }
 
-function openBatchMiniProgramResult(ctx, program) {
+function openBatchMiniProgramResult(ctx, programs) {
   const collections = selectedCollections(ctx.records);
   const resultRows = [];
   let skipped = 0;
   collections.forEach((collection, collectionIndex) => {
-    const isSkipped = collectionIndex < Math.min(program.skip, collections.length);
-    if (isSkipped) skipped += 1;
-    resultRows.push(`
-      <tr><td>${collection.cid}</td><td class="source-name">${collection.name}</td><td>${program.name}</td>
-      <td><span class="status ${isSkipped ? 'orange' : 'green'}">${isSkipped ? '已跳过' : '创建成功'}</span></td>
-      <td>${isSkipped ? '该合集在目标小程序已存在提审任务' : '已生成新的小程序提审任务'}</td></tr>`);
+    programs.forEach((program) => {
+      const isSkipped = collectionIndex < Math.min(program.skip, collections.length);
+      if (isSkipped) skipped += 1;
+      resultRows.push(`
+        <tr><td>${collection.cid}</td><td class="source-name">${collection.name}</td><td>${program.name}</td>
+        <td><span class="status ${isSkipped ? 'orange' : 'green'}">${isSkipped ? '已跳过' : '创建成功'}</span></td>
+        <td>${isSkipped ? '该合集在目标小程序已存在提审任务' : '已生成新的小程序提审任务'}</td></tr>`);
     });
-  const total = collections.length;
+  });
+  const total = collections.length * programs.length;
   const success = total - skipped;
   openModal({
     title: '批量送审结果',
@@ -319,23 +321,46 @@ function openBatchMiniProgramModal() {
         <div class="source-table-wrap"><table class="source-review-table source-collection-table"><thead><tr><th>合集ID</th><th>合集名称</th><th>送审小程序</th></tr></thead><tbody>${sourceCollectionRows(ctx.records)}</tbody></table></div>
       </section>
       <div class="batch-review-form">
-        <label for="batchReviewProgram"><i class="required">*</i> 选择送审小程序</label>
-        <select id="batchReviewProgram">
-          <option value="">请选择</option>
-          ${miniPrograms.map((program) => `<option value="${program.id}">${program.name}</option>`).join('')}
-        </select>
+        <label><i class="required">*</i> 选择送审小程序</label>
+        <div class="batch-program-multiselect" id="batchProgramMultiselect">
+          <button type="button" class="batch-program-trigger" id="batchProgramTrigger" aria-haspopup="listbox" aria-expanded="false">
+            <span id="batchProgramSelection" class="placeholder">请选择（可多选）</span><span class="select-arrow">⌄</span>
+          </button>
+          <div class="batch-program-menu" id="batchProgramMenu" role="listbox" aria-multiselectable="true">
+            ${miniPrograms.map((program) => `<label><input class="program-check" type="checkbox" value="${program.id}"><span>${program.name}</span></label>`).join('')}
+          </div>
+        </div>
       </div>
       <div class="batch-review-footer-note"><span>ⓘ</span><p>提交时按“合集ID＋送审小程序”校验，已经提审过的将自动跳过。</p></div>`
   });
 
   const confirmButton = document.querySelector('#confirmBatchMiniReview');
-  const programSelect = document.querySelector('#batchReviewProgram');
-  programSelect.addEventListener('change', () => {
-    confirmButton.disabled = !programSelect.value;
+  const multiSelect = document.querySelector('#batchProgramMultiselect');
+  const programTrigger = document.querySelector('#batchProgramTrigger');
+  const programMenu = document.querySelector('#batchProgramMenu');
+  const selectionText = document.querySelector('#batchProgramSelection');
+  const programChecks = [...document.querySelectorAll('.program-check')];
+  programTrigger.addEventListener('click', () => {
+    const opening = !multiSelect.classList.contains('open');
+    multiSelect.classList.toggle('open', opening);
+    programTrigger.setAttribute('aria-expanded', String(opening));
   });
+  programMenu.addEventListener('click', (event) => event.stopPropagation());
+  programChecks.forEach((check) => check.addEventListener('change', () => {
+    const selectedPrograms = programChecks
+      .filter((item) => item.checked)
+      .map((item) => miniPrograms.find((program) => program.id === item.value));
+    selectionText.textContent = selectedPrograms.length > 0
+      ? selectedPrograms.map((program) => program.name).join('、')
+      : '请选择（可多选）';
+    selectionText.classList.toggle('placeholder', selectedPrograms.length === 0);
+    confirmButton.disabled = selectedPrograms.length === 0;
+  }));
   confirmButton.addEventListener('click', () => {
-    const selectedProgram = miniPrograms.find((program) => program.id === programSelect.value);
-    if (selectedProgram) openBatchMiniProgramResult(ctx, selectedProgram);
+    const selectedPrograms = programChecks
+      .filter((check) => check.checked)
+      .map((check) => miniPrograms.find((program) => program.id === check.value));
+    if (selectedPrograms.length > 0) openBatchMiniProgramResult(ctx, selectedPrograms);
   });
 }
 
