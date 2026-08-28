@@ -43,8 +43,8 @@ function updateBatchState() {
     batchMenuHint.textContent = '全部批量操作可用';
   } else {
     batchHint.classList.add('mixed');
-    batchHint.textContent = '已跨合集选择，修改/替换不可用';
-    batchMenuHint.textContent = '修改剧目信息、替换剧集仅支持同一合集ID';
+    batchHint.textContent = '已跨合集选择，批量送审小程序可用；修改/替换不可用';
+    batchMenuHint.textContent = '批量送审小程序、删除、同步不受合集ID限制';
   }
 
   const visibleChecks = checks.filter((check) => !check.closest('tr').classList.contains('filtered'));
@@ -107,11 +107,20 @@ modalBackdrop.addEventListener('click', (event) => { if (event.target === modalB
 function recordContext(single) {
   const selected = single ? [activeSingleRow] : selectedRows();
   const first = selected[0] || rows[0];
+  const records = selected.map((row) => ({
+    id: row.dataset.id,
+    cid: row.dataset.cid,
+    name: row.children[3].textContent.trim(),
+    dramaId: row.children[4].textContent.trim(),
+    miniProgram: row.children[12].textContent.trim()
+  }));
   return {
     count: selected.length,
     cid: first.dataset.cid,
     name: first.children[3].textContent.trim(),
-    dramaId: first.children[4].textContent.trim()
+    dramaId: first.children[4].textContent.trim(),
+    collectionCount: new Set(records.map((record) => record.cid)).size,
+    records
   };
 }
 
@@ -239,10 +248,106 @@ function openSyncModal(single = false) {
   });
 }
 
+const miniPrograms = [
+  { id: 'xingyao', name: '星耀剧场', appId: 'wx9a71c2e58401f36b', note: '新增媒资小程序', skip: 0 },
+  { id: 'qingyue', name: '轻阅短剧', appId: 'wx2f836e1b74c09a25', note: '当前所选剧目均未送审', skip: 0 },
+  { id: 'qingning', name: '青柠短剧', appId: 'wx81d0a6c43fe27519', note: '部分剧目已有提审任务', skip: 1 },
+  { id: 'qingting', name: '蜻蜓剧场', appId: 'wxb427e931a506dc82', note: '部分剧目已有提审任务', skip: 2 }
+];
+
+function sourceReviewRows(records) {
+  return records.map((record) => `
+    <tr>
+      <td>${record.cid}</td><td class="source-name" title="${record.name}">${record.name}</td><td>${record.dramaId}</td>
+      <td>${record.miniProgram}</td><td><span class="status green">材料完整</span></td>
+    </tr>`).join('');
+}
+
+function openBatchMiniProgramResult(ctx, programs) {
+  const resultRows = [];
+  let skipped = 0;
+  ctx.records.forEach((record, recordIndex) => {
+    programs.forEach((program) => {
+      const isSkipped = recordIndex < Math.min(program.skip, ctx.records.length);
+      if (isSkipped) skipped += 1;
+      resultRows.push(`
+        <tr><td>${record.cid}</td><td class="source-name">${record.name}</td><td>${program.name}</td>
+        <td><span class="status ${isSkipped ? 'orange' : 'green'}">${isSkipped ? '已跳过' : '创建成功'}</span></td>
+        <td>${isSkipped ? '该剧目在目标小程序已存在提审任务' : '已复用原任务材料并生成新的提审任务'}</td></tr>`);
+    });
+  });
+  const total = ctx.records.length * programs.length;
+  const success = total - skipped;
+  openModal({
+    title: '批量送审结果',
+    size: 'wide',
+    footer: false,
+    body: `
+      <div class="result-stats">
+        <div><span>处理组合</span><strong>${total}</strong></div>
+        <div class="success"><span>创建成功</span><strong>${success}</strong></div>
+        <div class="skip"><span>自动跳过</span><strong>${skipped}</strong></div>
+        <div><span>失败</span><strong>0</strong></div>
+      </div>
+      <p class="modal-note">新任务已进入微信小程序送审流程；已存在“剧目ID＋目标小程序”提审任务的组合不会重复创建。</p>
+      <div class="source-table-wrap result-table-wrap"><table class="source-review-table result-table"><thead><tr><th>合集ID</th><th>合集名称</th><th>目标小程序</th><th>处理结果</th><th>说明</th></tr></thead><tbody>${resultRows.join('')}</tbody></table></div>`
+  });
+}
+
+function openBatchMiniProgramModal() {
+  const ctx = recordContext(false);
+  openModal({
+    title: '批量送审小程序',
+    size: 'wide',
+    footer: '<button class="btn" data-close>取消</button><button class="btn primary" id="confirmBatchMiniReview" disabled>确认批量送审</button>',
+    body: `
+      <div class="batch-review-summary">
+        <div><strong>已选择 ${ctx.count} 条送审记录</strong><span>覆盖 ${ctx.collectionCount} 个合集ID</span></div>
+        <p>支持跨合集批量补送。所有剧目、剧集及证明材料均从对应的已提审任务自动复用。</p>
+      </div>
+      <section class="batch-review-section">
+        <div class="batch-review-heading"><h3>已选送审任务</h3><span>材料来源：原提审记录</span></div>
+        <div class="source-table-wrap"><table class="source-review-table"><thead><tr><th>合集ID</th><th>合集名称</th><th>剧目ID</th><th>原送审小程序</th><th>材料状态</th></tr></thead><tbody>${sourceReviewRows(ctx.records)}</tbody></table></div>
+      </section>
+      <section class="batch-review-section">
+        <div class="batch-review-heading"><h3><i class="required">*</i> 选择送审小程序</h3><span>支持多选</span></div>
+        <div class="program-options">
+          ${miniPrograms.map((program) => `<label class="program-option"><input class="program-check" type="checkbox" value="${program.id}"><span class="program-check-ui">✓</span><span class="program-copy"><strong>${program.name}</strong><small>AppID：${program.appId}</small><em>${program.note}</em></span></label>`).join('')}
+        </div>
+      </section>
+      <section class="reuse-materials">
+        <div><strong>自动复用材料</strong><span>内容业务无需重新查找或填写</span></div>
+        <p><span>剧目基础信息</span><span>全部剧集信息</span><span>剧目资质</span><span>版权授权材料</span><span>内容声明及AI证明</span><span>其他平台发布证明</span></p>
+      </section>
+      <div class="batch-review-footer-note"><span>ⓘ</span><div><strong id="batchReviewPreview">请选择至少一个目标小程序</strong><p>提交时按“剧目ID＋目标小程序”校验，已有提审任务的组合将自动跳过。</p></div></div>`
+  });
+
+  const confirmButton = document.querySelector('#confirmBatchMiniReview');
+  const programChecks = [...document.querySelectorAll('.program-check')];
+  const preview = document.querySelector('#batchReviewPreview');
+  const updatePreview = () => {
+    const selectedPrograms = programChecks.filter((check) => check.checked).map((check) => miniPrograms.find((program) => program.id === check.value));
+    const skipped = selectedPrograms.reduce((sum, program) => sum + Math.min(program.skip, ctx.records.length), 0);
+    const total = ctx.records.length * selectedPrograms.length;
+    confirmButton.disabled = selectedPrograms.length === 0;
+    preview.textContent = selectedPrograms.length === 0
+      ? '请选择至少一个目标小程序'
+      : `预计创建 ${total - skipped} 个新提审任务，自动跳过 ${skipped} 个重复组合`;
+  };
+  programChecks.forEach((check) => check.addEventListener('change', () => {
+    check.closest('.program-option').classList.toggle('selected', check.checked);
+    updatePreview();
+  }));
+  confirmButton.addEventListener('click', () => {
+    const selectedPrograms = programChecks.filter((check) => check.checked).map((check) => miniPrograms.find((program) => program.id === check.value));
+    if (selectedPrograms.length > 0) openBatchMiniProgramResult(ctx, selectedPrograms);
+  });
+}
+
 batchActions.forEach((button) => button.addEventListener('click', () => {
   if (button.disabled) return;
   batchMenu.classList.remove('open');
-  const handlers = { modify: openModifyModal, replace: openReplaceModal, delete: openDeleteModal, sync: openSyncModal };
+  const handlers = { modify: openModifyModal, replace: openReplaceModal, 'mini-program-review': openBatchMiniProgramModal, delete: openDeleteModal, sync: openSyncModal };
   handlers[button.dataset.action]();
 }));
 

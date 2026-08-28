@@ -82,6 +82,7 @@
                   <div class="batch-menu" id="batchMenu" role="menu">
                     <button class="batch-action same-collection" data-action="modify" disabled>批量修改剧目信息</button>
                     <button class="batch-action same-collection" data-action="replace" disabled>批量替换剧集</button>
+                    <button class="batch-action" data-action="mini-program-review" disabled>批量送审小程序 <span class="callout small">6</span></button>
                     <button class="batch-action danger-text" data-action="delete" disabled>批量删除</button>
                     <button class="batch-action" data-action="sync" disabled>批量同步状态</button>
                     <p id="batchMenuHint">请先勾选送审记录</p>
@@ -135,7 +136,7 @@
       <section>
         <h2># 页面说明</h2>
         <p><strong>菜单路径：</strong>绿台 ＞ 内容管理 ＞ 内容审核库 ＞ 微信送审库</p>
-        <p><strong>优化目标：</strong>提升微信送审记录的批量处理效率，并补充剧目信息修改与版权保护状态追踪。</p>
+        <p><strong>优化目标：</strong>提升微信送审记录的批量处理效率，支持将已提审内容快速补送至新增或未覆盖的媒资小程序，并补充剧目信息修改与版权保护状态追踪。</p>
       </section>
 
       <section>
@@ -158,7 +159,7 @@
         <ul>
           <li>未勾选记录：“批量操作”按钮禁用。</li>
           <li>批量修改剧目信息、批量替换剧集：仅所选数据合集ID一致时可用。</li>
-          <li>批量删除、批量同步状态：勾选任意记录后即可使用，不校验合集ID。</li>
+          <li>批量送审小程序、批量删除、批量同步状态：勾选任意记录后即可使用，不校验合集ID。</li>
           <li>修改剧目信息、替换剧集弹窗与对应单条操作完全一致。</li>
           <li>同步提示：将从微信侧拉取最新剧目审核、媒资审核、剧目信息修改审核的状态。</li>
         </ul>
@@ -166,6 +167,16 @@
         <h3><span>5</span> 更多操作新增「历史」</h3>
         <p>点击后弹出剧目信息修改的历史记录，展示提交剧目信息修改的日期、状态、详情；点击详情查看当次提交的剧名、剧目ID、总集数、提审时间、审核状态及审核反馈。</p>
         <p><strong>数据兜底：</strong>若微信媒资接口未提供历史记录，则由绿台保存每次修改剧目信息的提审记录，并统一展示在“历史”中。</p>
+
+        <h3><span>6</span> 批量送审小程序</h3>
+        <p><strong>使用场景：</strong>业务新增媒资小程序，或当前小程序存在尚未送审的剧目时，按业务要求批量补送。</p>
+        <ul>
+          <li>支持同时勾选多个不同合集ID，不要求所选记录属于同一合集。</li>
+          <li>点击后弹出目标小程序多选弹窗；至少选择一个小程序后才可提交。</li>
+          <li>剧目基础信息、全部剧集信息、剧目资质、版权及内容声明证明等，均复用所选记录对应的已提审任务，内容业务无需重新查找或填写材料。</li>
+          <li>提交前按“剧目ID＋目标小程序”校验；已有提审任务的组合自动跳过，未送审组合生成新的提审任务。</li>
+          <li>提交结果展示成功、跳过和失败数量，并支持查看每条记录的处理结果。</li>
+        </ul>
       </section>
 
     </aside>
