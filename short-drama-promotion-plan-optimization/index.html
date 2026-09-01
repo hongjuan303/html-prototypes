@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>短剧推广计划功能优化原型</title>
+  <link rel="stylesheet" href="/html-prototypes/short-drama-promotion-plan-optimization/styles.css?v=20260901-1">
+</head>
+<body>
+  <main class="review-canvas">
+    <section class="prototype" aria-label="短剧推广计划功能优化原型">
+      <aside class="side-nav">
+        <div class="side-brand"><span class="brand-mark">◆</span><span>绿台</span></div>
+        <nav aria-label="绿台菜单">
+          <button class="nav-item"><span>◉</span>合集列表</button>
+          <button class="nav-item"><span>◉</span>合集标签分类管理</button>
+          <button class="nav-item"><span>◉</span>投放推荐剧</button>
+          <button class="nav-item"><span>◉</span>腾讯投放商品库</button>
+          <button class="nav-item"><span>◉</span>快手自建站剧集管理</button>
+          <button class="nav-item"><span>◉</span>端上投放剧集映射</button>
+          <button class="nav-item"><span>◉</span>内容审核库</button>
+          <button class="nav-item"><span>◉</span>项目管理</button>
+          <button class="nav-item"><span>◉</span>合集定价池</button>
+          <button class="nav-item active"><span>◉</span>短剧推广计划</button>
+          <button class="nav-item"><span>◉</span>平台内容爬虫看板</button>
+        </nav>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <div class="breadcrumb"><button class="menu-btn" title="收起菜单">☰</button><strong>内容管理</strong><span>/</span><span>短剧推广计划</span></div>
+          <div class="challenge">百日0故障挑战 第364天</div>
+          <div class="top-actions">
+            <label class="global-search"><span>⌕</span><input placeholder="请输入搜索内容"></label>
+            <button class="icon-btn" title="全屏">⛶</button><span>全屏</span>
+            <span class="avatar">洪</span><span>洪娟</span><span>⌄</span>
+          </div>
+        </header>
+
+        <div class="page-tabs-strip">
+          <span>首页（新） ×</span><span>合集列表 ×</span><span>修改合集 ×</span><span>内容审核库 ×</span><span class="active">短剧推广计划 ×</span>
+        </div>
+
+        <div class="page-body">
+          <div class="notice"><span>i</span><strong>准入规则：</strong>媒资审核与剧目审核全部通过的合集，才能加入推广计划。</div>
+
+          <section class="filters" aria-label="筛选区域">
+            <div class="filter-grid">
+              <label>合集名称<input id="collectionName" type="text" placeholder="支持模糊搜索"></label>
+              <label>合集ID<button class="entry-control" type="button" data-entry="collection"><span id="collectionEntryText">录入</span><b>⌄</b></button></label>
+              <label>剧目ID<button class="entry-control" type="button" data-entry="drama"><span id="dramaEntryText">录入</span><b>⌄</b></button></label>
+              <label>小程序<select id="miniProgram"><option value="">全部</option><option>冬青追剧</option><option>苏木短剧</option><option>千斤剧场</option><option>江白剧场</option><option>白敛追剧</option><option>来看短剧（IAA）</option></select></label>
+              <label>推广状态<select id="promotionStatus"><option value="">全部</option><option>未加入计划</option><option>已加入计划</option><option>退出计划中</option></select></label>
+            </div>
+            <div class="filter-actions">
+              <button class="btn primary" id="queryBtn">查询</button>
+              <button class="btn" id="resetBtn">重置</button>
+              <button class="btn light" id="exportBtn">导出</button>
+              <span class="filter-result" id="filterResult">共 6 条</span>
+            </div>
+          </section>
+
+          <section class="list-section" aria-label="推广计划列表">
+            <div class="list-toolbar">
+              <div class="list-summary">
+                <strong>短剧推广计划</strong>
+                <span id="selectedCount">已选择 0 条</span>
+                <span class="sync-note">状态更新时间：2026-09-01 10:18:32</span>
+              </div>
+              <button class="btn primary" id="batchJoinBtn" disabled>批量加入</button>
+            </div>
+
+            <div class="table-scroller">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="check-col"><input id="selectAll" type="checkbox" aria-label="全选可加入记录"></th>
+                    <th>合集ID</th>
+                    <th class="name-col">合集名称</th>
+                    <th>剧目ID</th>
+                    <th>小程序</th>
+                    <th>媒资审核状态</th>
+                    <th>剧目审核状态</th>
+                    <th>推广状态</th>
+                    <th class="remark-col">推广备注</th>
+                    <th>操作人</th>
+                    <th>操作时间</th>
+                    <th class="operation-col">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <tr data-cid="43287" data-did="7673015462871123401" data-name="春风吹过旧时光" data-app="冬青追剧" data-media="审核通过" data-drama="审核通过" data-status="未加入计划">
+                    <td><input class="row-check" type="checkbox" aria-label="选择春风吹过旧时光"></td><td>43287</td><td class="text-left">春风吹过旧时光</td><td>7673015462871123401</td><td>冬青追剧</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">-</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><button class="link-btn join-btn">加入计划</button></td>
+                  </tr>
+                  <tr data-cid="43312" data-did="7673122805328964582" data-name="别叫我姐姐" data-app="苏木短剧" data-media="审核通过" data-drama="审核通过" data-status="已加入计划">
+                    <td><input class="row-check" type="checkbox" disabled aria-label="别叫我姐姐不可批量加入"></td><td>43312</td><td class="text-left">别叫我姐姐</td><td>7673122805328964582</td><td>苏木短剧</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status blue">已加入计划</span></td><td class="remark-cell">2026-08-29 加入成功</td><td class="operator-cell">周启明</td><td class="time-cell">2026-08-29 16:42</td><td class="operation-col"><button class="link-btn exit-btn">退出计划</button></td>
+                  </tr>
+                  <tr data-cid="43328" data-did="7673389148256102274" data-name="月光落在旧信上" data-app="千斤剧场" data-media="审核通过" data-drama="审核通过" data-status="退出计划中">
+                    <td><input class="row-check" type="checkbox" disabled aria-label="月光落在旧信上退出处理中"></td><td>43328</td><td class="text-left">月光落在旧信上</td><td>7673389148256102274</td><td>千斤剧场</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status orange">退出计划中</span></td><td class="remark-cell">微信侧处理中</td><td class="operator-cell">洪娟</td><td class="time-cell">2026-09-01 09:55</td><td class="operation-col"><button class="link-btn disabled" disabled>处理中</button></td>
+                  </tr>
+                  <tr class="unqualified" data-cid="43346" data-did="7673520719956301138" data-name="掌心里的星光" data-app="江白剧场" data-media="审核失败" data-drama="审核通过" data-status="未加入计划">
+                    <td><input class="row-check" type="checkbox" disabled aria-label="掌心里的星光不满足准入条件"></td><td>43346</td><td class="text-left">掌心里的星光</td><td>7673520719956301138</td><td>江白剧场</td><td><span class="status red">审核失败</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">媒资审核未通过</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><span class="locked" title="媒资审核与剧目审核需全部通过">不满足条件</span></td>
+                  </tr>
+                  <tr class="unqualified" data-cid="43357" data-did="7673674289334018210" data-name="故里有长风" data-app="白敛追剧" data-media="审核通过" data-drama="审核中" data-status="未加入计划">
+                    <td><input class="row-check" type="checkbox" disabled aria-label="故里有长风不满足准入条件"></td><td>43357</td><td class="text-left">故里有长风</td><td>7673674289334018210</td><td>白敛追剧</td><td><span class="status green">审核通过</span></td><td><span class="status orange">审核中</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">等待剧目审核</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><span class="locked" title="媒资审核与剧目审核需全部通过">不满足条件</span></td>
+                  </tr>
+                  <tr data-cid="43369" data-did="7673816614058927459" data-name="她从山海归来" data-app="来看短剧（IAA）" data-media="审核通过" data-drama="审核通过" data-status="未加入计划">
+                    <td><input class="row-check" type="checkbox" aria-label="选择她从山海归来"></td><td>43369</td><td class="text-left">她从山海归来</td><td>7673816614058927459</td><td>来看短剧（IAA）</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">-</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><button class="link-btn join-btn">加入计划</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pagination"><span id="paginationTotal">共 6 条</span><button title="上一页">‹</button><button class="active">1</button><button title="下一页">›</button><span>20 条/页</span></div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <aside class="prd-panel" aria-label="需求PRD说明">
+      <header class="prd-header">
+        <span class="doc-tag">PRD · V1.0</span>
+        <h1>短剧推广计划功能优化</h1>
+        <p>将分散在各小程序后台的推广计划操作统一收口至绿台，并保证状态、数量与操作记录可追溯。</p>
+        <div class="prd-meta"><span>使用对象：视频号原生运营、内容业务</span><span>更新时间：2026-09-01</span></div>
+      </header>
+
+      <section>
+        <h2># 页面说明</h2>
+        <p><strong>菜单路径：</strong>绿台 ＞ 内容管理 ＞ 短剧推广计划</p>
+        <p><strong>业务背景：</strong>运营当前需扫码登录多个媒资小程序后台添加或退出推广计划，操作分散、效率低，且小程序后台缺少人员操作记录，出现问题后难以追溯。</p>
+        <p><strong>需求目标：</strong>统一推广计划入口，复用送审数据判断准入资格，记录完整操作链路，并与微信小程序后台保持数据一致。</p>
+      </section>
+
+      <section>
+        <h2># 架构逻辑</h2>
+        <div class="architecture" aria-label="系统架构逻辑">
+          <div class="arch-node source"><b>微信送审库</b><span>审核结果、小程序枚举</span></div>
+          <i>→</i>
+          <div class="arch-node core"><b>推广计划服务</b><span>准入校验、状态流转、操作编排</span></div>
+          <i>→</i>
+          <div class="arch-node provider"><b>微信小程序后台</b><span>加入/退出结果、合作剧目数</span></div>
+        </div>
+        <div class="architecture-sub">
+          <span>操作日志：记录操作人、时间、前后状态、请求结果</span>
+          <span>对账任务：按小程序校验已加入条数与“总合作剧目数”</span>
+        </div>
+        <ol class="numbered-list">
+          <li><b>统一数据口径：</b>以“小程序＋合集ID”为唯一推广单元；小程序枚举与“内容审核库-微信送审库”的“送审小程序”共用同一数据源。</li>
+          <li><b>准入前置：</b>实时读取媒资审核、剧目审核结果，仅两者均为“审核通过”时允许加入。</li>
+          <li><b>指令下发：</b>绿台按小程序路由加入/退出指令；批量任务按小程序分组执行，单条失败不阻断其他记录。</li>
+          <li><b>状态回写：</b>接口成功后回写推广状态与操作留痕；微信侧异步退出时先展示“退出计划中”。</li>
+          <li><b>同步对账：</b>小程序后台为推广状态最终事实源；操作后即时同步，并通过定时任务校正状态及已加入数量。</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2># 原型说明</h2>
+        <h3><span>1</span>筛选项</h3>
+        <ul>
+          <li>合集名称：文本输入，支持模糊搜索。</li>
+          <li>合集ID、剧目ID：精确搜索；点击“录入”后支持多个ID批量粘贴，每行一个，交互与微信送审库一致。</li>
+          <li>小程序：单选；枚举与微信送审库“送审小程序”一致，后续增删自动同步。</li>
+          <li>推广状态：全部、未加入计划、已加入计划、退出计划中。</li>
+        </ul>
+
+        <h3><span>2</span>列表字段</h3>
+        <p>合集ID、合集名称、剧目ID、小程序、媒资审核状态、剧目审核状态、推广状态、推广备注、操作人、操作时间、操作。</p>
+        <p>审核未全部通过的记录仍可查看，但复选框与加入操作禁用，并在备注中展示未满足原因。</p>
+
+        <h3><span>3</span>加入与批量加入</h3>
+        <ul>
+          <li>仅“未加入计划”且媒资、剧目审核全部通过的数据可加入。</li>
+          <li>批量加入支持跨小程序选择，由系统按小程序拆分任务。</li>
+          <li>提交前再次校验准入条件与当前状态，避免审核状态变化或重复加入。</li>
+          <li>部分失败时成功项正常回写；失败项保留原状态，并记录失败原因。</li>
+        </ul>
+
+        <h3><span>4</span>退出计划</h3>
+        <p>已加入计划的数据可执行退出。确认后状态更新为“退出计划中”；收到微信侧成功结果后切换为“未加入计划”。退出失败则恢复“已加入计划”并写入推广备注。</p>
+
+        <h3><span>5</span>操作留痕</h3>
+        <p>成功提交加入或退出指令后，记录操作人、操作时间、操作类型、操作前状态、操作后状态、请求流水号及接口结果。列表展示最近一次操作人和操作时间。</p>
+      </section>
+
+      <section>
+        <h2># 状态与规则</h2>
+        <div class="state-flow"><span>未加入计划</span><b>加入成功 →</b><span>已加入计划</span><b>提交退出 →</b><span>退出计划中</span><b>退出成功 →</b><span>未加入计划</span></div>
+        <div class="rule-box"><b>幂等键：</b>小程序 AppID ＋ 合集ID ＋ 操作类型。重复请求不重复执行，直接返回已有任务结果。</div>
+        <div class="rule-box"><b>异常规则：</b>超时不直接判定失败，推广状态保持操作前状态，仅在推广备注标记“结果待同步”并主动查询微信侧；最终状态以微信小程序后台为准。</div>
+      </section>
+
+      <section>
+        <h2># 数据一致性</h2>
+        <ul>
+          <li>筛选某一小程序及“已加入计划”时，列表条数必须与该小程序后台“总合作剧目数”一致。</li>
+          <li>加入/退出后立即触发单条同步；定时任务按小程序进行全量对账。</li>
+          <li>发现数量不一致时生成差异明细，记录小程序、合集ID、两端状态、发现时间与修复结果。</li>
+          <li>对账未完成前不覆盖人工操作日志，仅修正推广状态及同步备注。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2># 验收标准</h2>
+        <ol>
+          <li>双审核通过的数据可单条或批量加入；任一审核未通过的数据不可加入。</li>
+          <li>合集ID、剧目ID可一次录入多个值并精确命中；其他筛选组合生效。</li>
+          <li>推广状态只展示三个业务枚举，不再混用“审核通过”等审核状态文案。</li>
+          <li>加入、退出均有二次确认；操作完成后状态、操作人和时间正确回写。</li>
+          <li>按小程序筛选已加入计划时，条数与微信后台总合作剧目数一致。</li>
+          <li>所有失败、超时、重复请求均有明确结果和可追溯记录。</li>
+        </ol>
+      </section>
+    </aside>
+  </main>
+
+  <div class="entry-popover" id="entryPopover" hidden>
+    <div class="popover-head"><strong id="entryTitle">批量录入合集ID</strong><button id="entryClose" title="关闭">×</button></div>
+    <textarea id="entryTextarea" rows="6" placeholder="请输入合集ID，多个ID回车换行展示"></textarea>
+    <p>支持回车、逗号或空格分隔，最多录入 100 个</p>
+    <div class="popover-actions"><button class="btn" id="entryClear">清空</button><button class="btn primary" id="entryConfirm">确定</button></div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header"><h2 id="modalTitle"></h2><button id="modalClose" class="modal-close" title="关闭">×</button></header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer" id="modalFooter"></footer>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/html-prototypes/short-drama-promotion-plan-optimization/app.js?v=20260901-1"></script>
+</body>
+</html>
