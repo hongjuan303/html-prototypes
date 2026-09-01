@@ -162,6 +162,7 @@
   }
 
   function renderRowStatus(row, status, remark) {
+    delete row.dataset.pending;
     row.dataset.status = status;
     const className = status === '已加入计划' ? 'blue' : status === '退出计划中' ? 'orange' : 'gray';
     $('.promotion-cell', row).innerHTML = `<span class="status ${className}">${status}</span>`;
@@ -185,6 +186,26 @@
     }
   }
 
+  function renderJoinPending(row) {
+    row.dataset.pending = 'join';
+    $('.promotion-cell', row).innerHTML = '<span class="status gray">未加入计划</span>';
+    $('.remark-cell', row).textContent = '请求已受理，批查询状态中';
+    $('.operator-cell', row).textContent = '洪娟';
+    $('.time-cell', row).textContent = formatNow();
+    const checkbox = $('.row-check', row);
+    checkbox.checked = false;
+    checkbox.disabled = true;
+    $('.operation-col', row).innerHTML = '<button class="link-btn disabled" disabled>状态查询中</button>';
+  }
+
+  function queryPromotionStatus(rows, batch) {
+    setTimeout(() => {
+      rows.forEach((row) => renderRowStatus(row, '已加入计划', 'action_type=2 查询：已加入'));
+      applyFilters();
+      showToast(batch ? '批查询完成，本批短剧均已加入计划' : '状态查询完成，短剧已加入计划');
+    }, 1200);
+  }
+
   function openSingleAction(row, action) {
     const joining = action === 'join';
     state.currentRows = [row];
@@ -193,11 +214,16 @@
       confirmationBody(row, action),
       joining ? '确认加入' : '确认退出',
       () => {
-        if (joining) renderRowStatus(row, '已加入计划', '加入成功');
+        if (joining) renderJoinPending(row);
         else renderRowStatus(row, '退出计划中', '微信侧处理中');
         closeModal();
         applyFilters();
-        showToast(joining ? '已成功加入推广计划' : '退出申请已提交');
+        if (joining) {
+          showToast('加入请求已受理，正在通过 action_type=2 查询状态');
+          queryPromotionStatus([row], false);
+        } else {
+          showToast('退出申请已提交');
+        }
       }
     );
   }
@@ -207,16 +233,17 @@
     if (!rows.length) return;
     state.currentRows = rows;
     const body = `
-      <div class="modal-note" style="margin-top:0">共选择 ${rows.length} 个合集，系统将按小程序分组提交；单条失败不影响其他记录。</div>
+      <div class="modal-note" style="margin-top:0">共选择 ${rows.length} 个合集，系统将按小程序拆分微信批量请求。每个请求均为整批成败：任一短剧不符合条件，该请求内全部短剧加入失败。</div>
       <table class="batch-table">
         <thead><tr><th>合集ID</th><th>合集名称</th><th>小程序</th><th>准入校验</th></tr></thead>
         <tbody>${rows.map((row) => `<tr><td>${row.dataset.cid}</td><td>${row.dataset.name}</td><td>${row.dataset.app}</td><td><span class="status green">双审核通过</span></td></tr>`).join('')}</tbody>
       </table>`;
     openModal('批量加入推广计划', body, '确认批量加入', () => {
-      rows.forEach((row) => renderRowStatus(row, '已加入计划', '批量加入成功'));
+      rows.forEach(renderJoinPending);
       closeModal();
       applyFilters();
-      showToast(`已提交 ${rows.length} 条加入任务`);
+      showToast(`已提交 ${rows.length} 条加入任务，正在批查询短剧状态`);
+      queryPromotionStatus(rows, true);
     }, true);
   }
 
