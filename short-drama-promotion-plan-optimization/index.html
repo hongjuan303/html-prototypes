@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>短剧推广计划功能优化原型</title>
-  <link rel="stylesheet" href="/html-prototypes/short-drama-promotion-plan-optimization/styles.css?v=20260901-2">
+  <link rel="stylesheet" href="/html-prototypes/short-drama-promotion-plan-optimization/styles.css?v=20260901-3">
 </head>
 <body>
   <main class="review-canvas">
@@ -50,7 +50,7 @@
               <label>合集ID<button class="entry-control" type="button" data-entry="collection"><span id="collectionEntryText">录入</span><b>⌄</b></button></label>
               <label>剧目ID<button class="entry-control" type="button" data-entry="drama"><span id="dramaEntryText">录入</span><b>⌄</b></button></label>
               <label>小程序<select id="miniProgram"><option value="">全部</option><option>冬青追剧</option><option>苏木短剧</option><option>千斤剧场</option><option>江白剧场</option><option>白敛追剧</option><option>来看短剧（IAA）</option></select></label>
-              <label>推广状态<select id="promotionStatus"><option value="">全部</option><option>未加入计划</option><option>已加入计划</option><option>退出计划中</option></select></label>
+              <label>推广状态<select id="promotionStatus"><option value="">全部</option><option value="0">未加入计划</option><option value="1">已加入计划</option></select></label>
             </div>
             <div class="filter-actions">
               <button class="btn primary" id="queryBtn">查询</button>
@@ -89,22 +89,22 @@
                   </tr>
                 </thead>
                 <tbody id="tableBody">
-                  <tr data-cid="43287" data-did="7673015462871123401" data-name="春风吹过旧时光" data-app="冬青追剧" data-media="审核通过" data-drama="审核通过" data-status="未加入计划">
+                  <tr data-cid="43287" data-did="7673015462871123401" data-name="春风吹过旧时光" data-app="冬青追剧" data-media="审核通过" data-drama="审核通过" data-status="0">
                     <td><input class="row-check" type="checkbox" aria-label="选择春风吹过旧时光"></td><td>43287</td><td class="text-left">春风吹过旧时光</td><td>7673015462871123401</td><td>冬青追剧</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">-</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><button class="link-btn join-btn">加入计划</button></td>
                   </tr>
-                  <tr data-cid="43312" data-did="7673122805328964582" data-name="别叫我姐姐" data-app="苏木短剧" data-media="审核通过" data-drama="审核通过" data-status="已加入计划">
+                  <tr data-cid="43312" data-did="7673122805328964582" data-name="别叫我姐姐" data-app="苏木短剧" data-media="审核通过" data-drama="审核通过" data-status="1">
                     <td><input class="row-check" type="checkbox" disabled aria-label="别叫我姐姐不可批量加入"></td><td>43312</td><td class="text-left">别叫我姐姐</td><td>7673122805328964582</td><td>苏木短剧</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status blue">已加入计划</span></td><td class="remark-cell">2026-08-29 加入成功</td><td class="operator-cell">周启明</td><td class="time-cell">2026-08-29 16:42</td><td class="operation-col"><button class="link-btn exit-btn">退出计划</button></td>
                   </tr>
-                  <tr data-cid="43328" data-did="7673389148256102274" data-name="月光落在旧信上" data-app="千斤剧场" data-media="审核通过" data-drama="审核通过" data-status="退出计划中">
-                    <td><input class="row-check" type="checkbox" disabled aria-label="月光落在旧信上退出处理中"></td><td>43328</td><td class="text-left">月光落在旧信上</td><td>7673389148256102274</td><td>千斤剧场</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status orange">退出计划中</span></td><td class="remark-cell">微信侧处理中</td><td class="operator-cell">洪娟</td><td class="time-cell">2026-09-01 09:55</td><td class="operation-col"><button class="link-btn disabled" disabled>处理中</button></td>
+                  <tr data-cid="43328" data-did="7673389148256102274" data-name="月光落在旧信上" data-app="千斤剧场" data-media="审核通过" data-drama="审核通过" data-status="1" data-pending="exit">
+                    <td><input class="row-check" type="checkbox" disabled aria-label="月光落在旧信上退出状态查询中"></td><td>43328</td><td class="text-left">月光落在旧信上</td><td>7673389148256102274</td><td>千斤剧场</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status blue">已加入计划</span></td><td class="remark-cell">退出请求已受理，批查询状态中</td><td class="operator-cell">洪娟</td><td class="time-cell">2026-09-01 09:55</td><td class="operation-col"><button class="link-btn disabled" disabled>状态查询中</button></td>
                   </tr>
-                  <tr class="unqualified" data-cid="43346" data-did="7673520719956301138" data-name="掌心里的星光" data-app="江白剧场" data-media="审核失败" data-drama="审核通过" data-status="未加入计划">
+                  <tr class="unqualified" data-cid="43346" data-did="7673520719956301138" data-name="掌心里的星光" data-app="江白剧场" data-media="审核失败" data-drama="审核通过" data-status="0">
                     <td><input class="row-check" type="checkbox" disabled aria-label="掌心里的星光不满足准入条件"></td><td>43346</td><td class="text-left">掌心里的星光</td><td>7673520719956301138</td><td>江白剧场</td><td><span class="status red">审核失败</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">媒资审核未通过</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><span class="locked" title="媒资审核与剧目审核需全部通过">不满足条件</span></td>
                   </tr>
-                  <tr class="unqualified" data-cid="43357" data-did="7673674289334018210" data-name="故里有长风" data-app="白敛追剧" data-media="审核通过" data-drama="审核中" data-status="未加入计划">
+                  <tr class="unqualified" data-cid="43357" data-did="7673674289334018210" data-name="故里有长风" data-app="白敛追剧" data-media="审核通过" data-drama="审核中" data-status="0">
                     <td><input class="row-check" type="checkbox" disabled aria-label="故里有长风不满足准入条件"></td><td>43357</td><td class="text-left">故里有长风</td><td>7673674289334018210</td><td>白敛追剧</td><td><span class="status green">审核通过</span></td><td><span class="status orange">审核中</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">等待剧目审核</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><span class="locked" title="媒资审核与剧目审核需全部通过">不满足条件</span></td>
                   </tr>
-                  <tr data-cid="43369" data-did="7673816614058927459" data-name="她从山海归来" data-app="来看短剧（IAA）" data-media="审核通过" data-drama="审核通过" data-status="未加入计划">
+                  <tr data-cid="43369" data-did="7673816614058927459" data-name="她从山海归来" data-app="来看短剧（IAA）" data-media="审核通过" data-drama="审核通过" data-status="0">
                     <td><input class="row-check" type="checkbox" aria-label="选择她从山海归来"></td><td>43369</td><td class="text-left">她从山海归来</td><td>7673816614058927459</td><td>来看短剧（IAA）</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td class="promotion-cell"><span class="status gray">未加入计划</span></td><td class="remark-cell">-</td><td class="operator-cell">-</td><td class="time-cell">-</td><td class="operation-col"><button class="link-btn join-btn">加入计划</button></td>
                   </tr>
                 </tbody>
@@ -148,7 +148,7 @@
           <li><b>统一数据口径：</b>以“小程序＋合集ID”为唯一推广单元；小程序枚举与“内容审核库-微信送审库”的“送审小程序”共用同一数据源。</li>
           <li><b>准入前置：</b>实时读取媒资审核、剧目审核结果，仅两者均为“审核通过”时允许加入。</li>
           <li><b>指令下发：</b>绿台按小程序拆分并调用微信批量接口；同一个接口请求遵循整批成败，任一短剧不符合条件时，该请求内全部短剧加入失败。</li>
-          <li><b>状态回写：</b>接口受理不等于加入成功；提交后使用批查询 <code>action_type=2</code> 查询短剧状态，确认结果后再回写推广状态与操作留痕。</li>
+          <li><b>状态回写：</b>接口受理不等于状态变更；使用批查询 <code>action_type=2</code> 获取微信状态，按 <code>status=0/1</code> 回写推广状态与操作留痕。</li>
           <li><b>同步对账：</b>小程序后台为推广状态最终事实源；操作后即时同步，并通过定时任务校正状态及已加入数量。</li>
         </ol>
       </section>
@@ -160,7 +160,8 @@
           <li>合集名称：文本输入，支持模糊搜索。</li>
           <li>合集ID、剧目ID：精确搜索；点击“录入”后支持多个ID批量粘贴，每行一个，交互与微信送审库一致。</li>
           <li>小程序：单选；枚举与微信送审库“送审小程序”一致，后续增删自动同步。</li>
-          <li>推广状态：全部、未加入计划、已加入计划、退出计划中。</li>
+          <li>推广状态与微信批查询结果一致：<code>status=0</code> 为“未加入计划”，<code>status=1</code> 为“已加入计划”。</li>
+          <li>“加入查询中”“退出查询中”属于绿台任务过程，仅展示在推广备注和操作禁用态中，不新增推广状态枚举。</li>
         </ul>
 
         <h3><span>2</span>列表字段</h3>
@@ -177,7 +178,7 @@
         </ul>
 
         <h3><span>4</span>退出计划</h3>
-        <p>已加入计划的数据可执行退出。确认后状态更新为“退出计划中”；收到微信侧成功结果后切换为“未加入计划”。退出失败则恢复“已加入计划”并写入推广备注。</p>
+        <p>已加入计划的数据可执行退出。请求受理后推广状态仍为“已加入计划”，推广备注展示“退出状态查询中”；批查询返回 <code>status=0</code> 后切换为“未加入计划”。若仍为 <code>status=1</code>，则保留“已加入计划”并记录退出结果。</p>
 
         <h3><span>5</span>操作留痕</h3>
         <p>成功提交加入或退出指令后，记录操作人、操作时间、操作类型、操作前状态、操作后状态、请求流水号及接口结果。列表展示最近一次操作人和操作时间。</p>
@@ -185,7 +186,7 @@
 
       <section>
         <h2># 状态与规则</h2>
-        <div class="state-flow"><span>未加入计划</span><b>加入成功 →</b><span>已加入计划</span><b>提交退出 →</b><span>退出计划中</span><b>退出成功 →</b><span>未加入计划</span></div>
+        <div class="state-flow"><span>status=0 未加入计划</span><b>查询确认已加入 →</b><span>status=1 已加入计划</span><b>查询确认已退出 →</b><span>status=0 未加入计划</span></div>
         <div class="rule-box"><b>幂等键：</b>小程序 AppID ＋ 合集ID ＋ 操作类型。重复请求不重复执行，直接返回已有任务结果。</div>
         <div class="rule-box"><b>异常规则：</b>超时不直接判定失败，推广状态保持操作前状态，仅在推广备注标记“结果待同步”，继续通过 <code>action_type=2</code> 批查询；最终状态以微信查询结果和小程序后台为准。</div>
       </section>
@@ -205,7 +206,7 @@
         <ol>
           <li>双审核通过的数据可单条或批量加入；任一审核未通过的数据不可加入。</li>
           <li>合集ID、剧目ID可一次录入多个值并精确命中；其他筛选组合生效。</li>
-          <li>推广状态只展示三个业务枚举，不再混用“审核通过”等审核状态文案。</li>
+          <li>推广状态只展示微信接口的两个枚举：<code>status=0</code> 未加入计划、<code>status=1</code> 已加入计划。</li>
           <li>加入、退出均有二次确认；微信批量请求中任一短剧不符合条件时，该请求内全部失败。</li>
           <li>加入请求受理后使用 <code>action_type=2</code> 批查询，确认状态后再回写推广状态、操作人和时间。</li>
           <li>按小程序筛选已加入计划时，条数与微信后台总合作剧目数一致。</li>
@@ -231,6 +232,6 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="/html-prototypes/short-drama-promotion-plan-optimization/app.js?v=20260901-2"></script>
+  <script src="/html-prototypes/short-drama-promotion-plan-optimization/app.js?v=20260901-3"></script>
 </body>
 </html>

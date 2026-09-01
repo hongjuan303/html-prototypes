@@ -150,21 +150,23 @@
 
   function confirmationBody(row, action) {
     const joining = action === 'join';
+    const currentStatus = row.dataset.status === '1' ? '已加入计划（status=1）' : '未加入计划（status=0）';
     return `
       <dl class="confirm-summary">
         <dt>合集ID</dt><dd>${row.dataset.cid}</dd>
         <dt>合集名称</dt><dd>${row.dataset.name}</dd>
         <dt>剧目ID</dt><dd>${row.dataset.did}</dd>
         <dt>小程序</dt><dd>${row.dataset.app}</dd>
-        <dt>当前状态</dt><dd>${row.dataset.status}</dd>
+        <dt>当前状态</dt><dd>${currentStatus}</dd>
       </dl>
-      <div class="modal-note">${joining ? '系统将在提交前再次校验媒资审核与剧目审核状态。' : '确认退出后，状态将先更新为“退出计划中”，最终结果以微信侧返回为准。'}</div>`;
+      <div class="modal-note">${joining ? '系统将在提交前再次校验媒资审核与剧目审核状态。' : '确认退出后仍展示“已加入计划（status=1）”，批查询确认 status=0 后才更新为“未加入计划”。'}</div>`;
   }
 
   function renderRowStatus(row, status, remark) {
     delete row.dataset.pending;
-    row.dataset.status = status;
-    const className = status === '已加入计划' ? 'blue' : status === '退出计划中' ? 'orange' : 'gray';
+    const statusValue = status === '已加入计划' ? '1' : '0';
+    row.dataset.status = statusValue;
+    const className = statusValue === '1' ? 'blue' : 'gray';
     $('.promotion-cell', row).innerHTML = `<span class="status ${className}">${status}</span>`;
     $('.remark-cell', row).textContent = remark;
     $('.operator-cell', row).textContent = '洪娟';
@@ -176,10 +178,6 @@
       checkbox.checked = false;
       checkbox.disabled = true;
       operation.innerHTML = '<button class="link-btn exit-btn">退出计划</button>';
-    } else if (status === '退出计划中') {
-      checkbox.checked = false;
-      checkbox.disabled = true;
-      operation.innerHTML = '<button class="link-btn disabled" disabled>处理中</button>';
     } else {
       checkbox.disabled = false;
       operation.innerHTML = '<button class="link-btn join-btn">加入计划</button>';
@@ -188,8 +186,22 @@
 
   function renderJoinPending(row) {
     row.dataset.pending = 'join';
+    row.dataset.status = '0';
     $('.promotion-cell', row).innerHTML = '<span class="status gray">未加入计划</span>';
     $('.remark-cell', row).textContent = '请求已受理，批查询状态中';
+    $('.operator-cell', row).textContent = '洪娟';
+    $('.time-cell', row).textContent = formatNow();
+    const checkbox = $('.row-check', row);
+    checkbox.checked = false;
+    checkbox.disabled = true;
+    $('.operation-col', row).innerHTML = '<button class="link-btn disabled" disabled>状态查询中</button>';
+  }
+
+  function renderExitPending(row) {
+    row.dataset.pending = 'exit';
+    row.dataset.status = '1';
+    $('.promotion-cell', row).innerHTML = '<span class="status blue">已加入计划</span>';
+    $('.remark-cell', row).textContent = '退出请求已受理，批查询状态中';
     $('.operator-cell', row).textContent = '洪娟';
     $('.time-cell', row).textContent = formatNow();
     const checkbox = $('.row-check', row);
@@ -206,6 +218,14 @@
     }, 1200);
   }
 
+  function queryExitStatus(row) {
+    setTimeout(() => {
+      renderRowStatus(row, '未加入计划', 'action_type=2 查询：未加入');
+      applyFilters();
+      showToast('状态查询完成，短剧已退出推广计划');
+    }, 1200);
+  }
+
   function openSingleAction(row, action) {
     const joining = action === 'join';
     state.currentRows = [row];
@@ -215,14 +235,15 @@
       joining ? '确认加入' : '确认退出',
       () => {
         if (joining) renderJoinPending(row);
-        else renderRowStatus(row, '退出计划中', '微信侧处理中');
+        else renderExitPending(row);
         closeModal();
         applyFilters();
         if (joining) {
           showToast('加入请求已受理，正在通过 action_type=2 查询状态');
           queryPromotionStatus([row], false);
         } else {
-          showToast('退出申请已提交');
+          showToast('退出请求已受理，正在通过 action_type=2 查询状态');
+          queryExitStatus(row);
         }
       }
     );
