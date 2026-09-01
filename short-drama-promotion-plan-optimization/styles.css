@@ -166,13 +166,12 @@ button { cursor: pointer; }
 .data-table tr.unqualified td { background-color: #fcfcfd; }
 .data-table .check-col { width: 44px; }
 .data-table .name-col { width: 190px; }
-.data-table .remark-col { width: 155px; }
 .data-table th:nth-child(2) { width: 86px; }
 .data-table th:nth-child(4) { width: 164px; }
 .data-table th:nth-child(5) { width: 125px; }
 .data-table th:nth-child(6), .data-table th:nth-child(7), .data-table th:nth-child(8) { width: 120px; }
-.data-table th:nth-child(10) { width: 90px; }
-.data-table th:nth-child(11) { width: 145px; }
+.data-table th:nth-child(9) { width: 90px; }
+.data-table th:nth-child(10) { width: 145px; }
 .data-table .operation-col { position: sticky; right: 0; z-index: 2; width: 105px; background: #fff; box-shadow: -5px 0 8px rgba(40,50,65,.05); }
 .data-table th.operation-col { background: #f5f7fa; }
 .data-table tr.unqualified .operation-col { background: #fcfcfd; }

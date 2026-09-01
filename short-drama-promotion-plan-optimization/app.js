@@ -150,7 +150,7 @@
 
   function confirmationBody(row, action) {
     const joining = action === 'join';
-    const currentStatus = row.dataset.status === '1' ? '已加入计划（status=1）' : '未加入计划（status=0）';
+    const currentStatus = row.dataset.status;
     return `
       <dl class="confirm-summary">
         <dt>合集ID</dt><dd>${row.dataset.cid}</dd>
@@ -159,16 +159,14 @@
         <dt>小程序</dt><dd>${row.dataset.app}</dd>
         <dt>当前状态</dt><dd>${currentStatus}</dd>
       </dl>
-      <div class="modal-note">${joining ? '系统将在提交前再次校验媒资审核与剧目审核状态。' : '确认退出后仍展示“已加入计划（status=1）”，批查询确认 status=0 后才更新为“未加入计划”。'}</div>`;
+      <div class="modal-note">${joining ? '系统将在提交前再次校验媒资审核与剧目审核状态。' : '确认退出后状态更新为“退出计划中”，批查询确认退出后再更新为“未加入计划”。'}</div>`;
   }
 
   function renderRowStatus(row, status, remark) {
     delete row.dataset.pending;
-    const statusValue = status === '已加入计划' ? '1' : '0';
-    row.dataset.status = statusValue;
-    const className = statusValue === '1' ? 'blue' : 'gray';
+    row.dataset.status = status;
+    const className = status === '已加入计划' ? 'blue' : status === '退出计划中' ? 'orange' : 'gray';
     $('.promotion-cell', row).innerHTML = `<span class="status ${className}">${status}</span>`;
-    $('.remark-cell', row).textContent = remark;
     $('.operator-cell', row).textContent = '洪娟';
     $('.time-cell', row).textContent = formatNow();
     const checkbox = $('.row-check', row);
@@ -178,6 +176,10 @@
       checkbox.checked = false;
       checkbox.disabled = true;
       operation.innerHTML = '<button class="link-btn exit-btn">退出计划</button>';
+    } else if (status === '退出计划中') {
+      checkbox.checked = false;
+      checkbox.disabled = true;
+      operation.innerHTML = '<button class="link-btn disabled" disabled>状态查询中</button>';
     } else {
       checkbox.disabled = false;
       operation.innerHTML = '<button class="link-btn join-btn">加入计划</button>';
@@ -186,9 +188,8 @@
 
   function renderJoinPending(row) {
     row.dataset.pending = 'join';
-    row.dataset.status = '0';
+    row.dataset.status = '未加入计划';
     $('.promotion-cell', row).innerHTML = '<span class="status gray">未加入计划</span>';
-    $('.remark-cell', row).textContent = '请求已受理，批查询状态中';
     $('.operator-cell', row).textContent = '洪娟';
     $('.time-cell', row).textContent = formatNow();
     const checkbox = $('.row-check', row);
@@ -199,9 +200,8 @@
 
   function renderExitPending(row) {
     row.dataset.pending = 'exit';
-    row.dataset.status = '1';
-    $('.promotion-cell', row).innerHTML = '<span class="status blue">已加入计划</span>';
-    $('.remark-cell', row).textContent = '退出请求已受理，批查询状态中';
+    row.dataset.status = '退出计划中';
+    $('.promotion-cell', row).innerHTML = '<span class="status orange">退出计划中</span>';
     $('.operator-cell', row).textContent = '洪娟';
     $('.time-cell', row).textContent = formatNow();
     const checkbox = $('.row-check', row);
