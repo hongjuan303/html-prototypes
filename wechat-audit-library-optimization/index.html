@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>微信送审库功能优化原型</title>
-  <link rel="stylesheet" href="/html-prototypes/wechat-audit-library-optimization/styles.css?v=20260828-1752">
+  <link rel="stylesheet" href="/html-prototypes/wechat-audit-library-optimization/styles.css?v=20260903-1640">
 </head>
 <body>
   <main class="review-canvas">
@@ -49,17 +49,24 @@
               <label>合集名称<input id="collectionName" type="text" placeholder="录入"></label>
               <label>合集ID<input id="collectionId" type="text" placeholder="录入"></label>
               <label>剧目ID<input id="dramaId" type="text" placeholder="录入"></label>
-              <label class="new-field"><span class="callout">1</span>制作方<input id="producerSearch" type="text" placeholder="支持模糊搜索"></label>
-              <label class="wide">创建日期<span class="range-input">▣　开始日期　 至　 结束日期</span></label>
-              <label>剧目审核状态<select><option>全部</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
+              <label class="date-field new-field"><span class="callout">7</span>审核提交时间<span class="range-input"><input id="submitStart" type="date" aria-label="审核提交开始时间"><span>至</span><input id="submitEnd" type="date" aria-label="审核提交结束时间"></span></label>
+              <label>上传状态<select id="uploadFilter"><option>全部</option><option>上传完成</option><option>上传中</option><option>上传失败</option></select></label>
+              <label>剧目审核状态<select id="dramaAuditFilter"><option>全部</option><option>未提审</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
             </div>
             <div class="filter-row">
-              <label>媒资审核状态<select><option>全部</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
-              <label>替换状态<select><option>全部</option><option>未替换</option><option>替换中</option><option>替换完成</option></select></label>
-              <label>剧目审核资质<select><option>全部</option><option>已提交</option><option>未提交</option></select></label>
+              <label>剧集审核状态<select id="episodeAuditFilter"><option>全部</option><option>未提审</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
+              <label>版本更新<select id="versionFilter"><option>全部</option><option>是</option><option>否</option></select></label>
+              <label>能力<select id="abilityFilter"><option>请选择</option><option>可播放</option><option>可投放</option><option>可挂载</option></select></label>
+              <label>搜索/推荐开关<select id="recommendationFilter"><option>全部</option><option>开启</option><option>关闭</option></select></label>
+              <label class="wide">最新审核时间<span class="range-input"><input id="latestAuditStart" type="date" aria-label="最新审核开始时间"><span>至</span><input id="latestAuditEnd" type="date" aria-label="最新审核结束时间"></span></label>
+              <label>送审小程序<select id="miniProgramFilter"><option>请选择</option><option>蜻蜓剧场</option><option>青柠短剧</option></select></label>
+            </div>
+            <div class="filter-row requirements-row">
+              <label class="new-field"><span class="callout">1</span>制作方<input id="producerSearch" type="text" placeholder="支持模糊搜索"></label>
               <label class="new-field"><span class="callout">2</span>剧目信息修改状态<select id="modifyStatusFilter"><option>全部</option><option>审核中</option><option>审核失败</option><option>审核通过</option></select></label>
               <label class="new-field"><span class="callout">3</span>版权保护<select id="copyrightFilter"><option>全部</option><option>是</option><option>否</option></select></label>
-              <label>送审小程序<select><option>请选择</option><option>蜻蜓剧场</option><option>青柠短剧</option></select></label>
+              <label class="new-field"><span class="callout">8</span>剧集同步状态<select id="syncStatusFilter"><option>全部</option><option>未同步</option><option>同步中</option><option>已同步</option></select></label>
+              <label class="new-field"><span class="callout">9</span>剧集替换审核状态<select id="replacementAuditFilter"><option>全部</option><option>未提审</option><option>审核中</option><option>审核通过</option><option>审核失败</option></select></label>
             </div>
             <div class="filter-actions">
               <button class="btn primary" id="queryBtn">查询</button>
@@ -98,27 +105,28 @@
                 <thead>
                   <tr>
                     <th class="check-col"><input id="selectAll" type="checkbox" aria-label="全选"></th>
-                    <th>ID</th><th>合集ID</th><th class="name-col">合集名称</th><th>剧目ID</th><th>创建日期</th>
-                    <th>剧集替换状态</th><th>媒资审核状态</th><th>剧目审核状态</th><th class="new-col">剧目信息修改状态 <span class="callout small">2</span></th>
-                    <th class="new-col">版权保护 <span class="callout small">3</span></th><th>制作方</th><th>送审小程序</th><th class="operation-col">操作</th>
+                    <th>ID</th><th>合集ID</th><th class="name-col">合集名称</th><th>剧目ID</th><th>上传状态</th>
+                    <th>剧目审核状态</th><th>剧集审核状态</th><th class="ability-col">能力</th><th class="remark-col">审核备注</th>
+                    <th class="new-col">剧集同步状态 <span class="callout small">8</span></th><th class="new-col">剧集替换审核状态 <span class="callout small">9</span></th>
+                    <th class="new-col">剧目信息修改状态 <span class="callout small">2</span></th><th class="new-col">版权保护 <span class="callout small">3</span></th><th>制作方</th><th>送审小程序</th><th class="operation-col">操作</th>
                   </tr>
                 </thead>
                 <tbody id="tableBody">
-                  <tr data-id="3467" data-cid="42879" data-producer="果然映像" data-modify="审核中" data-copyright="否">
-                    <td><input class="row-check" type="checkbox" aria-label="选择3467"></td><td>3467</td><td>42879</td><td>她从山海归来</td><td>6227994627813402</td><td>2026-08-18 14:32</td><td><span class="status blue">替换完成</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status orange">审核中</span></td><td><span class="status gray">否</span></td><td>果然映像</td><td>蜻蜓剧场</td>
-                    <td class="operation-col"><button class="link-btn" data-detail="3467">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  <tr data-id="3467" data-cid="42879" data-name="她从山海归来" data-drama-id="6227994627813402" data-submit-time="2026-08-18 14:32" data-latest-audit="2026-08-20 10:30" data-upload="上传完成" data-drama-audit="审核通过" data-episode-audit="审核通过" data-version="否" data-ability="可播放、可投放" data-recommendation="开启" data-sync="已同步" data-replacement-audit="审核通过" data-producer="果然映像" data-modify="审核中" data-copyright="否" data-mini-program="蜻蜓剧场">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3467"></td><td>3467</td><td>42879</td><td>她从山海归来</td><td>6227994627813402</td><td>上传完成</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td>可播放、可投放</td><td>-</td><td><span class="status blue">已同步</span></td><td><span class="status green">审核通过</span></td><td><span class="status orange">审核中</span></td><td><span class="status gray">否</span></td><td>果然映像</td><td>蜻蜓剧场</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3467">审核记录</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
                   </tr>
-                  <tr data-id="3466" data-cid="42879" data-producer="果然映像" data-modify="审核通过" data-copyright="是">
-                    <td><input class="row-check" type="checkbox" aria-label="选择3466"></td><td>3466</td><td>42879</td><td>她从山海归来（高清版）</td><td>6227994627813403</td><td>2026-08-18 14:21</td><td><span class="status blue">替换完成</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">是</span></td><td>果然映像</td><td>蜻蜓剧场</td>
-                    <td class="operation-col"><button class="link-btn" data-detail="3466">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  <tr data-id="3466" data-cid="42879" data-name="她从山海归来（高清版）" data-drama-id="6227994627813403" data-submit-time="2026-08-18 14:21" data-latest-audit="2026-08-20 09:18" data-upload="上传完成" data-drama-audit="审核通过" data-episode-audit="审核通过" data-version="是" data-ability="可播放、可挂载" data-recommendation="开启" data-sync="已同步" data-replacement-audit="审核通过" data-producer="果然映像" data-modify="审核通过" data-copyright="是" data-mini-program="蜻蜓剧场">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3466"></td><td>3466</td><td>42879</td><td>她从山海归来（高清版）</td><td>6227994627813403</td><td>上传完成</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td>可播放、可挂载</td><td>-</td><td><span class="status blue">已同步</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">是</span></td><td>果然映像</td><td>蜻蜓剧场</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3466">审核记录</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
                   </tr>
-                  <tr data-id="3461" data-cid="43121" data-producer="青禾文化" data-modify="审核失败" data-copyright="否">
-                    <td><input class="row-check" type="checkbox" aria-label="选择3461"></td><td>3461</td><td>43121</td><td>风起时再次遇见你</td><td>6227981330057298</td><td>2026-08-17 11:08</td><td><span class="status orange">替换中</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status red">审核失败</span></td><td><span class="status gray">否</span></td><td>青禾文化</td><td>青柠短剧</td>
-                    <td class="operation-col"><button class="link-btn" data-detail="3461">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  <tr data-id="3461" data-cid="43121" data-name="风起时再次遇见你" data-drama-id="6227981330057298" data-submit-time="2026-08-17 11:08" data-latest-audit="2026-08-19 16:42" data-upload="上传完成" data-drama-audit="审核失败" data-episode-audit="未提审" data-version="否" data-ability="" data-recommendation="关闭" data-sync="同步中" data-replacement-audit="审核失败" data-producer="青禾文化" data-modify="审核失败" data-copyright="否" data-mini-program="青柠短剧">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3461"></td><td>3461</td><td>43121</td><td>风起时再次遇见你</td><td>6227981330057298</td><td>上传完成</td><td><span class="status red">审核失败</span></td><td><span class="status gray">未提审</span></td><td>-</td><td>剧名与备案信息不一致</td><td><span class="status orange">同步中</span></td><td><span class="status red">审核失败</span></td><td><span class="status red">审核失败</span></td><td><span class="status gray">否</span></td><td>青禾文化</td><td>青柠短剧</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3461">审核记录</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
                   </tr>
-                  <tr data-id="3458" data-cid="42766" data-producer="星河制作" data-modify="审核通过" data-copyright="是">
-                    <td><input class="row-check" type="checkbox" aria-label="选择3458"></td><td>3458</td><td>42766</td><td>月光落在旧信上</td><td>6227968412327088</td><td>2026-08-16 18:46</td><td><span class="status gray">未替换</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">是</span></td><td>星河制作</td><td>蜻蜓剧场</td>
-                    <td class="operation-col"><button class="link-btn" data-detail="3458">审核详情</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
+                  <tr data-id="3458" data-cid="42766" data-name="月光落在旧信上" data-drama-id="6227968412327088" data-submit-time="2026-08-16 18:46" data-latest-audit="2026-08-18 11:06" data-upload="上传完成" data-drama-audit="审核通过" data-episode-audit="审核通过" data-version="否" data-ability="可播放、可投放" data-recommendation="开启" data-sync="未同步" data-replacement-audit="未提审" data-producer="星河制作" data-modify="审核通过" data-copyright="是" data-mini-program="蜻蜓剧场">
+                    <td><input class="row-check" type="checkbox" aria-label="选择3458"></td><td>3458</td><td>42766</td><td>月光落在旧信上</td><td>6227968412327088</td><td>上传完成</td><td><span class="status green">审核通过</span></td><td><span class="status green">审核通过</span></td><td>可播放、可投放</td><td>-</td><td><span class="status gray">未同步</span></td><td><span class="status gray">未提审</span></td><td><span class="status green">审核通过</span></td><td><span class="status green">是</span></td><td>星河制作</td><td>蜻蜓剧场</td>
+                    <td class="operation-col"><button class="link-btn" data-detail="3458">审核记录</button><div class="more-wrap"><button class="link-btn more-btn">更多操作⌄</button><div class="more-menu"><button data-action="single-modify">修改剧目信息</button><button data-action="single-replace">替换剧集</button><button>授权小程序</button><button data-action="single-delete">删除</button><button data-action="single-sync">同步状态</button><button class="history-entry" data-action="history"><span class="callout small">5</span>历史</button></div></div></td>
                   </tr>
                 </tbody>
               </table>
@@ -141,6 +149,7 @@
 
       <section>
         <h2># 原型说明</h2>
+        <div class="rule-box baseline-rule"><strong>线上基准：</strong>除本需求明确新增或调整的内容外，筛选项、列表项与操作项均沿用当前线上微信送审库，不在本需求中改名、删减或改变逻辑。列表字段较多时保持横向滚动。</div>
         <h3><span>1</span> 筛选项新增「制作方」</h3>
         <p>文本输入，支持制作方名称模糊搜索；点击查询后刷新列表，重置后清空条件。</p>
 
@@ -178,6 +187,26 @@
           <li>提交前按“合集ID＋送审小程序”校验；已经提审过的组合自动跳过。</li>
           <li>点击“确认批量送审”后关闭弹窗并返回列表页，以轻提示告知任务已提交。</li>
         </ul>
+
+        <h3><span>7</span> 新增「审核提交时间」筛选</h3>
+        <p>时间范围筛选，支持选择开始日期、结束日期；查询时包含边界日期。该字段仅用于筛选，不在列表重复展示。</p>
+
+        <h3><span>8</span> 剧集同步状态</h3>
+        <p>原「剧集替换状态」统一改名为「剧集同步状态」，筛选与列表同步调整。枚举：未同步、同步中、已同步。</p>
+
+        <h3><span>9</span> 剧集替换审核状态</h3>
+        <p>筛选及列表新增该字段，用于展示剧目后续替换剧集的微信审核状态。枚举：未提审、审核中、审核通过、审核失败。</p>
+
+        <h3><span>10</span> 列表字段校正</h3>
+        <p>删除「创建日期」。线上已有的 ID、合集ID、合集名称、剧目ID、上传状态、剧目审核状态、剧集审核状态、能力、审核备注及操作保持不变；本需求新增字段在其后展示。</p>
+
+        <h3><span>11</span> 修改剧目信息按钮权限</h3>
+        <p>原弹窗按钮「确定」改为「重新送审」，并按当前记录的「剧目审核状态」控制可用性。</p>
+        <table class="rule-table">
+          <thead><tr><th>剧目审核状态</th><th>重新送审</th><th>确定修改剧目基本信息</th></tr></thead>
+          <tbody><tr><td>审核失败</td><td>可点击</td><td>禁用</td></tr><tr><td>审核通过</td><td>禁用</td><td>可点击</td></tr><tr><td>其他状态</td><td>禁用</td><td>禁用</td></tr></tbody>
+        </table>
+        <p><strong>批量场景：</strong>所选记录的剧目审核状态全部为审核失败时才可重新送审；全部为审核通过时才可修改剧目基本信息；混合状态下两个按钮均禁用。</p>
       </section>
 
     </aside>
@@ -192,6 +221,6 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="/html-prototypes/wechat-audit-library-optimization/app.js?v=20260828-1752"></script>
+  <script src="/html-prototypes/wechat-audit-library-optimization/app.js?v=20260903-1640"></script>
 </body>
 </html>

@@ -39,7 +39,7 @@ function updateBatchState() {
     batchMenu.classList.remove('open');
   } else if (sameCollection) {
     batchHint.classList.add('same');
-    batchHint.textContent = `合集ID ${ids[0]}，全部批量操作可用`;
+    batchHint.textContent = `已选择 ${selected.length} 条，同合集批量操作可用`;
     batchMenuHint.textContent = '全部批量操作可用';
   } else {
     batchHint.classList.add('mixed');
@@ -82,8 +82,9 @@ function closeModal() {
 function bindModalControls(title) {
   modalFooter.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', closeModal));
   modalFooter.querySelectorAll('[data-confirm]').forEach((button) => button.addEventListener('click', () => {
+    if (button.disabled) return;
     closeModal();
-    showToast(`${title}已提交`);
+    showToast(`${button.dataset.success || title}已提交`);
   }));
 }
 
@@ -110,15 +111,16 @@ function recordContext(single) {
   const records = selected.map((row) => ({
     id: row.dataset.id,
     cid: row.dataset.cid,
-    name: row.children[3].textContent.trim(),
-    dramaId: row.children[4].textContent.trim(),
-    miniProgram: row.children[12].textContent.trim()
+    name: row.dataset.name,
+    dramaId: row.dataset.dramaId,
+    miniProgram: row.dataset.miniProgram,
+    dramaAudit: row.dataset.dramaAudit
   }));
   return {
     count: selected.length,
     cid: first.dataset.cid,
-    name: first.children[3].textContent.trim(),
-    dramaId: first.children[4].textContent.trim(),
+    name: first.dataset.name,
+    dramaId: first.dataset.dramaId,
     collectionCount: new Set(records.map((record) => record.cid)).size,
     records
   };
@@ -131,11 +133,19 @@ function proofThumbs() {
 function openModifyModal(single = false) {
   const ctx = recordContext(single);
   const selectedText = single ? `已选择《${ctx.name}》 id:${ctx.cid}` : `已选择《${ctx.name}》 id:${ctx.cid}（共${ctx.count}条送审记录）`;
+  const allFailed = ctx.records.length > 0 && ctx.records.every((record) => record.dramaAudit === '审核失败');
+  const allPassed = ctx.records.length > 0 && ctx.records.every((record) => record.dramaAudit === '审核通过');
+  const auditText = allFailed
+    ? '当前所选记录均为剧目审核失败，可重新送审。'
+    : allPassed
+      ? '当前所选记录均为剧目审核通过，可修改剧目基本信息。'
+      : '当前所选记录包含不同或不可操作的剧目审核状态，两个提交按钮均不可用。';
   openModal({
     title: '修改剧目信息',
     size: 'wide',
-    footer: '<button class="btn" data-close>取消</button><button class="btn primary" data-confirm>确定</button><button class="btn primary" data-confirm>确定修改剧目基本信息</button>',
+    footer: `<button class="btn" data-close>取消</button><button class="btn primary" data-confirm data-success="重新送审任务" ${allFailed ? '' : 'disabled'}>重新送审</button><button class="btn primary" data-confirm data-success="剧目基本信息修改" ${allPassed ? '' : 'disabled'}>确定修改剧目基本信息</button>`,
     body: `
+      <div class="modal-note permission-note ${allFailed ? 'failed' : allPassed ? 'passed' : 'blocked'}"><strong>操作权限：</strong>${auditText}</div>
       <div class="online-form">
         <div class="form-row"><div class="form-label"><i class="required">*</i> 选择合集</div><div class="form-control"><button class="btn primary" disabled>选择合集</button><span>${selectedText}</span></div></div>
         <div class="form-row"><div class="form-label">备用片名</div><div class="form-control"><input type="text" placeholder="请填写备用片名" maxlength="50"><span class="text-counter">0/50</span></div></div>
@@ -420,9 +430,12 @@ document.querySelectorAll('.more-menu button').forEach((button) => button.addEve
 }));
 
 document.querySelectorAll('[data-detail]').forEach((button) => button.addEventListener('click', () => {
+  const row = button.closest('tr');
+  const dramaAudit = row.dataset.dramaAudit;
+  const episodeAudit = row.dataset.episodeAudit;
   openModal({
-    title: '审核详情', footer: false,
-    body: `<dl class="detail-grid"><dt>送审记录ID</dt><dd>${button.dataset.detail}</dd><dt>剧目审核</dt><dd><span class="status green">审核通过</span></dd><dt>媒资审核</dt><dd><span class="status green">审核通过</span></dd><dt>最近同步时间</dt><dd>2026-08-20 10:30:18</dd></dl>`
+    title: '审核记录', footer: false,
+    body: `<dl class="detail-grid"><dt>送审记录ID</dt><dd>${button.dataset.detail}</dd><dt>剧目审核</dt><dd><span class="status ${dramaAudit === '审核通过' ? 'green' : dramaAudit === '审核失败' ? 'red' : 'orange'}">${dramaAudit}</span></dd><dt>剧集审核</dt><dd><span class="status ${episodeAudit === '审核通过' ? 'green' : episodeAudit === '审核失败' ? 'red' : episodeAudit === '审核中' ? 'orange' : 'gray'}">${episodeAudit}</span></dd><dt>最近同步时间</dt><dd>${row.dataset.latestAudit}</dd></dl>`
   });
 }));
 
@@ -431,15 +444,44 @@ document.querySelector('#queryBtn').addEventListener('click', () => {
   const collectionName = document.querySelector('#collectionName').value.trim().toLowerCase();
   const collectionId = document.querySelector('#collectionId').value.trim();
   const dramaId = document.querySelector('#dramaId').value.trim();
+  const submitStart = document.querySelector('#submitStart').value;
+  const submitEnd = document.querySelector('#submitEnd').value;
+  const latestAuditStart = document.querySelector('#latestAuditStart').value;
+  const latestAuditEnd = document.querySelector('#latestAuditEnd').value;
+  const upload = document.querySelector('#uploadFilter').value;
+  const dramaAudit = document.querySelector('#dramaAuditFilter').value;
+  const episodeAudit = document.querySelector('#episodeAuditFilter').value;
+  const version = document.querySelector('#versionFilter').value;
+  const ability = document.querySelector('#abilityFilter').value;
+  const recommendation = document.querySelector('#recommendationFilter').value;
+  const miniProgram = document.querySelector('#miniProgramFilter').value;
   const modify = document.querySelector('#modifyStatusFilter').value;
   const copyright = document.querySelector('#copyrightFilter').value;
+  const sync = document.querySelector('#syncStatusFilter').value;
+  const replacementAudit = document.querySelector('#replacementAuditFilter').value;
+  const enumMatches = (selected, value) => selected === '全部' || selected === '请选择' || selected === value;
+  const inDateRange = (value, start, end) => (!start || value >= start) && (!end || value <= end);
   let visible = 0;
   rows.forEach((row) => {
-    const cells = row.children;
+    const submitDate = row.dataset.submitTime.slice(0, 10);
+    const latestAuditDate = row.dataset.latestAudit.slice(0, 10);
     const match = (!producer || row.dataset.producer.toLowerCase().includes(producer))
-      && (!collectionName || cells[3].textContent.toLowerCase().includes(collectionName))
-      && (!collectionId || row.dataset.cid === collectionId) && (!dramaId || cells[4].textContent.trim() === dramaId)
-      && (modify === '全部' || row.dataset.modify === modify) && (copyright === '全部' || row.dataset.copyright === copyright);
+      && (!collectionName || row.dataset.name.toLowerCase().includes(collectionName))
+      && (!collectionId || row.dataset.cid === collectionId)
+      && (!dramaId || row.dataset.dramaId === dramaId)
+      && inDateRange(submitDate, submitStart, submitEnd)
+      && inDateRange(latestAuditDate, latestAuditStart, latestAuditEnd)
+      && enumMatches(upload, row.dataset.upload)
+      && enumMatches(dramaAudit, row.dataset.dramaAudit)
+      && enumMatches(episodeAudit, row.dataset.episodeAudit)
+      && enumMatches(version, row.dataset.version)
+      && (ability === '请选择' || row.dataset.ability.includes(ability))
+      && enumMatches(recommendation, row.dataset.recommendation)
+      && enumMatches(miniProgram, row.dataset.miniProgram)
+      && enumMatches(modify, row.dataset.modify)
+      && enumMatches(copyright, row.dataset.copyright)
+      && enumMatches(sync, row.dataset.sync)
+      && enumMatches(replacementAudit, row.dataset.replacementAudit);
     row.classList.toggle('filtered', !match);
     if (match) visible += 1;
   });
