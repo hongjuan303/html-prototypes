@@ -444,6 +444,8 @@ document.querySelector('#queryBtn').addEventListener('click', () => {
   const collectionName = document.querySelector('#collectionName').value.trim().toLowerCase();
   const collectionId = document.querySelector('#collectionId').value.trim();
   const dramaId = document.querySelector('#dramaId').value.trim();
+  const latestSubmitStart = document.querySelector('#latestSubmitStart').value;
+  const latestSubmitEnd = document.querySelector('#latestSubmitEnd').value;
   const submitStart = document.querySelector('#submitStart').value;
   const submitEnd = document.querySelector('#submitEnd').value;
   const latestAuditStart = document.querySelector('#latestAuditStart').value;
@@ -463,12 +465,14 @@ document.querySelector('#queryBtn').addEventListener('click', () => {
   const inDateRange = (value, start, end) => (!start || value >= start) && (!end || value <= end);
   let visible = 0;
   rows.forEach((row) => {
+    const latestSubmitDate = row.dataset.latestSubmit.slice(0, 10);
     const submitDate = row.dataset.submitTime.slice(0, 10);
     const latestAuditDate = row.dataset.latestAudit.slice(0, 10);
     const match = (!producer || row.dataset.producer.toLowerCase().includes(producer))
       && (!collectionName || row.dataset.name.toLowerCase().includes(collectionName))
       && (!collectionId || row.dataset.cid === collectionId)
       && (!dramaId || row.dataset.dramaId === dramaId)
+      && inDateRange(latestSubmitDate, latestSubmitStart, latestSubmitEnd)
       && inDateRange(submitDate, submitStart, submitEnd)
       && inDateRange(latestAuditDate, latestAuditStart, latestAuditEnd)
       && enumMatches(upload, row.dataset.upload)
