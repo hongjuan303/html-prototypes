@@ -432,10 +432,10 @@ document.querySelectorAll('.more-menu button').forEach((button) => button.addEve
 document.querySelectorAll('[data-detail]').forEach((button) => button.addEventListener('click', () => {
   const row = button.closest('tr');
   const dramaAudit = row.dataset.dramaAudit;
-  const episodeAudit = row.dataset.episodeAudit;
+  const mediaAudit = row.dataset.mediaAudit;
   openModal({
-    title: '审核记录', footer: false,
-    body: `<dl class="detail-grid"><dt>送审记录ID</dt><dd>${button.dataset.detail}</dd><dt>剧目审核</dt><dd><span class="status ${dramaAudit === '审核通过' ? 'green' : dramaAudit === '审核失败' ? 'red' : 'orange'}">${dramaAudit}</span></dd><dt>剧集审核</dt><dd><span class="status ${episodeAudit === '审核通过' ? 'green' : episodeAudit === '审核失败' ? 'red' : episodeAudit === '审核中' ? 'orange' : 'gray'}">${episodeAudit}</span></dd><dt>最近同步时间</dt><dd>${row.dataset.latestAudit}</dd></dl>`
+    title: '审核详情', footer: false,
+    body: `<dl class="detail-grid"><dt>送审记录ID</dt><dd>${button.dataset.detail}</dd><dt>剧目审核</dt><dd><span class="status ${dramaAudit === '审核通过' ? 'green' : dramaAudit === '审核失败' ? 'red' : 'orange'}">${dramaAudit}</span></dd><dt>媒资审核</dt><dd><span class="status ${mediaAudit === '审核通过' ? 'green' : mediaAudit === '审核失败' ? 'red' : 'orange'}">${mediaAudit}</span></dd><dt>最近同步时间</dt><dd>${row.dataset.latestAudit}</dd></dl>`
   });
 }));
 
@@ -444,18 +444,13 @@ document.querySelector('#queryBtn').addEventListener('click', () => {
   const collectionName = document.querySelector('#collectionName').value.trim().toLowerCase();
   const collectionId = document.querySelector('#collectionId').value.trim();
   const dramaId = document.querySelector('#dramaId').value.trim();
-  const latestSubmitStart = document.querySelector('#latestSubmitStart').value;
-  const latestSubmitEnd = document.querySelector('#latestSubmitEnd').value;
+  const creationStart = document.querySelector('#creationStart').value;
+  const creationEnd = document.querySelector('#creationEnd').value;
   const submitStart = document.querySelector('#submitStart').value;
   const submitEnd = document.querySelector('#submitEnd').value;
-  const latestAuditStart = document.querySelector('#latestAuditStart').value;
-  const latestAuditEnd = document.querySelector('#latestAuditEnd').value;
-  const upload = document.querySelector('#uploadFilter').value;
   const dramaAudit = document.querySelector('#dramaAuditFilter').value;
-  const episodeAudit = document.querySelector('#episodeAuditFilter').value;
-  const version = document.querySelector('#versionFilter').value;
-  const ability = document.querySelector('#abilityFilter').value;
-  const recommendation = document.querySelector('#recommendationFilter').value;
+  const mediaAudit = document.querySelector('#mediaAuditFilter').value;
+  const qualification = document.querySelector('#qualificationFilter').value;
   const miniProgram = document.querySelector('#miniProgramFilter').value;
   const modify = document.querySelector('#modifyStatusFilter').value;
   const copyright = document.querySelector('#copyrightFilter').value;
@@ -465,22 +460,16 @@ document.querySelector('#queryBtn').addEventListener('click', () => {
   const inDateRange = (value, start, end) => (!start || value >= start) && (!end || value <= end);
   let visible = 0;
   rows.forEach((row) => {
-    const latestSubmitDate = row.dataset.latestSubmit.slice(0, 10);
     const submitDate = row.dataset.submitTime.slice(0, 10);
-    const latestAuditDate = row.dataset.latestAudit.slice(0, 10);
     const match = (!producer || row.dataset.producer.toLowerCase().includes(producer))
       && (!collectionName || row.dataset.name.toLowerCase().includes(collectionName))
       && (!collectionId || row.dataset.cid === collectionId)
       && (!dramaId || row.dataset.dramaId === dramaId)
-      && inDateRange(latestSubmitDate, latestSubmitStart, latestSubmitEnd)
+      && inDateRange(row.dataset.created, creationStart, creationEnd)
       && inDateRange(submitDate, submitStart, submitEnd)
-      && inDateRange(latestAuditDate, latestAuditStart, latestAuditEnd)
-      && enumMatches(upload, row.dataset.upload)
       && enumMatches(dramaAudit, row.dataset.dramaAudit)
-      && enumMatches(episodeAudit, row.dataset.episodeAudit)
-      && enumMatches(version, row.dataset.version)
-      && (ability === '请选择' || row.dataset.ability.includes(ability))
-      && enumMatches(recommendation, row.dataset.recommendation)
+      && enumMatches(mediaAudit, row.dataset.mediaAudit)
+      && enumMatches(qualification, row.dataset.qualification)
       && enumMatches(miniProgram, row.dataset.miniProgram)
       && enumMatches(modify, row.dataset.modify)
       && enumMatches(copyright, row.dataset.copyright)
