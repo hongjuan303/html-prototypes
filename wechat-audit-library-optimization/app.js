@@ -149,7 +149,7 @@ function openModifyModal(single = false) {
       <div class="online-form">
         <div class="form-row"><div class="form-label"><i class="required">*</i> 选择合集</div><div class="form-control"><button class="btn primary" disabled>选择合集</button><span>${selectedText}</span></div></div>
         <div class="form-row"><div class="form-label">备用片名</div><div class="form-control"><input type="text" placeholder="请填写备用片名" maxlength="50"><span class="text-counter">0/50</span></div></div>
-        <div class="form-row"><div class="form-label">送审小程序</div><div class="form-control"><select disabled><option>蜻蜓剧场</option></select></div></div>
+        <div class="form-row"><div class="form-label">送审小程序</div><div class="form-control"><select disabled><option>${ctx.records[0]?.miniProgram || '-'}</option></select></div></div>
         <div class="form-row"><div class="form-label">剧目制作方</div><div class="form-control inline-fields"><select><option>剧目制作方</option></select><input type="text" value="杭州容量互娱科技有限公司"></div></div>
         <div class="form-row"><div class="form-label"><i class="required">*</i> 版权保护</div><div class="form-control radio-line"><label><input type="radio" name="copyright" checked>不申请</label><label><input type="radio" name="copyright">申请</label></div></div>
         <div class="form-row"><div class="form-label"><i class="required">*</i> 版权验证方式</div><div class="form-control radio-line"><label><input type="radio" name="verify" checked>基于版权证明材料</label><label><input type="radio" name="verify">基于版权授权关系</label></div></div>
@@ -259,11 +259,11 @@ function openSyncModal(single = false) {
 }
 
 const miniPrograms = [
-  { id: 'xingyao', name: '星耀剧场' },
-  { id: 'qingyue', name: '轻阅短剧' },
-  { id: 'qingning', name: '青柠短剧' },
-  { id: 'qingting', name: '蜻蜓剧场' }
-];
+  '川洛剧场', '一新剧场', '掌文追剧', '江白剧场', '越上剧场', '千斤剧场', '冬青追剧', '归来剧场',
+  '七里剧场', '文元剧场', '槐米剧场', '竹沥追剧', '素问剧场', '白敛追剧', '苏木短剧', '长久剧场',
+  '永衡剧院', '守护剧场', '扬草剧场', '白芍剧场', '茯苓剧场', '佳容剧场', '大满剧场', '丘丘短剧',
+  '来看短剧（iaa）', '悠悠看吧'
+].map((name, index) => ({ id: `program-${index + 1}`, name }));
 
 function selectedCollections(records) {
   const collections = new Map();
@@ -435,7 +435,7 @@ document.querySelectorAll('[data-detail]').forEach((button) => button.addEventLi
   const mediaAudit = row.dataset.mediaAudit;
   openModal({
     title: '审核详情', footer: false,
-    body: `<dl class="detail-grid"><dt>送审记录ID</dt><dd>${button.dataset.detail}</dd><dt>剧目审核</dt><dd><span class="status ${dramaAudit === '审核通过' ? 'green' : dramaAudit === '审核失败' ? 'red' : 'orange'}">${dramaAudit}</span></dd><dt>媒资审核</dt><dd><span class="status ${mediaAudit === '审核通过' ? 'green' : mediaAudit === '审核失败' ? 'red' : 'orange'}">${mediaAudit}</span></dd><dt>最近同步时间</dt><dd>${row.dataset.latestAudit}</dd></dl>`
+    body: `<dl class="detail-grid"><dt>送审记录ID</dt><dd>${button.dataset.detail}</dd><dt>剧目审核</dt><dd><span class="status ${dramaAudit === '审核通过' ? 'green' : dramaAudit === '审核失败' || dramaAudit === '审核驳回' ? 'red' : 'orange'}">${dramaAudit}</span></dd><dt>媒资审核</dt><dd><span class="status ${mediaAudit === '全部通过' ? 'green' : mediaAudit === '失败' ? 'red' : 'orange'}">${mediaAudit}</span></dd><dt>最近同步时间</dt><dd>${row.dataset.latestAudit}</dd></dl>`
   });
 }));
 
