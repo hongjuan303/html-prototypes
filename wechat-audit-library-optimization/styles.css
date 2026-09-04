@@ -185,8 +185,9 @@ button { cursor: pointer; }
 .prd-meta { display: flex; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid #e7e9ed; color: #7a818b; }
 .prd-panel section { padding: 18px 0 4px; border-bottom: 1px solid #eceef1; }
 .prd-panel h2 { margin: 0 0 10px; color: var(--orange); font-size: 21px; letter-spacing: 0; }
-.prd-panel h3 { display: flex; align-items: center; margin: 17px 0 5px; color: #30343b; font-size: 16px; letter-spacing: 0; }
-.prd-panel h3 span { display: inline-grid; place-items: center; width: 23px; height: 23px; margin-right: 8px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 12px; }
+.prd-panel h3.structure-title { margin: 24px 0 10px; padding: 9px 12px; border-left: 4px solid var(--orange); background: #fff8ee; color: #30343b; font-size: 18px; letter-spacing: 0; }
+.prd-panel h4 { display: flex; align-items: center; margin: 17px 0 5px; color: #30343b; font-size: 16px; letter-spacing: 0; }
+.prd-panel h4 span { display: inline-grid; place-items: center; flex: 0 0 auto; width: 23px; height: 23px; margin-right: 8px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 12px; }
 .prd-panel p { margin: 7px 0; }
 .prd-panel ul, .prd-panel ol { margin: 8px 0 8px 22px; padding: 0; }
 .prd-panel li { margin: 6px 0; }

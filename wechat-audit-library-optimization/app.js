@@ -145,7 +145,7 @@ function openModifyModal(single = false) {
     size: 'wide',
     footer: `<button class="btn" data-close>取消</button><button class="btn primary" data-confirm data-success="重新送审任务" ${allFailed ? '' : 'disabled'}>重新送审</button><button class="btn primary" data-confirm data-success="剧目基本信息修改" ${allPassed ? '' : 'disabled'}>确定修改剧目基本信息</button>`,
     body: `
-      <div class="modal-note permission-note ${allFailed ? 'failed' : allPassed ? 'passed' : 'blocked'}"><strong>操作权限：</strong>${auditText}</div>
+      <div class="modal-note permission-note ${allFailed ? 'failed' : allPassed ? 'passed' : 'blocked'}"><span class="callout small">14</span><strong>操作权限：</strong>${auditText}</div>
       <div class="online-form">
         <div class="form-row"><div class="form-label"><i class="required">*</i> 选择合集</div><div class="form-control"><button class="btn primary" disabled>选择合集</button><span>${selectedText}</span></div></div>
         <div class="form-row"><div class="form-label">备用片名</div><div class="form-control"><input type="text" placeholder="请填写备用片名" maxlength="50"><span class="text-counter">0/50</span></div></div>
