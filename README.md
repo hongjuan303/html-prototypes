@@ -13,3 +13,4 @@
 
 - `business-cooperation/`：官网商务合作表单。
 - `cost-revenue-sharing/`：成本及分成比例设置弹窗。
+- `ai-smart-mixed-cut/`：AI 智能混剪单模块优化版交互原型。

@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="AI 智能混剪 · 原片证据约束的高光混剪产品原型" />
+  <title>AI 智能混剪 · 混剪剧情</title>
+  <link rel="stylesheet" href="/html-prototypes/ai-smart-mixed-cut/styles.css" />
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4.8 13h6.3L10 22l8.2-12h-6.1L13 2Z"/></symbol>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="7" r="3"/><circle cx="6" cy="17" r="3"/><path d="m8.5 8.5 10 7M8.5 15.5l10-7"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z"/><path d="M14 2v5h5M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M14 7l5 5-5 5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5m5-5-5 5 5 5"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 1.4 5.1L18 9l-4.6 1.9L12 16l-1.4-5.1L6 9l4.6-1.9L12 2ZM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4.5 5v6.2c0 4.7 3.1 8.9 7.5 10.3 4.4-1.4 7.5-5.6 7.5-10.3V5L12 2Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m4 16.5-.8 4.3 4.3-.8L19 8.5 15.5 5 4 16.5Z"/><path d="m13.8 6.7 3.5 3.5"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 7h13m0 0-3-3m3 3-3 3M20 17H7m0 0 3 3m-3-3 3-3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m9.5 14.5 5-5M7 17l-1 1a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0M17 7l1-1a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5"/><path d="M4 19v2h16v-2"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.2"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+  </svg>
+
+  <div class="app-layout">
+    <aside class="side-rail" aria-label="主导航">
+      <div class="rail-logo">AI</div>
+      <nav class="rail-nav">
+        <button class="rail-item active" aria-label="混剪剧情" data-tooltip="混剪剧情">
+          <svg class="icon"><use href="#i-scissors"></use></svg>
+        </button>
+        <button class="rail-item" aria-label="成片记录" data-tooltip="成片记录">
+          <svg class="icon"><use href="#i-video"></use></svg>
+          <span class="rail-badge">3</span>
+        </button>
+      </nav>
+      <div class="rail-bottom">
+        <div class="credit-badge" data-tooltip="剩余 60 积分">
+          <svg class="icon"><use href="#i-bolt"></use></svg><span>60</span>
+        </div>
+        <button class="avatar-button" aria-label="用户中心">娟</button>
+      </div>
+    </aside>
+
+    <main class="main-shell">
+      <header class="topbar">
+        <div class="product-title">
+          <span class="product-mark"><svg class="icon"><use href="#i-bolt"></use></svg></span>
+          <strong><span>AI</span> 智能混剪</strong>
+          <em>让高光选择有据可查</em>
+        </div>
+        <div class="topbar-actions">
+          <span class="system-pill"><i></i>模型服务正常</span>
+          <button class="icon-button" aria-label="更多"><svg class="icon"><use href="#i-more"></use></svg></button>
+          <button class="mini-avatar" aria-label="用户菜单">娟</button>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <section class="workspace-heading">
+          <div>
+            <div class="eyebrow"><span>混剪创作</span><b>优化版 Demo</b></div>
+            <h1>混剪剧情</h1>
+            <p>从剧集中定位可验证的高光片段，生成叙事连贯的投放素材</p>
+          </div>
+          <div class="heading-actions">
+            <button class="button ghost small" id="resetDemoBtn">重置演示</button>
+            <button class="button subtle small" id="guideBtn"><svg class="icon"><use href="#i-info"></use></svg>使用说明</button>
+          </div>
+        </section>
+
+        <nav class="stepper" aria-label="混剪流程">
+          <button class="step active" data-step="1"><span>1</span><div><strong>素材配置</strong><small>上传剧集与剪辑策略</small></div></button>
+          <i></i>
+          <button class="step" data-step="2"><span>2</span><div><strong>理解校对</strong><small>剧情、人物与事件证据</small></div></button>
+          <i></i>
+          <button class="step" data-step="3"><span>3</span><div><strong>高光方案</strong><small>选段、解说与时间线</small></div></button>
+          <i></i>
+          <button class="step" data-step="4"><span>4</span><div><strong>成片质检</strong><small>预览、修正与导出</small></div></button>
+        </nav>
+
+        <div id="stageRoot">
+          <section class="stage active" id="stage1" aria-labelledby="stage1Title">
+            <div class="info-strip">
+              <div class="info-icon"><svg class="icon"><use href="#i-spark"></use></svg></div>
+              <div><strong>演示项目已预置 3 集素材</strong><span>你可以直接体验分析流程，也可以添加本地视频；本 Demo 不会上传或保存文件。</span></div>
+              <span class="info-tag">本地演示</span>
+            </div>
+
+            <div class="config-grid">
+              <article class="panel asset-panel">
+                <div class="panel-head">
+                  <div><span class="panel-index">①</span><div><h2 id="stage1Title">视频素材</h2><p>按剧集顺序分析，支持批量选择</p></div></div>
+                  <span class="required">必填</span>
+                </div>
+
+                <label class="uploader" id="uploader" for="fileInput">
+                  <input id="fileInput" type="file" accept="video/mp4,video/quicktime" multiple />
+                  <span class="upload-icon"><svg class="icon"><use href="#i-upload"></use></svg></span>
+                  <strong>点击或拖拽上传剧集视频</strong>
+                  <span>支持 MP4 / MOV，单个文件不超过 2GB</span>
+                </label>
+
+                <div class="asset-summary">
+                  <span>已上传 <strong id="episodeCount">3</strong> 集</span>
+                  <span>总时长 <strong id="episodeDuration">31:42</strong></span>
+                  <button class="text-button" id="sortBtn">按集数排序</button>
+                </div>
+
+                <div class="episode-list" id="episodeList">
+                  <div class="episode-row" data-episode="1">
+                    <button class="drag-handle" aria-label="拖动排序">⋮⋮</button>
+                    <div class="episode-thumb scene-a"><span>01</span><svg class="icon"><use href="#i-play"></use></svg></div>
+                    <div class="episode-meta"><strong>豪门暗涌_第01集.mp4</strong><span>286.4MB · 10分26秒 · 1080P</span></div>
+                    <span class="status success"><svg class="icon"><use href="#i-check"></use></svg>就绪</span>
+                    <button class="icon-button remove-episode" aria-label="移除第1集"><svg class="icon"><use href="#i-close"></use></svg></button>
+                  </div>
+                  <div class="episode-row" data-episode="2">
+                    <button class="drag-handle" aria-label="拖动排序">⋮⋮</button>
+                    <div class="episode-thumb scene-b"><span>02</span><svg class="icon"><use href="#i-play"></use></svg></div>
+                    <div class="episode-meta"><strong>豪门暗涌_第02集.mp4</strong><span>301.2MB · 10分48秒 · 1080P</span></div>
+                    <span class="status success"><svg class="icon"><use href="#i-check"></use></svg>就绪</span>
+                    <button class="icon-button remove-episode" aria-label="移除第2集"><svg class="icon"><use href="#i-close"></use></svg></button>
+                  </div>
+                  <div class="episode-row" data-episode="3">
+                    <button class="drag-handle" aria-label="拖动排序">⋮⋮</button>
+                    <div class="episode-thumb scene-c"><span>03</span><svg class="icon"><use href="#i-play"></use></svg></div>
+                    <div class="episode-meta"><strong>豪门暗涌_第03集.mp4</strong><span>291.8MB · 10分28秒 · 1080P</span></div>
+                    <span class="status success"><svg class="icon"><use href="#i-check"></use></svg>就绪</span>
+                    <button class="icon-button remove-episode" aria-label="移除第3集"><svg class="icon"><use href="#i-close"></use></svg></button>
+                  </div>
+                </div>
+
+                <div class="asset-footnote"><svg class="icon"><use href="#i-info"></use></svg>系统将保留“剧集＋原片时间码”，所有高光均可回查。</div>
+              </article>
+
+              <article class="panel config-panel">
+                <div class="panel-head">
+                  <div><span class="panel-index">②</span><div><h2>混剪配置</h2><p>决定高光筛选和成片结构</p></div></div>
+                  <span class="impact-tag">影响高光判断</span>
+                </div>
+
+                <div class="field full">
+                  <label>剪辑方式</label>
+                  <div class="segmented" id="editMode">
+                    <button class="active" data-value="原片顺剪"><strong>原片顺剪</strong><small>保留关键对白</small></button>
+                    <button data-value="解说混剪"><strong>解说混剪</strong><small>旁白串联剧情</small></button>
+                  </div>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field"><label for="durationSelect">目标时长</label><div class="select-wrap"><select id="durationSelect"><option>30 秒</option><option selected>60 秒</option><option>90 秒</option><option>3 分钟</option></select><svg class="icon"><use href="#i-chevron"></use></svg></div></div>
+                  <div class="field"><label for="ratioSelect">成片比例</label><div class="select-wrap"><select id="ratioSelect"><option selected>9:16 竖屏</option><option>16:9 横屏</option><option>1:1 方形</option></select><svg class="icon"><use href="#i-chevron"></use></svg></div></div>
+                  <div class="field"><label for="languageSelect">解说语言</label><div class="select-wrap"><select id="languageSelect"><option selected>中文</option><option>英文</option><option>西班牙语</option></select><svg class="icon"><use href="#i-chevron"></use></svg></div></div>
+                  <div class="field"><label for="voiceSelect">解说音色</label><div class="select-wrap"><select id="voiceSelect"><option selected>知性女声 · 云舒</option><option>磁性男声 · 沉川</option><option>情绪女声 · 南乔</option></select><svg class="icon"><use href="#i-chevron"></use></svg></div></div>
+                </div>
+
+                <div class="field full">
+                  <label>高光偏好 <span>可多选</span></label>
+                  <div class="choice-chips" id="highlightPreferences">
+                    <button class="active" data-value="强冲突">强冲突</button>
+                    <button class="active" data-value="身份反转">身份反转</button>
+                    <button class="active" data-value="悬念断点">悬念断点</button>
+                    <button data-value="情感拉扯">情感拉扯</button>
+                    <button data-value="爽点打脸">爽点打脸</button>
+                  </div>
+                </div>
+
+                <div class="field-grid">
+                  <div class="field"><label for="spoilerSelect">剧透程度</label><div class="select-wrap"><select id="spoilerSelect"><option>无剧透</option><option selected>轻剧透</option><option>完整剧情</option></select><svg class="icon"><use href="#i-chevron"></use></svg></div></div>
+                  <div class="field"><label for="paceSelect">剪辑节奏</label><div class="select-wrap"><select id="paceSelect"><option selected>快节奏投放</option><option>均衡</option><option>剧情完整优先</option></select><svg class="icon"><use href="#i-chevron"></use></svg></div></div>
+                </div>
+
+                <div class="slider-field">
+                  <div><label for="originalAudio">原声保留比例</label><output id="audioOutput">40%</output></div>
+                  <input id="originalAudio" type="range" min="0" max="100" value="40" />
+                  <div class="range-labels"><span>全解说</span><span>关键对白优先</span><span>全原声</span></div>
+                </div>
+
+                <button class="advanced-toggle" id="advancedToggle" aria-expanded="false"><span><svg class="icon"><use href="#i-settings"></use></svg>高级设置</span><svg class="icon chevron"><use href="#i-chevron"></use></svg></button>
+                <div class="advanced-fields" id="advancedFields">
+                  <label><input type="checkbox" checked />严格原片事实约束</label>
+                  <label><input type="checkbox" checked />自动竖屏人物跟踪</label>
+                  <label><input type="checkbox" />生成 2 个差异化开头</label>
+                </div>
+
+                <div class="cost-bar">
+                  <div><span>预计分析</span><strong>约 4 分钟</strong></div>
+                  <div><span>预计消耗</span><strong>8 积分</strong></div>
+                  <div><span>输出方案</span><strong>3 个</strong></div>
+                </div>
+              </article>
+            </div>
+
+            <div class="stage-actions end">
+              <span><svg class="icon"><use href="#i-shield"></use></svg>分析结果仅用于项目内混剪</span>
+              <button class="button primary" id="startAnalysisBtn">开始理解分析<svg class="icon"><use href="#i-arrow"></use></svg></button>
+            </div>
+          </section>
+
+          <section class="stage" id="stage2" aria-labelledby="analysisTitle">
+            <div class="analysis-running" id="analysisRunning">
+              <div class="analysis-orbit"><span><svg class="icon"><use href="#i-spark"></use></svg></span><i></i><i></i><i></i></div>
+              <h2>正在理解 3 集剧情</h2>
+              <p id="analysisStatusText">正在进行语音识别与字幕校正…</p>
+              <div class="progress-track"><i id="analysisProgress"></i></div>
+              <div class="progress-meta"><strong id="analysisPercent">12%</strong><span id="analysisEta">预计还需 2 分钟</span></div>
+              <div class="pipeline-list">
+                <div class="pipeline-item running" data-analysis-step="0"><span><svg class="icon"><use href="#i-file"></use></svg></span><div><strong>对白与字幕</strong><small>ASR + OCR 双路校正</small></div><b>处理中</b></div>
+                <div class="pipeline-item" data-analysis-step="1"><span><svg class="icon"><use href="#i-video"></use></svg></span><div><strong>镜头与人物</strong><small>切分、跟踪与跨集聚类</small></div><b>等待</b></div>
+                <div class="pipeline-item" data-analysis-step="2"><span><svg class="icon"><use href="#i-link"></use></svg></span><div><strong>事件与关系</strong><small>建立可回查剧情时间线</small></div><b>等待</b></div>
+                <div class="pipeline-item" data-analysis-step="3"><span><svg class="icon"><use href="#i-bolt"></use></svg></span><div><strong>高光候选</strong><small>多信号召回与事实复核</small></div><b>等待</b></div>
+              </div>
+            </div>
+
+            <div class="analysis-result" id="analysisResult">
+              <div class="result-banner"><span><svg class="icon"><use href="#i-check"></use></svg></span><div><strong>理解分析完成</strong><small>识别 47 个剧情片段，其中 12 个进入高光候选池</small></div><b>证据覆盖率 96%</b></div>
+              <div class="analysis-grid">
+                <article class="panel story-panel">
+                  <div class="panel-head compact"><div><span class="panel-index"><svg class="icon"><use href="#i-file"></use></svg></span><div><h2 id="analysisTitle">剧情理解</h2><p>都市 · 情感 · 复仇</p></div></div><button class="button ghost small" id="editStoryBtn"><svg class="icon"><use href="#i-edit"></use></svg>校正</button></div>
+                  <div class="story-overview">
+                    <div class="overview-visual"><img src="/html-prototypes/ai-smart-mixed-cut/assets/drama-confrontation.jpg" alt="都市短剧人物冲突示例画面" /><span>共 3 集 · 31:42</span></div>
+                    <div><span class="section-label">剧情概览</span><p id="storySummary">苏棠带周越回到家中私会，并在谈话中轻视丈夫沈聿。两人不知道沈聿已通过隐藏摄像头掌握证据。沈聿没有立即对质，而是借慈善直播之名带媒体赶到现场，准备公开揭穿背叛。</p><div class="story-tags"><span>婚姻背叛</span><span>信息差</span><span>冷静复仇</span><span>公开揭露</span></div></div>
+                  </div>
+
+                  <div class="relation-block">
+                    <div class="section-title"><span>人物关系</span><button class="text-button" id="editRelationBtn">编辑人物</button></div>
+                    <div class="relation-map">
+                      <div class="person"><span class="person-avatar male">沈</span><div><strong>沈聿</strong><small>丈夫 / 集团总裁</small></div></div>
+                      <div class="relation-line"><span>婚姻 · 被背叛</span><i></i></div>
+                      <div class="person"><span class="person-avatar female">苏</span><div><strong>苏棠</strong><small>妻子</small></div></div>
+                      <div class="relation-line danger"><span>秘密关系</span><i></i></div>
+                      <div class="person"><span class="person-avatar other">周</span><div><strong>周越</strong><small>情人</small></div></div>
+                    </div>
+                  </div>
+                </article>
+
+                <aside class="panel evidence-panel">
+                  <div class="panel-head compact"><div><span class="panel-index"><svg class="icon"><use href="#i-shield"></use></svg></span><div><h2>理解可信度</h2><p>多模态证据交叉验证</p></div></div></div>
+                  <div class="confidence-score"><div class="score-ring" style="--score:96"><strong>96</strong><span>总体可信度</span></div><div class="score-legend"><span><i class="green"></i>强证据 9</span><span><i class="amber"></i>待确认 1</span><span><i class="gray"></i>未采用 2</span></div></div>
+                  <div class="evidence-stats">
+                    <div><span>对白覆盖</span><strong>98%</strong></div><div><span>画面覆盖</span><strong>95%</strong></div><div><span>人物匹配</span><strong>94%</strong></div>
+                  </div>
+                  <div class="attention-card"><svg class="icon"><use href="#i-info"></use></svg><div><strong>有 1 项建议确认</strong><p>第 2 集 08:42 的画外音说话人置信度为 72%。</p></div><button class="text-button" id="reviewIssueBtn">去确认</button></div>
+                </aside>
+              </div>
+
+              <article class="panel event-panel">
+                <div class="section-title"><div><strong>关键事件时间线</strong><span>所有事件均绑定原片时间码</span></div><div class="legend"><span><i class="dot purple"></i>冲突</span><span><i class="dot blue"></i>信息</span><span><i class="dot orange"></i>悬念</span></div></div>
+                <div class="event-timeline">
+                  <button class="event-card selected" data-preview="hidden-camera"><span class="event-type purple">冲突建立</span><strong>妻子带情人进入家中</strong><small>第 1 集 · 04:12–04:21</small><div><b>对白</b>“他今晚不会回来。”</div><em>画面+对白 强证据</em></button>
+                  <span class="timeline-arrow">→</span>
+                  <button class="event-card" data-preview="taunt"><span class="event-type blue">信息升级</span><strong>两人谈及丈夫与财产</strong><small>第 1 集 · 04:26–04:41</small><div><b>对白</b>“等股份到手，一切都结束了。”</div><em>对白+字幕 强证据</em></button>
+                  <span class="timeline-arrow">→</span>
+                  <button class="event-card" data-preview="monitor"><span class="event-type purple">反转</span><strong>丈夫通过监控掌握证据</strong><small>第 2 集 · 07:03–07:17</small><div><b>画面</b>监控墙中出现二人身影</div><em>多帧画面 强证据</em></button>
+                  <span class="timeline-arrow">→</span>
+                  <button class="event-card" data-preview="media"><span class="event-type orange">悬念断点</span><strong>媒体抵达卧室门外</strong><small>第 3 集 · 03:04–03:14</small><div><b>音效</b>急促敲门声，房门即将打开</div><em>画面+音频 强证据</em></button>
+                </div>
+              </article>
+
+              <div class="stage-actions split"><button class="button ghost" data-back="1"><svg class="icon"><use href="#i-back"></use></svg>返回配置</button><div><span>剧情与人物确认后再生成方案，可显著减少虚构内容</span><button class="button primary" id="createPlansBtn">确认理解，生成高光方案<svg class="icon"><use href="#i-arrow"></use></svg></button></div></div>
+            </div>
+          </section>
+
+          <section class="stage" id="stage3" aria-labelledby="planTitle">
+            <div class="plan-toolbar">
+              <div><span class="status success"><svg class="icon"><use href="#i-check"></use></svg>原片事实已锁定</span><p>共生成 3 个方案，均只使用已验证的原片片段</p></div>
+              <div class="plan-tabs" id="planTabs">
+                <button class="active" data-plan="conflict"><span>方案 A</span>冲突开场</button>
+                <button data-plan="reversal"><span>方案 B</span>反转前置</button>
+                <button data-plan="suspense"><span>方案 C</span>悬念倒叙</button>
+              </div>
+            </div>
+
+            <div class="review-grid">
+              <div class="review-main">
+                <article class="panel plan-overview">
+                  <div class="panel-head compact"><div><span class="panel-index"><svg class="icon"><use href="#i-bolt"></use></svg></span><div><h2 id="planTitle">冲突开场 · 冷静反击</h2><p id="planSubtitle">用直接背叛建立仇恨，再以丈夫掌控全局完成反转</p></div></div><div class="plan-metrics"><span><b id="planDuration">00:60</b>成片时长</span><span><b id="planCoverage">100%</b>事实覆盖</span><span><b id="planScore">92</b>投放适配</span></div></div>
+                  <div class="plan-compose">
+                    <div class="source-player" id="sourcePlayer">
+                      <img src="/html-prototypes/ai-smart-mixed-cut/assets/drama-confrontation.jpg" alt="当前高光片段预览" />
+                      <div class="source-top"><span id="playerSource">第 1 集 · 04:12–04:21</span><b>原片</b></div>
+                      <button class="big-play" id="sourcePlayBtn" aria-label="播放预览"><svg class="icon"><use href="#i-play"></use></svg></button>
+                      <div class="source-caption" id="playerCaption">“他今晚不会回来。”</div>
+                      <div class="player-bottom"><span id="playerTime">00:04:12</span><i><b></b></i><span>00:04:21</span></div>
+                    </div>
+                    <div class="story-structure">
+                      <div class="section-title"><div><strong>视频结构故事线</strong><span>点击节点预览原片证据</span></div><span class="safe-pill"><svg class="icon"><use href="#i-shield"></use></svg>无虚构剧情</span></div>
+                      <div class="structure-list" id="structureList"></div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="panel highlight-pool">
+                  <div class="section-title"><div><strong>入选高光片段</strong><span id="selectedSummary">已选 5 段 · 原片 61 秒 · 成片 60 秒</span></div><div class="pool-actions"><label class="filter-toggle"><input type="checkbox" id="strongEvidenceOnly" /><span></span>仅看强证据</label><button class="button ghost small" id="searchClipBtn"><svg class="icon"><use href="#i-search"></use></svg>搜索剧情</button></div></div>
+                  <div class="highlight-list" id="highlightList"></div>
+                </article>
+              </div>
+
+              <aside class="panel narration-panel">
+                <div class="narration-head"><div><strong>解说与原声</strong><span>每句已绑定对应画面</span></div><button class="icon-button" id="rewriteAllBtn" aria-label="重写全部解说"><svg class="icon"><use href="#i-spark"></use></svg></button></div>
+                <div class="voice-row"><div class="voice-avatar">云</div><div><strong>云舒 · 知性女声</strong><span>语速 1.05× · 情绪：克制</span></div><button class="text-button" id="changeVoiceBtn">更换</button></div>
+                <div class="narration-list" id="narrationList"></div>
+                <div class="narration-summary"><div><span>预计配音</span><strong id="narrationDuration">38.2 秒</strong></div><div><span>保留原声</span><strong>21.8 秒</strong></div></div>
+                <div class="fact-guard"><svg class="icon"><use href="#i-shield"></use></svg><div><strong>事实约束已开启</strong><span>改写后将自动检查是否有对应原片证据。</span></div></div>
+              </aside>
+            </div>
+
+            <div class="stage-actions split sticky-actions"><button class="button ghost" data-back="2"><svg class="icon"><use href="#i-back"></use></svg>返回理解结果</button><div><span>预计消耗 6 积分 · 约 2 分钟</span><button class="button primary" id="generateVideoBtn">生成解说视频<svg class="icon"><use href="#i-arrow"></use></svg></button></div></div>
+          </section>
+
+          <section class="stage" id="stage4" aria-labelledby="finalTitle">
+            <div class="generation-overlay" id="generationOverlay">
+              <div class="render-card">
+                <span class="render-icon"><svg class="icon"><use href="#i-video"></use></svg><i></i></span>
+                <h2>正在生成解说视频</h2><p id="renderStatus">正在匹配解说与原片片段…</p>
+                <div class="progress-track"><i id="renderProgress"></i></div><div class="progress-meta"><strong id="renderPercent">18%</strong><span>失败不扣除渲染积分</span></div>
+                <div class="render-steps"><span class="active">片段拼接</span><span>解说配音</span><span>字幕包装</span><span>成片质检</span></div>
+              </div>
+            </div>
+
+            <div class="final-content" id="finalContent">
+              <div class="final-banner"><div><span><svg class="icon"><use href="#i-check"></use></svg></span><div><strong id="finalTitle">视频生成完成，可以投放前复核</strong><small>冲突开场 · 60 秒 · 9:16 · 1080P</small></div></div><div><button class="button ghost small" id="createVariantBtn">复制为新版本</button><button class="button primary small" id="exportBtn"><svg class="icon"><use href="#i-download"></use></svg>导出成片</button></div></div>
+              <div class="editor-grid">
+                <article class="panel preview-panel">
+                  <div class="panel-head compact"><div><span class="panel-index"><svg class="icon"><use href="#i-play"></use></svg></span><div><h2>成片预览</h2><p>点击时间线片段可快速定位</p></div></div><span class="autosave"><i></i>已自动保存</span></div>
+                  <div class="final-preview-wrap">
+                    <div class="final-preview" id="finalPreview">
+                      <img src="/html-prototypes/ai-smart-mixed-cut/assets/drama-confrontation.jpg" alt="AI 混剪成片预览" />
+                      <div class="preview-gradient"></div>
+                      <div class="preview-kicker">她以为这场背叛无人知晓</div>
+                      <div class="preview-subtitle" id="previewSubtitle">苏棠带情人回家，却不知道丈夫早已看清一切。</div>
+                      <button class="big-play playing-control" id="finalPlayBtn" aria-label="播放成片"><svg class="icon"><use href="#i-play"></use></svg></button>
+                    </div>
+                    <div class="preview-controls"><button class="icon-button" id="bottomPlayBtn" aria-label="播放"><svg class="icon"><use href="#i-play"></use></svg></button><strong id="finalCurrentTime">00:00</strong><div class="scrubber" id="scrubber"><i id="scrubberFill"></i><b id="scrubberHandle"></b></div><span>01:00</span><button class="icon-button" aria-label="全屏">⛶</button></div>
+                  </div>
+                </article>
+
+                <aside class="panel inspector-panel">
+                  <div class="inspector-tabs"><button data-inspector="visual">画面</button><button data-inspector="narration">解说</button><button class="active" data-inspector="quality">质检 <span>6/6</span></button></div>
+                  <div class="inspector-content" id="qualityInspector">
+                    <div class="quality-hero"><div class="score-ring small" style="--score:98"><strong>98</strong></div><div><strong>成片质量优秀</strong><span>6 项检查全部通过</span></div><span class="status success"><svg class="icon"><use href="#i-check"></use></svg>可导出</span></div>
+                    <div class="quality-list">
+                      <div><span><svg class="icon"><use href="#i-shield"></use></svg></span><div><strong>事实一致性</strong><small>所有解说均有原片证据</small></div><b>通过</b></div>
+                      <div><span><svg class="icon"><use href="#i-clock"></use></svg></span><div><strong>音画时长</strong><small>配音与画面无溢出</small></div><b>通过</b></div>
+                      <div><span><svg class="icon"><use href="#i-file"></use></svg></span><div><strong>字幕安全区</strong><small>无越界、遮挡和错字</small></div><b>通过</b></div>
+                      <div><span><svg class="icon"><use href="#i-user"></use></svg></span><div><strong>人物连续性</strong><small>主要角色识别一致</small></div><b>通过</b></div>
+                      <div><span><svg class="icon"><use href="#i-video"></use></svg></span><div><strong>画面质量</strong><small>无黑帧、花屏和重复镜头</small></div><b>通过</b></div>
+                      <div><span><svg class="icon"><use href="#i-bolt"></use></svg></span><div><strong>投放风险</strong><small>未发现敏感画面与违禁表达</small></div><b>通过</b></div>
+                    </div>
+                  </div>
+                  <div class="inspector-content hidden" id="visualInspector"><div class="control-group"><label>竖屏取景</label><div class="segmented compact"><button class="active">人物跟踪</button><button>居中裁切</button></div></div><div class="control-group"><label for="subtitleSize">字幕字号 <output>42</output></label><input id="subtitleSize" type="range" min="32" max="56" value="42" /></div><div class="control-group"><label>字幕样式</label><div class="style-swatches"><button class="active">白字黑边</button><button>黄白强调</button><button>纯白底</button></div></div></div>
+                  <div class="inspector-content hidden" id="narrationInspector"><div class="control-group"><label>解说音色</label><div class="voice-row slim"><div class="voice-avatar">云</div><div><strong>云舒</strong><span>知性女声 · 克制</span></div><button class="text-button">试听</button></div></div><div class="control-group"><label for="voiceVolume">解说音量 <output>88%</output></label><input id="voiceVolume" type="range" min="0" max="100" value="88" /></div><div class="control-group"><label for="bgmVolume">原声 / BGM <output>36%</output></label><input id="bgmVolume" type="range" min="0" max="100" value="36" /></div></div>
+                </aside>
+              </div>
+
+              <article class="panel timeline-panel">
+                <div class="timeline-toolbar"><div><strong>剪辑时间线</strong><span id="timelineSelection">未选择片段</span></div><div><button class="button ghost tiny" id="trimBtn">调整边界</button><button class="button ghost tiny" id="replaceTimelineBtn"><svg class="icon"><use href="#i-swap"></use></svg>替换片段</button><button class="icon-button" aria-label="更多时间线操作"><svg class="icon"><use href="#i-more"></use></svg></button></div></div>
+                <div class="timeline-scroll">
+                  <div class="time-ruler"><span>00:00</span><span>00:10</span><span>00:20</span><span>00:30</span><span>00:40</span><span>00:50</span><span>01:00</span></div>
+                  <div class="track-row"><label>视频</label><div class="track video-track" id="videoTrack"><button style="--w:15%;--x:0%" data-title="钩子 · 妻子带情人回家"><i class="scene-a"></i><span>钩子</span></button><button style="--w:22%;--x:15%" data-title="推进 · 密谋获得股份"><i class="scene-b"></i><span>推进</span></button><button style="--w:20%;--x:37%" data-title="反转 · 丈夫监控全局"><i class="scene-c"></i><span>反转</span></button><button style="--w:28%;--x:57%" data-title="爽点 · 媒体突袭"><i class="scene-a"></i><span>爽点</span></button><button style="--w:15%;--x:85%" data-title="断点 · 房门即将打开"><i class="scene-b"></i><span>断点</span></button></div></div>
+                  <div class="track-row"><label>原声</label><div class="track audio-track"><span style="--w:15%;--x:0%"></span><span style="--w:20%;--x:37%"></span><span style="--w:15%;--x:85%"></span></div></div>
+                  <div class="track-row"><label>解说</label><div class="track narration-track"><span style="--w:22%;--x:15%">她以为…</span><span style="--w:28%;--x:57%">沈聿没有…</span></div></div>
+                  <div class="track-row"><label>字幕</label><div class="track subtitle-track"><span style="--w:100%;--x:0%">自动字幕 · 关键词强调</span></div></div>
+                  <div class="timeline-playhead" id="timelinePlayhead"></div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head"><div><strong id="modalTitle">原片证据预览</strong><span id="modalSubtitle">第 1 集 · 04:12–04:21</span></div><button class="icon-button" id="closeModalBtn" aria-label="关闭"><svg class="icon"><use href="#i-close"></use></svg></button></div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions" id="modalActions"><button class="button ghost" id="modalCancelBtn">取消</button><button class="button primary" id="modalConfirmBtn">确认</button></div>
+    </div>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+  <script src="/html-prototypes/ai-smart-mixed-cut/app.js"></script>
+</body>
+</html>
