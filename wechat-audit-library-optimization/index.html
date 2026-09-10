@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>微信送审库功能优化原型</title>
-  <link rel="stylesheet" href="/html-prototypes/wechat-audit-library-optimization/styles.css?v=20260904-2030">
+  <link rel="stylesheet" href="/html-prototypes/wechat-audit-library-optimization/styles.css?v=20260910-1">
 </head>
 <body>
   <main class="review-canvas">
@@ -218,8 +218,23 @@
         </table>
         <p><strong>批量场景：</strong>所选记录的剧目审核状态全部为审核失败时才可重新送审；全部为审核通过时才可修改剧目基本信息；混合状态下两个按钮均禁用。</p>
 
+        <h4><span>15</span> 批量替换剧集弹窗优化</h4>
+        <p class="prd-update">（2026.09.10 更新）</p>
+        <ul>
+          <li><strong>按钮调整：</strong>删除「剧集替换详情」弹窗顶部及每集操作列中的「同步线上」按钮；保留线上同步状态筛选和展示字段。主列表的「同步状态」「批量同步状态」仍按原逻辑使用。</li>
+          <li><strong>操作范围：</strong>勾选剧集后，点击「替换过审剧集」处理本次所选送审记录及集数；未勾选时按钮禁用。每集行内操作仅处理该集，单条与批量共用上述交互。</li>
+          <li><strong>执行过程：</strong>操作执行中展示「替换中…」，禁用重复提交及弹窗关闭；待本次操作全部结束后关闭「剧集替换详情」弹窗。</li>
+          <li><strong>失败反馈：</strong>原弹窗关闭后，只要本次存在无法替换的剧集，即展示「剧集替换失败提示」弹窗；部分失败、全部失败均需提示，仅列出本次替换失败的数据。</li>
+          <li><strong>展示字段：</strong>合集名称、剧目ID、替换失败的集数。按剧目ID逐行展示，同一剧目的失败集数去重并升序排列，以「第2集、第4集」形式展示；多个剧目失败时分别列出。</li>
+          <li><strong>提示文案：</strong>本次替换操作已结束，以下剧集未能替换，请核对后重新操作。</li>
+          <li><strong>关闭提示：</strong>点击「我知道了」或右上角关闭按钮后返回列表，不自动重新执行替换，也不重复弹出提示。</li>
+          <li><strong>全部成功：</strong>关闭详情弹窗，轻提示「所选剧集已全部替换成功」，不展示失败提示。未发起替换而直接关闭弹窗时，不展示结果提示。</li>
+          <li><strong>结果来源：</strong>以本次替换接口返回的逐剧目、逐集执行结果为准；不得仅凭列表审核状态推断替换失败。</li>
+        </ul>
+        <p><strong>原型演示：</strong>勾选前两条同合集记录并全选剧集，可查看两个剧目的失败明细（分别为第2集、第4集与第4集、第8集）；仅选第1集可体验全部成功。以上为模拟返回数据，用于演示交互。</p>
+
         <h3 class="structure-title">四、其他注意说明</h3>
-        <h4><span>15</span> 影响范围</h4>
+        <h4><span>16</span> 影响范围</h4>
         <p>本需求仅调整「微信送审库」Tab；抖音送审库、快手送审库、B站送审库及抖音商品库送审库不受影响。未在本需求中说明的微信送审库字段、枚举和操作逻辑保持线上现状。</p>
       </section>
 
@@ -235,6 +250,6 @@
   </div>
 
   <div class="toast" id="toast" role="status"></div>
-  <script src="/html-prototypes/wechat-audit-library-optimization/app.js?v=20260904-2030"></script>
+  <script src="/html-prototypes/wechat-audit-library-optimization/app.js?v=20260910-1"></script>
 </body>
 </html>

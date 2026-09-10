@@ -14,6 +14,7 @@ const modalBody = document.querySelector('#modalBody');
 const modalFooter = document.querySelector('#modalFooter');
 const toast = document.querySelector('#toast');
 let activeSingleRow = rows[0];
+let modalBusy = false;
 
 function selectedRows() {
   return rows.filter((row) => row.querySelector('.row-check').checked && !row.classList.contains('filtered'));
@@ -74,6 +75,7 @@ function showToast(message) {
 }
 
 function closeModal() {
+  if (modalBusy) return;
   modalBackdrop.classList.remove('open');
   modalBackdrop.setAttribute('aria-hidden', 'true');
   modal.className = 'modal';
@@ -176,32 +178,89 @@ function openModifyModal(single = false) {
   }));
 }
 
-function episodeRows() {
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+}
+
+function episodeRows(collectionName) {
   const statuses = [
     ['上传完成', '审核通过', '未同步'], ['上传完成', '审核中', '-'], ['-', '-', '-'], ['上传完成', '审核失败', '-'],
     ['-', '-', '-'], ['上传完成', '审核通过', '已同步'], ['-', '-', '-'], ['上传完成', '审核通过', '未同步']
   ];
   return statuses.map((status, index) => `
     <tr>
-      <td><input class="episode-check" type="checkbox" aria-label="选择第${index + 1}集"></td>
-      <td class="episode-name">她从山海归来-第${index + 1}集</td>
+      <td><input class="episode-check" type="checkbox" value="${index + 1}" aria-label="选择第${index + 1}集"></td>
+      <td class="episode-name">${escapeHtml(collectionName)}-第${index + 1}集</td>
       <td>${status[0]}</td><td>${status[0] === '-' ? '-' : `2026-08-${18 - (index % 3)} 10:2${index}`}</td>
       <td>${status[0] === '-' ? '-' : '2026-08-25 23:59'}</td>
       <td><span class="status ${status[1] === '审核通过' ? 'green' : status[1] === '审核失败' ? 'red' : status[1] === '审核中' ? 'orange' : 'gray'}">${status[1]}</span></td>
       <td>${status[1] === '审核失败' ? '视频内容需调整' : '-'}</td><td>-</td><td>${status[2]}</td>
-      <td class="episode-operation"><button class="link-btn episode-replace">替换过审剧集</button><button class="link-btn episode-sync" ${status[1] !== '审核通过' ? 'disabled' : ''}>同步线上</button></td>
+      <td class="episode-operation"><button class="link-btn episode-replace" data-episode="${index + 1}">替换过审剧集</button></td>
     </tr>`).join('');
 }
 
-function bindReplacementControls() {
+// 原型演示返回值；正式接入时使用替换接口返回的逐剧目、逐集结果，不以审核状态推断失败。
+const demoReplacementFailures = {
+  '6227994627813402': [2, 4],
+  '6227994627813403': [4, 8],
+  '6227981330057298': [2, 4],
+  '6227968412327088': []
+};
+
+function mockReplacementResults(records, episodeNumbers) {
+  return records.map((record) => ({
+    ...record,
+    failedEpisodes: [...new Set(episodeNumbers)]
+      .filter((number) => (demoReplacementFailures[record.dramaId] || []).includes(number))
+      .sort((a, b) => a - b)
+  }));
+}
+
+function openReplacementFailureModal(failures) {
+  openModal({
+    title: '剧集替换失败提示',
+    size: 'replacement-result',
+    footer: '<button class="btn primary" data-close>我知道了</button>',
+    body: `
+      <div class="replacement-result-note"><span aria-hidden="true">!</span><p>本次替换操作已结束，以下剧集未能替换，请核对后重新操作。</p></div>
+      <div class="replacement-result-table-wrap"><table class="replacement-result-table">
+        <thead><tr><th scope="col">合集名称</th><th scope="col">剧目ID</th><th scope="col">替换失败的集数</th></tr></thead>
+        <tbody>${failures.map((record) => `<tr><td>${escapeHtml(record.name)}</td><td>${escapeHtml(record.dramaId)}</td><td>${record.failedEpisodes.map((number) => `第${number}集`).join('、')}</td></tr>`).join('')}</tbody>
+      </table></div>`
+  });
+  modalFooter.querySelector('[data-close]').focus();
+}
+
+async function replaceEpisodes(ctx, episodeNumbers, trigger) {
+  if (modalBusy || episodeNumbers.length === 0) return;
+  modalBusy = true;
+  modal.setAttribute('aria-busy', 'true');
+  modalBody.querySelectorAll('button, input, select').forEach((control) => { control.disabled = true; });
+  document.querySelector('#modalClose').disabled = true;
+  trigger.textContent = '替换中…';
+  toast.classList.remove('show');
+
+  // 模拟等待本次操作全部结束后返回结果。
+  await new Promise((resolve) => window.setTimeout(resolve, 600));
+  const failures = mockReplacementResults(ctx.records, episodeNumbers).filter((record) => record.failedEpisodes.length > 0);
+  modalBusy = false;
+  modal.removeAttribute('aria-busy');
+  document.querySelector('#modalClose').disabled = false;
+  closeModal();
+  if (failures.length > 0) {
+    openReplacementFailureModal(failures);
+  } else {
+    showToast('所选剧集已全部替换成功');
+  }
+}
+
+function bindReplacementControls(ctx) {
   const episodeChecks = [...document.querySelectorAll('.episode-check')];
   const episodeSelectAll = document.querySelector('#episodeSelectAll');
   const replaceButton = document.querySelector('#modalReplaceBtn');
-  const syncButton = document.querySelector('#modalSyncBtn');
   const update = () => {
     const count = episodeChecks.filter((check) => check.checked).length;
     replaceButton.disabled = count === 0;
-    syncButton.disabled = count === 0;
     episodeSelectAll.checked = count === episodeChecks.length;
     episodeSelectAll.indeterminate = count > 0 && count < episodeChecks.length;
   };
@@ -210,10 +269,8 @@ function bindReplacementControls() {
     episodeChecks.forEach((check) => { check.checked = episodeSelectAll.checked; });
     update();
   });
-  document.querySelectorAll('.episode-replace').forEach((button) => button.addEventListener('click', () => showToast('已进入剧集文件替换流程')));
-  document.querySelectorAll('.episode-sync:not(:disabled)').forEach((button) => button.addEventListener('click', () => showToast('已提交同步线上')));
-  replaceButton.addEventListener('click', () => showToast('已进入批量替换过审剧集流程'));
-  syncButton.addEventListener('click', () => showToast('已提交所选剧集同步线上'));
+  document.querySelectorAll('.episode-replace').forEach((button) => button.addEventListener('click', () => replaceEpisodes(ctx, [Number(button.dataset.episode)], button)));
+  replaceButton.addEventListener('click', () => replaceEpisodes(ctx, episodeChecks.filter((check) => check.checked).map((check) => Number(check.value)), replaceButton));
   document.querySelector('#quickReviewBtn').addEventListener('click', () => showToast('已发起快速提审'));
 }
 
@@ -233,11 +290,11 @@ function openReplaceModal(single = false) {
           <button class="btn primary">查询</button><button class="btn">重置</button><button class="btn light">导出</button>
         </div>
       </div>
-      <div class="replace-actions"><button class="btn primary" id="quickReviewBtn">快速提审⌄</button><button class="btn" id="modalReplaceBtn" disabled>替换过审剧集</button><button class="btn" id="modalSyncBtn" disabled>同步线上</button></div>
-      <div class="replace-table-wrap"><table class="replace-table"><thead><tr><th><input id="episodeSelectAll" type="checkbox" aria-label="全选剧集"></th><th class="episode-name">名称</th><th>上传状态</th><th>替换送审时间</th><th>替换过期时间</th><th>替换审核状态</th><th>审核备注</th><th>审核证据截图</th><th>线上同步状态</th><th class="episode-operation">操作</th></tr></thead><tbody>${episodeRows()}</tbody></table></div>
+      <div class="replace-actions"><button class="btn primary" id="quickReviewBtn">快速提审⌄</button><button class="btn" id="modalReplaceBtn" disabled>替换过审剧集</button></div>
+      <div class="replace-table-wrap"><table class="replace-table"><thead><tr><th><input id="episodeSelectAll" type="checkbox" aria-label="全选剧集"></th><th class="episode-name">名称</th><th>上传状态</th><th>替换送审时间</th><th>替换过期时间</th><th>替换审核状态</th><th>审核备注</th><th>审核证据截图</th><th>线上同步状态</th><th class="episode-operation">操作</th></tr></thead><tbody>${episodeRows(ctx.name)}</tbody></table></div>
       <div class="replace-footer"><span>共 70 条</span><span>100条/页　1 / 1</span></div>`
   });
-  bindReplacementControls();
+  bindReplacementControls(ctx);
 }
 
 function openDeleteModal(single = false) {
