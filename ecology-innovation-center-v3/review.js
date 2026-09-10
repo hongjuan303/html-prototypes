@@ -35,18 +35,25 @@ function resizePrototype() {
 }
 
 function setActiveDoc(id, syncDocument = true) {
-  if (!id || activeDoc === id) return;
+  if (!id) return;
   activeDoc = id;
   docButtons.forEach(button => button.classList.toggle("is-active", button.dataset.docTarget === id));
   docSections.forEach(section => section.classList.toggle("is-active", section.dataset.prdSection === id));
   if (syncDocument) {
     const section = document.querySelector(`[data-prd-section="${id}"]`);
-    if (section) prdPane.scrollTo({ top: section.offsetTop - 112, behavior: "smooth" });
+    if (section) {
+      const outline = outlinePanels.find(panel => !panel.hidden);
+      const stickyHeight = outline ? outline.getBoundingClientRect().bottom - prdPane.getBoundingClientRect().top : 184;
+      const top = prdPane.scrollTop + section.getBoundingClientRect().top - prdPane.getBoundingClientRect().top - stickyHeight;
+      prdPane.scrollTo({ top, behavior: "smooth" });
+    }
   }
 }
 
 function syncFromPrototype() {
   if (currentDocument !== "site" || currentPrototype !== "site") return;
+  // Reading the PRD must not be interrupted by the off-screen prototype's scroll.
+  if (document.body.scrollLeft >= prdPane.offsetLeft - 1) return;
   const doc = frame.contentDocument;
   const win = frame.contentWindow;
   if (!doc || !win) return;
@@ -75,6 +82,7 @@ function scrollPrototypeTo(id) {
   }
   const doc = frame.contentDocument;
   const selector = prototypeTargets[id];
+  if (!selector) return;
   const target = doc?.querySelector(selector);
   if (!target) return;
   frame.contentWindow.scrollTo({ top: target.offsetTop, behavior: "smooth" });
@@ -150,3 +158,15 @@ backPrototypeButton.addEventListener("click", scrollToPrototype);
 
 window.addEventListener("resize", resizePrototype);
 resizePrototype();
+
+// Allow sharing a local preview link directly to a PRD chapter.
+function openDocumentFromHash() {
+  const section = docSections.find(item => `#${item.id}` === window.location.hash);
+  if (!section) return;
+  const view = section.closest("[data-document-panel]").dataset.documentPanel;
+  switchDocument(view);
+  setActiveDoc(section.dataset.prdSection);
+  document.body.scrollTo({ left: prdPane.offsetLeft, behavior: "instant" });
+}
+window.addEventListener("hashchange", openDocumentFromHash);
+openDocumentFromHash();

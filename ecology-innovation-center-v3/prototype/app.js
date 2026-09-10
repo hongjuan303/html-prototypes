@@ -32,7 +32,7 @@ const specialProjects = [
   { type: "space", name: "云谷中心OPC社区", lon: 120.08, lat: 30.31, dx: -92, dy: 38, region: "浙江省 · 杭州市", city: "西湖区", count: "产业空间", category: "OPC社区", location: "云谷中心", title: "容量短剧（云谷中心）人工智能影视OPC社区", description: "面向影视OPC团队开放的线下创作社区，提供办公场地、制作工具、算力、版权、发行和产业项目资源。", image: "assets/opc-community.png", items: [["创作场地", "团队办公与协同制作"], ["生产支持", "工具、算力与内容版权"], ["商业服务", "发行、出海与产业订单"]], action: "我要加入", joinDirection: "云谷中心人工智能影视OPC社区", joinTitle: "申请加入云谷中心人工智能影视OPC社区" },
   { type: "space", name: "永嘉创新应用中心", lon: 120.69, lat: 28.15, dx: 88, dy: 80, region: "浙江省 · 温州市", city: "永嘉县", count: "产业空间", category: "创新中心", location: "温州 · 永嘉", title: "容量短剧（永嘉）人工智能创新应用中心", description: "联动地方产业、城市文化与创作人才，承接人工智能内容共创、产业培训和区域项目孵化。", image: "assets/innovation-center.png", items: [["区域共创", "城市文化内容开发"], ["产业培训", "人工智能影视实践课程"], ["项目孵化", "创作团队与产业资源对接"]], action: "我要加入", joinDirection: "永嘉人工智能创新应用中心", joinTitle: "申请加入永嘉人工智能创新应用中心" },
   { type: "school", name: "浙传创新实验班", lon: 120.35, lat: 30.32, dx: -96, dy: -104, region: "浙江省 · 杭州市", city: "钱塘区", count: "校企合作", category: "产教融合", location: "浙江传媒学院", title: "容量短剧 × 浙江传媒学院人工智能创新实验班", description: "联合高校建设人工智能影视实践专班，面向师生开放创作工具、真实项目、算力支持与创业孵化资源。", image: "assets/aigc-class-graduation.png", items: [["实践专班", "真实项目进入课堂"], ["创作支持", "工具与算力开放"], ["成长通道", "实训、就业与创业孵化"]], action: "我要合作", joinDirection: "校企合作", joinTitle: "提交校企合作申请" },
-  { type: "event", name: "雁荡山杯", lon: 121.08, lat: 28.37, dx: 87, dy: 36, region: "浙江省 · 温州市", city: "乐清市", count: "创作赛事", category: "技能大赛", location: "温州 · 雁荡山", title: "雁荡山杯文旅OPC技能大赛", description: "聚焦文旅内容与OPC创作能力，面向全国创作团队开放主题赛题、产业资源与成果展示机会。", image: "assets/posters/xun-tian-ji.jpg", items: [["赛事方向", "文旅内容与漫剧创作"], ["参赛对象", "OPC团队与专业创作者"], ["赛事状态", "报名进行中"]], action: "我要参赛", href: "https://www.data0086.com" },
+  { type: "event", name: "雁荡山杯", lon: 121.08, lat: 28.37, dx: 87, dy: 36, region: "浙江省 · 温州市", city: "乐清市", count: "创作赛事", category: "技能大赛", location: "温州 · 雁荡山", title: "雁荡山杯文旅OPC技能大赛", description: "聚焦文旅内容与OPC创作能力，面向全国创作团队开放主题赛题、产业资源与成果展示机会。", image: "assets/posters/xun-tian-ji.jpg", items: [["赛事方向", "文旅内容与漫剧创作"], ["参赛对象", "OPC团队与专业创作者"], ["赛事状态", "已结束"]], action: "已结束", disabled: true },
   { type: "event", name: "大广赛·即将开启", lon: 116.4, lat: 39.9, dx: 80, dy: -38, region: "北京市", city: "北京", count: "创作赛事", category: "营销创作", location: "北京", title: "大广赛营销创客单元竞赛", description: "连接高校创意人才与产业真实命题，探索人工智能内容创作、品牌表达与青年创新实践。", image: "../ai-drama-website-optimization/assets/qa-banner-1.jpg", items: [["赛事方向", "品牌营销与内容创新"], ["参赛对象", "高校学生与青年创作者"], ["赛事状态", "即将开启"]], action: "敬请期待", message: "大广赛营销创客单元竞赛即将开启" },
   { type: "coming", name: "新疆·即将呈现", lon: 87.6, lat: 43.8, dx: -22, dy: -34, region: "新疆维吾尔自治区", city: "新疆", count: "筹备项目", category: "即将呈现", location: "新疆维吾尔自治区", title: "辽阔边疆与多元文化，等待被镜头重新发现", description: "围绕地域文化、自然景观与多民族生活展开内容调研，新的城市故事正在筹备中。", image: "assets/coming-regions.jpg", items: [["内容方向", "地域文化与自然人文"], ["当前阶段", "前期调研与合作洽谈"], ["合作机会", "面向本地机构与创作者开放"]], action: "查看筹备方向", target: ".coming-projects" },
   { type: "coming", name: "三星堆·即将呈现", lon: 104.23, lat: 31.0, dx: -79, dy: -50, region: "四川省 · 德阳市", city: "广汉市", count: "筹备项目", category: "即将呈现", location: "四川 · 三星堆", title: "让古蜀文明穿越时间，在人工智能影像中焕发新生", description: "以古蜀文明、考古发现与东方想象为内容源头，探索传统文化的年轻化影像表达。", image: "assets/coming-regions.jpg", items: [["内容方向", "古蜀文明与东方想象"], ["当前阶段", "创意策划与资源连接"], ["合作机会", "文化机构与制作团队共创"]], action: "查看筹备方向", target: ".coming-projects" },
@@ -101,6 +101,8 @@ let mapPointerState = null;
 const districtCache = new Map();
 
 function setFeaturedCoverMode(isDrama) {
+  featuredWork.removeAttribute("aria-disabled");
+  featuredWork.tabIndex = 0;
   featuredWork.classList.toggle("is-portrait-cover", isDrama);
   if (isDrama) {
     featuredWork.style.width = "216px";
@@ -376,7 +378,8 @@ function populateCity(index) {
   document.querySelector("[data-work]").textContent = city[7];
   document.querySelector("[data-description]").textContent = city[10];
   document.querySelector("[data-panel-action]").innerHTML = "我要合作 <span>↗</span>";
-  currentPanelAction = { type: "join", direction: `${location.name}精品短剧合作`, title: `申请合作${city[7]}` };
+  document.querySelector("[data-panel-action]").disabled = false;
+  currentPanelAction = { type: "form", formType: "drama", direction: `${location.name}精品短剧合作`, title: "" };
   currentFeaturedAction = { type: "trailer", title: city[7], image: city[11] };
   document.querySelector("[data-work-list]").classList.remove("has-work-cards");
   document.querySelector("[data-work-list]").innerHTML = "";
@@ -394,12 +397,19 @@ function populateSpecial(index) {
   document.querySelector("[data-location]").textContent = item.location;
   document.querySelector("[data-work]").textContent = item.title;
   document.querySelector("[data-description]").textContent = item.description;
-  document.querySelector("[data-panel-action]").innerHTML = `${item.action} <span>↗</span>`;
+  const panelAction = document.querySelector("[data-panel-action]");
+  panelAction.disabled = Boolean(item.disabled);
+  panelAction.innerHTML = item.disabled ? item.action : `${item.action} <span>↗</span>`;
+  if (item.disabled) {
+    featuredWork.setAttribute("aria-disabled", "true");
+    featuredWork.tabIndex = -1;
+  }
   const details = item.type === "coming" ? (item.items || []) : [];
   document.querySelector("[data-work-list]").classList.remove("has-work-cards");
   document.querySelector("[data-work-list]").innerHTML = details.map((detail, detailIndex) => `<div class="detail-row"><span>0${detailIndex + 1}</span><div><strong>${detail[0]}</strong><small>${detail[1]}</small></div></div>`).join("");
-  if (item.href) currentPanelAction = { type: "href", value: item.href };
-  else if (item.joinDirection) currentPanelAction = { type: "join", direction: item.joinDirection, title: item.joinTitle };
+  if (item.disabled) currentPanelAction = null;
+  else if (item.formType) currentPanelAction = { type: "form", formType: item.formType, direction: item.title, title: `${item.title}报名申报` };
+  else if (item.joinDirection) currentPanelAction = { type: "form", formType: item.type === "school" ? "school" : "opc", direction: item.joinDirection, title: item.joinTitle };
   else if (item.target) currentPanelAction = { type: "target", value: item.target };
   else currentPanelAction = { type: "toast", message: item.message || `${item.title}正在筹备中` };
   currentFeaturedAction = currentPanelAction;
@@ -423,7 +433,8 @@ function populateAdditionalWork(cityIndex, workIndex) {
   document.querySelector("[data-work-list]").classList.remove("has-work-cards");
   document.querySelector("[data-work-list]").innerHTML = "";
   document.querySelector("[data-panel-action]").innerHTML = "我要合作 <span>↗</span>";
-  currentPanelAction = { type: "join", direction: `${district}精品短剧合作`, title: `申请合作${work.title}` };
+  document.querySelector("[data-panel-action]").disabled = false;
+  currentPanelAction = { type: "form", formType: "drama", direction: `${district}精品短剧合作`, title: "" };
   currentFeaturedAction = { type: "trailer", title: work.title, image: work.image };
 }
 
@@ -676,6 +687,7 @@ const joinDialog = joinModal.querySelector(".join-dialog");
 const joinForm = document.querySelector("[data-join-form]");
 const formSuccess = document.querySelector("[data-form-success]");
 const submitButton = document.querySelector("[data-submit-form]");
+const formBody = document.querySelector("[data-form-body]");
 const trailerModal = document.querySelector("[data-trailer-modal]");
 const toast = document.querySelector("[data-toast]");
 const opcCitySelect = document.querySelector("[data-opc-city]");
@@ -698,33 +710,140 @@ function showToast(message) {
   toastTimer = setTimeout(() => { toast.hidden = true; }, 2800);
 }
 
-function openJoinModal(direction, options = {}) {
-  const isSpace = direction.includes("云谷") || direction.includes("永嘉");
+const field = {
+  input: (name, label, options = {}) => `<label class="${options.wide ? "form-wide" : ""}"><span>${label}${options.required ? " *" : ""}</span><input name="${name}" ${options.required ? "required" : ""} ${options.type ? `type="${options.type}"` : ""} ${options.pattern ? `pattern="${options.pattern}" maxlength="${options.maxlength || ""}"` : ""} ${options.min ? `min="${options.min}"` : ""} placeholder="${options.placeholder || "请输入"}"></label>`,
+  textarea: (name, label, options = {}) => `<label class="form-wide"><span>${label}${options.required ? " *" : ""}</span><textarea name="${name}" ${options.required ? "required" : ""} placeholder="${options.placeholder || "请输入"}"></textarea></label>`,
+  radio: (name, label, choices, options = {}) => `<fieldset class="form-choice ${options.wide === false ? "" : "form-wide"}" ${options.hook ? `data-choice-hook="${options.hook}"` : ""}><legend>${label}${options.required ? " *" : ""}</legend><div>${choices.map((choice, index) => `<label><input type="radio" name="${name}" value="${choice}" ${options.required && index === 0 ? "required" : ""}><span>${choice}</span></label>`).join("")}</div></fieldset>`,
+  checks: (name, label, choices, required = false) => `<fieldset class="form-choice form-wide"><legend>${label}${required ? " *" : ""}</legend><div>${choices.map((choice, index) => `<label><input type="checkbox" name="${name}" value="${choice}" ${required && index === 0 ? "data-checkbox-required" : ""}><span>${choice}</span></label>`).join("")}</div></fieldset>`,
+  file: (name, label, required = false) => `<label class="form-wide form-file"><span>${label}${required ? " *" : ""}</span><input type="file" name="${name}" ${required ? "required" : ""}><small>支持上传文档、图片或视频文件，原型仅演示选择状态</small></label>`
+};
+
+const opcPersonalFields = () => `
+  <div class="form-grid" data-identity-fields="personal">
+    ${field.input("name", "姓名", { required: true, placeholder: "请输入姓名" })}
+    ${field.input("phone", "联系手机号", { required: true, type: "tel", pattern: "1[3-9][0-9]{9}", maxlength: "11", placeholder: "请输入11位手机号" })}
+    ${field.input("wechat", "微信/企业微信", { required: true, placeholder: "用于业务对接" })}
+    <fieldset class="form-location"><legend>所在城市 *</legend><div class="form-location-controls"><select name="province" data-opc-province required aria-label="所在省份"><option value="">请选择省份</option></select><select name="city" data-opc-form-city required disabled aria-label="所在城市"><option value="">请先选择省份</option></select></div></fieldset>
+    ${field.textarea("bio", "个人简介", { placeholder: "简述短剧创作经历、擅长题材和代表作品" })}
+    ${field.radio("opcRegistration", "是否需要协助注册 OPC 一人公司", ["需要协助咨询注册", "暂不需要，以个人身份参与"], { required: true })}
+    <label><span>意向团队规模 *</span><select name="plannedTeamSize" required><option value="">请选择</option><option>1人（独立个人创作）</option><option>2-3人（小型协作小组）</option><option>4-6人</option><option>7人以上，10人以下</option></select></label>
+    ${field.radio("physicalSpace", "是否有意向入驻 OPC 实体空间", ["是", "否，仅线上参与生态"], { required: true, hook: "space" })}
+    <label data-conditional="workstations" hidden><span>意向工位数 *</span><input name="workstations" type="number" min="1" placeholder="请输入工位数"></label>
+    ${field.checks("expertise", "擅长方向", ["AI漫剧", "AI仿真人剧", "精品剧", "运营", "发行", "译配出海", "培训教育", "版权营销", "其他"], true)}
+    ${field.radio("hasWorks", "是否有过往短剧作品", ["有", "无"], { required: true, hook: "works" })}
+    <div class="form-wide form-conditional" data-conditional="works" hidden>${field.input("portfolioLink", "作品链接", { wide: true, placeholder: "请输入作品链接或网盘地址" })}${field.file("portfolioFile", "作品附件")}</div>
+    ${field.checks("projectTypes", "可承接的项目类型", ["产业订单", "精品项目", "赛事创作任务", "IP联合开发"])}
+    ${field.checks("resources", "意向资源诉求", ["IP授权", "场地工位", "订单对接", "发行推广", "工商注册咨询", "创业政策辅导", "其他"])}
+  </div>`;
+
+const opcTeamFields = () => `<div class="form-grid" data-identity-fields="team" hidden>
+  ${field.input("company", "团队/企业名称", { required: true })}${field.input("contact", "对接人姓名", { required: true })}
+  ${field.input("phone", "联系手机号", { required: true, type: "tel", pattern: "1[3-9][0-9]{9}", maxlength: "11", placeholder: "请输入11位手机号" })}${field.input("wechat", "微信/企业微信", { required: true })}
+  ${field.input("creditCode", "企业统一社会信用代码", { required: true, placeholder: "请输入统一社会信用代码" })}${field.input("teamSize", "现有团队总人数", { required: true, type: "number", min: "1", placeholder: "请输入人数" })}
+  ${field.textarea("capability", "团队简介与核心能力", { required: true, placeholder: "介绍业务方向、代表作和核心成员情况" })}${field.input("portfolioLink", "过往作品链接", { wide: true, placeholder: "请输入作品链接或网盘地址" })}${field.file("portfolioFile", "过往作品附件")}
+  ${field.checks("expertise", "擅长方向", ["AI漫剧", "AI仿真人剧", "精品剧", "运营", "发行", "译配出海", "教育培训", "版权营销", "其他"])}
+  ${field.checks("projectTypes", "可承接项目类型", ["产业订单", "精品项目", "赛事创作", "IP联合开发"])}
+  ${field.checks("resources", "意向资源诉求", ["IP素材授权", "场地工位", "订单对接", "发行推广", "工商注册咨询", "创业政策辅导", "其他"])}
+  ${field.radio("physicalSpace", "是否有意向入驻 OPC 实体空间", ["是", "否，仅线上参与生态"], { required: true, hook: "space" })}
+  <label data-conditional="workstations" hidden><span>意向工位数 *</span><input name="workstations" type="number" min="1" placeholder="请输入工位数"></label>
+</div>`;
+
+function getFormConfig(formType, context = {}) {
+  if (formType === "school") return { kicker: "产教融合实践", title: context.title || "提交校企合作申请", subtitle: "联合高校共建项目实践班、实训基地、联合课题、学生接单通道与创作赛事。", submit: "提交校企合作申请", success: "申请已提交，我方将在 5-7 个工作日内安排专人对接洽谈合作细节。", body: `<aside class="form-guidance">本表单面向高校院系对接人；在校学生如希望参与创作接单，请前往「加入 OPC 社区」。</aside><div class="form-grid">${field.input("school", "学校全称", { required: true })}${field.input("department", "二级院系/部门", { required: true, placeholder: "如：新闻与传播学院" })}${field.input("contact", "对接负责人", { required: true })}${field.input("position", "职务", { required: true })}${field.input("phone", "联系手机号码", { required: true, type: "tel", pattern: "1[3-9][0-9]{9}", maxlength: "11", placeholder: "请输入11位手机号" })}${field.input("email", "对接邮箱", { required: true, type: "email", placeholder: "用于正式函件、资料往来" })}${field.input("wechat", "微信", { placeholder: "用于日常沟通" })}${field.checks("cooperationModes", "意向合作模式", ["共建AI影视项目实践班", "共建产教融合实训实践基地", "学生实训实习、团队接单通道", "联合开发课程/教学案例库", "联合承办微短剧、AI创作类赛事", "IP联合共创、师生联合内容开发", "其他"], true)}${field.textarea("studentMajors", "可参与的学生专业/年级", { placeholder: "如：数字媒体艺术，本科大二至大四、研究生" })}${field.input("studentScale", "预估每年可参与学生规模", { type: "number", min: "1", placeholder: "请输入人数" })}${field.textarea("foundation", "学校现有基础条件与合作设想", { placeholder: "可填写实验室、师资、课程基础及校方合作诉求" })}${field.checks("resources", "希望获取平台配套资源", ["AI智能体/算力资源开放", "产业项目订单供给", "行业导师进课堂", "IP素材库开放使用", "作品出海发行、成果展示渠道", "创业孵化、政策申报辅导", "其他"], true)}${field.file("attachment", "附件上传")}</div>` };
+  if (formType === "drama") return { kicker: "“微短剧+”精品内容合作", title: context.title || "提交精品剧合作申请", subtitle: "面向地方文旅单位、创作团队与企业，联合开展文旅、非遗及城市 IP 精品短剧创制。", submit: "提交精品剧合作申请", success: "申请已提交，我方将在 5-7 个工作日完成材料评估并安排专人对接。", body: `<aside class="form-guidance">创作者如希望长期入驻生态，可前往「加入 OPC 社区」提交申请。</aside><div class="form-grid">${field.radio("entityType", "主体类型", ["个人创作者", "创作团队", "企业单位", "地方文旅/事业单位"], { required: true })}${field.input("entityName", "主体名称", { required: true })}${field.input("contact", "对接人", { required: true })}${field.input("phone", "联系手机号", { required: true, type: "tel", pattern: "1[3-9][0-9]{9}", maxlength: "11", placeholder: "请输入11位手机号" })}${field.input("email", "对接邮箱", { required: true, type: "email" })}${field.input("wechat", "微信/企业微信")}${field.checks("cooperationTypes", "合作类型", ["文旅定制", "非遗主题", "城市形象宣传", "IP联合开发共创", "其他"], true)}${field.input("region", "项目属地地区", { required: true, placeholder: "请输入省/市/区县" })}${field.textarea("intent", "已有 IP/文旅素材及合作意向", { required: true, placeholder: "填写合作背景、题材方向和合作意向" })}${field.input("cases", "过往同类项目案例", { wide: true, placeholder: "请输入案例链接或简要说明" })}</div>` };
+  if (formType === "event") return { kicker: "微短剧创作大赛", title: context.title || "提交大赛报名申报", subtitle: "提交剧本或成片作品参赛，优秀作品可获得流量扶持、产业订单、出海发行与 IP 联合开发机会。", submit: "提交大赛报名申报", success: "报名提交成功，将按照对应赛事规则开展后续评审工作，请留意通知。", body: `<aside class="form-guidance">报名赛事：<strong>${context.direction || "当前主题赛事"}</strong> · 报名截止时间以赛事公告为准</aside><div class="form-grid">${field.radio("identity", "参赛身份", ["个人创作者", "创作团队", "企业", "高校师生团队"], { required: true })}${field.input("entrantName", "参赛名称（个人姓名/团队名称）", { required: true })}${field.input("contact", "对接人", { required: true })}${field.input("phone", "联系手机号", { required: true, type: "tel", pattern: "1[3-9][0-9]{9}", maxlength: "11", placeholder: "请输入11位手机号" })}${field.input("email", "联系邮箱", { required: true, type: "email" })}${field.input("wechat", "微信")}${field.textarea("workIntro", "参赛作品名称及简介", { required: true, placeholder: "介绍核心剧情、创作亮点、与命题的契合点，并附网盘链接" })}${field.radio("filing", "是否已备案", ["是", "否"], { required: true, hook: "filing" })}<label data-conditional="filingNumber" hidden><span>备案号 *</span><input name="filingNumber" placeholder="请输入备案号"></label>${field.radio("workStatus", "作品状态", ["剧本阶段", "半成品", "成片完成"], { required: true })}${field.input("workLink", "剧本/成片链接", { required: true, wide: true, placeholder: "请输入网盘或作品链接" })}${field.file("workFile", "剧本/成片附件")}${field.radio("commercial", "是否意向承接赛事衍生商业订单", ["是", "否"], { required: true, hook: "commercial" })}<div class="form-wide" data-conditional="commercialCases" hidden>${field.textarea("commercialCases", "过往案例及团队主创介绍", { required: true, placeholder: "请介绍过往案例和团队主创" })}</div><aside class="form-guidance form-wide">如希望长期接单或入驻生态，可前往「加入 OPC 社区」提交入驻申请。</aside></div>` };
+  return { kicker: "AI 影视 OPC 社区入驻申请", title: context.title || "提交入驻申请", subtitle: "面向全国 AI 内容创作者与创作团队，连接订单、精品项目、赛事及产业资源。", submit: "提交入驻申请", success: "提交成功，工作人员将在 3-5 个工作日与您联系对接。", body: `<aside class="form-guidance">个人可选择以自然人接单，或咨询注册 OPC 一人市场主体参与产业项目。</aside>${field.radio("identity", "申请身份", ["个人创作者", "创作团队 / 企业"], { required: true, hook: "identity" })}${opcPersonalFields()}${opcTeamFields()}` };
+}
+
+function setConditionalRequired(container, active) {
+  container.hidden = !active;
+  container.querySelectorAll("input,select,textarea").forEach(control => {
+    if (control.dataset.wasRequired === undefined) control.dataset.wasRequired = String(control.required);
+    control.required = active && control.dataset.wasRequired === "true";
+    control.disabled = !active;
+  });
+}
+
+function updateOpcCityAvailability() {
+  const provinceSelect = formBody.querySelector("[data-opc-province]");
+  const citySelect = formBody.querySelector("[data-opc-form-city]");
+  if (!provinceSelect || !citySelect) return;
+  const isPersonal = !provinceSelect.closest("[data-identity-fields]").hidden;
+  provinceSelect.disabled = !isPersonal;
+  provinceSelect.required = isPersonal;
+  citySelect.disabled = !isPersonal || !provinceSelect.value;
+  citySelect.required = isPersonal;
+}
+
+function populateOpcCities(provinceName, selectedCity = "") {
+  const citySelect = formBody.querySelector("[data-opc-form-city]");
+  const province = CHINA_REGIONS.find(region => region.name === provinceName);
+  citySelect.replaceChildren(new Option(province ? "请选择城市" : "请先选择省份", ""));
+  province?.cities.forEach(city => citySelect.add(new Option(city.name, city.name)));
+  citySelect.value = province?.cities.some(city => city.name === selectedCity) ? selectedCity : "";
+  updateOpcCityAvailability();
+}
+
+function initializeOpcLocation(sourceCity = "") {
+  const provinceSelect = formBody.querySelector("[data-opc-province]");
+  provinceSelect.replaceChildren(new Option("请选择省份", ""));
+  CHINA_REGIONS.forEach(region => provinceSelect.add(new Option(region.name, region.name)));
+  // Community cards use short names (杭州); enum values retain full names (杭州市).
+  const normalize = name => name.trim().replace(/市$/, "");
+  const province = sourceCity ? CHINA_REGIONS.find(region => region.cities.some(city => normalize(city.name) === normalize(sourceCity))) : undefined;
+  const city = province?.cities.find(item => normalize(item.name) === normalize(sourceCity));
+  provinceSelect.value = province ? province.name : "";
+  populateOpcCities(provinceSelect.value, city?.name);
+  provinceSelect.addEventListener("change", () => populateOpcCities(provinceSelect.value));
+}
+
+function bindDynamicFormRules() {
+  formBody.querySelectorAll("[data-checkbox-required]").forEach(first => {
+    const group = [...first.closest("fieldset").querySelectorAll('input[type="checkbox"]')];
+    const validate = () => first.setCustomValidity(group.some(item => item.checked) ? "" : "请至少选择一项");
+    group.forEach(item => item.addEventListener("change", validate));
+    validate();
+  });
+  // Replace the delegated handler when the modal is rebuilt; never stack listeners.
+  formBody.onchange = event => {
+    const { name, value } = event.target;
+    if (name === "identity" && joinForm.elements.formType.value === "opc") {
+      setConditionalRequired(formBody.querySelector('[data-identity-fields="personal"]'), value === "个人创作者");
+      setConditionalRequired(formBody.querySelector('[data-identity-fields="team"]'), value === "创作团队 / 企业");
+      updateOpcCityAvailability();
+    }
+    if (name === "physicalSpace") setConditionalRequired(event.target.closest('[data-identity-fields]')?.querySelector('[data-conditional="workstations"]'), value === "是");
+    if (name === "hasWorks") setConditionalRequired(event.target.closest('[data-identity-fields]')?.querySelector('[data-conditional="works"]'), value === "有");
+    if (name === "filing") setConditionalRequired(formBody.querySelector('[data-conditional="filingNumber"]'), value === "是");
+    if (name === "commercial") setConditionalRequired(formBody.querySelector('[data-conditional="commercialCases"]'), value === "是");
+  };
+}
+
+function openApplicationModal(formType, options = {}) {
+  const config = getFormConfig(formType, options);
   joinForm.reset();
   joinForm.hidden = false;
   formSuccess.hidden = true;
   submitButton.disabled = false;
-  submitButton.textContent = "提交申请";
-  joinDialog.classList.toggle("is-space-form", isSpace);
-  document.querySelector("[data-form-title]").textContent = options.title || (direction === "商务合作" ? "提交商务合作申请" : `申请加入${direction}`);
-  document.querySelector("[data-form-subtitle]").textContent = isSpace
-    ? "请留下团队信息，空间运营人员将在审核后与您联系。"
-    : "提交申请后，我们将在审核后与您联系。";
-  document.querySelector("[data-form-direction]").value = direction;
-  ["city", "model", "portfolio"].forEach(name => {
-    const field = joinForm.elements[name];
-    field.disabled = isSpace;
-    if (name === "city") field.required = !isSpace;
-  });
-  if (options.city) {
-    joinForm.elements.city.disabled = false;
-    joinForm.elements.city.required = true;
-    joinForm.elements.city.value = options.city;
-    joinForm.elements.city.readOnly = true;
-  } else joinForm.elements.city.readOnly = false;
+  submitButton.textContent = config.submit;
+  document.querySelector("[data-form-kicker]").textContent = config.kicker;
+  const formTitle = document.querySelector("[data-form-title]");
+  formTitle.textContent = options.title ?? config.title;
+  formTitle.hidden = !formTitle.textContent;
+  document.querySelector("[data-form-subtitle]").textContent = config.subtitle;
+  document.querySelector("[data-form-type]").value = formType;
+  document.querySelector("[data-form-direction]").value = options.direction || "";
+  document.querySelector("[data-success-copy]").textContent = config.success;
+  formBody.innerHTML = config.body;
+  bindDynamicFormRules();
+  if (formType === "opc") {
+    setConditionalRequired(formBody.querySelector('[data-identity-fields="personal"]'), true);
+    setConditionalRequired(formBody.querySelector('[data-identity-fields="team"]'), false);
+    initializeOpcLocation(options.city);
+  }
   joinModal.hidden = false;
   document.body.classList.add("has-modal");
-  setTimeout(() => joinForm.elements.company.focus(), 30);
+  setTimeout(() => joinForm.querySelector("input:not([type=hidden]),select,textarea")?.focus(), 30);
 }
 
 function updateOpcCommunity(city) {
@@ -780,12 +899,12 @@ function openTrailer(title, image) {
   document.body.classList.add("has-modal");
 }
 
-document.querySelectorAll("[data-join]").forEach(button => button.addEventListener("click", () => openJoinModal(button.dataset.join)));
+document.querySelectorAll("[data-join]").forEach(button => button.addEventListener("click", () => openApplicationModal("drama", { direction: button.dataset.join, title: "提交精品剧合作申请" })));
 opcMemberList.addEventListener("click", event => {
   const button = event.target.closest("[data-opc-member-join]");
   if (!button) return;
   const city = button.dataset.city;
-  openJoinModal(`${city}线上OPC社区`, { city, title: `申请加入${city}线上OPC社区` });
+  openApplicationModal("opc", { direction: `${city}线上OPC社区`, city, title: `申请加入${city}线上OPC社区` });
 });
 opcMemberList.addEventListener("wheel", event => {
   if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
@@ -796,7 +915,7 @@ opcCitySelect.addEventListener("change", () => updateOpcCommunity(opcCitySelect.
 opcActionButton.addEventListener("click", () => {
   const city = opcCitySelect.value;
   const action = opcActionButton.dataset.mode === "create" ? "创建" : "加入";
-  openJoinModal(`${city}线上OPC社区`, { city, title: `申请${action}${city}线上OPC社区` });
+  openApplicationModal("opc", { direction: `${city}线上OPC社区`, city, title: `申请${action}${city}线上OPC社区` });
 });
 renderOpcCommunities();
 updateOpcCommunity(opcCitySelect.value);
@@ -813,7 +932,7 @@ function runPanelAction(action) {
   if (!action) return;
   if (action.type === "trailer") openTrailer(action.title, action.image);
   else if (action.type === "href") window.open(action.value, "_blank", "noopener,noreferrer");
-  else if (action.type === "join") openJoinModal(action.direction, { title: action.title });
+  else if (action.type === "form") openApplicationModal(action.formType, { direction: action.direction, title: action.title });
   else if (action.type === "target") {
     const target = document.querySelector(action.value);
     if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -891,13 +1010,13 @@ joinForm.addEventListener("submit", event => {
     joinForm.hidden = true;
     formSuccess.hidden = false;
     submitButton.disabled = false;
-    submitButton.textContent = "提交申请";
+    submitButton.textContent = getFormConfig(joinForm.elements.formType.value).submit;
   }, 900);
 });
 
 document.querySelector("[data-success-close]").addEventListener("click", () => {
   closeModal(joinModal);
-  showToast("申请已提交，审核通过后将计入社群人数");
+  showToast(document.querySelector("[data-success-copy]").textContent);
 });
 
 document.querySelector("[data-video-toggle]").addEventListener("click", event => {
