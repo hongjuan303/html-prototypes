@@ -1,3 +1,8 @@
+const applicationPrd = document.querySelector("#prd-admin-applications");
+if (applicationPrd && window.APPLICATION_PRD_HTML) {
+  applicationPrd.innerHTML = window.APPLICATION_PRD_HTML;
+}
+
 const frame = document.querySelector("[data-prototype-frame]");
 const adminFrame = document.querySelector("[data-admin-frame]");
 const stage = document.querySelector("[data-prototype-stage]");
@@ -169,4 +174,5 @@ function openDocumentFromHash() {
   document.body.scrollTo({ left: prdPane.offsetLeft, behavior: "instant" });
 }
 window.addEventListener("hashchange", openDocumentFromHash);
+if (new URLSearchParams(window.location.search).get("view") === "admin") switchPrototype("admin");
 openDocumentFromHash();

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>容量万相｜生态创新中心 V3.0 评审原型</title>
-  <link rel="stylesheet" href="review.css?v=20260910-prd-v1">
+  <link rel="stylesheet" href="review.css?v=20260911-admin-v1">
 </head>
 <body>
   <main class="review-shell">
@@ -20,8 +20,8 @@
         </div>
       </header>
       <div class="prototype-stage is-fit" data-prototype-stage>
-        <iframe data-prototype-frame data-prototype-panel="site" src="prototype/" title="容量万相生态创新中心 V3.0 官网前台原型"></iframe>
-        <iframe data-admin-frame data-prototype-panel="admin" src="../ecology-admin-review/" title="容量万相生态创新中心绿台配置原型" hidden></iframe>
+        <iframe data-prototype-frame data-prototype-panel="site" src="prototype/?v=20260911-admin-v1" title="容量万相生态创新中心 V3.0 官网前台原型"></iframe>
+        <iframe data-admin-frame data-prototype-panel="admin" src="../ecology-admin-review/?v=20260911-admin-v7" title="容量万相生态创新中心绿台配置原型" hidden></iframe>
       </div>
     </section>
 
@@ -32,7 +32,7 @@
           <span>需求评审文档</span>
           <strong>容量万相 · 生态创新中心</strong>
         </div>
-        <em>V1.1</em>
+        <em>V1.2</em>
       </header>
 
       <nav class="prd-doc-switch" aria-label="需求文档切换">
@@ -65,7 +65,8 @@
           <table>
             <thead><tr><th>版本</th><th>日期</th><th>变更内容</th></tr></thead>
             <tbody>
-              <tr><td>V1.1</td><td class="change-date">2026-09-10</td><td>补充 OPC 入驻、校企合作、精品内容合作三类申请表单及提交说明；OPC「所在城市」改为全国省市二级联动下拉单选；修改日期统一标注在「申请表单」总标题下方；删除精品短剧合作弹窗的作品申请标题；雁荡山杯入口改为「已结束」且不可点击。</td></tr>
+              <tr><td>V1.2</td><td class="change-date">2026-09-11</td><td>按业务 PDF 删除 OPC 个人申请的「所在城市」；绿台申请管理改为三个 Tab，按各自前台表单重整筛选、列表及详情，补充字段来源映射与橙底白字序号说明。</td></tr>
+              <tr><td>V1.1</td><td class="change-date">2026-09-10</td><td>补充三类申请表单及提交说明；当时新增的 OPC 省市字段已在 V1.2 按 PDF 删除。修改日期统一标注在「申请表单」总标题下方；删除精品短剧合作弹窗的作品申请标题；雁荡山杯入口改为「已结束」且不可点击。</td></tr>
               <tr><td>V1.0</td><td class="change-date">2026-08-25</td><td>初始原型</td></tr>
             </tbody>
           </table>
@@ -182,7 +183,7 @@
           <h2># 申请加入操作</h2>
           <ol>
             <li>点击城市社区卡片中的「申请加入」，打开居中的申请弹窗。</li>
-            <li>先选择「个人创作者」或「创作团队 / 企业」，分别展示对应字段；个人分支的「所在城市」使用省、市二级联动下拉单选，从城市卡片进入时预选对应省市且允许修改。团队分支保留来源城市信息，不新增省市控件。</li>
+            <li>先选择「个人创作者」或「创作团队 / 企业」，分别展示对应字段；按业务 PDF，两种身份均不填写「所在城市」。城市社区或产业空间入口仅保留申请来源，不等同于申请人所在地。</li>
             <li>点击「取消」或关闭图标，关闭弹窗且不保存本次填写内容。</li>
             <li>点击「提交入驻申请」时校验当前身份下的必填项、手机号及多选项；详细字段见下方「申请表单」章节。</li>
             <li>当前原型仅模拟提交成功，不生成后台记录、不更新成员人数；正式接入后，申请进入待审核流程，成员人数仅在审核通过后更新。</li>
@@ -191,7 +192,7 @@
 
         <section class="prd-section" id="prd-applications" data-prd-section="applications">
           <h1># 申请表单</h1>
-          <p class="change-date">修改日期：2026-09-10 · V1.1</p>
+          <p class="change-date">修改日期：2026-09-11 · V1.2</p>
           <p>本次替换旧版通用申请表单说明。字段依据《生态创新版块合作表单设置.pdf》及当前本地原型整理，包含 OPC 入驻、校企合作、精品内容合作三类业务表单；原型与需求仍存在的差异统一列在本章末尾，不视为已完成能力。</p>
 
           <h2># 入口与适用对象</h2>
@@ -227,7 +228,6 @@
               <tr><td>姓名</td><td>文本输入</td><td>必填</td><td>填写个人姓名。</td></tr>
               <tr><td>联系手机号</td><td>手机号输入</td><td>必填</td><td>遵循通用手机号规则。</td></tr>
               <tr><td>微信/企业微信</td><td>文本输入</td><td>必填</td><td>用于业务对接。</td></tr>
-              <tr><td>所在城市</td><td>省市二级联动下拉单选</td><td>必填</td><td>先选省份，再选城市；两级均须选择，不支持自由输入。省级枚举覆盖全国 34 个省级地区，市级枚举随省份联动，包含地级市、地区、自治州、盟及省直辖县级单位；直辖市和港澳的市级使用同名选项，台湾地区展示县市。切换省份清空原城市，未选省时市级禁用。从城市社区入口进入时预选对应省市，可重新选择；所选所在地与来源社区分别保留。</td></tr>
               <tr><td>个人简介</td><td>多行文本</td><td>选填</td><td>创作经历、擅长题材、代表作品。</td></tr>
               <tr><td>是否需要协助注册 OPC 一人公司</td><td>单选</td><td>必填</td><td>需要协助咨询注册 / 暂不需要，以个人身份参与；仅个人分支展示。</td></tr>
               <tr><td>意向团队规模</td><td>下拉单选</td><td>必填</td><td>1人（独立个人创作） / 2-3人（小型协作小组） / 4-6人 / 7人以上，10人以下。</td></tr>
@@ -242,7 +242,7 @@
             </tbody>
           </table>
 
-          <p class="note"><b>省市枚举：</b>本地字典含 34 个省级选项、393 个二级选项，运行时不依赖外部接口。大陆采用可追溯的 2023 年区划基线，港澳台按二级地址选择口径补齐；区划后续调整需更新字典，不将本次修改日期视为区划数据版本。</p>
+          <p class="note"><b>字段边界：</b>业务 PDF 的个人填写项没有「所在城市」，本版已删除该控件及省市必填校验。PDF 后台备注中的所在地统计属于后续业务数据需求，不能从入口城市推断为申请人的真实所在地。</p>
 
           <h3>○ 创作团队 / 企业字段</h3>
           <table class="application-fields">
@@ -308,11 +308,11 @@
           <p class="note"><b>提交：</b>按钮「提交精品剧合作申请」。当前原型成功提示「申请已提交，我方将在 5-7 个工作日完成材料评估并安排专人对接。」创作者如希望长期接单或入驻生态，使用 OPC 入驻表单。</p>
 
           <h2># 后台归集要求（正式接入）</h2>
-          <p>三类表单需独立存储，不共用一张通用申请记录；保留业务类型及入口来源，按各自业务标签筛选跟进。以下为 PDF 中的后续接入要求，当前静态原型未实现，本轮不修改绿台申请管理原型。</p>
+          <p>三类表单需独立存储，保留业务类型及入口来源，按各自业务标签筛选跟进。绿台原型已按官网字段重整列表及详情，并以演示数据验证映射；正式接口、上传与数据库尚未接入，前台模拟提交不会生成绿台真实记录。</p>
           <table>
             <thead><tr><th>表单</th><th>归集标签 / 口径</th><th>说明</th></tr></thead>
             <tbody>
-              <tr><td>OPC 入驻</td><td>申请身份、意向 OPC 注册、拟团队规模、资源诉求；关联来源城市。</td><td>后续支持提取已入驻企业名称、所在地、规模及区域 OPC 数量；团队分支不写入个人注册咨询项。</td></tr>
+              <tr><td>OPC 入驻</td><td>申请身份、意向 OPC 注册、拟团队规模、资源诉求；独立保留入口来源。</td><td>团队分支不写入个人注册咨询项；企业所在地与区域 OPC 数量的正式统计数据源待确认，不从个人表单或来源社区臆造。</td></tr>
               <tr><td>校企合作</td><td>合作模式、学生规模、资源诉求。</td><td>与 OPC 入驻分开归集，面向校方负责人跟进。</td></tr>
               <tr><td>精品内容合作</td><td>合作属地、合作类型、资源诉求。</td><td>当前无独立资源诉求控件，该标签提取口径待确认，不额外添加用户未要求的表单字段。</td></tr>
             </tbody>
@@ -320,61 +320,18 @@
 
           <h2># 原型差异与待补齐项</h2>
           <ul>
-            <li><b>条件必填：</b>工位数目前展示星号，但未实际设置必填约束，正式交付需补齐；本次已修正重复打开弹窗时的监听叠加与必填状态覆盖，确保省市选择在身份切换后仍正确校验。</li>
+            <li><b>条件必填：</b>工位数目前展示星号，但未实际设置必填约束，正式交付需补齐；此前已修正重复打开弹窗时的监听叠加与必填状态覆盖。</li>
             <li><b>“其他”补充：</b>PDF 中标有「其他：____」的多选项需要说明输入；当前仅能勾选「其他」，尚未实现补充文本，必填口径待确认。</li>
             <li><b>OPC 分流：</b>当前辅助文案提示前往 OPC 入驻，尚未提供表单内一键跳转按钮。</li>
             <li><b>真实提交：</b>接口、附件上传、失败重试、后台独立存储及自动标签均未接入；不能把成功演示视为真实申请已送达。</li>
           </ul>
-          <p class="note danger"><b>评审口径：</b>以上差异已记录，不在本次「补充 PRD 说明」中擅自改变业务表单。此前通用表单中的「业务范围」「意向合作模式」「代表作品」不再作为 OPC 通用字段沿用。</p>
+          <p class="note danger"><b>评审口径：</b>以上差异仍待后续完善，不作为本版已完成能力。此前通用表单中的「业务范围」「意向合作模式」「代表作品」不再作为 OPC 通用字段沿用；绿台详情按本次提交身份及条件字段逐项映射。</p>
         </section>
       </article>
 
       <article class="prd-document" data-document-panel="admin" hidden>
         <section class="prd-section is-active" id="prd-admin-applications" data-prd-section="admin-applications">
-          <h1># 生态创新中心申请管理</h1>
-          <h2># 页面说明</h2>
-          <ul>
-            <li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; AI漫剧官网配置 &gt; 生态创新中心。</li>
-            <li><b>使用对象：</b>内容业务、生态合作运营及审核人员。</li>
-            <li>通过四个Tab分别管理OPC社区、精品短剧、产业空间及校企合作的前台申请。</li>
-          </ul>
-
-          <h2># 原型说明</h2>
-          <h3>● Tab项</h3>
-          <ul>
-            <li>页面不设置“全部”Tab，默认进入<code>OPC社区</code>。</li>
-            <li>Tab枚举为“OPC社区、精品短剧、产业空间、校企合作”。</li>
-          </ul>
-
-          <h3>○ OPC社区</h3>
-          <ul>
-            <li><b>筛选：</b>联系人、联系电话、提交时间、审核状态。</li>
-            <li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li>
-            <li><b>操作：</b>详情；待审核记录额外展示审核。</li>
-            <li>审核支持“审核通过、审核拒绝”；拒绝时必填拒绝原因。</li>
-          </ul>
-
-          <h3>○ 精品短剧 / 产业空间 / 校企合作</h3>
-          <ul>
-            <li><b>筛选：</b>联系人、联系电话、提交时间。</li>
-            <li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li>
-            <li><b>操作：</b>仅详情，不提供审核入口。</li>
-            <li>审核状态统一展示“无需审核”。</li>
-          </ul>
-
-          <h3>○ 通用规则</h3>
-          <ul>
-            <li>联系电话在列表中默认脱敏，进入详情且具备权限后才展示完整号码。</li>
-            <li>提交时间支持开始日期与结束日期组合查询。</li>
-            <li>详情展示申请人本次提交的完整资料、来源入口及隐私授权状态。</li>
-          </ul>
-
-          <h3>○ 数据与权限</h3>
-          <ul>
-            <li>申请数据写入后台数据库，不以浏览器缓存作为正式数据源。</li>
-            <li>详情和审核分开配置权限；手机号等个人信息应脱敏展示、加密存储。</li>
-            <li>记录查看、审核等关键操作日志，便于问题追溯。</li>
-          </ul>
+          <p>正在加载申请管理说明…</p>
         </section>
 
         <section class="prd-section" id="prd-admin-waterfall" data-prd-section="admin-waterfall">
@@ -424,6 +381,8 @@
       </article>
     </aside>
   </main>
-  <script src="review.js?v=20260910-prd-v1"></script>
+  <script src="../ecology-admin-review/application-schema.js?v=20260911-chinese-fields-v1"></script>
+  <script src="../ecology-admin-review/application-prd.js?v=20260911-date-v1"></script>
+  <script src="review.js?v=20260911-admin-v1"></script>
 </body>
 </html>

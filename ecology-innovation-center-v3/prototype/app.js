@@ -723,7 +723,6 @@ const opcPersonalFields = () => `
     ${field.input("name", "姓名", { required: true, placeholder: "请输入姓名" })}
     ${field.input("phone", "联系手机号", { required: true, type: "tel", pattern: "1[3-9][0-9]{9}", maxlength: "11", placeholder: "请输入11位手机号" })}
     ${field.input("wechat", "微信/企业微信", { required: true, placeholder: "用于业务对接" })}
-    <fieldset class="form-location"><legend>所在城市 *</legend><div class="form-location-controls"><select name="province" data-opc-province required aria-label="所在省份"><option value="">请选择省份</option></select><select name="city" data-opc-form-city required disabled aria-label="所在城市"><option value="">请先选择省份</option></select></div></fieldset>
     ${field.textarea("bio", "个人简介", { placeholder: "简述短剧创作经历、擅长题材和代表作品" })}
     ${field.radio("opcRegistration", "是否需要协助注册 OPC 一人公司", ["需要协助咨询注册", "暂不需要，以个人身份参与"], { required: true })}
     <label><span>意向团队规模 *</span><select name="plannedTeamSize" required><option value="">请选择</option><option>1人（独立个人创作）</option><option>2-3人（小型协作小组）</option><option>4-6人</option><option>7人以上，10人以下</option></select></label>
@@ -764,39 +763,6 @@ function setConditionalRequired(container, active) {
   });
 }
 
-function updateOpcCityAvailability() {
-  const provinceSelect = formBody.querySelector("[data-opc-province]");
-  const citySelect = formBody.querySelector("[data-opc-form-city]");
-  if (!provinceSelect || !citySelect) return;
-  const isPersonal = !provinceSelect.closest("[data-identity-fields]").hidden;
-  provinceSelect.disabled = !isPersonal;
-  provinceSelect.required = isPersonal;
-  citySelect.disabled = !isPersonal || !provinceSelect.value;
-  citySelect.required = isPersonal;
-}
-
-function populateOpcCities(provinceName, selectedCity = "") {
-  const citySelect = formBody.querySelector("[data-opc-form-city]");
-  const province = CHINA_REGIONS.find(region => region.name === provinceName);
-  citySelect.replaceChildren(new Option(province ? "请选择城市" : "请先选择省份", ""));
-  province?.cities.forEach(city => citySelect.add(new Option(city.name, city.name)));
-  citySelect.value = province?.cities.some(city => city.name === selectedCity) ? selectedCity : "";
-  updateOpcCityAvailability();
-}
-
-function initializeOpcLocation(sourceCity = "") {
-  const provinceSelect = formBody.querySelector("[data-opc-province]");
-  provinceSelect.replaceChildren(new Option("请选择省份", ""));
-  CHINA_REGIONS.forEach(region => provinceSelect.add(new Option(region.name, region.name)));
-  // Community cards use short names (杭州); enum values retain full names (杭州市).
-  const normalize = name => name.trim().replace(/市$/, "");
-  const province = sourceCity ? CHINA_REGIONS.find(region => region.cities.some(city => normalize(city.name) === normalize(sourceCity))) : undefined;
-  const city = province?.cities.find(item => normalize(item.name) === normalize(sourceCity));
-  provinceSelect.value = province ? province.name : "";
-  populateOpcCities(provinceSelect.value, city?.name);
-  provinceSelect.addEventListener("change", () => populateOpcCities(provinceSelect.value));
-}
-
 function bindDynamicFormRules() {
   formBody.querySelectorAll("[data-checkbox-required]").forEach(first => {
     const group = [...first.closest("fieldset").querySelectorAll('input[type="checkbox"]')];
@@ -810,7 +776,6 @@ function bindDynamicFormRules() {
     if (name === "identity" && joinForm.elements.formType.value === "opc") {
       setConditionalRequired(formBody.querySelector('[data-identity-fields="personal"]'), value === "个人创作者");
       setConditionalRequired(formBody.querySelector('[data-identity-fields="team"]'), value === "创作团队 / 企业");
-      updateOpcCityAvailability();
     }
     if (name === "physicalSpace") setConditionalRequired(event.target.closest('[data-identity-fields]')?.querySelector('[data-conditional="workstations"]'), value === "是");
     if (name === "hasWorks") setConditionalRequired(event.target.closest('[data-identity-fields]')?.querySelector('[data-conditional="works"]'), value === "有");
@@ -839,7 +804,6 @@ function openApplicationModal(formType, options = {}) {
   if (formType === "opc") {
     setConditionalRequired(formBody.querySelector('[data-identity-fields="personal"]'), true);
     setConditionalRequired(formBody.querySelector('[data-identity-fields="team"]'), false);
-    initializeOpcLocation(options.city);
   }
   joinModal.hidden = false;
   document.body.classList.add("has-modal");

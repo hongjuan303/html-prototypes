@@ -3,37 +3,20 @@ const pages = {
   waterfall: { label: "瀑布流轮播图", group: "产品运营 / 内容运营" }
 };
 
+const applicationSchema = window.APPLICATION_SCHEMA;
+const applicationContract = window.ApplicationContract;
+// Independent, fictional snapshots. No data is read from the public website or sent to a server.
 const applicationRows = [
-  {
-    id: "260821001", type: "OPC社区", subject: "杭州OPC社区", organization: "杭州云栖影业有限公司",
-    contact: "陈澈", phone: "138****5621", submitTime: "2026-08-21 09:42", review: "待审核", follow: "未跟进", reviewer: "-",
-    city: "杭州", teamSize: "12人", model: "收益分成", scope: "AI漫剧制作、分镜生成、短剧后期与联合发行",
-    portfolio: "https://example.com/portfolio/hzyq", source: "OPC社区-申请加入", consent: "已同意"
-  },
-  {
-    id: "260820018", type: "精品短剧", subject: "《山海有信》文旅短剧", organization: "新疆远山文旅发展有限公司",
-    contact: "赵宁", phone: "186****0912", submitTime: "2026-08-20 16:18", review: "无需审核", follow: "跟进中", reviewer: "-",
-    city: "乌鲁木齐", teamSize: "8人", model: "联合制作", scope: "文旅内容策划、景区取景协调及本地宣发资源",
-    portfolio: "项目策划案、版权证明、主创团队介绍", source: "精品短剧-我要合作", consent: "已同意"
-  },
-  {
-    id: "260820011", type: "产业空间", subject: "永嘉人工智能创新应用中心", organization: "温州瓯越数字产业园",
-    contact: "叶倩", phone: "159****7710", submitTime: "2026-08-20 11:06", review: "无需审核", follow: "未跟进", reviewer: "-",
-    city: "温州·永嘉", teamSize: "30-50个工位", model: "产业共建", scope: "提供办公空间、政策对接、产业项目与本地文旅资源",
-    portfolio: "园区介绍及场地照片", source: "产业空间-我要加入", consent: "已同意"
-  },
-  {
-    id: "260819026", type: "校企合作", subject: "人工智能影视实践专班", organization: "浙江传媒学院动画与数字艺术学院",
-    contact: "徐老师", phone: "137****2236", submitTime: "2026-08-19 15:31", review: "无需审核", follow: "已转化", reviewer: "-",
-    city: "杭州", teamSize: "首期60人", model: "课程共建", scope: "联合课程、真实项目进课堂、师资与算力支持",
-    portfolio: "学院介绍、课程方案", source: "校企合作-我要合作", consent: "已同意"
-  },
-  {
-    id: "260818036", type: "OPC社区", subject: "成都OPC社区", organization: "拾光像素工作室",
-    contact: "宋言", phone: "177****8455", submitTime: "2026-08-18 18:05", review: "审核通过", follow: "未跟进", reviewer: "林楠",
-    city: "成都", teamSize: "6人", model: "暂不确定", scope: "AI短剧制作、角色资产管理、后期包装",
-    portfolio: "https://example.com/portfolio/cd", source: "OPC社区-申请创建", consent: "已同意"
-  }
+  { id: "260911001", formType: "opc", direction: "杭州OPC社区", submittedAt: "2026-09-11 10:26", review: "待审核", fields: { identity: "个人创作者", name: "林小禾（演示）", phone: "13800000001", wechat: "demo_lin", bio: "关注城市生活题材，擅长 AI 分镜与短剧剪辑。", opcRegistration: "需要协助咨询注册", plannedTeamSize: "1人（独立个人创作）", physicalSpace: "是", workstations: "1", expertise: ["AI漫剧", "译配出海"], hasWorks: "有", portfolioLink: "https://example.com/demo-portfolio", portfolioFile: "个人作品集（演示）.pdf", projectTypes: ["精品项目", "赛事创作任务"], resources: ["IP授权", "工商注册咨询"] } },
+  { id: "260911002", formType: "opc", direction: "永嘉人工智能创新应用中心", submittedAt: "2026-09-11 09:40", review: "待审核", fields: { identity: "创作团队 / 企业", company: "星禾创作工作室（演示）", contact: "陈小舟", phone: "13800000002", wechat: "demo_xinghe", creditCode: "DEMO-仅用于原型展示", teamSize: "8", capability: "分镜、角色资产、AI 漫剧制作与后期合成全流程协作。", portfolioLink: "https://example.com/demo-team", portfolioFile: "团队能力介绍（演示）.pdf", expertise: ["AI漫剧", "精品剧"], projectTypes: ["产业订单", "IP联合开发"], resources: ["IP素材授权", "场地工位"], physicalSpace: "是", workstations: "8" } },
+  { id: "260910003", formType: "opc", direction: "成都OPC社区", submittedAt: "2026-09-10 17:15", review: "审核通过", reviewer: "演示审核员", reviewedAt: "2026-09-10 18:30", reviewNote: "资料核对完成，进入后续对接。", fields: { identity: "个人创作者", name: "顾小雨（演示）", phone: "13800000003", wechat: "demo_gu", bio: "", opcRegistration: "暂不需要，以个人身份参与", plannedTeamSize: "2-3人（小型协作小组）", physicalSpace: "否，仅线上参与生态", expertise: ["运营", "培训教育"], hasWorks: "无", projectTypes: ["产业订单"], resources: [] } },
+  { id: "260910004", formType: "opc", direction: "上海OPC社区", submittedAt: "2026-09-10 15:48", review: "审核拒绝", reviewer: "演示审核员", reviewedAt: "2026-09-10 16:10", rejectReason: "申请资料不完整", reviewNote: "请补充可评估的核心能力介绍后重新申请。", fields: { identity: "创作团队 / 企业", company: "青岸影像团队（演示）", contact: "周小言", phone: "13800000004", wechat: "demo_qingan", creditCode: "DEMO-示例代码", teamSize: "5", capability: "正在组建 AI 内容团队。", portfolioLink: "", portfolioFile: "", expertise: ["教育培训"], projectTypes: [], resources: [], physicalSpace: "否，仅线上参与生态" } },
+  { id: "260910005", formType: "opc", direction: "", submittedAt: "2026-09-10 13:02", review: "待审核", fields: { identity: "个人创作者", name: "叶小川（演示）", phone: "13800000005", wechat: "demo_ye", bio: "数字媒体艺术毕业，计划参加短剧项目。", opcRegistration: "暂不需要，以个人身份参与", plannedTeamSize: "1人（独立个人创作）", physicalSpace: "否，仅线上参与生态", expertise: ["精品剧"], hasWorks: "有", portfolioLink: "", portfolioFile: "", projectTypes: [], resources: ["订单对接"] } },
+  { id: "260909006", formType: "opc", direction: "深圳OPC社区", submittedAt: "2026-09-09 11:20", review: "待审核", fields: { identity: "创作团队 / 企业", company: "南风内容工作室（演示）", contact: "韩小宁", phone: "13800000006", wechat: "demo_nanfeng", creditCode: "DEMO-示例代码", teamSize: "12", capability: "聚焦 AI 仿真人剧制作与海外发行。", portfolioLink: "", portfolioFile: "发行作品目录（演示）.pdf", expertise: ["AI仿真人剧", "发行"], projectTypes: ["产业订单", "赛事创作"], resources: ["发行推广"], physicalSpace: "是", workstations: "" } },
+  { id: "260911007", formType: "drama", direction: "《山海有信》文旅短剧", submittedAt: "2026-09-11 10:08", fields: { entityType: "地方文旅/事业单位", entityName: "山海文旅中心（演示）", contact: "赵小宁", phone: "13800000007", email: "demo-tourism@example.com", wechat: "demo_tourism", cooperationTypes: ["文旅定制", "城市形象宣传"], region: "浙江省温州市永嘉县", intent: "以本地山水、传统村落为背景，共创城市文旅微短剧。\n希望对接内容策划与联合制作团队。", cases: "往期文旅宣传短片合作（演示说明）" } },
+  { id: "260910008", formType: "drama", direction: "精品内容合作", submittedAt: "2026-09-10 14:30", fields: { entityType: "创作团队", entityName: "纸鸢内容团队（演示）", contact: "方小知", phone: "13800000008", email: "demo-kite@example.com", wechat: "", cooperationTypes: ["非遗主题", "IP联合开发共创"], region: "江苏省苏州市", intent: "围绕传统手艺，开发年轻化非遗主题内容。", cases: "" } },
+  { id: "260911009", formType: "school", direction: "人工智能影视实践专班", submittedAt: "2026-09-11 08:50", fields: { school: "星海传媒学院（演示）", department: "动画与数字艺术学院", contact: "徐老师", position: "实践教学负责人", phone: "13800000009", email: "demo-academy@example.com", wechat: "demo_teacher", cooperationModes: ["共建AI影视项目实践班", "联合开发课程/教学案例库"], studentMajors: "数字媒体艺术，本科大二至大四", studentScale: "120", foundation: "已配备数字影像实验室，希望引入真实产业项目和行业导师。", resources: ["产业项目订单供给", "行业导师进课堂"], attachment: "院系实践教学介绍（演示）.pdf" } },
+  { id: "260909010", formType: "school", direction: "校企合作", submittedAt: "2026-09-09 15:12", fields: { school: "云岭数字艺术学院（演示）", department: "影视创作系", contact: "唐老师", position: "系主任", phone: "13800000010", email: "demo-art@example.com", wechat: "", cooperationModes: ["学生实训实习、团队接单通道"], studentMajors: "", studentScale: "", foundation: "", resources: ["AI智能体/算力资源开放"], attachment: "" } }
 ];
 
 const waterfallRows = [
@@ -56,7 +39,10 @@ const waterfallRows = [
 
 const state = {
   page: location.hash.slice(1) || "applications",
-  applicationType: "OPC社区",
+  applicationType: "opc",
+  applicationFilters: {},
+  applicationPage: 1,
+  applicationPageSize: 5,
   waterfallApplication: "AI漫剧",
   waterfallType: "生态创新中心",
   contentVersion: "国内"
@@ -72,6 +58,9 @@ const modalFooter = document.getElementById("modalFooter");
 const toast = document.getElementById("toast");
 
 function icon(name) { return `<i data-lucide="${name}" aria-hidden="true"></i>`; }
+function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character])); }
+function numbered(value) { return `<span class="prototype-number">${value}</span>`; }
+function valueText(value, fallback = "—") { return value === undefined || value === null || value === "" || (Array.isArray(value) && !value.length) ? fallback : Array.isArray(value) ? value.join("、") : String(value); }
 function refreshIcons() { if (window.lucide) window.lucide.createIcons({ attrs: { "stroke-width": 1.8 } }); }
 function showToast(message) {
   toast.textContent = message;
@@ -124,34 +113,54 @@ function statusTag(value, type) {
 }
 
 function applicationTabs() {
-  const items = ["OPC社区", "精品短剧", "产业空间", "校企合作"];
-  return `<div class="section-tabs">${items.map(item => `<button class="section-tab ${state.applicationType === item ? "active" : ""}" type="button" data-application-type="${item}">${item}</button>`).join("")}</div>`;
+  return `<div class="section-tabs application-tabs" role="tablist" aria-label="申请类型">${numbered(1)}${Object.entries(applicationSchema).map(([key, item]) => `<button class="section-tab ${state.applicationType === key ? "active" : ""}" role="tab" aria-selected="${state.applicationType === key}" type="button" data-application-type="${key}">${item.label}<span class="tab-count">${applicationRows.filter(row => row.formType === key).length}</span></button>`).join("")}</div>`;
+}
+
+function matchingApplications() {
+  const schema = applicationSchema[state.applicationType];
+  return applicationRows.filter(row => row.formType === state.applicationType && schema.filters.every(item => {
+    if (item.control === "date-range") {
+      const day = row.submittedAt.slice(0, 10);
+      return (!state.applicationFilters.startDate || day >= state.applicationFilters.startDate) && (!state.applicationFilters.endDate || day <= state.applicationFilters.endDate);
+    }
+    const query = state.applicationFilters[item.key];
+    if (!query) return true;
+    const value = applicationContract.getValue(row, item.sourceKey);
+    if (item.match === "includes") return Array.isArray(value) && value.includes(query);
+    if (item.match === "exact") return String(value ?? "") === query;
+    return valueText(value, "").toLocaleLowerCase().includes(query.toLocaleLowerCase());
+  })).sort((a, b) => b.submittedAt.localeCompare(a.submittedAt) || b.id.localeCompare(a.id));
+}
+
+function applicationFilterControl(item) {
+  const selected = state.applicationFilters[item.key] || "";
+  if (item.control === "date-range") return `<div class="field-inline application-date-field"><label>提交时间</label><div class="date-range"><input class="control" type="date" name="startDate" aria-label="提交开始日期" value="${escapeHtml(state.applicationFilters.startDate || "")}"><span>至</span><input class="control" type="date" name="endDate" aria-label="提交结束日期" value="${escapeHtml(state.applicationFilters.endDate || "")}"></div></div>`;
+  const id = `filter-${item.key}`;
+  return `<div class="field-inline"><label for="${id}">${item.label}</label>${item.control === "select" ? `<select class="control" id="${id}" name="${item.key}"><option value="">全部</option>${item.options.map(option => `<option value="${escapeHtml(option)}" ${option === selected ? "selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select>` : `<input class="control" id="${id}" name="${item.key}" type="${item.control}" value="${escapeHtml(selected)}" placeholder="${item.control === "tel" ? "完整11位手机号" : `请输入${item.label}`}" ${item.control === "tel" ? 'inputmode="numeric" maxlength="11"' : 'maxlength="100"'}>`}</div>`;
+}
+
+function applicationPagination(total) {
+  const pageCount = Math.max(1, Math.ceil(total / state.applicationPageSize));
+  return `<div class="pagination application-pagination"><span>共 ${total} 条</span><select class="page-size" data-application-page-size aria-label="每页条数">${[5, 10, 20].map(size => `<option value="${size}" ${size === state.applicationPageSize ? "selected" : ""}>${size} 条/页</option>`).join("")}</select><button type="button" data-application-page="${state.applicationPage - 1}" aria-label="上一页" ${state.applicationPage === 1 ? "disabled" : ""}>‹</button>${Array.from({ length: pageCount }, (_, index) => `<button type="button" data-application-page="${index + 1}" class="${state.applicationPage === index + 1 ? "active" : ""}" aria-label="第 ${index + 1} 页">${index + 1}</button>`).join("")}<button type="button" data-application-page="${state.applicationPage + 1}" aria-label="下一页" ${state.applicationPage === pageCount ? "disabled" : ""}>›</button></div>`;
 }
 
 function applicationsPage() {
-  const rows = applicationRows.filter(row => row.type === state.applicationType);
-  const isOpc = state.applicationType === "OPC社区";
-  const filterItems = [
-    inputControl("联系人", "请输入联系人"),
-    inputControl("联系电话", "请输入联系电话", true),
-    `<div class="field-inline date-field"><label>提交时间</label><div class="date-range"><input class="control" type="text" placeholder="开始日期"><span>至</span><input class="control" type="text" placeholder="结束日期"></div></div>`
-  ];
-  if (isOpc) filterItems.push(selectControl("审核状态", ["全部", "待审核", "审核通过", "审核拒绝"], "全部"));
-  const filter = filterItems.join("");
-  const totals = { "OPC社区": 24, "精品短剧": 16, "产业空间": 12, "校企合作": 9 };
-
-  return `${applicationTabs()}
-    ${filterPanel(filter)}
-    <section class="content-card">
-      <div class="table-wrap application-table"><table>
-        <colgroup><col style="width:110px"><col style="width:220px"><col style="width:190px"><col style="width:90px"><col style="width:125px"><col style="width:150px"><col style="width:105px"><col style="width:140px"></colgroup>
-        <thead><tr><th>ID</th><th>申请对象</th><th>团队/公司</th><th>联系人</th><th>联系电话</th><th>提交时间</th><th>审核状态</th><th class="sticky-operation">操作</th></tr></thead>
-        <tbody>${rows.map(row => `<tr>
-          <td>${row.id}</td><td class="text-left ellipsis" title="${row.subject}">${row.subject}</td><td class="text-left ellipsis" title="${row.organization}">${row.organization}</td><td>${row.contact}</td><td>${row.phone}</td><td>${row.submitTime}</td><td>${statusTag(row.review)}</td>
-          <td class="sticky-operation"><div class="operations"><button class="button text" data-action="application-detail" data-id="${row.id}">详情</button>${isOpc && row.review === "待审核" ? `<button class="button text" data-action="application-review" data-id="${row.id}">审核</button>` : ""}</div></td>
-        </tr>`).join("")}</tbody>
-      </table></div>${pagination(totals[state.applicationType])}
-    </section>`;
+  const schema = applicationSchema[state.applicationType];
+  const allRows = matchingApplications();
+  state.applicationPage = Math.min(state.applicationPage, Math.max(1, Math.ceil(allRows.length / state.applicationPageSize)));
+  const rows = allRows.slice((state.applicationPage - 1) * state.applicationPageSize, state.applicationPage * state.applicationPageSize);
+  const isOpc = state.applicationType === "opc";
+  const tableWidth = schema.columns.reduce((sum, item) => sum + item.width, 132);
+  return `<div class="application-page">${applicationTabs()}
+    <form class="content-card filter-card" id="applicationFilters" novalidate><div class="section-heading">${numbered(2)}<h2>筛选项</h2></div><div class="filter-panel application-filter-panel">${schema.filters.map(applicationFilterControl).join("")}</div><p class="filter-error" id="applicationFilterError" role="alert" hidden></p><div class="filter-actions"><button class="button primary" type="submit">${icon("search")}查询</button><button class="button" type="button" data-application-reset>重置</button></div></form>
+    <section class="content-card application-results"><div class="section-heading">${numbered(3)}<h2>${schema.label}申请</h2><span class="result-count">${allRows.length} 条结果</span><span class="demo-note">演示数据 · 未接入官网提交</span></div>
+      <div class="table-wrap application-table" tabindex="0" aria-label="${schema.label}申请列表，可横向滚动"><table style="min-width:${tableWidth}px"><colgroup>${schema.columns.map(item => `<col style="width:${item.width}px">`).join("")}<col style="width:132px"></colgroup>
+      <thead><tr>${schema.columns.map(item => `<th title="${escapeHtml(applicationContract.sourceLabel(item.key, item.source, state.applicationType))}">${item.label}</th>`).join("")}<th class="sticky-operation">${numbered(4)} 操作</th></tr></thead>
+      <tbody>${rows.length ? rows.map(row => `<tr>${schema.columns.map(item => {
+        const value = applicationContract.getValue(row, item.key, item.source);
+        const formatted = item.format === "phone" ? String(value || "").replace(/^(\d{3})\d{4}(\d{4})$/, "$1****$2") : valueText(value);
+        return `<td class="text-left ellipsis" title="${escapeHtml(formatted)}">${item.key === "review" ? statusTag(value) : escapeHtml(formatted)}</td>`;
+      }).join("")}<td class="sticky-operation"><div class="operations"><button class="button text" type="button" data-action="application-detail" data-id="${row.id}" aria-label="查看申请 ${row.id} 详情">详情</button>${isOpc && row.review === "待审核" ? `<button class="button text" type="button" data-action="application-review" data-id="${row.id}" aria-label="审核申请 ${row.id}">审核</button>` : ""}</div></td></tr>`).join("") : `<tr><td colspan="${schema.columns.length + 1}"><div class="empty-state">${icon("search-x")}<strong>暂无匹配的申请</strong><span>请调整筛选条件后重试</span><button class="button text" type="button" data-application-reset>清空筛选</button></div></td></tr>`}</tbody></table></div>${applicationPagination(allRows.length)}</section></div>`;
 }
 
 function contentVersionTabs() {
@@ -172,14 +181,7 @@ function waterfallPage() {
 }
 
 const docs = {
-  applications: `<h2>#页面说明</h2>
-    <ul><li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; AI漫剧官网配置 &gt; 生态创新中心。</li><li><b>使用对象：</b>内容业务、生态合作运营及审核人员。</li><li>通过四个Tab分别管理OPC社区、精品短剧、产业空间及校企合作的前台申请。</li></ul>
-    <h3>#原型说明</h3>
-    <h4>● Tab项</h4><ul><li>页面不设置“全部”Tab，默认进入<code>OPC社区</code>。</li><li>Tab枚举为“OPC社区、精品短剧、产业空间、校企合作”。</li></ul>
-    <h4>○ OPC社区</h4><ul><li><b>筛选：</b>联系人、联系电话、提交时间、审核状态。</li><li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li><li><b>操作：</b>详情；待审核记录额外展示审核。</li><li>审核支持“审核通过、审核拒绝”；拒绝时必填拒绝原因。</li></ul>
-    <h4>○ 精品短剧 / 产业空间 / 校企合作</h4><ul><li><b>筛选：</b>联系人、联系电话、提交时间。</li><li><b>列表：</b>ID、申请对象、团队/公司、联系人、联系电话、提交时间、审核状态。</li><li><b>操作：</b>仅详情，不提供审核入口。</li><li>审核状态统一展示“无需审核”。</li></ul>
-    <h4>○ 通用规则</h4><ul><li>联系电话在列表中默认脱敏，进入详情且具备权限后才展示完整号码。</li><li>提交时间支持开始日期与结束日期组合查询。</li><li>详情展示申请人本次提交的完整资料、来源入口及隐私授权状态。</li></ul>
-    <h4>○ 数据与权限</h4><ul><li>申请数据写入后台数据库，不以浏览器缓存作为正式数据源。</li><li>详情和审核分开配置权限；手机号等个人信息应脱敏展示、加密存储。</li><li>记录查看、审核等关键操作日志，便于问题追溯。</li></ul>`,
+  applications: window.APPLICATION_PRD_HTML,
   waterfall: `<h2>#页面说明</h2>
     <ul><li><b>菜单路径：</b>绿台 &gt; 产品运营 &gt; 内容运营 &gt; 瀑布流轮播图。</li><li><b>使用对象：</b>内容业务及产品运营。</li><li>本次在现有页面增加生态创新中心Banner配置能力，不新增独立Banner菜单。</li></ul>
     <h3>#原型说明</h3>
@@ -193,6 +195,7 @@ function render() {
   if (!pages[state.page]) state.page = "applications";
   renderNav();
   prototype.innerHTML = state.page === "applications" ? applicationsPage() : waterfallPage();
+  document.body.classList.toggle("application-view", state.page === "applications");
   docsPanel.innerHTML = docs[state.page];
   bindInteractions();
   refreshIcons();
@@ -207,8 +210,40 @@ function bindInteractions() {
   }));
   document.querySelectorAll("[data-application-type]").forEach(button => button.addEventListener("click", () => {
     state.applicationType = button.dataset.applicationType;
+    state.applicationFilters = {};
+    state.applicationPage = 1;
     render();
   }));
+  const applicationFilters = document.getElementById("applicationFilters");
+  if (applicationFilters) applicationFilters.addEventListener("submit", event => {
+    event.preventDefault();
+    const values = Object.fromEntries(Array.from(new FormData(applicationFilters), ([key, value]) => [key, String(value).trim()]));
+    const error = document.getElementById("applicationFilterError");
+    let message = "";
+    if (values.phone && !/^1[3-9]\d{9}$/.test(values.phone)) message = "请输入完整的 11 位中国大陆手机号后查询。";
+    if (values.startDate && values.endDate && values.startDate > values.endDate) message = "开始日期不能晚于结束日期，请调整后查询。";
+    if (message) { error.hidden = false; error.textContent = message; return; }
+    state.applicationFilters = values;
+    state.applicationPage = 1;
+    render();
+    showToast(`查询完成，共 ${matchingApplications().length} 条结果`);
+  });
+  document.querySelectorAll("[data-application-reset]").forEach(button => button.addEventListener("click", () => {
+    state.applicationFilters = {};
+    state.applicationPage = 1;
+    render();
+    showToast("筛选条件已重置");
+  }));
+  document.querySelectorAll("[data-application-page]").forEach(button => button.addEventListener("click", () => {
+    state.applicationPage = Number(button.dataset.applicationPage);
+    render();
+  }));
+  const applicationPageSize = document.querySelector("[data-application-page-size]");
+  if (applicationPageSize) applicationPageSize.addEventListener("change", () => {
+    state.applicationPageSize = Number(applicationPageSize.value);
+    state.applicationPage = 1;
+    render();
+  });
   const waterfallType = document.querySelector("[data-waterfall-type]");
   if (waterfallType) waterfallType.addEventListener("change", () => {
     state.waterfallType = waterfallType.value;
@@ -247,43 +282,79 @@ function handleAction(action, id) {
 }
 
 function displayItem(label, value, full = false, html = false) {
-  return `<div class="detail-field ${full ? "full" : ""}"><span>${label}</span><strong>${html ? value : String(value)}</strong></div>`;
+  return `<div class="detail-field ${full ? "full" : ""}"><span>${escapeHtml(label)}</span><strong>${html ? value : escapeHtml(valueText(value, "未填写"))}</strong></div>`;
 }
 
 function openApplicationDetail(row) {
-  const isOpc = row.type === "OPC社区";
-  const body = `<div class="detail-status-line"><div><span>申请ID</span><strong>${row.id}</strong></div><div>${statusTag(row.review)}</div></div>
-    <section class="detail-section"><h3>基础信息</h3><div class="detail-grid">
-      ${displayItem("申请类型", row.type)}${displayItem("申请对象", row.subject)}${displayItem("团队/公司", row.organization)}${displayItem("所在城市", row.city)}
-      ${displayItem("联系人", row.contact)}${displayItem("联系电话", row.phone.replace("****", "2865"))}${displayItem("团队/承载规模", row.teamSize)}${displayItem("意向合作模式", row.model)}
-      ${displayItem("业务范围 / 合作诉求", row.scope, true)}${displayItem("代表作品 / 附件", `<a class="detail-link" href="#">${row.portfolio}</a>`, true, true)}
-    </div></section>
-    <section class="detail-section"><h3>${isOpc ? "提交与审核" : "提交信息"}</h3><div class="detail-grid">
-      ${displayItem("提交入口", row.source)}${displayItem("提交时间", row.submitTime)}${displayItem("隐私授权", row.consent)}${isOpc ? displayItem("审核人", row.reviewer) : ""}
-    </div></section>`;
-  openModal("生态创新中心申请详情", body, `<button class="button" data-modal-cancel>关闭</button>${isOpc && row.review === "待审核" ? `<button class="button primary" data-detail-review="${row.id}">审核</button>` : ""}`, "extra-wide");
+  if (!row) return;
+  const isOpc = row.formType === "opc";
+  const schema = applicationSchema[row.formType];
+  const fields = applicationContract.getFields(row).filter(item => applicationContract.isApplicable(row, item));
+  const groups = [...new Set(fields.map(item => item.group))];
+  const detailGroups = groups.map(group => `<section class="detail-section"><h3>${group}<small>官网填写</small></h3><div class="detail-grid">${fields.filter(item => item.group === group).map(item => {
+    const value = row.fields[item.key];
+    let html = escapeHtml(valueText(value, "未填写"));
+    if (item.control === "附件" && value) html = `${escapeHtml(value)}<small class="attachment-note">演示文件名 · 未接入文件存储</small>`;
+    if (["portfolioLink", "cases"].includes(item.key) && typeof value === "string" && /^https?:\/\//i.test(value)) html = `<a class="detail-link" href="${escapeHtml(value)}" target="_blank" rel="noopener noreferrer">${escapeHtml(value)} ↗</a>`;
+    return `<div class="detail-field ${["多行文本", "多选", "附件"].includes(item.control) || ["portfolioLink", "cases"].includes(item.key) ? "full" : ""}" data-source-field="${item.key}"><span>${item.label}</span><strong>${html}</strong></div>`;
+  }).join("")}</div></section>`).join("");
+  const reviewDetails = isOpc ? `<section class="detail-section"><h3>审核记录<small>运营填写</small></h3><div class="detail-grid">${displayItem("审核状态", row.review)}${displayItem("审核人", row.reviewer || "尚未审核")}${displayItem("审核时间", row.reviewedAt || "尚未审核")}${displayItem("拒绝原因", row.review === "审核拒绝" ? row.rejectReason : "不适用")}${displayItem("审核备注", row.review === "待审核" ? "尚未审核" : row.reviewNote, true)}</div></section>` : "";
+  const body = `<div class="detail-status-line"><div><span>申请 ID</span><strong>${row.id}</strong></div><div>${isOpc ? statusTag(row.review) : `<span>${schema.label}</span>`}</div></div><p class="application-detail-note">以下均为演示资料，非官网真实提交。${isOpc ? "未触发的条件字段不展示；来源社区不等于申请人所在地。" : "仅展示本类申请字段，不设置审核流程。"}</p>
+    ${isOpc ? `<section class="detail-section"><h3>申请身份<small>官网填写</small></h3><div class="detail-grid">${displayItem("申请身份", row.fields.identity)}</div></section>` : ""}${detailGroups}
+    <section class="detail-section"><h3>来源与提交信息<small>自动带入 / 系统生成</small></h3><div class="detail-grid">${displayItem("申请类型", schema.label)}${displayItem("提交时间", row.submittedAt)}${displayItem("来源对象 / 合作方向", row.direction || "未提供", true)}</div></section>${reviewDetails}`;
+  openModal(`${schema.label}申请详情`, body, `<button class="button" data-modal-cancel>关闭</button>${isOpc && row.review === "待审核" ? `<button class="button primary" data-detail-review="${row.id}">审核</button>` : ""}`, "extra-wide application-detail-modal");
   const reviewButton = modalFooter.querySelector("[data-detail-review]");
   if (reviewButton) reviewButton.addEventListener("click", () => openReview(row));
 }
 
 function openReview(row) {
-  if (row.type !== "OPC社区") return;
-  const body = `<div class="review-subject"><span>${row.type}</span><strong>${row.subject}</strong><small>申请ID：${row.id} · ${row.organization}</small></div>
+  if (!row || row.formType !== "opc" || row.review !== "待审核") return;
+  const subject = applicationContract.getValue(row, applicationSchema.opc.columns[2].key);
+  const body = `<div class="review-subject"><span>OPC社区</span><strong>${escapeHtml(subject)}</strong><small>申请 ID：${row.id} · ${escapeHtml(row.fields.identity)}</small></div>
     <div class="form-grid single-form">
-      <div class="form-item full"><label class="required">审核结果</label><div class="radio-row"><label><input type="radio" name="reviewResult" value="审核通过" checked> 审核通过</label><label><input type="radio" name="reviewResult" value="审核拒绝"> 审核拒绝</label></div></div>
-      <div class="form-item full" data-reject-field hidden><label class="required">拒绝原因</label><select class="control"><option>申请资料不完整</option><option>联系方式无效</option><option>不符合当前合作范围</option><option>其他</option></select></div>
-      <div class="form-item full"><label>审核备注</label><textarea class="control" maxlength="500" placeholder="请输入审核备注，最多500字"></textarea><p class="hint">审核记录保存后不可删除</p></div>
+      <fieldset class="form-item full review-result"><legend class="required">审核结果</legend><div class="radio-row"><label><input type="radio" name="reviewResult" value="审核通过" checked> 审核通过</label><label><input type="radio" name="reviewResult" value="审核拒绝"> 审核拒绝</label></div></fieldset>
+      <div class="form-item full" data-reject-field hidden><label for="rejectReason" class="required">拒绝原因</label><select class="control" id="rejectReason"><option value="">请选择拒绝原因</option><option>申请资料不完整</option><option>联系方式无效</option><option>不符合当前合作范围</option><option>其他</option></select></div>
+      <div class="form-item full"><label for="reviewNote">审核备注</label><textarea class="control" id="reviewNote" maxlength="500" placeholder="请输入审核备注；拒绝原因选“其他”时必填，最多500字"></textarea><p class="hint">仅保存在当前原型页面，刷新后恢复演示样例；不发送真实审核通知。</p></div>
+      <p class="review-error" role="alert" data-review-error hidden></p>
     </div>`;
-  openModal("审核OPC社区申请", body, `<button class="button" data-modal-cancel>取消</button><button class="button primary" data-review-submit>确认审核</button>`, "wide");
+  openModal("审核 OPC 社区申请", body, `<button class="button" data-modal-cancel>取消</button><button class="button primary" data-review-submit>确认审核</button>`, "wide");
   const rejectField = modalBody.querySelector("[data-reject-field]");
-  modalBody.querySelectorAll("input[name=reviewResult]").forEach(input => input.addEventListener("change", () => { rejectField.hidden = input.value !== "审核拒绝"; }));
+  modalBody.querySelectorAll("input[name=reviewResult]").forEach(input => input.addEventListener("change", () => {
+    rejectField.hidden = modalBody.querySelector("input[name=reviewResult]:checked").value !== "审核拒绝";
+    modalBody.querySelector("[data-review-error]").hidden = true;
+  }));
   modalFooter.querySelector("[data-review-submit]").addEventListener("click", () => {
     const result = modalBody.querySelector("input[name=reviewResult]:checked").value;
-    row.review = result;
-    row.reviewer = "洪娟";
-    closeModal();
-    render();
-    showToast(`申请已${result === "审核通过" ? "通过" : "拒绝"}`);
+    const reason = result === "审核拒绝" ? modalBody.querySelector("#rejectReason").value : "";
+    const note = modalBody.querySelector("#reviewNote").value.trim();
+    const error = modalBody.querySelector("[data-review-error]");
+    if (result === "审核拒绝" && (!reason || (reason === "其他" && !note))) {
+      error.hidden = false;
+      error.textContent = !reason ? "请选择拒绝原因。" : "拒绝原因选择“其他”时，请填写审核备注。";
+      return;
+    }
+    const confirmation = document.createElement("div");
+    confirmation.className = "review-confirmation";
+    confirmation.innerHTML = `<p>确认对 <strong>${escapeHtml(subject)}</strong> 作出「${result}」处理？</p><p>${result === "审核拒绝" ? `拒绝原因：${escapeHtml(reason)}` : "审核通过后，该演示记录不再展示审核入口。"}</p><p class="hint">仅当前页面演示，不影响真实申请。</p><div><button class="button" type="button" data-review-back>返回修改</button><button class="button primary" type="button" data-review-final>确认并保存</button></div>`;
+    modalBody.append(confirmation);
+    modalBody.querySelector(".form-grid").hidden = true;
+    modalFooter.hidden = true;
+    confirmation.querySelector("[data-review-back]").addEventListener("click", () => {
+      confirmation.remove();
+      modalBody.querySelector(".form-grid").hidden = false;
+      modalFooter.hidden = false;
+    });
+    confirmation.querySelector("[data-review-final]").addEventListener("click", () => {
+      row.review = result;
+      row.reviewer = "当前演示审核员";
+      const now = new Date();
+      row.reviewedAt = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      row.rejectReason = reason;
+      row.reviewNote = note;
+      closeModal();
+      render();
+      showToast("审核记录已保存，仅本地演示");
+    });
   });
 }
 
@@ -318,6 +389,7 @@ function openModal(title, body, footer, size = "") {
   modalTitle.textContent = title;
   modalBody.innerHTML = body;
   modalFooter.innerHTML = footer;
+  modalFooter.hidden = false;
   modalLayer.hidden = false;
   document.body.style.overflow = "hidden";
   modalFooter.querySelectorAll("[data-modal-cancel]").forEach(button => button.addEventListener("click", closeModal));
@@ -333,6 +405,7 @@ function confirmModal(title, copy, kind, onConfirm) {
 
 function closeModal() {
   modalLayer.hidden = true;
+  modalFooter.hidden = false;
   document.body.style.overflow = "";
 }
 
