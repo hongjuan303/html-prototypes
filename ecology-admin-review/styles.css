@@ -231,7 +231,7 @@ th.sticky-operation { z-index: 3; background: var(--head); }
 .application-table .empty-state strong { font-size:14px; font-weight:500; }
 .application-pagination { color:#687481; }
 .application-pagination button:disabled { color:#adb7c2; border-color:#e3e8ed; background:#f7f9fb; cursor:not-allowed; }
-.application-detail-note { margin:14px 0 0; color:#7a5a32; font-size:13px; line-height:1.7; }
+.application-detail-note { margin:0 0 8px; color:#7a5a32; font-size:13px; line-height:1.7; }
 .application-detail-modal .detail-section h3 { display:flex; align-items:center; gap:10px; }
 .application-detail-modal .detail-section h3 small { color:#758292; font-size:12px; font-weight:400; }
 .application-detail-modal .detail-field { grid-template-columns:160px minmax(0,1fr); padding:14px 12px; }

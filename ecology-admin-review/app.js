@@ -281,27 +281,23 @@ function handleAction(action, id) {
   if (action === "sort") return showToast("已进入拖拽排序模式");
 }
 
-function displayItem(label, value, full = false, html = false) {
-  return `<div class="detail-field ${full ? "full" : ""}"><span>${escapeHtml(label)}</span><strong>${html ? value : escapeHtml(valueText(value, "未填写"))}</strong></div>`;
-}
-
 function openApplicationDetail(row) {
   if (!row) return;
   const isOpc = row.formType === "opc";
   const schema = applicationSchema[row.formType];
-  const fields = applicationContract.getFields(row).filter(item => applicationContract.isApplicable(row, item));
-  const groups = [...new Set(fields.map(item => item.group))];
-  const detailGroups = groups.map(group => `<section class="detail-section"><h3>${group}<small>官网填写</small></h3><div class="detail-grid">${fields.filter(item => item.group === group).map(item => {
+  const fields = [
+    ...(isOpc ? [{ key: "identity", label: "申请身份", control: "单选" }] : []),
+    ...applicationContract.getFields(row).filter(item => applicationContract.isApplicable(row, item))
+  ];
+  const detailFields = fields.map(item => {
     const value = row.fields[item.key];
     let html = escapeHtml(valueText(value, "未填写"));
     if (item.control === "附件" && value) html = `${escapeHtml(value)}<small class="attachment-note">演示文件名 · 未接入文件存储</small>`;
     if (["portfolioLink", "cases"].includes(item.key) && typeof value === "string" && /^https?:\/\//i.test(value)) html = `<a class="detail-link" href="${escapeHtml(value)}" target="_blank" rel="noopener noreferrer">${escapeHtml(value)} ↗</a>`;
-    return `<div class="detail-field ${["多行文本", "多选", "附件"].includes(item.control) || ["portfolioLink", "cases"].includes(item.key) ? "full" : ""}" data-source-field="${item.key}"><span>${item.label}</span><strong>${html}</strong></div>`;
-  }).join("")}</div></section>`).join("");
-  const reviewDetails = isOpc ? `<section class="detail-section"><h3>审核记录<small>运营填写</small></h3><div class="detail-grid">${displayItem("审核状态", row.review)}${displayItem("审核人", row.reviewer || "尚未审核")}${displayItem("审核时间", row.reviewedAt || "尚未审核")}${displayItem("拒绝原因", row.review === "审核拒绝" ? row.rejectReason : "不适用")}${displayItem("审核备注", row.review === "待审核" ? "尚未审核" : row.reviewNote, true)}</div></section>` : "";
-  const body = `<div class="detail-status-line"><div><span>申请 ID</span><strong>${row.id}</strong></div><div>${isOpc ? statusTag(row.review) : `<span>${schema.label}</span>`}</div></div><p class="application-detail-note">以下均为演示资料，非官网真实提交。${isOpc ? "未触发的条件字段不展示；来源社区不等于申请人所在地。" : "仅展示本类申请字段，不设置审核流程。"}</p>
-    ${isOpc ? `<section class="detail-section"><h3>申请身份<small>官网填写</small></h3><div class="detail-grid">${displayItem("申请身份", row.fields.identity)}</div></section>` : ""}${detailGroups}
-    <section class="detail-section"><h3>来源与提交信息<small>自动带入 / 系统生成</small></h3><div class="detail-grid">${displayItem("申请类型", schema.label)}${displayItem("提交时间", row.submittedAt)}${displayItem("来源对象 / 合作方向", row.direction || "未提供", true)}</div></section>${reviewDetails}`;
+    const full = ["多行文本", "多选", "附件"].includes(item.control) || ["identity", "opcRegistration", "physicalSpace", "portfolioLink", "cases"].includes(item.key);
+    return `<div class="detail-field ${full ? "full" : ""}" data-source-field="${item.key}"><span>${escapeHtml(item.label)}</span><strong>${html}</strong></div>`;
+  }).join("");
+  const body = `<p class="application-detail-note">演示资料，仅展示官网申请内容。</p><div class="detail-grid">${detailFields}</div>`;
   openModal(`${schema.label}申请详情`, body, `<button class="button" data-modal-cancel>关闭</button>${isOpc && row.review === "待审核" ? `<button class="button primary" data-detail-review="${row.id}">审核</button>` : ""}`, "extra-wide application-detail-modal");
   const reviewButton = modalFooter.querySelector("[data-detail-review]");
   if (reviewButton) reviewButton.addEventListener("click", () => openReview(row));
