@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#147d64">
+  <meta name="description" content="容量万相广告创作工作台：原片混剪、AI 解说与批量成片交互演示。">
+  <title>智能混剪 · 容量万相</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23147d64'/%3E%3Cpath d='M8 10h7v7H8zm9 5h7v7h-7zM17 7h7v6h-7zM8 19h7v6H8z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css?v=20260914-green">
+</head>
+<body>
+  <aside class="sidebar" aria-label="主导航">
+    <a class="brand" href="./" aria-label="容量万相广告创作工作台">
+      <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect width="34" height="34" rx="10" fill="#147d64"/><path d="M8 10h8v8H8V10Zm10-3h8v8h-8V7ZM8 20h8v7H8v-7Zm10-3h8v8h-8v-8Z" fill="white"/><path d="M18 17h8v3h-8z" fill="#bce7d5"/></svg>
+      <span><strong>容量万相</strong><small>广告创作工作台</small></span>
+    </a>
+    <div class="nav-caption">创作空间</div>
+    <nav class="side-nav">
+      <button class="nav-item active" data-nav="create" type="button"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="4"/><path d="M10 6.5v7M6.5 10h7"/></svg><span>新建混剪</span><span class="nav-shortcut">＋</span></button>
+      <button class="nav-item" data-nav="assets" type="button"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2.5 5.5a2 2 0 0 1 2-2h3l2 2h6a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-9Z"/><path d="M8.5 8.5 12 11l-3.5 2.5v-5Z"/></svg><span>剧目素材</span></button>
+      <button class="nav-item" data-nav="tasks" type="button"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="3"/><path d="m7.5 6.5 6 3.5-6 3.5v-7Z"/></svg><span>任务与成片</span></button>
+      <button class="nav-item" data-nav="credits" type="button"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="2.5" y="4" width="15" height="12" rx="3"/><path d="M3 7.5h14M12 11.5h2.5"/></svg><span>积分与账单</span></button>
+    </nav>
+    <div class="side-bottom">
+      <button class="demo-tools" type="button" data-action="demo-tools"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m8 3 4 0 1 3 3 1v4l-3 1-1 4H8l-1-4-3-1V7l3-1 1-3Z"/><circle cx="10" cy="9.5" r="2.5"/></svg>演示设置<span>⌘</span></button>
+      <div class="user-profile"><div class="avatar">陈</div><div><strong>陈剪辑</strong><span>内容创作团队</span></div><span class="user-more" aria-hidden="true">···</span></div>
+    </div>
+  </aside>
+  <div class="shell">
+    <div class="demo-bar"><span class="demo-dot" aria-hidden="true"></span>交互演示 · 示例素材与计费，不调用真实 AI</div>
+    <header class="topbar">
+      <div id="breadcrumb" class="breadcrumb">广告创作 <span>/</span> <strong>新建混剪</strong></div>
+      <button class="wallet-button" data-nav="credits" type="button"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m9 2 6 3.5v7L9 16l-6-3.5v-7L9 2Z"/><path d="m9 5 3 4-3 4-3-4 3-4Z"/></svg><span id="walletTop">可用积分</span><span class="wallet-arrow">›</span></button>
+    </header>
+    <main id="app"></main>
+  </div>
+  <footer id="actionBar" class="action-bar" aria-label="生成操作"></footer>
+  <dialog id="dialog" aria-labelledby="dialogTitle">
+    <div class="dialog-head"><h2 id="dialogTitle"></h2><button id="closeDialog" class="icon-btn" type="button" aria-label="关闭弹窗">×</button></div>
+    <div id="dialogBody"></div>
+    <div class="dialog-actions" id="dialogActions"></div>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="./assets/jszip.min.js"></script>
+  <script type="module" src="./app.js?v=20260914-green2"></script>
+</body>
+</html>
