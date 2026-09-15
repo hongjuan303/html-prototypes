@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>容量万相 · 原型与说明并排评审</title>
+  <style>
+    :root{--orange:#F28C18;--ink:#273545;--line:#dce3eb;--muted:#667587}
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);background:#edf1f5;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px}button,a{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+    .review-toolbar{height:68px;display:flex;align-items:center;gap:24px;padding:0 24px;background:#fff;border-bottom:1px solid var(--line)}.brand{flex:none;line-height:1.5;font-size:15px;font-weight:650}.brand small{display:block;font-size:11px;letter-spacing:.3px;color:var(--muted);font-weight:400}.tabs{display:flex;align-items:center;gap:3px;padding:3px;background:#f2f4f7;border:1px solid #e6eaf0;border-radius:6px}.tabs button{padding:7px 17px;white-space:nowrap;border:0;background:transparent;border-radius:4px;color:#536174;font-size:13px}.tabs button[aria-pressed="true"]{color:#a95100;background:#fff4e5;box-shadow:0 1px 3px #25344d10}.actions{margin-left:auto;display:flex;gap:10px;align-items:center}.actions a{white-space:nowrap;padding:7px 12px;border:1px solid var(--line);border-radius:4px;font-size:12px}.actions a:hover{background:#f6f8fa}.preview-label{font-size:12px;color:var(--muted);white-space:nowrap}.preview-label::before{display:inline-block;content:"";height:6px;width:6px;margin-right:7px;background:var(--orange);border-radius:50%}
+    .guidebar{height:46px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 24px;border-bottom:1px solid #dde4ec;background:#f9fafc}.guidebar p{font-size:12px;color:#566476;line-height:1.5;margin:0}.guidebar strong{font-weight:500;color:#35465a}.guide-actions{display:flex;gap:8px;flex:none}.guide-actions button{border:0;background:transparent;color:#976019;font-size:12px;padding:5px 8px;white-space:nowrap}.guide-actions button:hover{background:#fff0dc;border-radius:4px}
+    .review-scroll{height:calc(100dvh - 114px);overflow:auto;overscroll-behavior-x:contain;scrollbar-color:#b6c2d0 #e5ebf2;scrollbar-width:auto}.review-stage{display:flex;gap:24px;width:max-content;min-height:100%;padding:20px 24px 22px;align-items:stretch}.board{display:flex;flex-direction:column;flex-shrink:0;background:#fff;border:1px solid #d5dee8;border-radius:5px;overflow:hidden;box-shadow:0 2px 9px #263e5808}.prototype-board{width:1282px}.prd-board{width:682px}.board-title{height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line);font-size:12px;color:#5c6a7c;background:#fff}.board-title strong{font-weight:550;color:#34465b}.board-title .dimension{font-size:11px;color:#7b8898}iframe{display:block;border:0;background:#fff;flex:1;min-height:520px;height:calc(100dvh - 212px)}#prototypeFrame{width:1280px}#prdFrame{width:680px}.chapter-title{color:#b96300!important}.sync-indicator{width:6px;height:6px;display:inline-block;background:var(--orange);border-radius:50%;margin-right:6px}
+    @media(max-width:1000px){.review-toolbar{gap:14px;padding:0 16px}.brand{font-size:14px}.preview-label{display:none}.actions{gap:6px}.tabs button{padding:7px 13px}.guidebar{padding:0 16px}.review-stage{padding-left:16px;padding-right:16px}}
+    @media(max-width:760px){.review-toolbar{height:108px;align-content:center;justify-content:space-between;flex-wrap:wrap;gap:9px 12px;padding:10px 16px}.brand{width:calc(100% - 250px)}.actions{order:3;margin:0;width:100%}.actions a{padding:5px 10px}.tabs button{padding:6px 11px}.guidebar{height:63px;align-items:flex-start;padding-top:8px;padding-bottom:7px;flex-direction:column;gap:3px}.guidebar p{font-size:11px}.guide-actions button{padding:2px 6px}.review-scroll{height:calc(100dvh - 171px)}iframe{height:calc(100dvh - 269px)}}
+    /* Keep the QA desktop viewport intact inside the review canvas. */
+    iframe{min-height:800px}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <header class="review-toolbar">
+    <div class="brand">容量万相 <small>9 / 14 需求 · 并排评审</small></div>
+    <nav class="tabs" aria-label="原型页面"><button type="button" id="websiteTab" aria-pressed="true">官网原型</button><button type="button" id="adminTab" aria-pressed="false">绿台配置</button></nav>
+  </header>
+  <div class="guidebar"><p><strong>左侧原型，右侧对应说明。</strong>画板保持原尺寸，可横向滚动查看。</p><div class="guide-actions"><button id="showPrototype" type="button">← 返回原型</button><button id="showPrd" type="button">向右查看说明 →</button></div></div>
+  <main class="review-scroll" id="reviewScroll" tabindex="0" aria-label="原型及需求说明，支持横向滚动">
+    <div class="review-stage">
+      <section class="board prototype-board" aria-labelledby="prototypeTitle"><div class="board-title"><strong id="prototypeTitle">官网原型</strong><span class="dimension">1280 px · 原尺寸画板</span></div><iframe id="prototypeFrame" title="容量万相可交互原型" src="about:blank"></iframe></section>
+      <section class="board prd-board" id="prdBoard" aria-labelledby="prdTitle"><div class="board-title"><strong class="chapter-title" id="prdTitle"><span class="sync-indicator" aria-hidden="true"></span><span id="chapterName">首页创作入口文案</span></strong><span class="dimension">对应 PRD · 自动同步</span></div><iframe id="prdFrame" title="当前原型对应需求说明" src="prd.html?embedded=1"></iframe></section>
+    </div>
+  </main>
+  <script>
+    const prototypeFrame=document.getElementById('prototypeFrame');
+    const prdFrame=document.getElementById('prdFrame');
+    const reviewScroll=document.getElementById('reviewScroll');
+    const chapterNames={home:'首页创作入口文案',overseas:'海外入口文案',login:'审核制登录',library:'内容库 · 查看更多',admin:'绿台 · 登录用户管理'};
+    const routeSections={home:'home',overseas:'overseas',login:'login',novels:'library',scripts:'library',library:'library',admin:'admin'};
+    const savedPrototypeUrls={website:new URL('index.html',location.href).href,admin:new URL('admin.html',location.href).href};
+    // Carry the preview revision into both canvases, so updated annotations are visible immediately.
+    const previewRevision=new URLSearchParams(location.search).get('refresh');
+    if(previewRevision){
+      for(const view of Object.keys(savedPrototypeUrls)){const url=new URL(savedPrototypeUrls[view]);url.searchParams.set('refresh',previewRevision);savedPrototypeUrls[view]=url.href;}
+      prdFrame.src='prd.html?embedded=1&refresh='+encodeURIComponent(previewRevision);
+    }
+    let currentView='';
+    let currentSection='home';
+    let unbindFrameEvents=null;
+
+    function isAllowedSection(section){return typeof section==='string'&&Object.hasOwn(chapterNames,section);}
+    function readPrototypeUrl(){
+      try{const url=new URL(prototypeFrame.contentWindow.location.href);return url.origin===location.origin&&url.href!=='about:blank'?url:null;}
+      catch{return null;}
+    }
+    function rememberPrototypeUrl(){
+      const url=readPrototypeUrl();
+      if(!url)return;
+      if(url.pathname.endsWith('/admin.html'))savedPrototypeUrls.admin=url.href;
+      else if(url.pathname.endsWith('/index.html')||url.pathname.endsWith('/'))savedPrototypeUrls.website=url.href;
+    }
+    function showViewState(view){
+      currentView=view;
+      const isAdmin=view==='admin';
+      document.getElementById('websiteTab').setAttribute('aria-pressed',String(!isAdmin));
+      document.getElementById('adminTab').setAttribute('aria-pressed',String(isAdmin));
+      document.getElementById('prototypeTitle').textContent=isAdmin?'绿台配置 · 登录用户管理':'官网原型';
+      prototypeFrame.title=isAdmin?'绿台登录用户管理原型':'容量万相官网交互原型';
+    }
+    function setSection(section){
+      if(!isAllowedSection(section))return;
+      currentSection=section;
+      // Let the embedded PRD replace its URL without anchor navigation, which
+      // would otherwise scroll the parent review canvas to the right iframe.
+      prdFrame.contentWindow.postMessage({type:'wanxiang-prd-display',section},location.origin);
+      document.getElementById('chapterName').textContent=chapterNames[section];
+    }
+    prdFrame.addEventListener('load',()=>setSection(currentSection));
+    function syncFromPrototypeLocation(){
+      const url=readPrototypeUrl();
+      if(!url)return;
+      rememberPrototypeUrl();
+      if(url.pathname.endsWith('/admin.html')){showViewState('admin');return setSection('admin');}
+      if(!url.pathname.endsWith('/index.html')&&!url.pathname.endsWith('/'))return;
+      showViewState('website');
+      const route=url.hash.slice(1);
+      if(!route)return setSection('home');
+      if(Object.hasOwn(routeSections,route))setSection(routeSections[route]);
+    }
+    function selectView(view,{updateUrl=true}={}){
+      if(!Object.hasOwn(savedPrototypeUrls,view)||currentView===view)return;
+      rememberPrototypeUrl();
+      const isAdmin=view==='admin';
+      showViewState(view);
+      if(unbindFrameEvents){unbindFrameEvents();unbindFrameEvents=null;}
+      prototypeFrame.src=savedPrototypeUrls[view];
+      setSection(isAdmin?'admin':'home');
+      if(updateUrl){const url=new URL(location.href);if(isAdmin)url.searchParams.set('view','admin');else url.searchParams.delete('view');history.replaceState(null,'',url);}
+    }
+    prototypeFrame.addEventListener('load',()=>{
+      if(unbindFrameEvents){unbindFrameEvents();unbindFrameEvents=null;}
+      const url=readPrototypeUrl();
+      if(!url)return;
+      syncFromPrototypeLocation();
+      const child=prototypeFrame.contentWindow;
+      child.addEventListener('hashchange',syncFromPrototypeLocation);
+      child.addEventListener('popstate',syncFromPrototypeLocation);
+      unbindFrameEvents=()=>{try{child.removeEventListener('hashchange',syncFromPrototypeLocation);child.removeEventListener('popstate',syncFromPrototypeLocation);}catch{}};
+    });
+    window.addEventListener('message',event=>{
+      if(event.source!==prototypeFrame.contentWindow||event.origin!==location.origin)return;
+      const data=event.data;
+      if(!data||typeof data!=='object'||data.type!=='wanxiang-prd-section'||!isAllowedSection(data.section))return;
+      setSection(data.section);
+      rememberPrototypeUrl();
+    });
+    document.getElementById('websiteTab').addEventListener('click',()=>selectView('website'));
+    document.getElementById('adminTab').addEventListener('click',()=>selectView('admin'));
+    const scrollBehavior=()=>matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth';
+    document.getElementById('showPrototype').addEventListener('click',()=>reviewScroll.scrollTo({left:0,behavior:scrollBehavior()}));
+    document.getElementById('showPrd').addEventListener('click',()=>reviewScroll.scrollTo({left:document.getElementById('prdBoard').offsetLeft-24,behavior:scrollBehavior()}));
+    window.addEventListener('popstate',()=>selectView(new URLSearchParams(location.search).get('view')==='admin'?'admin':'website',{updateUrl:false}));
+    window.addEventListener('load',()=>{
+      // Initial positioning runs once only. Later chapter changes never reset
+      // the reader's chosen horizontal position.
+      reviewScroll.scrollTo({left:0,behavior:'instant'});
+      requestAnimationFrame(()=>reviewScroll.scrollTo({left:0,behavior:'instant'}));
+    },{once:true});
+    selectView(new URLSearchParams(location.search).get('view')==='admin'?'admin':'website',{updateUrl:false});
+  </script>
+</body>
+</html>

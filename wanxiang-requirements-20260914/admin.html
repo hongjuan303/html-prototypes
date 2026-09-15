@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>登录用户管理 · 容量万相需求 Demo</title>
+  <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="./annotations.css?v=20260915-v3">
+</head>
+<body>
+  <div id="pageSurface">
+    <header class="reviewbar">
+      <strong>容量万相 <span>· 9/14 需求 Demo</span></strong>
+      <span class="demo-note"><i aria-hidden="true"></i>本地演示 · 不发送真实短信</span>
+    </header>
+    <div class="app-shell" id="appShell">
+      <aside class="sidebar" id="sidebar">
+        <div class="admin-brand"><span class="brand-mark">RL</span><strong>容量绿台</strong></div>
+        <nav aria-label="后台菜单">
+          <div class="menu-title"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>AI漫剧系统</span><span class="chevron">⌄</span></div>
+          <div class="submenu-title">AI漫剧官网配置<span class="chevron">⌄</span></div>
+          <a class="menu-item active" href="./admin.html" aria-current="page"><span class="menu-dot" aria-hidden="true"></span>登录用户管理</a>
+        </nav>
+        <div class="sidebar-foot">本次仅展示需求涉及的菜单</div>
+      </aside>
+      <section class="main-shell">
+        <header class="topbar">
+          <button class="icon-button" id="toggleSidebar" aria-label="折叠菜单" aria-expanded="true" aria-controls="sidebar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16m5-11-3 3 3 3"/></svg></button>
+          <div class="breadcrumb">AI漫剧系统 <span>/</span> AI漫剧官网配置 <span>/</span> <strong>登录用户管理</strong></div>
+          <div class="user-info"><span class="avatar">审</span><span>演示审核员</span></div>
+        </header>
+        <div class="tabbar"><span class="page-tab"><i aria-hidden="true"></i>登录用户管理</span></div>
+        <main class="workspace">
+          <div class="page-heading"><div><h1 class="prd-anchor">登录用户管理<span class="prd-pin" data-prd-number="5" title="PRD 5 · 绿台登录用户管理" aria-hidden="true">5</span></h1><p>管理官网登录申请，审核通过后发送短信通知。</p></div><a class="help-link" href="./prd.html#admin">查看需求说明 <span aria-hidden="true">↗</span></a></div>
+          <section class="content-card filter-card prd-anchor" aria-label="用户筛选"><span class="prd-pin" data-prd-number="1" title="PRD 5 / 1 · 筛选项" aria-hidden="true">1</span>
+            <form id="filterForm">
+              <div class="filter-panel">
+                <div class="field-inline"><label for="phoneFilter">手机号</label><input class="control" id="phoneFilter" name="phone" type="search" placeholder="请输入手机号" autocomplete="off"></div>
+                <div class="field-inline"><label for="statusFilter">审核状态</label><select class="control" id="statusFilter" name="status"><option value="">全部状态</option><option value="pending">待审核</option><option value="approved">已通过</option><option value="rejected">已拒绝</option></select></div>
+                <div class="field-inline date-field"><span class="field-label" id="dateLabel">申请日期</span><div class="date-range" role="group" aria-labelledby="dateLabel"><input class="control" id="startDate" name="start" type="date" aria-label="申请开始日期"><span>至</span><input class="control" id="endDate" name="end" type="date" aria-label="申请结束日期"></div></div>
+                <div class="filter-actions"><button class="button primary" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg>查询</button><button class="button" id="resetFilters" type="button">重置</button></div>
+              </div>
+              <p class="filter-error" id="filterError" role="alert" hidden></p>
+            </form>
+          </section>
+          <section class="content-card list-card prd-anchor" aria-labelledby="listTitle"><span class="prd-pin" data-prd-number="2" title="PRD 5 / 2 · 列表项与详情" aria-hidden="true">2</span>
+            <header class="list-toolbar"><h2 id="listTitle" tabindex="-1">用户列表 <span id="listCount"></span></h2><span class="list-note">仅待审核用户可执行审核</span></header>
+            <div class="table-wrap" tabindex="0" role="region" aria-label="登录用户列表，可横向滚动">
+              <table>
+                <colgroup><col class="col-phone"><col class="col-source"><col class="col-time"><col class="col-status"><col class="col-notice"><col class="col-action"></colgroup>
+                <thead><tr><th scope="col">手机号</th><th scope="col">申请入口</th><th scope="col">申请时间</th><th scope="col">审核状态</th><th scope="col">短信通知</th><th scope="col" class="sticky-operation">操作<span class="prd-pin" data-prd-number="3" title="PRD 5 / 3 · 操作项" aria-hidden="true">3</span></th></tr></thead>
+                <tbody id="userRows"></tbody>
+              </table>
+            </div>
+            <footer class="pagination"><span id="totalCount" class="total-count" aria-live="polite"></span><label class="page-size-label"><span class="sr-only">每页条数</span><select id="pageSize" class="page-size"><option value="10">10 条 / 页</option><option value="20">20 条 / 页</option><option value="50">50 条 / 页</option></select></label><button id="previousPage" type="button" aria-label="上一页">‹</button><span id="pageNumbers" class="page-numbers"></span><button id="nextPage" type="button" aria-label="下一页">›</button></footer>
+          </section>
+          <details class="demo-tools" id="demoTools">
+            <summary>演示工具 <span>仅影响本地模拟，不属于正式业务页面</span></summary>
+            <div><label><input id="failNextSave" type="checkbox">下一次审核模拟保存失败</label><p>开启后首次确认不会修改数据，弹窗保留，可直接重试。官网新提交的申请会同步到本列表。</p></div>
+          </details>
+        </main>
+      </section>
+    </div>
+  </div>
+  <div class="modal-layer" id="modalLayer" hidden>
+    <section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+      <header class="modal-header"><h2 id="modalTitle" class="prd-anchor"></h2><button class="icon-button" id="modalClose" type="button" aria-label="关闭弹窗"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer" id="modalFooter"></footer>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./admin.js?v=20260915-v3"></script>
+</body>
+</html>

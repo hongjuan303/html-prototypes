@@ -1,0 +1,181 @@
+{
+  "collectedAt": "2026-09-15",
+  "purpose": "容量万相 2026-09-14 会议需求局部 Demo 的 QA 视觉复用素材。",
+  "notes": [
+    "仅复用当前 QA 页面和既有官网原型中的视觉素材，不新增版权规则；海外剧本封面对应 QA 当前可见条目，不意味着上线内容已获最终业务确认。",
+    "Logo 沿用 QA 当前素材；新 Logo 尚待确认，本次不擅自设计或替换。",
+    "首页 Banner 不在本次需求范围，未复制；未确认的本地候选图片未使用。",
+    "qa-novel、qa-script 与 asset-character 文件来自既有本地官网优化原型，其原始远程链接本次未重新核验，不编造来源 URL。",
+    "国内与海外内容池由 Demo 数据独立配置；素材复用不代表正式业务资源共享。",
+    "海外小说不虚构内容，使用现有暂无内容/待业务提供18篇状态。"
+  ],
+  "qaAssets": [
+    {
+      "file": "logo.png",
+      "source": "https://aiqa.weiduanju.com/assets/rlwx-logo-851X3b5U.png",
+      "role": "现有品牌标识"
+    },
+    {
+      "file": "login-art.png",
+      "source": "https://aiqa.weiduanju.com/assets/login-illustration-BTVLelu2.png",
+      "role": "登录弹窗插画"
+    },
+    {
+      "file": "quick-novel.png",
+      "source": "https://aiqa.weiduanju.com/assets/home-create-preview-novel-D6hbe3cH.png",
+      "role": "快速创作 · 小说创作"
+    },
+    {
+      "file": "quick-script.png",
+      "source": "https://aiqa.weiduanju.com/assets/home-create-preview-script-Dhfb3FVl.png",
+      "role": "快速创作 · AI 剧本"
+    },
+    {
+      "file": "quick-canvas.png",
+      "source": "https://aiqa.weiduanju.com/assets/home-create-preview-canvas-Ds7u6QJc.png",
+      "role": "快速创作 · 无限画布"
+    },
+    {
+      "file": "quick-drama.png",
+      "source": "https://aiqa.weiduanju.com/assets/home-create-preview-drama-BGVepNUM.png",
+      "role": "快速创作 · 漫剧创作"
+    },
+    {
+      "file": "qa-feature-novel-1.png",
+      "source": "https://aiqa.weiduanju.com/assets/novel_slogan1-DB-mdkZ-.png",
+      "role": "小说库现有能力入口背景"
+    },
+    {
+      "file": "qa-feature-novel-2.png",
+      "source": "https://aiqa.weiduanju.com/assets/novel_slogan2-VtraX2Up.png",
+      "role": "小说库现有能力入口背景"
+    },
+    {
+      "file": "qa-feature-novel-3.png",
+      "source": "https://aiqa.weiduanju.com/assets/novel_slogan3-BtSr-are.png",
+      "role": "小说库现有能力入口背景"
+    },
+    {
+      "file": "qa-feature-script-1.png",
+      "source": "https://aiqa.weiduanju.com/assets/script-card-img-1-CZZggpJ2.png",
+      "role": "剧本库现有能力入口背景"
+    },
+    {
+      "file": "qa-feature-script-2.png",
+      "source": "https://aiqa.weiduanju.com/assets/script-card-img-2-C_IthHsd.png",
+      "role": "剧本库现有能力入口背景"
+    },
+    {
+      "file": "qa-feature-script-3.png",
+      "source": "https://aiqa.weiduanju.com/assets/script-card-img-3-DVmjpDU2.png",
+      "role": "剧本库现有能力入口背景"
+    },
+    {
+      "file": "qa-home-top-bg.png",
+      "source": "https://aiqa.weiduanju.com/assets/home-top-bg-AXSn8GqL.png",
+      "role": "首页现有背景（非 Banner）"
+    },
+    {
+      "file": "qa-icon-1.svg",
+      "source": "https://aiqa.weiduanju.com/home-page",
+      "role": "现有第 1 项创作入口的内联 SVG，仅补 xmlns 以独立加载"
+    },
+    {
+      "file": "qa-icon-2.svg",
+      "source": "https://aiqa.weiduanju.com/home-page",
+      "role": "现有第 2 项创作入口的内联 SVG，仅补 xmlns 以独立加载"
+    },
+    {
+      "file": "qa-icon-3.svg",
+      "source": "https://aiqa.weiduanju.com/home-page",
+      "role": "现有第 3 项创作入口的内联 SVG，仅补 xmlns 以独立加载"
+    },
+    {
+      "file": "qa-icon-4.svg",
+      "source": "https://aiqa.weiduanju.com/home-page",
+      "role": "现有第 4 项创作入口的内联 SVG，仅补 xmlns 以独立加载"
+    },
+    {
+      "file": "qa-business-icon.svg",
+      "source": "https://aiqa.weiduanju.com/home-page",
+      "role": "现有商务浮动入口内联 SVG"
+    },
+    {
+      "file": "qa-language-icon.svg",
+      "source": "https://aiqa.weiduanju.com/home-page",
+      "role": "现有语言浮动入口内联 SVG"
+    },
+    {
+      "file": "qa-search-icon.svg",
+      "source": "https://aiqa.weiduanju.com/novel-ip-library",
+      "role": "现有搜索控件内联 SVG"
+    }
+  ],
+  "overseasQaScriptAssets": [
+    {
+      "file": "overseas-script-1.jpg",
+      "title": "Oops!My Billionaire Baby Daddy",
+      "source": "https://csy-cdp-img.hzrlhy.com/novel/image/image//COMMON_IMAGE/218/270/69bea5ce1b5d80d69d43d7962f50ace2_1@!image_common"
+    },
+    {
+      "file": "overseas-script-2.jpg",
+      "title": "My Fucking Marriage Goes to the Hell",
+      "source": "https://csy-cdp-img.hzrlhy.com/novel/image/image//COMMON_IMAGE/30/221/3f46a62177b24f9497081371b0eb4f9e_1@!image_common"
+    },
+    {
+      "file": "overseas-script-3.jpg",
+      "title": "Mr. Sheriff, Let’s Get Divorced",
+      "source": "https://csy-cdp-img.hzrlhy.com/novel/image/image//COMMON_IMAGE/106/220/2100d6d43b0dbd77b8608434d159d0ee_1@!image_common"
+    },
+    {
+      "file": "overseas-script-4.jpg",
+      "title": "Left For Dead",
+      "source": "https://csy-cdp-img.hzrlhy.com/novel/image/image//COMMON_IMAGE/35/315/762b347f372a8d495cced5c3b17f2576_1@!image_common"
+    },
+    {
+      "file": "overseas-script-5.jpg",
+      "title": "DragonMom: My Identity Exposed After Birth",
+      "source": "https://csy-cdp-img.hzrlhy.com/novel/image/image//COMMON_IMAGE/979/469/16b4d139720167e9ff9dc3def65db28d_1@!image_common"
+    }
+  ],
+  "reusedPrototypeAssets": {
+    "sourceDirectory": "../../ai-drama-website-optimization/assets/",
+    "files": [
+      "qa-novel-1.jpg",
+      "qa-novel-2.jpg",
+      "qa-novel-3.jpg",
+      "qa-novel-4.jpg",
+      "qa-novel-5.jpg",
+      "qa-novel-6.jpg",
+      "qa-script-1.jpg",
+      "qa-script-2.jpg",
+      "qa-script-3.jpg",
+      "qa-script-4.jpg",
+      "qa-script-5.jpg",
+      "qa-script-6.jpg",
+      "qa-script-7.jpg",
+      "qa-script-8.jpg",
+      "qa-script-9.jpg",
+      "qa-script-10.jpg",
+      "asset-character-01.png",
+      "asset-character-02.png",
+      "asset-character-03.png",
+      "asset-character-04.png",
+      "asset-character-05.png",
+      "asset-character-06.png",
+      "asset-character-07.png",
+      "asset-character-08.png",
+      "asset-character-09.png",
+      "asset-character-10.png"
+    ]
+  },
+  "qaStyleSources": [
+    "https://aiqa.weiduanju.com/assets/SiteNavBar-DG4akByz.css",
+    "https://aiqa.weiduanju.com/assets/home-BMwsLaIm.css",
+    "https://aiqa.weiduanju.com/assets/index-Dbz5OmwP.css",
+    "https://aiqa.weiduanju.com/assets/index-Dz0xxXly.css",
+    "https://aiqa.weiduanju.com/assets/FilterSelect-DDKcx-nB.css",
+    "https://aiqa.weiduanju.com/assets/ScriptCard-D_PDsPeg.css",
+    "https://aiqa.weiduanju.com/assets/portal-C2bXXdVR.css"
+  ]
+}

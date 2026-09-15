@@ -1,0 +1,19 @@
+/* PRD review annotations only. Absolute pins do not resize the QA components. */
+.prd-anchor{position:relative}
+.prd-pin{
+  position:absolute;z-index:5;display:flex!important;align-items:center;justify-content:center;
+  width:24px!important;height:24px!important;min-width:24px!important;padding:0!important;
+  border:0!important;border-radius:50%!important;background:#F28C18!important;color:#fff!important;
+  font:600 13px/1 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif!important;
+  letter-spacing:0!important;text-indent:0!important;white-space:nowrap;box-sizing:border-box;
+  top:50%;right:-32px;transform:translateY(-50%);pointer-events:none;user-select:none;
+}
+.site-nav #switchEdition,.site-nav #navLogin,#moreButton{position:relative}
+.site-nav .prd-pin{top:-12px;right:-8px;transform:none}
+.site-nav .site-links a>.prd-pin{top:50%;right:-28px;transform:translateY(-50%)}
+.section-heading h1>.prd-pin{left:-32px;right:auto}
+#moreButton>.prd-pin{left:-14px;right:auto;top:-14px;transform:none}
+#modalLayer .login-title>.prd-pin{left:-28px;right:auto}
+.bussiness-title.prd-anchor,.page-heading h1.prd-anchor{width:fit-content}
+.content-card>.prd-pin{left:12px;right:auto;top:-12px;transform:none}
+th.sticky-operation>.prd-pin{right:14px}
