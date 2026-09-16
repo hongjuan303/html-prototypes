@@ -1,0 +1,19 @@
+import {REVIEW_NOTES} from './review-notes.js?v=20260916-publish1';
+const frame=document.querySelector('#prototypeFrame'),stage=document.querySelector('#reviewStage'),scroller=document.querySelector('#notesScroller'),content=document.querySelector('#notesContent');
+let context='',available=[],focused=null,focusTimer;
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+function send(type,extra={}){frame.contentWindow?.postMessage({channel:'mixed-cut-v5-review',type,...extra},location.origin);}
+function goPrototype(){stage.scrollTo({left:0,behavior:'smooth'});}
+function goNotes(){stage.scrollTo({left:document.querySelector('#notesBoard').offsetLeft-24,behavior:'smooth'});}
+function focusNote(number){const section=content.querySelector(`[data-section="${Number(number)}"]`);if(!section)return;content.querySelector('.is-focused')?.classList.remove('is-focused');section.classList.add('is-focused');focused=number;clearTimeout(focusTimer);focusTimer=setTimeout(()=>{section.classList.remove('is-focused');focused=null;},5000);scroller.scrollTo({top:section.offsetTop-content.offsetTop-20,behavior:'smooth'});}
+function render(key,numbers){const note=REVIEW_NOTES[key];if(!note)return;available=numbers||[];if(key!==context){context=key;focused=null;clearTimeout(focusTimer);document.querySelector('#prototypeTitle').textContent=note.title;document.querySelector('#notesTitle').textContent=note.title;document.querySelector('#currentContext').textContent=`当前：${note.title}`;content.innerHTML=`<p class="notes-context">${esc(note.page)} · V5 当前原型</p><h2 class="doc-heading">#页面说明</h2><ul class="page-intro"><li>本页是智能混剪的「${esc(note.title)}」。</li></ul><h2 class="doc-heading">#原型说明</h2><ul class="page-intro"><li><strong>背景：</strong>${esc(note.background)}</li><li><strong>需求：</strong>${esc(note.need)}</li></ul>${note.sections.map(section=>`<section class="note-section" data-section="${section.number}"><h3><button type="button" class="note-number" data-locate="${section.number}" aria-label="定位原型 ${section.number}：${esc(section.title)}">${section.number}</button><span>${esc(section.title)}</span><small class="note-unavailable" hidden>当前状态未展示</small></h3><ul>${section.bullets.map(bullet=>`<li>${esc(bullet)}</li>`).join('')}</ul></section>`).join('')}<p class="notes-footer">编号对应当前页面或弹窗。<a href="./prd.html" target="_blank" rel="noopener">查看完整 PRD ↗</a></p>`;scroller.scrollTop=0;}
+  for(const button of content.querySelectorAll('[data-locate]')){const exists=available.includes(Number(button.dataset.locate));button.setAttribute('aria-disabled',String(!exists));button.title=exists?'定位到原型对应区域':'该区域在当前状态下未展示';button.parentElement.querySelector('.note-unavailable').hidden=exists;}
+}
+window.addEventListener('message',event=>{if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.channel!=='mixed-cut-v5-review')return;const data=event.data;if(data.type==='context'){render(data.context,data.available);send('markers',{visible:document.querySelector('#showMarkers').checked});}if(data.type==='select'&&data.context===context){goNotes();focusNote(data.number);}});
+content.addEventListener('click',event=>{const button=event.target.closest('[data-locate]');if(!button||button.getAttribute('aria-disabled')==='true')return;focusNote(Number(button.dataset.locate));goPrototype();send('locate',{context,number:Number(button.dataset.locate)});});
+document.querySelector('#toPrototype').addEventListener('click',goPrototype);
+document.querySelector('#toNotes').addEventListener('click',goNotes);
+document.querySelector('#showMarkers').addEventListener('change',event=>send('markers',{visible:event.target.checked}));
+frame.addEventListener('load',()=>send('ready'));
+render('create',[]);
+send('ready');
