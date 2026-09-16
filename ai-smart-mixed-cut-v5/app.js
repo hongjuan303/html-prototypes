@@ -1,6 +1,6 @@
 import {CREATION_MODES,isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,DEFAULT,EVENTS,clone,getEpisodes,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,outputCost,createBatch,settleOutput,revise,overlap} from './engine.js?v=20260916-publish1';
 import {resolveSource,listCollections,getCollection} from './sources.js?v=20260916-publish1';
-import {createSyncUI} from './sync-ui.js?v=20260916-publish1';
+import {createSyncUI} from './sync-ui.js?v=20260916-sync2';
 import {dramaKey,registerDrama,listDramas,findDrama} from './dramas.js?v=20260916-publish1';
 import {renderLibrary,renderTaskTable,renderDrama,renderDramaOutputs,taskMatches} from './library-ui.js?v=20260916-publish1';
 import {createForm,renderCreationPreview,BGM_MOODS,BGM_TRACKS,bgmSelectionLabel} from './creation-ui.js?v=20260916-publish1';

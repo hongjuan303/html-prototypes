@@ -1,4 +1,4 @@
-import {REVIEW_NOTES} from './review-notes.js?v=20260916-publish1';
+import {REVIEW_NOTES} from './review-notes.js?v=20260916-sync2';
 const frame=document.querySelector('#prototypeFrame'),stage=document.querySelector('#reviewStage'),scroller=document.querySelector('#notesScroller'),content=document.querySelector('#notesContent');
 let context='',available=[],focused=null,focusTimer;
 const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));

@@ -37,7 +37,7 @@ dialog.material-sync-dialog[open] { display: flex; flex-direction: column; }
 .sync-route-band span { color: #6d7c8c; font-size: 11px; line-height: 1.7; }
 .sync-route-band .text-btn { margin-left: auto; padding: 2px 4px; font-size: 12px; }
 .sync-basic { border: 0; padding: 0; margin: 0; }
-.sync-basic>summary, .sync-upload-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 39px; padding: 9px 14px; background: #f2f3f5; color: #59616c; font-size: 13px; font-weight: 600; }
+.sync-basic>summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 39px; padding: 9px 14px; background: #f2f3f5; color: #59616c; font-size: 13px; font-weight: 600; }
 .sync-basic>summary { cursor: pointer; list-style: none; }
 .sync-basic>summary::-webkit-details-marker { display: none; }
 .sync-basic>summary:after { content: "展开 ⌄"; color: #3389d5; font-size: 11px; font-weight: 400; }
@@ -73,19 +73,6 @@ dialog.material-sync-dialog[open] { display: flex; flex-direction: column; }
 .sync-drama-options>button:hover { background: #eff7ff; color: #2579bb; }
 .sync-drama-options small { display: block; color: #88929f; font-size: 11px; margin-top: 2px; }
 .sync-drama-options .empty { padding: 15px 9px; border: 0; font-size: 12px; }
-.sync-upload-title { margin-top: 2px; }
-.sync-upload-title span { color: #838b97; font-size: 11px; font-weight: 400; }
-.sync-files { margin-top: 12px; border: 1px solid #e1e5eb; border-radius: 5px; max-height: 204px; overflow-y: auto; }
-.sync-file { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border-bottom: 1px solid #edf0f4; background: #fff; }
-.sync-file:last-child { border-bottom: 0; }
-.sync-file-icon { display: grid; place-items: center; flex-shrink: 0; width: 32px; height: 38px; background: #eef5fc; color: #73a2cd; border-radius: 4px; font-size: 15px; }
-.sync-file-icon svg { width: 18px; height: 18px; }
-.sync-file-info { flex: 1; min-width: 0; }
-.sync-file-info strong { display: block; color: #586271; font-size: 12px; font-weight: 500; line-height: 1.65; overflow-wrap: anywhere; }
-.sync-file-info small { display: block; color: #828c98; font-size: 11px; line-height: 1.65; margin-top: 2px; }
-.sync-file>.icon-btn { flex-shrink: 0; width: 26px; height: 26px; font-size: 19px; color: #949da7; }
-.sync-file>.text-btn { font-size: 11px; }
-.sync-file-notice { margin-top: 9px; color: #808996; font-size: 11px; line-height: 1.75; }
 .sync-modal-note { display: flex; align-items: flex-start; gap: 6px; color: #8a929d; margin-top: 14px; font-size: 11px; line-height: 1.7; }
 .sync-modal-note svg { width: 13px; height: 13px; margin-top: 3px; }
 .sync-form-errors { color: #b45143; border: 1px solid #f1d3ca; background: #fff6f2; padding: 10px 13px; border-radius: 5px; font-size: 12px; line-height: 1.75; margin: 12px 0 0; }
@@ -134,7 +121,6 @@ dialog.material-sync-dialog[open] { display: flex; flex-direction: column; }
   .material-sync-dialog .dialog-head { padding-top: 13px; padding-bottom: 13px; }
   .material-sync-dialog #dialogBody { padding-top: 13px; padding-bottom: 14px; }
   .sync-form { gap: 12px; padding-top: 14px; padding-bottom: 17px; }
-  .sync-files { max-height: 159px; }
 }
 @media(max-width:720px) {
   dialog.material-sync-dialog { max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
@@ -159,8 +145,6 @@ dialog.material-sync-dialog[open] { display: flex; flex-direction: column; }
   .sync-field-control { width: 100%; }
   .sync-target-choices { grid-template-columns: 1fr; gap: 10px; }
   .sync-target-card { min-height: 92px; padding: 15px; }
-  .sync-file { gap: 8px; padding: 10px; }
-  .sync-file-icon { width: 27px; height: 34px; }
   .sync-record-meta { grid-template-columns: 80px minmax(0,1fr); gap: 6px 9px; }
   .sync-batch-strip .text-btn { margin-left: 0; }
 }

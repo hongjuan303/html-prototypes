@@ -2,7 +2,7 @@ import { TARGETS, TARGET_DATA, targetForBatch, outputVersion, validateSyncForm, 
 
 // Only simulates delivery state; no target system or local video is contacted.
 export function createSyncUI(api) {
- const {getState,save,render,toast,modal,closeModal,button,esc,icon,formatTime,getBatch,getOutput}=api;
+ const {getState,save,render,toast,modal,closeModal,button,esc,getBatch,getOutput}=api;
  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
  let draft=null,activeJob=null,tagManager=false;
  const timers=new Set();
@@ -78,7 +78,7 @@ export function createSyncUI(api) {
    field('关联剧集','<div class="sync-drama-picker"><input id="syncDramaSearch" aria-label="关联剧集" placeholder="输入剧集名称搜索并选择" autocomplete="off" value="'+esc(draft.dramaQuery)+'"><div id="syncDramaOptions" class="sync-drama-options" hidden></div></div>',draft.mapped?'已自动关联，可修改。':'请从'+t.systemLabel+'的剧集列表中选择，不能只输入名称。')+
    field('素材标签','<div class="sync-tags-row"><details class="sync-tags-combo"><summary id="syncTagsSummary">'+(f.tagIds.length?esc(tags(draft.target).filter(i=>f.tagIds.includes(i.id)).map(i=>i.label).join('、')):'请选择标签（可多选）')+'</summary><div id="syncTagOptions" class="sync-tag-options">'+tagsHTML()+'</div></details>'+button('标签管理','sync-tag-manager','sync-primary')+'</div><div id="syncTagManager" class="sync-tag-manager" hidden><p>新增'+t.label+'标签 · 仅在本 Demo 生效</p><div><input id="syncNewTag" maxlength="20" aria-label="新标签名称" placeholder="输入标签名称">'+button('新增','sync-add-tag','secondary')+'</div></div>')+
    field('上线时间','<input id="syncOnlineDate" type="date" data-sync-field="onlineDate" aria-label="上线时间" required value="'+esc(f.onlineDate)+'"><p class="sync-date-warning">该时间设置后会影响素材保护规则，请谨慎设置！</p>')+
-   '</div></details><div class="sync-upload-title">上传区域 <span>自动带入已确认成片</span></div><div class="sync-files">'+selectedItems.map(o=>'<div class="sync-file"><span class="sync-file-icon">'+icon('film')+'</span><div class="sync-file-info"><strong>'+esc(o.title)+' · V'+outputVersion(o)+'</strong><small>'+formatTime(o.duration)+' · 剪辑已确认</small></div>'+button('移除','sync-remove-file','text-btn','data-id="'+o.id+'"')+'</div>').join('')+'</div><p class="sync-file-notice">已选 '+selectedItems.length+' 条。</p>';
+   '</div></details>';
   modalShow('上传素材',body,'<span class="sync-footer-note">本次同步不新增示例积分消耗</span>'+button('取消','close')+button('确定同步 '+selectedItems.length+' 条','sync-submit','sync-primary',selectedItems.length?'':'disabled'));
  }
  function tagsHTML() {return tags(draft.target).map(t=>'<label><input type="checkbox" data-sync-tag="'+esc(t.id)+'" '+(draft.form.tagIds.includes(t.id)?'checked':'')+'> '+esc(t.label)+'</label>').join('');}
@@ -147,7 +147,6 @@ export function createSyncUI(api) {
    case 'sync-drama-pick':{const item=TARGET_DATA[draft.target].dramas.find(d=>d.id===el.dataset.id);draft.form.dramaId=item.id;draft.dramaQuery=item.label;$('#syncDramaSearch').value=item.label;$('#syncDramaOptions').hidden=true;break;}
    case 'sync-tag-manager':tagManager=!tagManager;$('#syncTagManager').hidden=!tagManager;break;
    case 'sync-add-tag':{const label=$('#syncNewTag').value.trim();if(!label){toast('请输入标签名称');return;}if(tags(draft.target).some(t=>t.label===label)){toast('该标签已存在，请直接选择');return;}const item={id:draft.target+'-custom-'+Date.now(),label,target:draft.target};extraTags().push(item);draft.form.tagIds.push(item.id);save();$('#syncTagOptions').innerHTML=tagsHTML();$('#syncTagsSummary').textContent=tags(draft.target).filter(t=>draft.form.tagIds.includes(t.id)).map(t=>t.label).join('、');$('#syncNewTag').value='';toast('已新增示例标签并选中');break;}
-   case 'sync-remove-file':draft.ids=draft.ids.filter(id=>id!==el.dataset.id);showForm();break;
    case 'sync-submit':submit();break;
    case 'sync-records':records(b);break;
    case 'sync-record-one':records(b,el.dataset.id);break;
