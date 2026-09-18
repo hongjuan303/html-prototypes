@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="合集池新增全民K歌类型：可交互页面原型与需求说明" />
+    <title>合集池管理 - 全民K歌类型</title>
+    <link rel="stylesheet" href="/html-prototypes/quanmin-kge-collection-pool/styles.css" />
+  </head>
+  <body>
+    <div class="review-canvas">
+      <div class="prototype-stage">
+        <div class="app-shell">
+          <aside class="sidebar" aria-label="主导航">
+            <nav>
+              <button><i>◉</i><span>抖音号管理</span><b>⌄</b></button>
+              <button><i>◉</i><span>视频号管理</span><b>⌄</b></button>
+              <button><i>◉</i><span>快手号管理</span><b>⌄</b></button>
+              <button class="section"><i>◉</i><span>产品运营</span><b>⌃</b></button>
+              <button class="sub"><i>◉</i><span>用户运营</span><b>⌄</b></button>
+              <button class="sub"><i>◉</i><span>活动运营</span><b>⌄</b></button>
+              <button class="sub"><i>◉</i><span>内容运营</span><b>⌃</b></button>
+              <button class="sub second"><i>◉</i><span>内容频道管理</span></button>
+              <button class="sub second"><i>◉</i><span>瀑布流轮播图</span></button>
+              <button class="sub second active"><i>◉</i><span>合集池管理</span></button>
+            </nav>
+          </aside>
+
+          <div class="workspace">
+            <header class="topbar">
+              <button id="collapseNav" class="icon-button" title="收起导航" aria-label="收起导航">☰</button>
+              <div class="breadcrumb"><b>产品运营</b><i>/</i><span>合集池管理</span></div>
+              <span class="demo-label">交互原型 · 示例数据</span>
+              <button id="fullScreen" class="icon-button" title="全屏" aria-label="全屏">⛶</button><span>全屏</span>
+              <button class="user-button"><span>洪</span>洪娟</button>
+            </header>
+
+            <div class="route-tabs" aria-label="已打开页面">
+              <span>爬虫账号配置<button>×</button></span><span>剧本库配置<button>×</button></span><span>作者管理<button>×</button></span><span>小说管理<button>×</button></span><span>数据权限配置<button>×</button></span><span>瀑布流轮播图<button>×</button></span><span>剧本详情<button>×</button></span><span>帆软BI入口<button>×</button></span><span class="current">合集池管理<button>×</button></span>
+            </div>
+
+            <main>
+              <section class="filter-panel" aria-label="合集池筛选">
+                <label><span>池ID</span><input id="idFilter" /></label>
+                <label><span>池名称</span><input id="nameFilter" /></label>
+                <div class="select-field"><span>池类型</span><button id="typeSelectButton" aria-haspopup="listbox" aria-expanded="true"><em id="typeSelectText">全部</em><i>⌃</i></button>
+                  <div class="select-menu" id="typeMenu" role="listbox">
+                    <button data-value="" class="selected" role="option">全部</button><button data-value="未知" role="option">未知</button><button data-value="抖音" role="option">抖音</button><button data-value="快手" role="option">快手</button><button data-value="微信" role="option">微信</button><button data-value="QQ浏览器" role="option">QQ浏览器</button><button data-value="华为视频百花号" role="option">华为视频百花号</button><button data-value="OPPO" role="option">OPPO</button><button data-value="全民K歌" class="new-option" role="option"><span>全民K歌</span><b>新增</b></button>
+                  </div>
+                </div>
+                <label><span>状态</span><select id="statusFilter"><option value="">全部</option><option>启用</option><option>停用</option></select></label>
+                <button class="secondary" id="resetButton">重置</button><button class="primary" id="queryButton">查询</button>
+                <div class="toolbar-actions"><button class="primary" id="createPoolButton">新建合集池</button><button class="success" id="batchAddButton">批量添加池元素</button><button class="warning" id="importButton">批量导入</button><button class="danger-light" id="batchDeleteButton">批量删除</button></div>
+              </section>
+
+              <section class="table-panel">
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th><input id="selectAllPools" type="checkbox" aria-label="全选" /></th><th>池ID</th><th>池名称</th><th>池元素数</th><th>状态</th><th>池类型</th><th>操作</th></tr></thead>
+                    <tbody id="poolRows"></tbody>
+                  </table>
+                  <div class="empty-state" id="emptyState" hidden>暂无符合条件的数据</div>
+                </div>
+                <div class="pagination"><span id="totalText"></span><select id="pageSize" aria-label="每页条数"><option value="10">10条/页</option><option value="20">20条/页</option></select><button id="prevPage" aria-label="上一页">‹</button><b id="pageNumber">1</b><button id="nextPage" aria-label="下一页">›</button><span>前往</span><input id="pageInput" aria-label="页码" value="1" /><span>页</span></div>
+              </section>
+            </main>
+          </div>
+        </div>
+      </div>
+
+<aside class="prd-panel" aria-label="PRD文档说明">
+  <div class="prd-heading"><span>PRD</span><div><strong>合集池新增全民K歌类型</strong><small>渠道内容接入 · V1.0 评审稿</small></div></div>
+
+  <section>
+    <h2># 页面说明</h2>
+    <ul>
+      <li><b>菜单路径：</b>绿台 ＞ 产品运营 ＞ 内容运营 ＞ 合集池管理。</li>
+      <li><b>使用对象：</b>内容业务、渠道运营，沿用现有合集池权限。</li>
+      <li><b>需求目标：</b>新增全民K歌池，完成选剧、资料维护、校验、推送及结果追踪。</li>
+      <li><b>参考资料：</b><a href="https://hongjuan303.github.io/html-prototypes/oppo-collection-pool/" target="_blank" rel="noreferrer">OPPO合集池原型</a>、<a href="https://doc.weixin.qq.com/doc/w3_AEgAbAaQAK8CN9tNX3SfXSJKzCxNV" target="_blank" rel="noreferrer">声播统一接入内容合作API—短剧</a>。</li>
+      <li><b>接入前提：</b>接口文档未明确列出全民K歌，须确认账号分发渠道与授权范围，确认前不开放正式推送。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2># 页面改动</h2>
+    <h3>筛选与列表</h3>
+    <ul>
+      <li><b>池类型：</b>新增“全民K歌”，保留OPPO及其他类型；池ID、名称、状态筛选不变。</li>
+      <li><b>行操作：</b>保留“修改名称、修改池元素、自动添加元素、更多”及现有顺序。</li>
+      <li><b>新建池：</b>名称、类型必填，状态默认启用，创建后元素数为0。</li>
+    </ul>
+    <h3>池元素管理</h3>
+    <ul>
+      <li>展示合集ID、名称、总集数、校验状态、推送状态、最近推送时间；支持添加元素、维护渠道资料、查看问题及推送记录。</li>
+      <li>自动添加沿用现有选剧规则、执行方式与同池去重，仅维护池内范围，不自动发起推送。</li>
+      <li>停用池禁止新推送；移除元素、停用或删除池均不等于平台下架，历史记录保留。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2># 推送流程</h2>
+    <ol>
+      <li>维护合集及渠道资料，执行校验；缺失字段可定位到合集或具体分集。</li>
+      <li>确认本次范围及跳过数量，仅提交校验通过的内容；提交前服务端再次校验。</li>
+      <li>先提交专辑，成功后提交其分集；一部合集对应一个专辑，ID保持稳定。</li>
+      <li>每次请求最多提交同一专辑的100条分集，不限制该专辑总集数；如125集拆为100+25条，保留原集序并逐项记录结果。</li>
+      <li>新增及更新内容标记待同步，由运营确认提交；调序、付费变更使用独立接口并留痕。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2># 字段规则</h2>
+    <h3>专辑资料</h3>
+    <p class="field-list">必填：唯一ID、名称、封面及MD5、简介、演员/角色、备案信息、内容类型、一级/二级分类、发布时间、是否首发、全网发布时间。类型区分漫剧、短剧、儿童，分类按平台枚举映射。</p>
+    <h3>备案材料</h3>
+    <ul>
+      <li>制作预算必填，单位万元，整数1～999999；成本配置证明始终必填。</li>
+      <li>仅短剧类型（type=2）必填演员总片酬占比，范围1%～99%、两位小数；例如18.35表示18.35%，不是金额。</li>
+      <li>预算≥100万元时，须补充广电备案号、上线备案材料；100万元边界待平台确认。</li>
+    </ul>
+    <h3>分集与付费</h3>
+    <p class="field-list">分集唯一ID、视频MD5必填。本期首传或替换视频须提供下载地址，并传真实集序。付费接口列出免费、单集付费、整剧付费、各平台自定四种模式；账号可用模式及字段约束须确认，价格、会员及起付集数不按示例自动赋值。</p>
+    <p class="field-note">MD5及鉴权由服务端处理，运营无需填写签名或密钥。</p>
+  </section>
+
+  <section>
+    <h2># 校验口径</h2>
+    <ul>
+      <li><b>完整性：</b>校验必填、条件必填、有效分类、重复ID及集序；资料变更后重新校验。</li>
+      <li><b>视频：</b>下载地址长度≤512，至少可访问7日；不继承OPPO的720p、50MB限制。</li>
+      <li><b>封面：</b>专辑字段要求3:4且大于600×800；通用标准要求方图最低750×750、推荐1500×1500且带标题。两处冲突，最终规格须平台确认后启用校验。</li>
+      <li><b>分批：</b>100条限制针对单专辑分集，不是100部合集；分批不重新编号。</li>
+      <li><b>定时：</b>定时发布时间须首次推送携带；时区、即时发布取值及后续改期规则待确认。</li>
+      <li><b>未确认配置：</b>渠道权限、分类映射及商业配置未确认时提示原因，不允许用占位值提交。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2># 状态与异常</h2>
+    <ul>
+      <li><b>校验状态：</b>未校验、校验通过、校验失败；与推送状态分别展示。</li>
+      <li><b>推送状态：</b>未推送、推送中、推送成功、部分失败、推送失败、结果待确认、已中止。中止时未发送项记已取消，已发送项保留实际结果；存在不确定结果时优先显示待确认。</li>
+      <li><b>成功口径：</b>依据专辑及各分集实际响应，顶层成功不代表全部分集成功，也不保证已分发至全民K歌、审核通过或已上架。</li>
+      <li><b>异常处理：</b>明确失败记录原因并支持修正后重试；超时或结果不完整进入待确认，不自动反复提交。增量及重试语义须联调确认。</li>
+      <li><b>清空资料：</b>可选字段的省略、null、空值处理须确认；确认前不把本地清空记为平台已清空。</li>
+      <li><b>记录：</b>保留批次、时间、操作人、合集及分集结果；调序和付费变更单独记录。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2># 本期范围与对接确认</h2>
+    <ul>
+      <li>本期包含池管理、专辑/分集推送、调序、付费更新及记录；页面流程与任务状态为本次产品方案。</li>
+      <li>当前文档未提供上下架、删除、审核回查或结果回调接口，不新增相应自动操作。</li>
+      <li>上线前确认全民K歌分发权限、封面标准、短剧/儿童分类、合同字段、付费规则及完整错误响应。</li>
+      <li>声播人工编辑过的专辑字段会忽略后续API覆盖；存量人工内容转API需平台协助关联。</li>
+    </ul>
+  </section>
+
+  <div class="prd-note"><b>原型体验</b><span>左侧可体验筛选、新建池、维护元素与样例资料、查看问题、模拟推送、失败重试、调序及付费同步。本说明列出目标需求；演示校验仅验证样例字段，不验证实际渠道权限、文件真实性及待确认的分类/封面规则，不调用真实渠道接口。</span></div>
+</aside>
+
+
+    </div>
+    <div id="modalRoot"></div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <script src="/html-prototypes/quanmin-kge-collection-pool/app.js"></script>
+  </body>
+</html>
