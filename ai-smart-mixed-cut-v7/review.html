@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>智能混剪 V7 · 原型与需求说明</title><link rel="stylesheet" href="./review.css?v=20261008-fields1"></head>
+<body>
+  <header class="review-toolbar">
+    <div class="review-brand"><span aria-hidden="true">▧</span><div><strong>智能混剪 <small>V7</small></strong><p>原型与需求说明</p></div></div>
+    <div class="review-tools"><a href="./review.html?entry=toolbox">工具箱入口</a><a href="./review.html">智能混剪</a><label><input id="showMarkers" type="checkbox" checked>显示序号</label><button id="toPrototype" type="button">← 返回原型</button><button id="toNotes" type="button" class="primary">查看对应说明 →</button></div>
+  </header>
+  <div class="review-guide"><span id="currentContext" aria-live="polite">正在载入制作素材…</span><span>点击橙色序号，双向定位原型与说明</span></div>
+  <main class="review-stage" id="reviewStage" aria-label="左右对照评审画板" tabindex="-1">
+    <div class="review-canvas">
+      <section class="prototype-board" aria-label="产品原型">
+        <div class="board-heading"><span>产品原型</span><strong id="prototypeTitle">制作素材</strong></div>
+        <script>{const f=document.createElement('iframe');f.id='prototypeFrame';f.title='智能混剪 V7 可操作原型';f.src=new URLSearchParams(location.search).get('entry')==='toolbox'?'./toolbox.html?review=1&v=20261008-fields1':'./index.html?review=1&v=20261008-fields1';document.currentScript.replaceWith(f);}</script>
+      </section>
+      <section class="notes-board" id="notesBoard" aria-label="对应需求说明">
+        <div class="board-heading"><span>需求说明</span><strong id="notesTitle">制作素材</strong></div>
+        <div id="notesScroller" tabindex="-1"><article id="notesContent"></article></div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="./review.js?v=20261008-fields1"></script>
+</body></html>
