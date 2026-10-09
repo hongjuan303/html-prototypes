@@ -172,7 +172,7 @@ header > [data-action="demo-tools"] { font-size: 12px; color: #a2a2a7; white-spa
 .bgm-option:has(input:checked), .bgm-track-option:has(input:checked) { background: var(--green-soft); border-color: var(--green); }
 
 /* Lists, reusable drama analysis and production tasks. */
-.table-wrap, .stat, .empty, .library-overview, .task-card, .sync-batch-strip { background: var(--platform-panel); border-color: var(--line); border-radius: 6px; }
+.table-wrap, .stat, .empty, .sync-batch-strip { background: var(--platform-panel); border-color: var(--line); border-radius: 6px; }
 th { background: #1d1d1f; color: #a6a6ad; border-color: #353539; }
 td { border-color: #2b2b2e; }
 tbody tr:hover { background: #1a1a1c; }
@@ -207,22 +207,13 @@ tbody tr:hover { background: #1a1a1c; }
 .legend i { background: #467b71; }
 .legend i.blank { background: #3b3b40; }
 .progress-track { background: #333339; }
-.library-overview { color: #a8acb0; }
-.library-overview b { color: var(--ink); }
 .drama-table small, .library-task-table small { color: #999ba2; }
 .drama-monogram { background: #2d3231; color: #c1cfca; }
 .drama-monogram.domestic { background: #1b3430; color: #91d5bb; }
 .drama-monogram.overseas { background: #273343; color: #a8c1e4; }
 .needs-attention { color: var(--platform-warning); }
-.drama-tabs { border-color: var(--line); }
-.drama-tabs button { color: var(--muted); }
-.drama-tabs button.active { color: var(--green); border-bottom-color: var(--green); }
 .plot-scope { background: #1c2926; border-radius: 6px; }
 .plot-scope p { color: #a3b1ab; }
-.task-card.is-open { border-color: #486461; }
-.task-card-head { background: #19191b; }
-.task-card.is-open .task-card-head { background: #1a2323; }
-.task-toggle, .task-toggle:hover { background: transparent; }
 .mini-source { color: #9db5ad; }
 
 /* Dialogs use the same surface, field and action patterns as the platform. */

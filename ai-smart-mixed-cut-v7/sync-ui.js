@@ -1,4 +1,6 @@
-import { TARGETS, TARGET_DATA, targetForBatch, outputVersion, validateSyncForm, getOutputSync, prepareSync } from './sync-model.js?v=20261008-interaction1';
+import { TARGETS, TARGET_DATA, SYNC_SCHEMA_VERSION, businessDate, designerForAccount, targetForBatch, outputVersion, validateSyncForm, getOutputSync, prepareSync } from './sync-model.js?v=20261009-update10';
+import { platformAccount } from './platform-context.js?v=20261009-update10';
+import { dramaKey, findDrama } from './dramas.js?v=20261009-update10';
 
 // Only simulates delivery state; no target system or local video is contacted.
 export function createSyncUI(api) {
@@ -9,7 +11,7 @@ export function createSyncUI(api) {
  const targets=id=>TARGETS.find(t=>t.id===id);
  const jobs=()=>getState().syncJobs;
  const extraTags=()=>getState().customTags;
- const tags=target=>[...TARGET_DATA[target].tags,...extraTags().filter(t=>t.target===target)];
+ const tags=target=>target==='domestic'?[...TARGET_DATA.domestic.tags,...extraTags().filter(t=>t.target==='domestic')]:[];
  const findBatch=id=>getState().batches.find(b=>b.id===id);
  const current=(b,o)=>getOutputSync(b.id,o,jobs());
  const confirmed=o=>!o.narrationDraft&&!o.reworkPending&&!o.repairing&&o.status==='ready'&&o.confirmed&&(!o.confirmedVersion||o.confirmedVersion===outputVersion(o));
@@ -45,24 +47,28 @@ export function createSyncUI(api) {
   const old=history(b,o).some(j=>j.items.some(i=>i.outputId===o.id&&i.status==='success'));
   return '<div class="sync-review-notice"><span>当前成片 V'+outputVersion(o)+' · '+(confirmed(o)?'剪辑已确认':'待剪辑确认')+'</span>'+badgeFor(b,o)+(old?'<p>已同步版本保留在素材管理中。此处修改、退款或取消确认不会自动替换或撤回旧素材。</p>':'<p>确认当前版本没有问题后，可同步到对应投放系统。</p>')+'</div>';
  }
- function setTarget(target) {
+ const dramaName=b=>findDrama(getState(),dramaKey(b.config))?.title||b.sourceTitle||'';
+ const recordName=j=>j.labels?.materialName||j.labels?.dramaName||j.labels?.drama||j.form?.materialName||j.form?.dramaName||'';
+ const currentSchema=j=>j?.schemaVersion===SYNC_SCHEMA_VERSION||j?.form?.schemaVersion===SYNC_SCHEMA_VERSION;
+ function setTarget(target,previousJob=null) {
   const b=findBatch(draft.batchId),data=TARGET_DATA[target];if(!b||!data)return;
-  const mapped=targetForBatch(b)===target?data.dramas.find(d=>d.greenCollectionId===b.config.source.collectionId):null;
   const preferences=b.syncPreferences?.[target]||{},allowedTags=new Set(tags(target).map(t=>t.id));
-  const directoryId=data.directories.some(item=>item.id===preferences.directoryId)?preferences.directoryId:'';
-  const designerId=data.designers.some(item=>item.id===preferences.designerId)?preferences.designerId:data.designers[0]?.id||'';
-  const tagIds=Array.isArray(preferences.tagIds)?[...new Set(preferences.tagIds.filter(id=>allowedTags.has(id)))]:[];
-  draft.target=target;draft.form={directoryId,designerId,dramaId:mapped?.id||'',tagIds,onlineDate:''};draft.dramaQuery=mapped?.label||'';draft.mapped=!!mapped;tagManager=false;showForm();
+  const previous=previousJob?.form||preferences;
+  const directoryId=data.directories.some(item=>item.id===previous.directoryId)?previous.directoryId:'';
+  const designerId=designerForAccount(target,platformAccount.id);
+  const name=dramaName(b);
+  const tagIds=Array.isArray(previous.tagIds)?[...new Set(previous.tagIds.filter(id=>allowedTags.has(id)))]:[];
+  draft.target=target;draft.form={schemaVersion:SYNC_SCHEMA_VERSION,directoryId,designerId,...(target==='domestic'?{dramaName:name,tagIds,onlineDate:businessDate()}:{materialName:name})};tagManager=false;showForm();
  }
  function open(b,outputs) {
   activeJob=null;
   if(!b||!outputs.length){toast('请先勾选已确认可用的成片');return;}
-  if(outputs.some(o=>o.narrationDraft)){toast('所选素材有未保存的文案，请先保存或放弃修改');return;}
+  if(outputs.some(o=>o.narrationDraft)){toast('所选素材有未应用的文案，请先应用或放弃修改');return;}
   if(outputs.some(o=>!confirmed(o))){toast('选中的素材尚未全部确认，请先检查并确认当前版本');return;}
   if(outputs.some(o=>!canSync(b,o))){toast('选中项包含已同步或结果待核实的版本，请查看同步记录');return;}
   const failed=outputs.length===1?current(b,outputs[0]):null;
   if(failed?.status==='failed'){showJob(failed.job.id);return;}
-  draft={batchId:b.id,ids:outputs.map(o=>o.id),target:null,form:null};
+  draft={batchId:b.id,ids:outputs.map(o=>o.id),versions:outputs.map(o=>({id:o.id,version:outputVersion(o)})),target:null,form:null};
   const target=targetForBatch(b);if(target)setTarget(target);else showTarget();
  }
  function showTarget() {
@@ -73,34 +79,33 @@ export function createSyncUI(api) {
  function showForm() {
   const b=findBatch(draft.batchId),t=targets(draft.target),data=TARGET_DATA[draft.target],f=draft.form;
   const selectedItems=b.outputs.filter(o=>draft.ids.includes(o.id));
-  const body='<div class="sync-route-band"><strong>'+t.systemLabel+' · 素材管理</strong><span>'+(targetForBatch(b)?'已根据'+(draft.target==='domestic'?'国内短剧':'海外短剧')+'自动匹配':'已选择'+t.label)+'</span>'+(!targetForBatch(b)?button('更换系统','sync-change-target','text-btn'):'')+'</div><div id="syncFormErrors" class="sync-form-errors" role="alert" hidden></div><details class="sync-basic" open><summary>素材基本信息</summary><div class="sync-form">'+
+  const domestic=draft.target==='domestic';
+  const body='<div class="sync-route-band"><strong>'+t.systemLabel+' · 素材管理</strong><span>'+(targetForBatch(b)?'已根据'+(domestic?'国内短剧':'海外短剧')+'自动匹配':'已选择'+t.label)+'</span>'+(!targetForBatch(b)&&!draft.retryOf?button('更换系统','sync-change-target','text-btn'):'')+'</div>'+(draft.retryNotice?'<p class="sync-retry-notice" role="status">'+esc(draft.retryNotice)+'</p>':'')+'<div id="syncFormErrors" class="sync-form-errors" role="alert" hidden></div><details class="sync-basic" open><summary>素材基本信息</summary><div class="sync-form" data-sync-target="'+draft.target+'">'+
    field('上传目录','<select id="syncDirectory" data-sync-field="directoryId" aria-label="上传目录" required>'+options(data.directories,f.directoryId,'选择上传目录')+'</select>')+
    field('设计师（剪辑）','<select id="syncDesigner" data-sync-field="designerId" aria-label="设计师（剪辑）" required>'+options(data.designers,f.designerId,'请选择')+'</select>')+
-   field('关联剧集','<div class="sync-drama-picker"><input id="syncDramaSearch" aria-label="关联剧集" placeholder="输入剧集名称搜索并选择" autocomplete="off" value="'+esc(draft.dramaQuery)+'"><div id="syncDramaOptions" class="sync-drama-options" hidden></div></div>',draft.mapped?'已自动关联，可修改。':'请从'+t.systemLabel+'的剧集列表中选择，不能只输入名称。')+
-   field('素材标签','<div class="sync-tags-row"><details class="sync-tags-combo"><summary id="syncTagsSummary">'+(f.tagIds.length?esc(tags(draft.target).filter(i=>f.tagIds.includes(i.id)).map(i=>i.label).join('、')):'请选择标签（可多选）')+'</summary><div id="syncTagOptions" class="sync-tag-options">'+tagsHTML()+'</div></details>'+button('标签管理','sync-tag-manager','sync-primary')+'</div><div id="syncTagManager" class="sync-tag-manager" hidden><p>新增'+t.label+'标签 · 仅在本 Demo 生效</p><div><input id="syncNewTag" maxlength="20" aria-label="新标签名称" placeholder="输入标签名称">'+button('新增','sync-add-tag','secondary')+'</div></div>')+
-   field('上线时间','<input id="syncOnlineDate" type="date" data-sync-field="onlineDate" aria-label="上线时间" required value="'+esc(f.onlineDate)+'"><p class="sync-date-warning">该时间设置后会影响素材保护规则，请谨慎设置！</p>')+
+   (domestic?field('关联剧集','<input id="syncDramaName" data-sync-field="dramaName" aria-label="关联剧集" placeholder="请输入剧集名称" required value="'+esc(f.dramaName)+'">')+
+   field('素材标签','<div class="sync-tags-row"><details class="sync-tags-combo"><summary id="syncTagsSummary">'+(f.tagIds.length?esc(tags(draft.target).filter(i=>f.tagIds.includes(i.id)).map(i=>i.label).join('、')):'请选择标签（可多选）')+'</summary><div id="syncTagOptions" class="sync-tag-options">'+tagsHTML()+'</div></details>'+button('标签管理','sync-tag-manager','sync-primary')+'</div><div id="syncTagManager" class="sync-tag-manager" hidden><p>新增素材标签</p><div><input id="syncNewTag" maxlength="20" aria-label="新标签名称" placeholder="输入标签名称">'+button('新增','sync-add-tag','secondary')+'</div></div>')+
+   field('上线时间','<input id="syncOnlineDate" type="date" data-sync-field="onlineDate" aria-label="上线时间" min="'+businessDate()+'" required value="'+esc(f.onlineDate)+'"><p class="sync-date-warning">该日期会影响素材保护规则，请谨慎设置。</p>'):field('素材名称','<input id="syncMaterialName" data-sync-field="materialName" aria-label="素材名称" placeholder="请输入素材名称" required value="'+esc(f.materialName)+'">'))+
    '</div></details>';
-  modalShow('上传素材',body,'<span class="sync-footer-note">本次同步不新增示例积分消耗</span>'+button('取消','close')+button('确定同步 '+selectedItems.length+' 条','sync-submit','sync-primary',selectedItems.length?'':'disabled'));
+  modalShow('上传素材',body,button('取消','close')+button((draft.retryOf?'确认并重试 ':'确定同步 ')+selectedItems.length+' 条','sync-submit','sync-primary',selectedItems.length?'':'disabled'));
  }
  function tagsHTML() {return tags(draft.target).map(t=>'<label><input type="checkbox" data-sync-tag="'+esc(t.id)+'" '+(draft.form.tagIds.includes(t.id)?'checked':'')+'> '+esc(t.label)+'</label>').join('');}
- function showDramaOptions() {
-  const q=draft.dramaQuery.trim().toLowerCase(),items=TARGET_DATA[draft.target].dramas.filter(d=>d.label.toLowerCase().includes(q));
-  $('#syncDramaOptions').hidden=false;$('#syncDramaOptions').innerHTML=items.length?items.map(d=>button(esc(d.label),'sync-drama-pick','text-btn','data-id="'+d.id+'"')).join(''):'<p>未找到剧集，请调整关键词或到投放系统维护剧集。</p>';
- }
  function errors(message) {const el=$('#syncFormErrors');if(el){el.hidden=false;el.textContent=message;$('.sync-basic').open=true;el.scrollIntoView({block:'nearest'});}else toast(message);}
  function submit() {
-  if(!draft)return;const b=findBatch(draft.batchId),outputs=b.outputs.filter(o=>draft.ids.includes(o.id));
+  if(!draft)return;const b=findBatch(draft.batchId),outputs=b?.outputs.filter(o=>draft.ids.includes(o.id))||[];
   try {
-   const items=prepareSync(b,outputs,draft.target,draft.form,jobs(),extraTags());
-   const normalized=validateSyncForm(draft.form,draft.target,extraTags()).normalized;
+   if(!b||outputs.length!==draft.ids.length||draft.versions.some(v=>outputVersion(outputs.find(o=>o.id===v.id))!==v.version))throw new Error('成片版本已变化，请关闭弹窗后重新选择当前版本');
+   const now=new Date();if(draft.target==='domestic'&&$('#syncOnlineDate'))$('#syncOnlineDate').min=businessDate(now);
+   const items=prepareSync(b,outputs,draft.target,draft.form,jobs(),extraTags(),now);
+   const normalized=validateSyncForm(draft.form,draft.target,extraTags(),now).normalized;
    if(!b.syncPreferences||typeof b.syncPreferences!=='object'||Array.isArray(b.syncPreferences))b.syncPreferences={};
-   b.syncPreferences[draft.target]={directoryId:normalized.directoryId,designerId:normalized.designerId,tagIds:[...normalized.tagIds]};
-   const job=createJob(b,draft.target,normalized,items,getState().syncScenario||'normal');draft=null;showJob(job.id);runJob(job);
+   b.syncPreferences[draft.target]={directoryId:normalized.directoryId,...(draft.target==='domestic'?{tagIds:[...normalized.tagIds]}:{})};
+   const job=createJob(b,draft.target,normalized,items,getState().syncScenario||'normal',draft.retryOf||null);draft=null;showJob(job.id);runJob(job);
   }catch(e){errors(e.message);}
  }
  function createJob(b,target,form,items,scenario='normal',retryOf=null) {
   const data=TARGET_DATA[target],label=(group,id)=>data[group].find(v=>v.id===id)?.label||id;
-  const j={id:'SYNC-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,5),batchId:b.id,target,form:JSON.parse(JSON.stringify(form)),createdAt:new Date().toISOString(),status:'processing',scenario,retryOf,simulated:true,source:JSON.parse(JSON.stringify(b.config.source||{kind:'sample'})),labels:{directory:label('directories',form.directoryId),designer:label('designers',form.designerId),drama:label('dramas',form.dramaId),tags:tags(target).filter(t=>form.tagIds.includes(t.id)).map(t=>t.label)},items:items.map(i=>{const o=b.outputs.find(x=>x.id===i.outputId);return {...i,title:o.title,duration:o.duration,filename:o.id+'-V'+i.version+'.mp4',confirmedAt:o.confirmedAt||null};})};
+  const j={id:'SYNC-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,5),schemaVersion:SYNC_SCHEMA_VERSION,batchId:b.id,target,form:JSON.parse(JSON.stringify(form)),createdAt:new Date().toISOString(),status:'processing',scenario,retryOf,simulated:true,source:JSON.parse(JSON.stringify(b.config.source||{kind:'sample'})),labels:{directory:label('directories',form.directoryId),designer:label('designers',form.designerId),...(target==='domestic'?{dramaName:form.dramaName,tags:tags(target).filter(t=>form.tagIds.includes(t.id)).map(t=>t.label),date:form.onlineDate}:{materialName:form.materialName})},items:items.map(i=>{const o=b.outputs.find(x=>x.id===i.outputId);return {...i,title:o.title,duration:o.duration,filename:o.id+'-V'+i.version+'.mp4',confirmedAt:o.confirmedAt||null};})};
   jobs().unshift(j);save();render();return j;
  }
  function updateJob(j) {
@@ -121,20 +126,32 @@ export function createSyncUI(api) {
  }
  function completeItem(j,i) {i.status='success';i.materialId=(j.target==='domestic'?'CN':'OS')+'-DEMO-'+j.id.slice(5)+'-'+(j.items.indexOf(i)+1);i.syncedAt=new Date().toISOString();i.error=null;}
  function showJob(id) {const j=jobs().find(j=>j.id===id);if(!j)return;activeJob=id;modalShow('素材同步记录','',button('关闭','close'));$('#dialog').dataset.syncJob=id;renderJobBody(j);}
+ function recordMeta(j) {
+  const labels=j.labels||{},form=j.form||{},base=[['上传目录',labels.directory||form.directoryId||''],['设计师（剪辑）',labels.designer||form.designerId||'']];
+  const fields=currentSchema(j)?(j.target==='domestic'?[...base,['关联剧集',labels.dramaName||form.dramaName||''],['素材标签',(labels.tags||[]).join('、')],['上线时间',labels.date||form.onlineDate||'']]:[...base,['素材名称',labels.materialName||form.materialName||'']]):[...base,['关联剧集',labels.drama||''],['素材标签',(labels.tags||[]).join('、')],['上线时间',form.onlineDate||labels.date||'']];
+  return '<dl class="sync-record-meta">'+fields.map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl>';
+ }
  function renderJobBody(j) {
   const success=j.items.filter(i=>i.status==='success').length,failed=j.items.filter(i=>i.status==='failed').length,unknown=j.items.filter(i=>i.status==='unknown').length;
-  $('#dialogBody').innerHTML='<div class="sync-route-band"><strong>'+targets(j.target).systemLabel+' · 素材管理</strong>'+tag('同步演示','orange')+'</div><div class="sync-job-summary"><h3>'+ (j.status==='processing'?'正在同步':j.status==='success'?'同步完成':unknown?'同步结果待核实':'部分素材未同步')+'</h3><p>成功 '+success+' / '+j.items.length+' 条'+(failed?' · 失败 '+failed+' 条':'')+(unknown?' · 待核实 '+unknown+' 条':'')+'</p></div><dl class="sync-record-meta"><div><dt>上传目录</dt><dd>'+esc(j.labels.directory)+'</dd></div><div><dt>设计师（剪辑）</dt><dd>'+esc(j.labels.designer)+'</dd></div><div><dt>关联剧集</dt><dd>'+esc(j.labels.drama)+'</dd></div><div><dt>素材标签</dt><dd>'+esc(j.labels.tags.join('、'))+'</dd></div><div><dt>上线时间</dt><dd>'+esc(j.form.onlineDate)+'</dd></div></dl><div class="sync-job-items">'+j.items.map(i=>'<div class="sync-job-row"><div><strong>'+esc(i.title)+' · V'+i.version+'</strong><p>'+statusName(i.status)+(i.materialId?' · 素材 ID：'+esc(i.materialId):'')+'</p>'+(i.syncedAt?'<small>'+new Date(i.syncedAt).toLocaleString('zh-CN')+'</small>':'')+(i.error?'<small class="error-text">'+esc(i.error)+'</small>':'')+'</div>'+tag(statusName(i.status),i.status==='success'?'green':i.status==='failed'||i.status==='unknown'?'orange':'gray')+'</div>').join('')+'</div><p class="sync-modal-note">记录对应提交时的成片版本。</p>';
+  $('#dialogBody').innerHTML='<div class="sync-route-band"><strong>'+targets(j.target).systemLabel+' · 素材管理</strong></div><div class="sync-job-summary"><h3>'+ (j.status==='processing'?'正在同步':j.status==='success'?'同步完成':unknown?'同步结果待核实':'部分素材未同步')+'</h3><p>成功 '+success+' / '+j.items.length+' 条'+(failed?' · 失败 '+failed+' 条':'')+(unknown?' · 待核实 '+unknown+' 条':'')+'</p></div>'+recordMeta(j)+'<div class="sync-job-items">'+j.items.map(i=>'<div class="sync-job-row"><div><strong>'+esc(i.title)+' · V'+i.version+'</strong><p>'+statusName(i.status)+(i.materialId?' · 素材 ID：'+esc(i.materialId):'')+'</p>'+(i.syncedAt?'<small>'+new Date(i.syncedAt).toLocaleString('zh-CN')+'</small>':'')+(i.error?'<small class="error-text">'+esc(i.error)+'</small>':'')+'</div>'+tag(statusName(i.status),i.status==='success'?'green':i.status==='failed'||i.status==='unknown'?'orange':'gray')+'</div>').join('')+'</div><p class="sync-modal-note">记录对应提交时的成片版本。</p>';
   $('#dialogActions').innerHTML=button('全部同步记录','sync-records')+(unknown?button('查询同步结果','sync-query','secondary','data-job="'+j.id+'"'):'')+(failed?button('仅重试失败 '+failed+' 条','sync-retry','sync-primary','data-job="'+j.id+'"'):'')+button('关闭','close');
  }
  function records(b,outputId=null) {
   activeJob=null;const records=jobs().filter(j=>j.batchId===b.id&&(!outputId||j.items.some(i=>i.outputId===outputId)));
-  modalShow('同步到素材管理的记录',records.length?'<p class="sync-modal-note">按提交时版本保留记录；修改成片不会覆盖原同步记录。</p><div class="sync-job-items">'+records.map(j=>'<div class="sync-job-row"><div><strong>'+targets(j.target).label+' · '+j.items.length+' 条</strong><p>'+esc(j.labels.drama)+' · '+new Date(j.createdAt).toLocaleString('zh-CN')+'</p><small>'+j.items.filter(i=>i.status==='success').length+' 条已同步'+(j.retryOf?' · 失败重试':'')+'</small></div>'+button('查看详情','sync-job-detail','text-btn','data-job="'+j.id+'"')+'</div>').join('')+'</div>':'<div class="empty"><h3>还没有同步记录</h3><p>检查并确认成片后，即可同步到素材管理。</p></div>',button('关闭','close'));
+  modalShow('同步到素材管理的记录',records.length?'<p class="sync-modal-note">按提交时版本保留记录；修改成片不会覆盖原同步记录。</p><div class="sync-job-items">'+records.map(j=>'<div class="sync-job-row"><div><strong>'+targets(j.target).label+' · '+j.items.length+' 条</strong><p>'+esc(recordName(j))+' · '+new Date(j.createdAt).toLocaleString('zh-CN')+'</p><small>'+j.items.filter(i=>i.status==='success').length+' 条已同步'+(j.retryOf?' · 失败重试':'')+'</small></div>'+button('查看详情','sync-job-detail','text-btn','data-job="'+j.id+'"')+'</div>').join('')+'</div>':'<div class="empty"><h3>还没有同步记录</h3><p>检查并确认成片后，即可同步到素材管理。</p></div>',button('关闭','close'));
  }
  function retry(j) {
-  const b=findBatch(j.batchId),failed=j.items.filter(i=>i.status==='failed');
+  if(!j)return;const b=findBatch(j.batchId),failed=j.items.filter(i=>i.status==='failed');
+  if(!b||!failed.length){toast('未找到可重试的失败素材');return;}
   const candidates=failed.map(i=>b.outputs.find(o=>o.id===i.outputId)).filter(Boolean);
-  if(failed.some(i=>outputVersion(b.outputs.find(o=>o.id===i.outputId))!==i.version)){toast('失败素材的内容版本已变化，请重新确认并从成片列表同步新版本');return;}
-  try{const items=prepareSync(b,candidates,j.target,j.form,jobs(),extraTags());const retryJob=createJob(b,j.target,j.form,items,'normal',j.id);showJob(retryJob.id);runJob(retryJob);}catch(e){toast(e.message);}
+  if(candidates.length!==failed.length||failed.some(i=>outputVersion(b.outputs.find(o=>o.id===i.outputId))!==i.version)){toast('失败素材的内容版本已变化，请重新确认并从成片列表同步新版本');return;}
+  if(candidates.some(o=>!confirmed(o))){toast('请先确认失败素材的当前版本可用');return;}
+  if(j.items.some(i=>['pending','processing','unknown'].includes(i.status))){toast('请先查询待核实素材的同步结果，再重试失败项');return;}
+  const expired=j.target==='domestic'&&(!j.form?.onlineDate||j.form.onlineDate<businessDate());
+  if(!currentSchema(j)||expired){
+   activeJob=null;draft={batchId:b.id,ids:candidates.map(o=>o.id),versions:candidates.map(o=>({id:o.id,version:outputVersion(o)})),target:j.target,form:null,retryOf:j.id,retryNotice:expired?'原上线日期已过期，请核对今天或之后的上线日期，再确认重试。':'请核对上传信息，再确认重试失败素材。'};setTarget(j.target,j);return;
+  }
+  try{const now=new Date(),validation=validateSyncForm(j.form,j.target,extraTags(),now),items=prepareSync(b,candidates,j.target,j.form,jobs(),extraTags(),now);const retryJob=createJob(b,j.target,validation.normalized,items,'normal',j.id);showJob(retryJob.id);runJob(retryJob);}catch(e){toast(e.message);}
  }
  function query(j,el) {
   el.disabled=true;el.textContent='查询中…';
@@ -147,9 +164,8 @@ export function createSyncUI(api) {
    case 'sync-open-selected':open(b,api.getSelectedOutputs());break;
    case 'sync-target':setTarget(el.dataset.target);break;
    case 'sync-change-target':draft.target=null;draft.form=null;showTarget();break;
-   case 'sync-drama-pick':{const item=TARGET_DATA[draft.target].dramas.find(d=>d.id===el.dataset.id);draft.form.dramaId=item.id;draft.dramaQuery=item.label;$('#syncDramaSearch').value=item.label;$('#syncDramaOptions').hidden=true;break;}
-   case 'sync-tag-manager':tagManager=!tagManager;$('#syncTagManager').hidden=!tagManager;break;
-   case 'sync-add-tag':{const label=$('#syncNewTag').value.trim();if(!label){toast('请输入标签名称');return;}if(tags(draft.target).some(t=>t.label===label)){toast('该标签已存在，请直接选择');return;}const item={id:draft.target+'-custom-'+Date.now(),label,target:draft.target};extraTags().push(item);draft.form.tagIds.push(item.id);save();$('#syncTagOptions').innerHTML=tagsHTML();$('#syncTagsSummary').textContent=tags(draft.target).filter(t=>draft.form.tagIds.includes(t.id)).map(t=>t.label).join('、');$('#syncNewTag').value='';toast('已新增示例标签并选中');break;}
+   case 'sync-tag-manager':if(draft?.target!=='domestic')return;tagManager=!tagManager;$('#syncTagManager').hidden=!tagManager;break;
+   case 'sync-add-tag':{if(draft?.target!=='domestic')return;const label=$('#syncNewTag').value.trim();if(!label){toast('请输入标签名称');return;}if(Array.from(label).length>20){toast('标签名称最多20字');return;}if(tags(draft.target).some(t=>t.label===label)){toast('该标签已存在，请直接选择');return;}const item={id:'domestic-custom-'+Date.now(),label,target:'domestic'};extraTags().push(item);draft.form.tagIds.push(item.id);save();$('#syncTagOptions').innerHTML=tagsHTML();$('#syncTagsSummary').textContent=tags(draft.target).filter(t=>draft.form.tagIds.includes(t.id)).map(t=>t.label).join('、');$('#syncNewTag').value='';toast('已新增标签并选中');break;}
    case 'sync-submit':submit();break;
    case 'sync-records':records(b);break;
    case 'sync-record-one':records(b,el.dataset.id);break;
@@ -158,11 +174,9 @@ export function createSyncUI(api) {
    case 'sync-query':query(jobs().find(j=>j.id===el.dataset.job),el);break;
   }
  }
- document.addEventListener('input',e=>{if(!draft?.form)return;if(e.target.dataset.syncField)draft.form[e.target.dataset.syncField]=e.target.value;if(e.target.id==='syncDramaSearch'){draft.dramaQuery=e.target.value;draft.form.dramaId='';draft.mapped=false;showDramaOptions();}});
- document.addEventListener('change',e=>{if(!draft?.form)return;if(e.target.dataset.syncField)draft.form[e.target.dataset.syncField]=e.target.value;if(e.target.dataset.syncTag){const id=e.target.dataset.syncTag;draft.form.tagIds=e.target.checked?[...new Set([...draft.form.tagIds,id])]:draft.form.tagIds.filter(t=>t!==id);$('#syncTagsSummary').textContent=tags(draft.target).filter(t=>draft.form.tagIds.includes(t.id)).map(t=>t.label).join('、')||'请选择标签（可多选）';}});
- document.addEventListener('focusin',e=>{if(draft?.form&&e.target.id==='syncDramaSearch')showDramaOptions();});
- document.addEventListener('click',e=>{if($('#syncDramaOptions')&&!e.target.closest('.sync-drama-picker'))$('#syncDramaOptions').hidden=true;});
- $('#dialog').addEventListener('close',()=>{delete $('#dialog').dataset.syncJob;activeJob=null;});
+ document.addEventListener('input',e=>{if(!draft?.form)return;if(e.target.dataset.syncField&&Object.hasOwn(draft.form,e.target.dataset.syncField))draft.form[e.target.dataset.syncField]=e.target.value;});
+ document.addEventListener('change',e=>{if(!draft?.form)return;if(e.target.dataset.syncField&&Object.hasOwn(draft.form,e.target.dataset.syncField))draft.form[e.target.dataset.syncField]=e.target.value;if(draft.target==='domestic'&&e.target.dataset.syncTag){const id=e.target.dataset.syncTag;draft.form.tagIds=e.target.checked?[...new Set([...draft.form.tagIds,id])]:draft.form.tagIds.filter(t=>t!==id);$('#syncTagsSummary').textContent=tags(draft.target).filter(t=>draft.form.tagIds.includes(t.id)).map(t=>t.label).join('、')||'请选择标签（可多选）';}});
+ $('#dialog').addEventListener('close',()=>{delete $('#dialog').dataset.syncJob;activeJob=null;draft=null;});
  function invalidate(o) {o.contentVersion=outputVersion(o)+1;o.confirmed=false;o.confirmedVersion=null;o.confirmedAt=null;}
  function reset() {timers.forEach(t=>clearTimeout(t));timers.clear();draft=null;activeJob=null;initialize();}
  return {open,handle,badgeFor,rowAction,reviewActions,reviewNotice,locked,confirmed,canSync,invalidate,reset,isBusy:()=>timers.size>0};

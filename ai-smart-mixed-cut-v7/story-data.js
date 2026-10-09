@@ -1,4 +1,4 @@
-import {resolveSource} from './sources.js?v=20261008-interaction1';
+import {resolveSource} from './sources.js?v=20261009-update10';
 const episodeStories = [
   ['重返签约会', '林知夏重返陆氏，在签约会上被误认成助理。她坚持核对自己的项目合同。', '这份合同，我需要看一下附页。'],
   ['被换掉的附页', '陆承川质疑林知夏的资历。林知夏指出合同附页被人调换，要求当场核验。', '如果附页没有被换过，为什么签章的日期对不上？'],
@@ -73,7 +73,7 @@ export const EPISODES = Object.freeze(episodeStories.map(([name, story, dialogue
 
 export function getEpisodes(config = {}) {
   const source = resolveSource(config);
-  if (!source) return [];
+  if (!source || source.simulated === false) return [];
   return source.availableEpisodes.map(id => {
     const episode = EPISODES[(id - 1) % EPISODES.length];
     return {...episode, id, name: `第 ${id} 集 · ${episode.title}`, drama: source.title,

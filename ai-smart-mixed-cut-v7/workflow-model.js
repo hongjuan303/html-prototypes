@@ -1,5 +1,5 @@
-import {compareContent,curateCandidates} from './content-model.js?v=20261008-interaction1';
-import {clone,planBatch,assetKey} from './engine.js?v=20261008-interaction1';
+import {compareContent,curateCandidates} from './content-model.js?v=20261009-update10';
+import {clone,planBatch,assetKey} from './engine.js?v=20261009-update10';
 
 const round=value=>Math.round(value*100)/100;
 const amount=value=>Number.isFinite(value)?Math.max(0,value):0;
@@ -64,7 +64,7 @@ function creativeCandidate(state,b,o,direction){
 export function beginRework(state,b,o,{kind='creative',direction='opening',instruction=''}={}){
  if(o.reworkPending)return o.reworkPending;
  if(!reviewable(o))throw Error('请等待当前素材处理完成后再重新制作');
- if(o.narrationDraft)throw Error('请先保存或放弃文案修改');
+ if(o.narrationDraft)throw Error('请先应用或放弃文案修改');
  if(!['quality','creative'].includes(kind))throw Error('请选择重新制作方式');
  if(kind==='quality'&&!o.issues?.length)throw Error('请先标记质量问题，再进行免费修复');
  if(kind==='creative'&&!['opening','context','angle'].includes(direction))throw Error('请选择调整方向');
@@ -82,6 +82,7 @@ export function beginRework(state,b,o,{kind='creative',direction='opening',instr
 }
 
 export function finishRework(state,b,o,success=true){
+ if(o.reworkPending?.kind==='narration')return finishNarrationUpdate(state,b,o,success);
  const job=o.reworkPending;
  if(!job)return o.lastReworkResult||{success:false,ignored:true,reason:'no-pending-job'};
  // If another action changed content, release this job instead of overwriting it.
@@ -107,4 +108,50 @@ export function finishRework(state,b,o,success=true){
  o.creationRequests=[...(o.creationRequests||[]),{operationId:job.operationId,kind:job.kind,direction:job.direction,instruction:job.instruction,instructionApplied:false,at}];
  if(cost){b.cost.production=round(amount(b.cost.production)+cost);state.ledger.unshift({id:job.operationId+'-settled',batch:b.id,output:o.id,operationId:job.operationId,type:'创作重做已结算（从冻结扣除）',points:0,settled:cost,at});}
  const result={success:true,operationId:job.operationId,cost,version};o.lastReworkResult=result;return result;
+}
+
+// Saving words is separate from rendering media. This local operation reuses
+// the task's quoted unit and leaves every prior media/sync version untouched.
+export function beginNarrationUpdate(state,b,o,texts){
+ if(!b||!o||b.config.mode!=='narrated'||!reviewable(o))throw Error('当前素材正在处理，请稍后应用修改');
+ const full=b.config.narrationStructure==='full',expected=full?(o.segments||[]).filter(s=>s.type==='narration').length:1;
+ const draft=Array.isArray(texts)?texts.map(text=>String(text).trim()):[];
+ if(!draft.length||draft.length!==expected||draft.some(text=>!text))throw Error('请填写完整解说文案');
+ const signature=JSON.stringify(draft);
+ if(signature!==JSON.stringify(o.narrationSavedDraft)||signature!==JSON.stringify((o.narrationDraft||[]).map(text=>String(text).trim())))throw Error('请先保存当前文案，再应用修改');
+ const media=full?o.segments.filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||''];
+ if(signature===JSON.stringify(media.map(text=>String(text).trim())))throw Error('文案没有变化');
+ const cost=amount(b.cost.unit);
+ if(cost>amount(state.balance))throw Error('积分不足，暂时无法应用修改');
+ const operationId='NU-'+Date.now().toString(36).toUpperCase()+'-'+(++sequence).toString(36).toUpperCase(),summary=costSummary(state,b);
+ const job={operationId,kind:'narration',type:'narration-update',fromVersion:o.contentVersion,draftSignature:signature,texts:clone(draft),cost,config:clone(b.config),startedAt:now()};
+ b.cost.quoted=summary.quoted+cost;b.cost.released=summary.released;b.cost.refunded=summary.refunded;
+ if(cost){state.balance=round(state.balance-cost);b.cost.frozen=round(amount(b.cost.frozen)+cost);state.ledger.unshift({id:operationId+'-freeze',batch:b.id,output:o.id,operationId,type:'文案应用 · 冻结制作额度',points:-cost,at:job.startedAt});}
+ o.reworkPending=job;return job;
+}
+export function finishNarrationUpdate(state,b,o,success=true){
+ const job=o.reworkPending;
+ if(!job)return o.lastNarrationResult||{success:false,ignored:true};
+ if(job.kind!=='narration')return {success:false,ignored:true};
+ if(o.contentVersion!==job.fromVersion||JSON.stringify(o.narrationSavedDraft)!==job.draftSignature)success=false;
+ const cost=amount(job.cost),at=now();
+ b.cost.frozen=round(Math.max(0,amount(b.cost.frozen)-cost));
+ if(!success){
+  if(cost){state.balance=round(state.balance+cost);b.cost.released=round(amount(b.cost.released)+cost);state.ledger.unshift({id:job.operationId+'-release',batch:b.id,output:o.id,operationId:job.operationId,type:'文案应用失败 · 释放额度',points:cost,at});}
+  delete o.reworkPending;o.lastNarrationResult={success:false,operationId:job.operationId,released:cost,version:o.contentVersion};return o.lastNarrationResult;
+ }
+ const previous=clone(o);for(const key of ['reworkPending','versionHistory','qualityBaseline','narrationDraft','narrationSavedDraft','narrationDraftSavedAt','lastNarrationResult'])delete previous[key];
+ o.versionHistory=[{...previous,version:o.contentVersion,archivedAt:at,reason:'应用解说文案修改'},...(o.versionHistory||[])];
+ const full=b.config.narrationStructure==='full',segments=(o.segments||[]).filter(s=>s.type==='narration');
+ segments.forEach((segment,index)=>segment.text=job.texts[full?index:0]);
+ o.narrationText=full?job.texts.join('\n\n'):job.texts[0];const oldVersion=o.contentVersion;o.contentVersion++;
+ o.preferences=(o.preferences||[]).map(item=>item.version===oldVersion?{...item,version:o.contentVersion,carriedFromVersion:item.carriedFromVersion??oldVersion}:item);o.confirmed=false;o.confirmedVersion=null;delete o.confirmedAt;
+ // Existing quality and creative feedback require their own verification; a
+// text change alone is not evidence that unrelated defects have been fixed.
+ o.status=o.issues?.length?'issue':'ready';o.quality={status:o.issues?.length?'attention':'passed',checkedAt:at};
+ (o.revisions||=[]).unshift({version:o.contentVersion,description:'应用解说文案修改，待重新确认',at,operationId:job.operationId});
+ if(o.qualityBaseline){o.qualityBaseline.segments=clone(o.segments);o.qualityBaseline.narrationText=o.narrationText;}
+ for(const key of ['narrationDraft','narrationSavedDraft','narrationDraftSavedAt','narrationTimingDirty','reworkPending'])delete o[key];
+ if(cost){b.cost.production=round(amount(b.cost.production)+cost);state.ledger.unshift({id:job.operationId+'-settled',batch:b.id,output:o.id,operationId:job.operationId,type:'文案应用已结算（从冻结扣除）',points:0,settled:cost,at});}
+ o.lastNarrationResult={success:true,operationId:job.operationId,cost,version:o.contentVersion};return o.lastNarrationResult;
 }

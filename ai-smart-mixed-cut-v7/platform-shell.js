@@ -1,4 +1,4 @@
-import {platformAccount,readPlatformUsage,subscribePlatformUsage} from './platform-context.js?v=20261008-interaction1';
+import {platformAccount,readPlatformUsage,subscribePlatformUsage} from './platform-context.js?v=20261009-update10';
 const $=s=>document.querySelector(s);
 const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const paths={

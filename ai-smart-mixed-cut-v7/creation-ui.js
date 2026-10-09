@@ -1,5 +1,6 @@
-import {MODES,CREATION_MODES,RANGES,analysisInfo,estimate,isFullNarration,validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261008-interaction1';
-import {resolveSource} from './sources.js?v=20261008-interaction1';
+import {MODES,CREATION_MODES,RANGES,analysisInfo,estimate,isFullNarration,validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261009-update10';
+import {resolveSource} from './sources.js?v=20261009-update10';
+import {sourceAccess,sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261009-update10';
 
 export const BGM_MOODS=[{id:'tension',name:'悬念推进'},{id:'rise',name:'逆袭时刻'},{id:'soft',name:'情感叙事'}];
 export const BGM_TRACKS=[{id:'auto',name:'自动匹配',mood:null},{id:'tension-01',name:'暗涌',mood:'tension'},{id:'rise-01',name:'破局',mood:'rise'},{id:'soft-01',name:'心事',mood:'soft'}];
@@ -14,6 +15,7 @@ export function durationLabel(value){
  return value.includes('-')?value.replace('-','–')+' 分钟':'约 '+value+' 分钟';
 }
 export function renderCreationPreview(c,{esc}){
+ if(!isConfiguredSource(c))return '<div class="preview-heading"><h2>预计成片结构</h2></div><p class="helper">请先选择片源</p>';
  const narrated=c.mode==='narrated',full=isFullNarration(c),chosen=!narrated||['mixed','full'].includes(c.narrationStructure);
  const speed=c.narrationSpeed||1,narrationLength='AI 解说';
  const flow=!narrated?[
@@ -29,17 +31,17 @@ export function renderCreationPreview(c,{esc}){
 }
 export function createForm(state,{busy},h){
  const {heading,button,esc,tag,option,field,footer,sourceLabel}=h;
- const c=state.config,info=analysisInfo(state,c),q=estimate(state,c,c.count),s=resolveSource(c);
- const narrated=c.mode==='narrated',full=isFullNarration(c),chosen=!narrated||['mixed','full'].includes(c.narrationStructure),error=validate(c);
+ const c=state.config,access=sourceAccess(state),permissionError=sourcePermissionError(state,c),configured=isConfiguredSource(c)&&!permissionError,info=configured?analysisInfo(state,c):{reused:[],pending:[]},q=estimate(state,c,c.count),s=configured?resolveSource(c):null;
+ const narrated=c.mode==='narrated',full=isFullNarration(c),chosen=!narrated||['mixed','full'].includes(c.narrationStructure),error=permissionError||validate(c);
  const blocked=busy||Boolean(error);
  footer(error?'<strong>待完成设置</strong>':`<span>预计最高</span><strong>${q.total}</strong><span>积分</span>${tag('示例计费','orange')}`,error||`新增分析 ${q.analysis} 分 + 制作 ${q.production} 分 · 使用平台积分`,button('费用明细','quote','text-btn',error?'disabled':'')+button(busy?'正在处理…':'生成视频','direct','primary',blocked?'disabled':''));
  const durations=full?['30s','60s','90s','120s','3','5','3-5','5-7','10']:Object.keys(RANGES).filter(k=>!k.endsWith('s'));
  return heading('制作素材','')+`
  <div class="create-grid"><div>
- <section class="section"><div class="section-heading"><h2><span class="number">1</span>片源与选集</h2><div class="actions">${button('绿台合集','source-picker','text-btn')}${button('本地上传','upload','text-btn')}</div></div>
- <div class="source-card"><img class="poster" src="./assets/drama-confrontation.jpg" alt="虚构剧目封面"><div class="source-info"><strong>${esc(s?.title||'请选择片源')}</strong><p>${esc(s?.description||'')}</p>${tag(sourceLabel())} ${tag('原片 V'+(c.source.fileVersion||1))}</div>${button('更换','source-picker','text-btn')}</div>
- <div class="range-row"><label>本次选集</label><div class="pills">${[10,20,30].map(n=>button('前 '+n+' 集','range',c.start===1&&c.end===n?'active':'','data-value="'+n+'"')).join('')}</div><label>第 <input type="number" min="1" max="40" data-config="start" aria-label="起始集数" value="${c.start}"> — <input type="number" min="1" max="40" data-config="end" aria-label="结束集数" value="${c.end}"> 集</label></div>
- <div class="analysis-bar"><span>已分析可复用 <b>${info.reused.length}</b> 集 · 本次新增 <b>${info.pending.length}</b> 集</span>${button('查看剧目','current-drama','text-btn')}</div></section>
+ <section class="section"><div class="section-heading"><h2><span class="number">1</span>片源与选集</h2><div class="actions">${access.canUseCollections?button('绿台合集','source-picker','text-btn'):''}${button('本地上传','upload','text-btn')}</div></div>
+ <div class="source-card">${s?.cover?`<img class="poster" src="${esc(s.cover)}" alt="剧目封面">`:`<span class="poster source-local-placeholder" aria-hidden="true">▹</span>`}<div class="source-info"><strong>${esc(s?.title||'请选择片源')}</strong><p>${esc(s?.description||'')}</p>${configured?tag(sourceLabel())+' '+tag('原片 V'+(c.source.fileVersion||1)):''}</div><div class="source-card-actions">${configured?button('更换',access.canUseCollections?'source-picker':'upload','text-btn'):''}${c.source?.kind==='manual'&&c.source.simulated!==true&&Array.isArray(c.source.files)&&c.source.files.length?button('添加视频','append-local-source','text-btn'):''}</div></div>
+ ${configured?` <div class="range-row"><label>本次选集</label><div class="pills">${[10,20,30].map(n=>button('前 '+n+' 集','range',c.start===1&&c.end===n?'active':'','data-value="'+n+'"')).join('')}</div><label>第 <input type="number" min="1" max="${s?.totalEpisodes||1}" data-config="start" aria-label="起始集数" value="${c.start}"> — <input type="number" min="1" max="${s?.totalEpisodes||1}" data-config="end" aria-label="结束集数" value="${c.end}"> 集</label></div>
+ <div class="analysis-bar"><span>已分析可复用 <b>${info.reused.length}</b> 集 · 本次新增 <b>${info.pending.length}</b> 集</span>${button('查看成片','current-drama','text-btn')}</div>`:''}</section>
  <section class="section"><div class="section-heading"><h2><span class="number">2</span>制作方式</h2></div>
  <div class="mode-grid two-modes">${CREATION_MODES.map((id,i)=>`<button class="mode-card ${id===c.mode?'active':''}" data-action="mode" data-value="${id}" aria-pressed="${id===c.mode}"><span class="mode-icon">${i?'≋':'✧'}</span><strong>${MODES[id].name}</strong><p>${i?'用解说讲述剧情，支持混合与全解说结构':'提炼剧情高光，保留人物原声与完整对白'}</p></button>`).join('')}</div>
  ${narrated?`<div class="narration-choice"><div class="structure-heading"><b>解说结构 <span class="required">*</span></b></div><div class="structure-options" role="group" aria-label="解说结构">${[['mixed','解说＋原片','解说与原片原声衔接，可前置或穿插'],['full','全解说','全篇解说承担叙事，原片提供对应画面']].map(([id,title,desc])=>`<button class="structure-option ${c.narrationStructure===id?'selected':''}" data-action="narration-structure" data-value="${id}" aria-pressed="${c.narrationStructure===id}"><span class="radio-dot"></span><div><b>${title}</b><p>${desc}</p></div></button>`).join('')}</div>${!chosen?'<p class="structure-hint">请选择解说结构</p>':full?'<p class="helper">全篇解说配原片画面，原片人声关闭。</p>':''}</div>`:''}

@@ -1,10 +1,10 @@
-import {mountPlatformShell,renderToolbox} from './platform-shell.js?v=20261008-interaction1';
-import {claimEditingSession} from './demo-session.js?v=20261008-interaction1';
+import {mountPlatformShell,renderToolbox} from './platform-shell.js?v=20261009-update10';
+import {claimEditingSession} from './demo-session.js?v=20261009-update10';
 const toolbox=document.body.dataset.workspace==='toolbox';
 mountPlatformShell(toolbox);
 if(toolbox){
  renderToolbox();
- await import('./review-bridge.js?v=20261008-interaction1');
+ await import('./review-bridge.js?v=20261009-update10');
 }else{
  const url=new URL(location.href);
  const showSession=(title,message,retry=false)=>{
@@ -26,7 +26,7 @@ if(toolbox){
    try{
     document.querySelector('#workspaceNav').hidden=false;
     document.querySelector('[data-action="demo-tools"]').hidden=false;
-    const app=await import('./app.js?v=20261008-interaction1');
+    const app=await import('./app.js?v=20261009-update10');
     session.setYieldHandler(()=>{
      if(!app.relinquishEditingSession())return false;
      url.searchParams.set('session','paused');
@@ -42,5 +42,5 @@ if(toolbox){
    showSession('暂时无法接续页面','请重新进入，已有记录会继续保留。',true);
   }
  }
- await import('./review-bridge.js?v=20261008-interaction1');
+ await import('./review-bridge.js?v=20261009-update10');
 }

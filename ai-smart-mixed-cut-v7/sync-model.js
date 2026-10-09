@@ -10,27 +10,29 @@ function deepFreeze(value) {
 }
 
 export const TARGETS = deepFreeze([
-  {id: 'domestic', label: '国内素材', systemLabel: '国内投放系统'},
-  {id: 'overseas', label: '海外素材', systemLabel: '海外投放系统'},
+  {id: 'domestic', label: '国内素材', systemLabel: '容量广告'},
+  {id: 'overseas', label: '海外素材', systemLabel: '容量海外短剧'},
 ]);
+
+export const SYNC_SCHEMA_VERSION = 2;
 
 // Keep every lookup scoped by target. A Green Console collection ID is not a
 // material-system drama ID, and the same collection ID may exist in both markets.
 export const TARGET_DATA = deepFreeze({
   domestic: {
+    sources: {
+      directories: '容量广告 / 上传素材 / 目录',
+      designers: '容量广告 / 上传素材 / 设计师',
+      tags: '容量广告 / 上传素材 / 素材标签',
+    },
     directories: [
       {id: 'domestic-dir-001', label: '国内投放 / 短剧混剪'},
       {id: 'domestic-dir-002', label: '国内投放 / AI 解说'},
       {id: 'domestic-dir-003', label: '国内投放 / 测试素材'},
     ],
     designers: [
-      {id: 'domestic-designer-001', label: '陈剪辑（当前用户）'},
-      {id: 'domestic-designer-002', label: '李剪辑'},
-    ],
-    dramas: [
-      {id: 'domestic-drama-001', label: '重逢时，她已是王牌（虚构示例）', greenCollectionId: 'collection-001'},
-      {id: 'domestic-drama-002', label: '她的第二次选择（虚构示例）', greenCollectionId: 'collection-002'},
-      {id: 'domestic-drama-004', label: '回到相逢那天（虚构示例）', greenCollectionId: null},
+      {id: 'domestic-designer-002', label: '李剪辑', accountId: 'wanxiang-demo-account-li'},
+      {id: 'domestic-designer-001', label: '陈剪辑', accountId: 'wanxiang-demo-account'},
     ],
     tags: [
       {id: 'domestic-tag-001', label: '原片混剪'},
@@ -40,25 +42,18 @@ export const TARGET_DATA = deepFreeze({
     ],
   },
   overseas: {
+    sources: {
+      directories: '容量海外短剧 / 素材管理 / 文件夹目录',
+      designers: '容量海外短剧 / 素材管理 / 上传素材 / 设计师',
+    },
     directories: [
       {id: 'overseas-dir-001', label: '海外投放 / 短剧混剪'},
       {id: 'overseas-dir-002', label: '海外投放 / AI 解说'},
       {id: 'overseas-dir-003', label: '海外投放 / 测试素材'},
     ],
     designers: [
-      {id: 'overseas-designer-001', label: '陈剪辑（当前用户）'},
-      {id: 'overseas-designer-002', label: '周剪辑'},
-    ],
-    dramas: [
-      {id: 'overseas-drama-001', label: '归来后的新身份（虚构示例）', greenCollectionId: 'collection-001'},
-      {id: 'overseas-drama-002', label: '最后一页合约（虚构示例）', greenCollectionId: 'collection-002'},
-      {id: 'overseas-drama-004', label: '重逢的季节（虚构示例）', greenCollectionId: null},
-    ],
-    tags: [
-      {id: 'overseas-tag-001', label: '原片混剪'},
-      {id: 'overseas-tag-002', label: 'AI 解说'},
-      {id: 'overseas-tag-003', label: '身份反转'},
-      {id: 'overseas-tag-004', label: '都市情感'},
+      {id: 'overseas-designer-002', label: '周剪辑', accountId: 'wanxiang-demo-account-zhou'},
+      {id: 'overseas-designer-001', label: '陈剪辑', accountId: 'wanxiang-demo-account'},
     ],
   },
 });
@@ -91,20 +86,42 @@ function isCalendarDate(value) {
   return day <= [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
 }
 
+/** The product's business day follows Asia/Shanghai, independent of browser zone. */
+export function businessDate(now = new Date()) {
+  const date = now instanceof Date ? now : new Date(now);
+  if (!Number.isFinite(date.getTime())) throw new TypeError('Invalid business date');
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(date);
+  const value = type => parts.find(part => part.type === type).value;
+  return value('year') + '-' + value('month') + '-' + value('day');
+}
+
+export function designerForAccount(target, accountId) {
+  if (!targetExists(target) || typeof accountId !== 'string' || !accountId) return '';
+  const matches = TARGET_DATA[target].designers.filter(item => item.accountId === accountId);
+  return matches.length === 1 ? matches[0].id : '';
+}
+
 /**
- * Form schema: {directoryId:string, designerId:string, dramaId:string,
- * tagIds:string[], onlineDate:string (YYYY-MM-DD)}. Every field is required.
- * extraTags: [{id:string, label:string, target:'domestic'|'overseas'}].
+ * V2 schemas are independent. Domestic requires directory/designer/dramaName/
+ * tags/date; overseas requires directory/designer/materialName only.
+ * Normalization drops fields belonging to another target, including legacy IDs.
+ * extraTags are domestic-only. now is injectable for business-day boundary tests.
  * Returns {valid:boolean, errors:{[field]:string}, normalized:form}.
  * Date validation deliberately does not derive the destination protection period.
  */
-export function validateSyncForm(form, target, extraTags = []) {
+export function validateSyncForm(form, target, extraTags = [], now = new Date()) {
   const values = form && typeof form === 'object' && !Array.isArray(form) ? form : {};
   const text = field => typeof values[field] === 'string' ? values[field].trim() : '';
   const normalized = {
-    directoryId: text('directoryId'), designerId: text('designerId'), dramaId: text('dramaId'),
-    tagIds: Array.isArray(values.tagIds) ? [...new Set(values.tagIds.filter(id => typeof id === 'string').map(id => id.trim()))] : [],
-    onlineDate: text('onlineDate'),
+    schemaVersion: SYNC_SCHEMA_VERSION,
+    directoryId: text('directoryId'), designerId: text('designerId'),
+    ...(target === 'domestic' ? {
+      dramaName: text('dramaName'),
+      tagIds: Array.isArray(values.tagIds) ? [...new Set(values.tagIds.filter(id => typeof id === 'string').map(id => id.trim()))] : [],
+      onlineDate: text('onlineDate'),
+    } : target === 'overseas' ? {materialName: text('materialName')} : {}),
   };
   const errors = {};
   if (!targetExists(target)) errors.target = '请选择国内素材或海外素材';
@@ -112,12 +129,17 @@ export function validateSyncForm(form, target, extraTags = []) {
   const fields = [
     ['directoryId', 'directories', '上传目录'],
     ['designerId', 'designers', '设计师（剪辑）'],
-    ['dramaId', 'dramas', '关联剧集'],
   ];
   for (const [field, options, label] of fields) {
     if (!normalized[field]) errors[field] = '请选择' + label;
     else if (!data?.[options].some(item => item.id === normalized[field])) errors[field] = label + '不属于当前投放系统，请重新选择';
   }
+  if (target === 'overseas') {
+    if (!normalized.materialName) errors.materialName = '请输入素材名称';
+    return {valid: Object.keys(errors).length === 0, errors, normalized};
+  }
+  if (target !== 'domestic') return {valid: false, errors, normalized};
+  if (!normalized.dramaName) errors.dramaName = '请输入关联剧集名称';
   const allowedTags = new Set([
     ...(data?.tags || []).map(item => item.id),
     ...(Array.isArray(extraTags) ? extraTags : [])
@@ -128,6 +150,7 @@ export function validateSyncForm(form, target, extraTags = []) {
   else if (values.tagIds.some(id => typeof id !== 'string') || normalized.tagIds.some(id => !allowedTags.has(id))) errors.tagIds = '素材标签不属于当前投放系统，请重新选择';
   if (!normalized.onlineDate) errors.onlineDate = '请选择上线时间';
   else if (!isCalendarDate(normalized.onlineDate)) errors.onlineDate = '请输入有效的上线日期';
+  else if (normalized.onlineDate < businessDate(now)) errors.onlineDate = '上线时间不能早于今天，请重新选择';
   return {valid: Object.keys(errors).length === 0, errors, normalized};
 }
 
@@ -170,12 +193,12 @@ function fail(message, code, details) {
  * be checked and recorded as success or failed by the application.
  * Errors expose a Chinese message plus code and optional validation details.
  */
-export function prepareSync(batch, outputs, target, form, jobs = [], extraTags = []) {
+export function prepareSync(batch, outputs, target, form, jobs = [], extraTags = [], now = new Date()) {
   if (!batch || typeof batch.id !== 'string' || !batch.id) fail('未找到当前混剪任务', 'INVALID_BATCH');
   if (!targetExists(target)) fail('请选择国内素材或海外素材', 'TARGET_REQUIRED');
   const routedTarget = targetForBatch(batch);
   if (routedTarget && routedTarget !== target) fail('所选合集属于' + TARGETS.find(item => item.id === routedTarget).systemLabel + '，无法跨系统同步', 'TARGET_MISMATCH');
-  const validation = validateSyncForm(form, target, extraTags);
+  const validation = validateSyncForm(form, target, extraTags, now);
   if (!validation.valid) fail(Object.values(validation.errors)[0], 'INVALID_FORM', validation.errors);
   if (!Array.isArray(outputs) || !outputs.length) fail('请先选择已确认可用的成片', 'EMPTY_SELECTION');
   const ids = new Set();
@@ -184,7 +207,7 @@ export function prepareSync(batch, outputs, target, form, jobs = [], extraTags =
     ids.add(candidate.id);
     const output = batch.outputs?.find(item => item.id === candidate.id);
     if (!output || outputVersion(output) !== outputVersion(candidate)) fail('成片版本已变化，请重新选择并确认', 'STALE_OUTPUT');
-    if (output.status !== 'ready' || output.confirmed !== true || (output.confirmedVersion != null && output.confirmedVersion !== outputVersion(output))) fail('仅可同步剪辑已确认当前版本可用的成片，请先完成检查', 'NOT_CONFIRMED');
+    if (output.narrationDraft || output.reworkPending || output.repairing || output.status !== 'ready' || output.confirmed !== true || (output.confirmedVersion != null && output.confirmedVersion !== outputVersion(output))) fail('仅可同步剪辑已确认当前版本可用的成片，请先完成检查', 'NOT_CONFIRMED');
     const crossTargetDuplicate = matchesForOutput(batch.id, output, jobs)
       .find(match => match.target !== target && NON_RETRYABLE.has(match.status));
     if (crossTargetDuplicate) {

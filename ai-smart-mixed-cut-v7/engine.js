@@ -1,6 +1,6 @@
-import {EPISODES,getEpisodes} from './story-data.js?v=20261008-interaction1';
-import {resolveSource} from './sources.js?v=20261008-interaction1';
-import {fullNarrationCandidates} from './full-narration.js?v=20261008-interaction1';
+import {EPISODES,getEpisodes} from './story-data.js?v=20261009-update10';
+import {resolveSource} from './sources.js?v=20261009-update10';
+import {fullNarrationCandidates} from './full-narration.js?v=20261009-update10';
 export {getEpisodes};
 export const clone=v=>JSON.parse(JSON.stringify(v));
 export const CREATION_MODES=Object.freeze(['highlight','narrated']);

@@ -1,9 +1,22 @@
-import {evidenceFor,relatedContent} from './content-model.js?v=20261008-interaction1';
-export function contentEvidence(state,b,o,{esc,button,tag,fmt}){
- const evidence=evidenceFor(b,o),related=relatedContent(state,b,o);
- return `<details class="content-evidence"><summary><span>选取依据与内容差异</span><span class="evidence-tags">${evidence.tags.map(t=>tag(t)).join('')}</span></summary><div class="evidence-body"><p class="helper">${esc(evidence.rule)}</p><div class="evidence-reasons">${evidence.reasons.map(r=>`<article><b>${r.label}</b><p>${esc(r.text)}</p><div><small>第 ${r.segment.sourceEp} 集 ${fmt(r.segment.sourceStart)}–${fmt(r.segment.sourceEnd)}</small>${button('定位成片 '+fmt(r.segment.start),'quality-locate','text-btn',`data-at="${r.segment.start}"`)}</div></article>`).join('')}</div><h3>内容差异检查</h3>${related.length?related.map(item=>`<div class="similarity-row"><div><b>${esc(item.output.title)}</b><small>${item.inBatch?'本批素材':'同片源历史素材'}</small><p>${esc(item.reasons.join(' · '))}</p>${item.sameEvent?`<p class="helper">${item.sameOpening?'开场相同':'开场不同'} · ${item.sameEnding?'结尾相同':'结尾不同'}；同一事件可保留不同剪法供比较。</p>`:''}</div>${button('对比','compare-content','text-btn',`data-batch="${esc(item.batch.id)}" data-id="${esc(item.output.id)}"`)}</div>`).join(''):'<p class="helper">当前没有达到提示条件的相似素材，不代表没有重复风险。</p>'}<p class="helper evidence-boundary">依据与区间来自虚构故事板，不是投放效果预测。</p></div></details>`;
+import {compareContent} from './content-model.js?v=20261009-update10';
+import {assetKey} from './engine.js?v=20261009-update10';
+
+// Expose only actionable high similarity. Sharing one event alone is common
+// for drama creatives and does not meet the model's duplicate condition.
+export function similarMaterials(state,b,o){
+ const source=assetKey(b.config),items=[];
+ for(const otherBatch of state.batches||[]){
+  if(assetKey(otherBatch.config)!==source)continue;
+  for(const other of otherBatch.outputs||[]){
+   if(otherBatch.id===b.id&&other.id===o.id||!['ready','issue'].includes(other.status))continue;
+   const comparison=compareContent(o,other);
+   if(comparison.duplicate)items.push({batch:otherBatch,output:other,...comparison});
+  }
+ }
+ return items.sort((a,b)=>b.priority-a.priority);
 }
-export function compareContentDialog(b,o,otherBatch,other,{esc,fmt}){
- const column=(batch,item)=>`<section><h3>${esc(item.title)}</h3><p class="helper">${batch.id===b.id?'本批':'历史批次'} · ${fmt(item.duration)} · V${item.contentVersion}</p><b>开场</b><p>${esc(item.segments[0].text)}</p><b>结尾</b><p>${esc(item.segments.at(-1).text)}</p><small>取材第 ${item.episodes.join('、')} 集</small>${item.narrationText?`<details class="comparison-narration"><summary>解说全文</summary><p>${esc(item.narrationText)}</p></details>`:''}</section>`;
- return `<div class="content-comparison">${column(b,o)}${column(otherBatch,other)}</div><p class="helper">用于检查已有成片差异，不新增制作任务或积分消耗。</p>`;
+export function contentSimilarity(state,b,o,{esc,button}){
+ const related=similarMaterials(state,b,o);
+ if(!related.length)return '';
+ return `<details class="related-materials"><summary><span>与 ${related.length} 条素材内容相似</span><span>查看相关素材</span></summary><div class="related-material-list">${related.map(item=>`<div class="related-material-row"><span>${esc(item.output.title)}</span>${button('查看成片','review-related','text-btn',`data-batch="${esc(item.batch.id)}" data-id="${esc(item.output.id)}"`)}</div>`).join('')}</div></details>`;
 }

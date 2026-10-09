@@ -6,7 +6,7 @@ export const MARKETS = Object.freeze([
 ]);
 
 const sequence = count => Array.from({length: count}, (_, index) => index + 1);
-const collection = value => Object.freeze({...value, availableEpisodes: Object.freeze(value.availableEpisodes), simulated: true});
+const collection = value => Object.freeze({cover:'./assets/drama-confrontation.jpg',...value, availableEpisodes: Object.freeze(value.availableEpisodes), simulated: true});
 
 // IDs are only unique within a market, just as independent source systems may use the same ID.
 export const COLLECTIONS = Object.freeze([
@@ -41,13 +41,20 @@ export function resolveSource(config = {}) {
   const source = config?.source;
   // Stored tasks created before collection selection keep their original sample source.
   if (source == null || source.kind === 'sample') return copySource(SAMPLE_SOURCE);
+  if (source.kind === 'manual' && source.simulated === false && Array.isArray(source.files) && source.files.length) {
+    const files = source.files;
+    return copySource({...source, market:null, title:source.displayName || source.title || files[0].name,
+      cover:source.cover || files[0].cover || '', totalEpisodes:files.length,
+      availableEpisodes:files.map((file,index)=>file.status==='ready'?index+1:null).filter(Boolean),
+      description:files.length+' 集本地原片', simulated:false});
+  }
   if (source.kind === 'manual' && source.simulated === true) return copySource({...SAMPLE_SOURCE,kind:'manual',title:'手动上传剧集（虚构示例）',description:'30 集示例原片 · 未确定国内或海外类型'});
   if (source.kind !== 'green' || !MARKETS.some(item => item.id === source.market)) return null;
   const item = getCollection(source.market, source.collectionId);
   if (!item) return null;
   return copySource({
     kind: 'green', market: item.market, collectionId: item.id,
-    title: item.title, description: item.description, totalEpisodes: item.totalEpisodes,
+    title: item.title, cover:item.cover, description: item.description, totalEpisodes: item.totalEpisodes,
     availableEpisodes: item.availableEpisodes, simulated: true,
   });
 }
