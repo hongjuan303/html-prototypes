@@ -1,4 +1,4 @@
-import {outputTable} from './workflow-ui.js?v=20261009-update10';
+import {outputTable} from './workflow-ui.js?v=20261009-update11';
 
 const currentConfirmed=o=>o.status==='ready'&&o.confirmed&&o.confirmedVersion===o.contentVersion&&!o.narrationDraft;
 export function materialMatches(o,config,filters){

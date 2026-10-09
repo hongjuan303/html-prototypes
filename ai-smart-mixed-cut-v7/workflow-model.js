@@ -1,5 +1,6 @@
-import {compareContent,curateCandidates} from './content-model.js?v=20261009-update10';
-import {clone,planBatch,assetKey} from './engine.js?v=20261009-update10';
+import {assignBgmSnapshot} from './bgm-assignment.js?v=20261009-update11';
+import {compareContent,curateCandidates} from './content-model.js?v=20261009-update11';
+import {clone,planBatch,assetKey} from './engine.js?v=20261009-update11';
 
 const round=value=>Math.round(value*100)/100;
 const amount=value=>Number.isFinite(value)?Math.max(0,value):0;
@@ -71,6 +72,7 @@ export function beginRework(state,b,o,{kind='creative',direction='opening',instr
  const cost=kind==='creative'?amount(b.cost.unit):0;
  if(cost>amount(state.balance))throw Error('积分不足，请减少制作数量或补充积分');
  const candidate=kind==='quality'?qualityCandidate(b,o):creativeCandidate(state,b,o,direction);
+ candidate.bgmSnapshot=assignBgmSnapshot(b.config,candidate);
  const operationId='RW-'+Date.now().toString(36).toUpperCase()+'-'+(++sequence).toString(36).toUpperCase();
  const job={operationId,kind,direction,instruction:String(instruction||'').trim().slice(0,500),cost,candidate:clone(candidate),fromVersion:o.contentVersion,startedAt:now()};
  // Validation and candidate selection finish before any wallet or content write.
@@ -121,10 +123,12 @@ export function beginNarrationUpdate(state,b,o,texts){
  if(signature!==JSON.stringify(o.narrationSavedDraft)||signature!==JSON.stringify((o.narrationDraft||[]).map(text=>String(text).trim())))throw Error('请先保存当前文案，再应用修改');
  const media=full?o.segments.filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||''];
  if(signature===JSON.stringify(media.map(text=>String(text).trim())))throw Error('文案没有变化');
+ let narrationIndex=0;const updatedSegments=clone(o.segments||[]).map(segment=>segment.type==='narration'?{...segment,text:draft[full?narrationIndex++:0]}:segment);
+ const bgmSnapshot=assignBgmSnapshot(b.config,{...o,segments:updatedSegments});
  const cost=amount(b.cost.unit);
  if(cost>amount(state.balance))throw Error('积分不足，暂时无法应用修改');
  const operationId='NU-'+Date.now().toString(36).toUpperCase()+'-'+(++sequence).toString(36).toUpperCase(),summary=costSummary(state,b);
- const job={operationId,kind:'narration',type:'narration-update',fromVersion:o.contentVersion,draftSignature:signature,texts:clone(draft),cost,config:clone(b.config),startedAt:now()};
+ const job={operationId,kind:'narration',type:'narration-update',fromVersion:o.contentVersion,draftSignature:signature,texts:clone(draft),bgmSnapshot,cost,config:clone(b.config),startedAt:now()};
  b.cost.quoted=summary.quoted+cost;b.cost.released=summary.released;b.cost.refunded=summary.refunded;
  if(cost){state.balance=round(state.balance-cost);b.cost.frozen=round(amount(b.cost.frozen)+cost);state.ledger.unshift({id:operationId+'-freeze',batch:b.id,output:o.id,operationId,type:'文案应用 · 冻结制作额度',points:-cost,at:job.startedAt});}
  o.reworkPending=job;return job;
@@ -144,13 +148,13 @@ export function finishNarrationUpdate(state,b,o,success=true){
  o.versionHistory=[{...previous,version:o.contentVersion,archivedAt:at,reason:'应用解说文案修改'},...(o.versionHistory||[])];
  const full=b.config.narrationStructure==='full',segments=(o.segments||[]).filter(s=>s.type==='narration');
  segments.forEach((segment,index)=>segment.text=job.texts[full?index:0]);
- o.narrationText=full?job.texts.join('\n\n'):job.texts[0];const oldVersion=o.contentVersion;o.contentVersion++;
+ o.narrationText=full?job.texts.join('\n\n'):job.texts[0];o.bgmSnapshot=clone(job.bgmSnapshot??null);const oldVersion=o.contentVersion;o.contentVersion++;
  o.preferences=(o.preferences||[]).map(item=>item.version===oldVersion?{...item,version:o.contentVersion,carriedFromVersion:item.carriedFromVersion??oldVersion}:item);o.confirmed=false;o.confirmedVersion=null;delete o.confirmedAt;
  // Existing quality and creative feedback require their own verification; a
 // text change alone is not evidence that unrelated defects have been fixed.
  o.status=o.issues?.length?'issue':'ready';o.quality={status:o.issues?.length?'attention':'passed',checkedAt:at};
  (o.revisions||=[]).unshift({version:o.contentVersion,description:'应用解说文案修改，待重新确认',at,operationId:job.operationId});
- if(o.qualityBaseline){o.qualityBaseline.segments=clone(o.segments);o.qualityBaseline.narrationText=o.narrationText;}
+ if(o.qualityBaseline){o.qualityBaseline.segments=clone(o.segments);o.qualityBaseline.narrationText=o.narrationText;o.qualityBaseline.bgmSnapshot=clone(o.bgmSnapshot);}
  for(const key of ['narrationDraft','narrationSavedDraft','narrationDraftSavedAt','narrationTimingDirty','reworkPending'])delete o[key];
  if(cost){b.cost.production=round(amount(b.cost.production)+cost);state.ledger.unshift({id:job.operationId+'-settled',batch:b.id,output:o.id,operationId:job.operationId,type:'文案应用已结算（从冻结扣除）',points:0,settled:cost,at});}
  o.lastNarrationResult={success:true,operationId:job.operationId,cost,version:o.contentVersion};return o.lastNarrationResult;

@@ -1,4 +1,4 @@
-import {issueTypes,issueRangeLabel,formatTimeCode,currentPreferences,ISSUE_TYPES} from './feedback-model.js?v=20261009-update10';
+import {issueTypes,issueRangeLabel,formatTimeCode,currentPreferences,ISSUE_TYPES} from './feedback-model.js?v=20261009-update11';
 
 export function feedbackForm(c,o,at,{esc,option}){
  const types=issueTypes(c);

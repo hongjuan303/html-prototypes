@@ -1,5 +1,5 @@
-import {sourceAccess,sourcePermissionError} from './source-access.js?v=20261009-update10';
-import {listDramas} from './dramas.js?v=20261009-update10';
+import {sourceAccess,sourcePermissionError} from './source-access.js?v=20261009-update11';
+import {listDramas} from './dramas.js?v=20261009-update11';
 
 const marketOf=d=>d.config.source?.kind==='green'?d.config.source.market:'manual';
 export function renderLibrary(state,filters,h){

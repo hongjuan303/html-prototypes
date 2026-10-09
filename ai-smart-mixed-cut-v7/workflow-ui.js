@@ -1,6 +1,6 @@
-import {currentPreferences} from './feedback-model.js?v=20261009-update10';
-import {modeLabel} from './engine.js?v=20261009-update10';
-import {reviewable} from './workflow-model.js?v=20261009-update10';
+import {currentPreferences} from './feedback-model.js?v=20261009-update11';
+import {modeLabel} from './engine.js?v=20261009-update11';
+import {reviewable} from './workflow-model.js?v=20261009-update11';
 
 export function outputStatus(o){
  if(o.reworkPending)return ['重新制作中','orange'];

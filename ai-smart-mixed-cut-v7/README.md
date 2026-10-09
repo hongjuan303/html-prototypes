@@ -1,14 +1,17 @@
 # 智能混剪 V7 Demo
 
-2026-10-09 · update10。面向国内、海外短剧投放剪辑，菜单为制作素材、剧目管理、成片管理。V6 文件和演示数据保留。
+2026-10-09 · update11 BGM 更新。面向国内、海外短剧投放剪辑，菜单为制作素材、剧目管理、成片管理。V6 文件和演示数据保留。
 
 ## 本地预览
 
-- 原型与编号说明：http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261009-update10
-- 独立原型：http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/index.html?v=20261009-update10
-- 评审PRD：http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/prd.html?v=20261009-update10
+- 原型与编号说明：http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261009-update11
+- 独立原型：http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/index.html?v=20261009-update11
+- 评审PRD：http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/prd.html?v=20261009-update11
 
 ## 当前版本
+
+- BGM 弹窗采用系统曲库、本地上传、智能匹配三种方式，无剧情情绪选择。系统曲库与智能匹配共同读取“工具箱 → 小说转投放素材 → 解说素材 → BGM → 平台素材”；手选同曲应用整批，智能按每条最终内容独立选曲。确认应用才更新设置，取消保留原配置；试听在切源/关闭时停止。
+- 本地音频支持多文件添加、试听、单选和移除；音频与元数据保存在当前账号作用域的浏览器存储，生成前复核文件可用性。移除不改历史任务的配乐快照。新版本按修改后的内容更新智能匹配，失败保留旧版。
 
 - 容量万相工具箱入口新开智能混剪，沿用主平台账户、权限和积分交互。
 - 高光混剪、AI解说。AI解说明确选择解说＋原片或全解说，不默认短解说；统一成片速度、最终时长，混合可按需覆盖口播语速。
@@ -27,6 +30,8 @@
 
 ## 演示边界
 
+BGM 的平台曲库接口尚未接入，列表和系统试听音频为本地演示资产；智能匹配通过每条故事板关键词演示独立选曲，不是真实视频理解或生产 AI 匹配。实际媒体未合成 BGM，无法据此验收完整混音质量；正式匹配和人声避让按右侧产品要求实现。
+
 员工授权仅在演示设置中模拟，实际授权须接平台员工/资源权限服务；各投放系统的目录、设计师和标签使用示例字典，未调用真实业务接口。
 
 此目录是交互与故事板原型，未接真实绿台、ASR/视觉/剧情模型、生产TTS、MP4渲染、平台鉴权计费或投放同步接口；不会产出真实MP4。浏览器语音只用于文案试听示意，时长/画面对齐需要真实渲染服务验收。
@@ -39,16 +44,18 @@
 
 ## 发布状态
 
-本次发布版本：20261009-update10。通过仓库 main 分支根目录的 GitHub Pages 发布：
+本次发布版本为 update11，包含 BGM 三种选择方式及对应需求说明，通过仓库 main 分支根目录的 GitHub Pages 发布。此前交付的 update10 代码包为独立历史快照。
 
-- [公开原型](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/index.html)
-- [公开原型与说明](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html)
-- [公开PRD](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/prd.html)
-- [公开字段说明](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/FIELD-SPEC.md)
+- [公开原型](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/index.html?v=20261009-update11)
+- [公开原型与说明](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261009-update11)
+- [公开PRD](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/prd.html?v=20261009-update11)
+- [公开字段说明](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/FIELD-SPEC.md?v=20261009-update11)
 
 沿用hongjuan303/html-prototypes仓库main根目录Pages；本轮不改变发布配置，不创建新工作流，V6保持。
 
 ## 验证
+
+update11通过10项BGM交互检查及本地音频丢失补检：三方式切换、真实试听、多文件上传与去重、删除/取消回退、刷新复用、逐条选曲、文件失效生成前拦截且不扣积分。31说明场景/117编号保留，BGM三处编号双向定位与历史配置/版本快照检查通过；系统曲库和本地上传共6张1280/1440/1920截图正常，脚本与资源错误0。56本地资源HTTP200且字节一致、30JS语法、主副稿一致、V6 41文件保持。报告为output/playwright/v7-bgm-qa.json、v7-bgm-root-review.json、v7-update11-static.json。
 
 update10通过6种员工授权场景及生成中撤权释放、9项国内/海外同步流程与8个模型边界补检；国内/海外×1280/1440/1920共6张同步弹窗截图通过。最终6项联合检查覆盖31说明场景/117编号、两套同步表单全部编号双向定位、权限与本地入口、8阶段生成说明保留，资源与脚本错误0。49本地资源HTTP200且字节一致、27JS语法、主副稿一致，V6 41文件保持。报告为output/playwright/v7-target-sync-qa.json、v7-update10-review-qa.json、v7-update10-static.json。
 

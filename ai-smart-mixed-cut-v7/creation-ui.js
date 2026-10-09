@@ -1,14 +1,9 @@
-import {MODES,CREATION_MODES,RANGES,analysisInfo,estimate,isFullNarration,validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261009-update10';
-import {resolveSource} from './sources.js?v=20261009-update10';
-import {sourceAccess,sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261009-update10';
+import {MODES,CREATION_MODES,RANGES,analysisInfo,estimate,isFullNarration,validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261009-update11';
+import {resolveSource} from './sources.js?v=20261009-update11';
+import {sourceAccess,sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261009-update11';
 
-export const BGM_MOODS=[{id:'tension',name:'悬念推进'},{id:'rise',name:'逆袭时刻'},{id:'soft',name:'情感叙事'}];
-export const BGM_TRACKS=[{id:'auto',name:'自动匹配',mood:null},{id:'tension-01',name:'暗涌',mood:'tension'},{id:'rise-01',name:'破局',mood:'rise'},{id:'soft-01',name:'心事',mood:'soft'}];
-export function bgmSelectionLabel(c){
- const mood=BGM_MOODS.find(item=>item.id===c.music)?.name||'悬念推进';
- const track=BGM_TRACKS.find(item=>item.id===(c.bgmTrack||'auto'))||BGM_TRACKS[0];
- return track.id==='auto'?mood+' · 自动匹配':track.name+' · '+(BGM_MOODS.find(item=>item.id===track.mood)?.name||mood);
-}
+import {bgmSelectionLabel} from './bgm-model.js?v=20261009-update11';
+
 export function durationLabel(value){
  if(!value)return '待选择时长';
  if(value.endsWith('s'))return '约 '+value.slice(0,-1)+' 秒';
