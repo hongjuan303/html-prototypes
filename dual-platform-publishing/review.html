@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>三平台批量发视频 · 原型与说明</title><link rel="stylesheet" href="./styles.css?v=1.5.2"></head><body class="review-body"><header class="review-top"><strong>三平台批量发视频 · 原型与说明</strong><a href="./index.html">打开纯原型 ↗</a><small>V1.5.2 · 2026-10-12 · 本地演示</small></header><div class="review-layout"><iframe id="prototype" class="review-prototype" src="./index.html?annotated=1&v=1.5.2" title="绿台交互原型"></iframe><aside class="review-notes" id="notes"></aside></div><script>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>三平台批量发视频 · 原型与说明</title><link rel="stylesheet" href="./styles.css?v=1.6"></head><body class="review-body"><header class="review-top"><strong>三平台批量发视频 · 原型与说明</strong><a href="./index.html">打开纯原型 ↗</a><small>V1.6 · 2026-10-12 · 本地演示</small></header><div class="review-layout"><iframe id="prototype" class="review-prototype" src="./index.html?annotated=1&v=1.6" title="绿台交互原型"></iframe><aside class="review-notes" id="notes"></aside></div><script>
 const common='<div class="review-note">演示边界：素材、账号、剧目和结果均为示例。抖音、视频号编辑字段已依据绿台当前发布的前端表单代码逐项核对；候选接口与真实发布未接入。视频素材仍从OSS选取；封面图片按原控件支持替换，在Demo中仅本地预览。</div>';
 const note=(title,intro,sections)=>'<h1># 页面说明</h1><p>'+intro+'</p><h1 style="margin-top:28px"># 原型说明</h1><p><strong>需求：</strong>'+title+'</p>'+sections.map((s,i)=>'<h2><span class="num">'+(i+1)+'</span>'+s[0]+'</h2><ul>'+s[1].map(x=>'<li>'+x+'</li>').join('')+'</ul>').join('')+common;
 const listFields={
@@ -6,10 +6,15 @@ const listFields={
  '视频号':[['筛选项',['视频号名称、素材名、发布状态、挂链类型、发布时间。']],['列表字段',['视频号名称、素材名、素材封面、素材描述、视频标注、关联合集、挂链类型、关联小程序、发布状态、发布失败原因、发布成功时间、发布时间。']]],
  '快手':[['筛选项',['快手号名称、素材名、发布状态、发布时间、挂载短剧名称、挂链类型。','挂链类型下拉单选：全部、作者服务、通栏服务。']],['列表字段',['快手号、素材名、素材封面、作品描述、挂链类型、挂载短剧名称、发布状态、失败原因、发布成功时间、发布时间。']]]
 };
+const listActions={
+ '抖音':['操作列仅显示编辑：未到发布时间且尚未发布时可编辑；到时、已发布或进入执行时禁用，并显示原因。','点击编辑沿用抖音原字段弹窗，保存更新原记录，取消不改数据；保存时再次校验发布时间。'],
+ '视频号':['操作列仅显示删除；确认后记录标记已删除，待执行任务取消。取消确认不改记录；已删除记录不可重复删除。'],
+ '快手':['操作列仅显示编辑：未到发布时间且尚未发布时可编辑；到时、已发布或进入执行时禁用，并显示原因。','点击编辑沿用快手五项字段，保存更新原记录，取消不改数据；保存时再次校验时间及任务有效期。']
+};
 const pages={
  list:(step,p='抖音')=>note('同一菜单页按平台展示各自列表。','本页为'+p+'批量发视频列表。',[
  ['菜单与平台 Tab',['入口改为绿台 → 版权管理 → 抖微快批量发视频，作为版权管理下新增二级菜单。旧位置的批量发视频入口移除；顶部页签和面包屑同步名称。','保留抖音、视频号、快手三个 Tab；删除全部平台和各 Tab 数字。','抖音、视频号沿用原菜单的筛选和列表字段；快手使用业务指定清单。','此前平台多选、创建日期、发布日期与通用挂链目标调整，已由后续平台专属清单覆盖。']],...listFields[p],
- ['操作与结果',['搜索、重置、导出作用于当前平台。切换平台保留各自筛选条件。','发布成功时间独立于发布时间。历史缺失值显示“—”，不从计划时间猜测。','字段较多时表格横向滚动，右侧操作固定。']]]),
+ ['操作与结果',[...listActions[p],'搜索、重置、导出作用于当前平台。切换平台保留各自筛选条件。','发布成功时间独立于发布时间。历史缺失值显示“—”，不从计划时间猜测。','字段较多时表格横向滚动，右侧操作固定。']]]),
  wizard:step=>step===1?note('从OSS选择剪辑提前上传的素材。','本页为新增发视频—选择素材页。',[
  ['选择素材',['打开OSS文件库弹窗，支持搜索、文件夹筛选、跨页勾选和状态判断。','无本地上传入口，不前置业务类型、剧目或题材。']],
  ['任务引用',['同一素材可用于多个平台，最多100份。移除只取消任务引用，不删除OSS文件。']]]):step===2?note('多个平台上下展示，各自展开后按素材逐条编辑。','本页为新增发视频—分配账号与挂链页。',[

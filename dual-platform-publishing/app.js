@@ -15,7 +15,7 @@ let mappings=saved.mappings||[]; // Kept only for old local data; never used to 
 let templates=saved.templates||[{id:'t1',name:'自然流 · 剧情推荐',platform:'全部',business:'自然流',text:'{剧目名}，故事才刚刚开始。 #短剧 #好剧推荐',ok:true},{id:'t2',name:'投流 · 悬念片段',platform:'抖音',business:'投流',text:'没想到，{剧目名}的结局竟然是这样！ #短剧',ok:true}];
 if(!templates.some(t=>t.id==='ks-default'))templates.push({id:'ks-default',name:'快手 · 剧名与题材',platform:'快手',text:'#{剧名}#{短剧题材}',ok:true});
 let state={page:'list',platform:'抖音',view:'detail',filters:{},pageNo:1,pageSize:8,selected:new Set(),configTab:'mapping',batch:null,step:1,wizard:null,activePlatform:'抖音',assetSelected:new Set(),collapsed:false};
-const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify({rows,accounts,draft,mappings,templates,triPlatform:true}))}catch(e){toast('当前浏览器无法保存本地记录',true)}};
+const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify({rows,accounts,draft,mappings,templates,triPlatform:true,listActionsVersion:1}))}catch(e){toast('当前浏览器无法保存本地记录',true)}};
 const drama=id=>DRAMAS.find(d=>d.id===id), account=id=>accounts.find(a=>a.id===id);
 const cover=id=>{const d=drama(id)||DRAMAS[0];return `<span class="cover ${d.c}">${esc(d.cover).replace(/\n/g,'<br>')}</span>`};
 const platformBadge=p=>`<span class="platform"><span class="platform-icon ${p==='视频号'?'wx':p==='快手'?'ks':''}">${p==='视频号'?'◉':p==='快手'?'∞':'♪'}</span>${p}</span>`;
@@ -83,7 +83,7 @@ function legacyStatus(r){
  return r.status==='已取消'?'已取消':r.status;
 }
 
-const statusBadge=s=>`<span class="status ${s==='已发布'?'green':s==='发布失败'?'red':['待确认','待发布'].includes(s)?'orange':['已取消','未返回'].includes(s)?'gray':'blue'}">${esc(s)}</span>`;
+const statusBadge=s=>`<span class="status ${s==='已发布'?'green':s==='发布失败'?'red':['待确认','待发布'].includes(s)?'orange':['已取消','已删除','未返回'].includes(s)?'gray':'blue'}">${esc(s)}</span>`;
 const pin=n=>`<span class="annotation-pin">${n}</span>`;
 function toast(t,error=false){$('#toast').innerHTML=`<div class="toast ${error?'error':''}">${esc(t)}</div>`;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').innerHTML='',3300)}
 function syncNote(){parent.postMessage({type:'publishing-page',page:state.page,step:state.step,tab:state.configTab,platform:state.platform},location.origin)}
@@ -117,6 +117,30 @@ function renderList(){
 }
 
 function rowAction(r){if(r.issue==='推广链创建失败')return `<button class="link-button" data-action="repair" data-id="${r.id}">补建推广链</button>`;if(r.issue==='账号授权失效')return `<button class="link-button" data-action="auth" data-id="${r.id}">处理授权</button>`;if(r.status==='发布失败')return `<button class="link-button" data-action="retry" data-id="${r.id}">重试</button>`;if(r.status==='待确认')return `<button class="link-button" data-action="reconcile" data-id="${r.id}">核对结果</button>`;if(r.status==='待发布')return `<button class="link-button" data-action="cancel" data-id="${r.id}">取消</button>`;return ''}
+const shanghaiTime=(date=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(date);
+function publishTimestamp(value){
+ const text=String(value||'').trim();
+ if(!/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(:\d{2})?$/.test(text))return NaN;
+ return Date.parse(text.replace(' ','T')+'+08:00');
+}
+function recordEditRestriction(r,now=Date.now()){
+ if(!r||!['抖音','快手'].includes(r.platform))return '当前平台不支持编辑';
+ if(r.status==='已发布'||r.publishedAt||r.status?.startsWith('发布成功'))return '已发布，不能重新编辑';
+ if(['已取消','已删除','发布中','已提交待结果','待确认'].includes(r.status))return '当前发布状态不支持编辑';
+ const time=publishTimestamp(r.time);
+ if(!Number.isFinite(time))return '立即发布或无有效发布时间，不能编辑';
+ if(time<=now)return '已到发布时间，不能编辑';
+ return '';
+}
+function platformListAction(r){
+ if(r.platform==='视频号')return `<button class="link-button danger" data-action="delete-video-record" data-id="${r.id}" ${legacyStatus(r)==='已删除'?'disabled title="已删除"':''}>删除</button>`;
+ const reason=recordEditRestriction(r);
+ return `<button class="link-button" data-action="edit-video-record" data-id="${r.id}" ${reason?`disabled title="${esc(reason)}"`:''}>编辑</button>`;
+}
+function refreshRecordEditAvailability(){
+ $$('[data-action="edit-video-record"]').forEach(button=>{const reason=recordEditRestriction(rows.find(r=>r.id===button.dataset.id));button.disabled=!!reason;button.title=reason});
+ if(materialEditor?.recordId){const reason=recordEditRestriction(rows.find(r=>r.id===materialEditor.recordId));if(reason){const error=$('#modalError'),save=$('#overlay [data-action="save-material"]');if(error)error.textContent=reason;if(save)save.disabled=true}}
+}
 function listCell(r,key,html=true){
  const text=key==='account'?account(r.account)?.name||'—':key==='drama'?mountedDramaName(r):key==='hang'?serviceLabel(r):key==='publishedAt'?r.publishedAt||'—':key==='status'?legacyStatus(r):key==='annotation'?r.annotation||'—':key==='miniProgram'?r.miniProgram||'—':r[key]||'—';
  if(!html)return key==='cover'?'示例封面':text;
@@ -130,7 +154,7 @@ function listCell(r,key,html=true){
 }
 function renderPlatformTable(list,p){
  const cols=LIST_SCHEMAS[p].columns,minWidth=cols.reduce((n,c)=>n+c[2],190);
- return `<div class="table-wrap platform-record-wrap"><table class="data-table native-record-table" style="min-width:${minWidth}px"><colgroup><col style="width:37px">${cols.map(c=>`<col style="width:${c[2]}px">`).join('')}<col style="width:152px"></colgroup><thead><tr><th class="check-col"><input type="checkbox" id="selectAll" aria-label="选择当前页" ${list.length&&list.every(r=>state.selected.has(r.id))?'checked':''}></th>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th class="action-col">操作 ${pin(3)}</th></tr></thead><tbody>${list.length?list.map(r=>`<tr><td class="check-col"><input type="checkbox" data-select-row="${r.id}" aria-label="选择${esc(r.name)}" ${state.selected.has(r.id)?'checked':''}></td>${cols.map(c=>`<td>${listCell(r,c[0])}</td>`).join('')}<td class="action-col"><div class="ops"><button class="link-button" data-action="detail" data-id="${r.id}">详情</button>${rowAction(r)}</div></td></tr>`).join(''):`<tr><td class="empty" colspan="${cols.length+2}"><strong>暂无符合条件的发布记录</strong><button class="link-button" data-action="reset-filters">清空筛选条件</button></td></tr>`}</tbody></table></div>`;
+ return `<div class="table-wrap platform-record-wrap"><table class="data-table native-record-table" style="min-width:${minWidth}px"><colgroup><col style="width:37px">${cols.map(c=>`<col style="width:${c[2]}px">`).join('')}<col style="width:152px"></colgroup><thead><tr><th class="check-col"><input type="checkbox" id="selectAll" aria-label="选择当前页" ${list.length&&list.every(r=>state.selected.has(r.id))?'checked':''}></th>${cols.map(c=>`<th>${c[1]}</th>`).join('')}<th class="action-col">操作 ${pin(3)}</th></tr></thead><tbody>${list.length?list.map(r=>`<tr><td class="check-col"><input type="checkbox" data-select-row="${r.id}" aria-label="选择${esc(r.name)}" ${state.selected.has(r.id)?'checked':''}></td>${cols.map(c=>`<td>${listCell(r,c[0])}</td>`).join('')}<td class="action-col"><div class="ops">${platformListAction(r)}</div></td></tr>`).join(''):`<tr><td class="empty" colspan="${cols.length+2}"><strong>暂无符合条件的发布记录</strong><button class="link-button" data-action="reset-filters">清空筛选条件</button></td></tr>`}</tbody></table></div>`;
 }
 
 function renderTable(list){return `<div class="table-wrap"><table class="data-table"><colgroup><col class="check-col"><col class="platform-col"><col class="account-col"><col class="asset-col"><col class="drama-col"><col class="time-col"><col class="status-col"><col class="action-col"></colgroup><thead><tr><th class="check-col"><input type="checkbox" id="selectAll" aria-label="选择当前页" ${list.length&&list.every(r=>state.selected.has(r.id))?'checked':''}></th><th>平台</th><th>发布账号</th><th>素材</th><th>挂链目标</th><th>计划发布时间</th><th>发布状态</th><th class="action-col">操作 ${pin(3)}</th></tr></thead><tbody>${list.length?list.map(r=>`<tr><td class="check-col"><input type="checkbox" data-select-row="${r.id}" aria-label="选择${esc(r.name)}" ${state.selected.has(r.id)?'checked':''}></td><td>${platformBadge(r.platform)}</td><td>${esc(account(r.account)?.name||'—')}<span class="cell-sub">${esc(r.account)}</span></td><td><div class="asset-cell">${r.platform==='快手'?'<span class="cover file-cover" title="视频第一帧（示例占位）">▶</span>':cover(r.drama)}<div class="asset-info"><div class="asset-name" title="${esc(r.name)}">${esc(r.name)}</div><span class="cell-sub">${esc(r.hang||'未配置')} · ${r.privacy||'公开'}</span></div></div></td><td>${rowTargetSummary(r)}</td><td>${esc(r.time?.split(' ')[0]||'立即发布')}<span class="cell-sub">${esc(r.time?.split(' ')[1]||'提交后执行')}</span></td><td>${statusBadge(r.status)}${r.issue?`<div class="exception ${r.status==='发布失败'?'error':''}">${esc(r.issue)}</div>`:''}</td><td class="action-col"><div class="ops"><button class="link-button" data-action="detail" data-id="${r.id}">详情</button>${rowAction(r)}</div></td></tr>`).join(''):'<tr><td class="empty" colspan="8"><span style="font-size:30px">▤</span><strong>暂无符合条件的发布记录</strong><button class="link-button" data-action="reset-filters">清空筛选条件</button></td></tr>'}</tbody></table></div>`}
@@ -196,7 +220,7 @@ function renderNativeMaterialEditor(){
   fields+=field('添加标签',`<div class="native-tag-row"><select disabled aria-label="标签类型"><option>付费内容</option></select><select data-native-target aria-label="端上合集"><option value="">请选择</option>${availableTargets(w,id,assetId).map(t=>`<option value="${t.id}" ${target?.id===t.id?'selected':''}>${esc(t.name)}</option>`).join('')}</select></div>`,true);
   fields+=cover+description('视频描述',true);
   fields+=field('发布时间',`<div class="native-publish-radios" role="radiogroup" aria-label="发布时间">${['立即发布','定时发布'].map(mode=>`<label class="radio-label"><input type="radio" name="nativePublishMode" data-native-config="mode" value="${mode}" ${c.mode===mode?'checked':''}>${mode}</label>`).join('')}</div>`,true);
-  if(c.mode==='定时发布')fields+=field('',`<input type="datetime-local" step="1" data-native-config="time" aria-label="定时发布时间" value="${esc(c.time||'')}" min="${localDateTime(new Date(Date.now()+7200000))}" max="${localDateTime(new Date(Date.now()+14*86400000))}"><p class="native-time-tips">支持2小时后及14天内的定时发布。发布后如需修改时间，可前往作品管理修改</p>`);
+  if(c.mode==='定时发布')fields+=field('',`<input type="datetime-local" step="1" data-native-config="time" aria-label="定时发布时间" value="${esc(c.time||'')}" min="${localDateTime(new Date(Date.now()+(materialEditor?.recordId?0:7200000)))}" max="${localDateTime(new Date(Date.now()+14*86400000))}"><p class="native-time-tips">支持2小时后及14天内的定时发布。发布后如需修改时间，可前往作品管理修改</p>`);
  }else{
   fields+=field('挂链类型',`<div class="native-scene-radios" role="radiogroup" aria-label="挂链类型">${HANGS.map(h=>`<label class="radio-label"><input type="radio" name="nativeHang" data-native-hang value="${h}" ${type===h?'checked':''}>${h}</label>`).join('')}</div>`,true);
   fields+=field('关联合集',self?`<button type="button" class="btn primary small" data-action="native-select-collection">选择合集</button>${target?`<span class="native-selected-collection">${esc(target.name)}（ID：${esc(target.id)}）</span>`:''}`:`<select data-native-target aria-label="关联合集"><option value="">请选择合集</option>${availableTargets(w,id,assetId).map(t=>`<option value="${t.id}" ${target?.id===t.id?'selected':''}>${esc(t.name)}${type==='外部小程序'?'（'+t.id+'）-合作剧场':''}</option>`).join('')}</select>`,true);
@@ -226,7 +250,7 @@ function nativeEditorChange(t){
  }
  return false;
 }
-function nativeEditorError(w,p,assetId,id){
+function nativeEditorError(w,p,assetId,id,options={}){
  const c=assetConfig(w,p,assetId,id),type=accountType(w,id,assetId),target=selectedTarget(w,assetId,id);
  if(!target)return p==='抖音'?'请选择端上合集':'请选择关联合集ID不能为空';
  if(!c.coverUrl)return '请上传视频封面';
@@ -235,7 +259,7 @@ function nativeEditorError(w,p,assetId,id){
  if(p==='视频号'&&type==='自营小程序'&&!c.useClientId)return '请选择关联小程序不能为空';
  if(p==='视频号'||c.mode==='定时发布'){
   const time=new Date(c.time),now=Date.now();if(!c.time||!Number.isFinite(time.getTime()))return '请选择发布时间';
-  if(p==='抖音'&&(time.getTime()<now+7200000||time.getTime()>now+14*86400000))return '请选择2小时后及14天内的发布时间';
+  if(p==='抖音'&&!options.allowExistingSchedule&&(time.getTime()<now+7200000||time.getTime()>now+14*86400000))return '请选择2小时后及14天内的发布时间';
   if(p==='视频号'&&time<new Date(new Date().setHours(0,0,0,0)))return '请选择今天或之后的发布时间';
  }
  return '';
@@ -281,6 +305,7 @@ function renderMaterialEditor(){
  modal('编辑素材信息',`<form class="native-material-form ks-material-form">${fields}<div id="modalError" class="inline-error" role="alert"></div></form>`,`<button class="btn" data-action="close-modal">取 消</button><button class="btn primary" data-action="save-material">确 定</button>`,'native-material-modal ks-material-modal');
 }
 function saveMaterialEditor(){
+ if(materialEditor?.recordId)return saveVideoRecordEditor();
  if(materialEditor?.native)return saveNativeMaterialEditor();
  const {assetId,accountId:id,working:e}=materialEditor,w=state.wizard,key=targetKey(assetId,id);
  const error=makeUnits(e).find(u=>u.platform==='快手'&&u.asset.id===assetId&&u.account===id)?.error;
@@ -301,6 +326,57 @@ function editorChange(t){
  if(t.dataset.editorTask){setKsTarget(w,assetId,id,ksService(w,id,assetId),t.value);const task=ksSelection(w,assetId,id)[ksService(w,id,assetId)];if(c.ksAutoDescription)c.text=task?`#${task.dramaName||'剧名'}#${task.genre||'短剧题材'}`:'#剧名#短剧题材';renderMaterialEditor();return true}
  if(t.dataset.editorConfig){if(t.type==='radio'&&!t.checked)return true;c[t.dataset.editorConfig]=t.value;if(t.dataset.editorConfig==='text')c.ksAutoDescription=false;if(t.dataset.editorConfig==='mode')renderMaterialEditor();return true}
  return false;
+}
+
+function openVideoRecordEditor(recordId){
+ const r=rows.find(r=>r.id===recordId),reason=recordEditRestriction(r);if(reason)return toast(reason,true);
+ const p=r.platform,id=r.account,w=newWizard(),source=OSS_FILES.find(a=>a.id===r.assetId),asset={...(source||{}),id:r.assetId||r.id,name:r.name,source:'oss',ossVersion:r.ossVersion||source?.ossVersion||'v1'},key=targetKey(asset.id,id);
+ w.platforms=[p];w.assets=[asset];setAssignments(w,p,asset.id,[id]);
+ const c={...w.configs[p],...(r.editConfig||{}),text:r.desc||'',coverUrl:r.coverUrl||'',mode:'定时发布',time:r.time.replace(' ','T'),title:r.name,privacy:r.privacy||'公开',nativeMatched:true};
+ if(p==='抖音'){
+  const target=CATALOG.find(t=>t.account===id&&t.type==='端原生'&&t.id===r.targetId);if(target)w.targets[key]=target.id;
+ }else{
+  w.materialServices[key]=r.service||'';
+  const task=ksCandidates(id,r.service).find(t=>t.id===r.services?.[r.service]?.id);
+  if(task){w.ksTargets[key]={[r.service]:task.id};w.ksMetadata[key]={dramaName:r.dramaName||task.dramaName,genre:r.genre||task.genre}}
+  const meta=w.ksMetadata[key]||{};Object.assign(c,{coverMode:'视频第一帧',declaration:KS_DECLARATION,ksAutoDescription:r.editConfig?.ksAutoDescription??c.text===`#${meta.dramaName}#${meta.genre}`});
+ }
+ w.materialAccountConfigs[key]=c;materialEditor={platform:p,assetId:asset.id,accountId:id,working:w,native:p==='抖音',recordId};renderMaterialEditor();
+}
+function videoRecordEditorError(w,p,assetId,id,r){
+ const c=assetConfig(w,p,assetId,id),scheduled=c.mode==='定时发布',time=publishTimestamp(c.time);
+ if(scheduled&&(!Number.isFinite(time)||time<=Date.now()))return '请选择未来的发布时间';
+ if(p==='抖音')return nativeEditorError(w,p,assetId,id,{allowExistingSchedule:scheduled&&time===publishTimestamp(r.time)});
+ if(!c.text?.trim())return '请填写作品描述';
+ const service=ksService(w,id,assetId),definition=KS_SERVICES.find(s=>s.key===service),task=ksSelection(w,assetId,id)[service];
+ if(!definition)return '请选择快手挂链类型';
+ if(!task)return '请选择'+definition.label+'的具体任务';
+ if(!ksTaskValid(task,scheduled?new Date(time):new Date()))return definition.label+'任务在发布时间不可用';
+ return '';
+}
+function saveVideoRecordEditor(){
+ const e=materialEditor,r=rows.find(r=>r.id===e.recordId),reason=recordEditRestriction(r);
+ if(reason){$('#modalError').textContent=reason;refreshRecordEditAvailability();return}
+ const {platform:p,assetId,accountId:id,working:w}=e,key=targetKey(assetId,id),error=videoRecordEditorError(w,p,assetId,id,r);
+ if(error){$('#modalError').textContent=error;return}
+ const c=assetConfig(w,p,assetId,id),patch={desc:c.text,coverUrl:c.coverUrl||'',time:c.mode==='定时发布'?c.time.replace('T',' '):'立即发布',privacy:c.privacy||'公开',editConfig:JSON.parse(JSON.stringify(c)),updated:shanghaiTime()};
+ if(p==='抖音'){const target=selectedTarget(w,assetId,id);Object.assign(patch,{drama:target.drama,targetId:target.id,targetName:target.name,hang:'端原生'})}
+ else{const service=ksService(w,id,assetId),definition=KS_SERVICES.find(s=>s.key===service),task=ksSelection(w,assetId,id)[service],meta=w.ksMetadata[key]||{};Object.assign(patch,{service,services:{[service]:JSON.parse(JSON.stringify(task))},dramaName:meta.dramaName||task.dramaName,genre:meta.genre||task.genre,hang:definition.label+' · '+definition.type,coverMode:'视频第一帧',declaration:KS_DECLARATION})}
+ Object.assign(r,patch);persist();closeModal();materialEditor=null;render();toast('发布信息已更新');
+}
+function applyVideoRecordDelete(recordId){
+ const r=rows.find(r=>r.id===recordId);if(!r||r.platform!=='视频号'||legacyStatus(r)==='已删除')return false;
+ r.status='已删除';r.deletedAt=shanghaiTime();r.updated=r.deletedAt;r.issue='';state.selected.delete(recordId);persist();return true;
+}
+function openVideoRecordDelete(recordId){
+ const r=rows.find(r=>r.id===recordId);if(!r||r.platform!=='视频号'||legacyStatus(r)==='已删除')return;
+ confirmAction('删除视频号发布记录',`确认删除 <strong>${esc(r.name)}</strong>？<p class="inline-note">该记录将标记为已删除，待执行的发布任务将取消。</p>`,'确认删除',()=>{if(applyVideoRecordDelete(recordId)){render();toast('已删除')}});
+}
+function ensureListActionExamples(){
+ if(saved.listActionsVersion)return;
+ const asset=OSS_FILES[0],time=shanghaiTime(new Date(Date.now()+86400000)),created=shanghaiTime(),target=CATALOG.find(t=>t.id==='DY01-N-10086'),task=ksCandidates('ks01','author')[0],common={batch:'FB-DEMO-EDIT',name:asset.name,assetId:asset.id,ossKey:asset.ossKey,ossVersion:asset.ossVersion,status:'待发布',issue:'',time,created,audit:'未返回',link:'待处理',owner:'演示运营',privacy:'公开',retries:0};
+ const examples=[{...common,id:'DY-EDIT-DEMO',platform:'抖音',account:'dy01',drama:target.drama,targetId:target.id,targetName:target.name,hang:'端原生',coverUrl:demoCover(target.name),desc:target.name+'，精彩故事即将上线。#短剧'},{...common,id:'KS-EDIT-DEMO',platform:'快手',account:'ks01',service:'author',services:{author:{...task}},dramaName:task.dramaName,genre:task.genre,hang:'作者服务 · 关联变现任务',desc:`#${task.dramaName}#${task.genre}`,coverMode:'视频第一帧',declaration:KS_DECLARATION}];
+ rows.unshift(...examples.filter(example=>!rows.some(r=>r.id===example.id)));persist();
 }
 
 // The original DY sync includes the source account; WX keeps each destination account.
@@ -458,7 +534,7 @@ function exportRows(){
  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=(batch?'三平台':state.platform)+'发布明细-演示.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);toast(`已导出 ${data.length} 条演示明细`);
 }
 
-function applyOperation(r,type){closeModal();if(type==='repair'){r.link='成功';r.issue='';r.retries=(r.retries||0)+1;persist();render();toast('推广链已补建，未重新发布视频');return}if(type==='reconcile'){r.status='已发布';r.issue='';r.link='成功';r.audit='通过';r.publishedAt ||= new Date().toLocaleString('sv-SE').slice(0,16);persist();render();toast('已模拟确认平台发布成功，未重复提交');return}r.status='发布中';r.issue='';r.retries=(r.retries||0)+1;persist();render();toast('已重新执行失败步骤');setTimeout(()=>{r.status='已发布';r.audit='通过';r.link='成功';persist();if(state.page==='list'||state.page==='batch')render()},1000)}
+function applyOperation(r,type){closeModal();if(type==='repair'){r.link='成功';r.issue='';r.retries=(r.retries||0)+1;persist();render();toast('推广链已补建，未重新发布视频');return}if(type==='reconcile'){r.status='已发布';r.issue='';r.link='成功';r.audit='通过';r.publishedAt ||= new Date().toLocaleString('sv-SE').slice(0,16);persist();render();toast('已模拟确认平台发布成功，未重复提交');return}r.status='发布中';r.issue='';r.retries=(r.retries||0)+1;persist();render();toast('已重新执行失败步骤');setTimeout(()=>{if(['已删除','已取消'].includes(r.status))return;r.status='已发布';r.audit='通过';r.link='成功';persist();if(state.page==='list'||state.page==='batch')render()},1000)}
 const actions={
 'collapse':()=>{state.collapsed=!state.collapsed;$('#shell').classList.toggle('collapsed',state.collapsed)},
 'nav-list':el=>{if(state.page==='wizard'){confirmAction('离开新增页面','将保存当前配置为草稿，再返回发布列表。','保存并返回',()=>{saveDraft();state.page='list';state.platform=PLATFORMS.includes(el.dataset.value)?el.dataset.value:'抖音';render()});return}state.page='list';state.platform=PLATFORMS.includes(el.dataset.value)?el.dataset.value:'抖音';state.selected.clear();state.filters={};state.pageNo=1;render()},
@@ -495,6 +571,8 @@ const actions={
 'submit-task':()=>submitTask(),
 'close-modal':()=>{if(materialEditor?.selectingCollection){renderNativeMaterialEditor();return}closeModal();materialEditor=null},
 'detail':el=>openDetail(el.dataset.id),
+'edit-video-record':el=>openVideoRecordEditor(el.dataset.id),
+'delete-video-record':el=>openVideoRecordDelete(el.dataset.id),
 'batch':el=>{state.batch=el.dataset.id;state.page='batch';state.selected.clear();render()},
 'cancel':el=>{const r=rows.find(r=>r.id===el.dataset.id);confirmAction('取消待发布任务',`将取消 <strong>${esc(account(r.account)?.name)}</strong> 的这条待发布任务。已发布作品不受影响。`,'确认取消',()=>{r.status='已取消';r.issue='';persist();render();toast('待发布任务已取消')})},
 'batch-cancel':()=>{const eligible=rows.filter(r=>state.selected.has(r.id)&&['待上传','待发布'].includes(r.status));if(!eligible.length)return toast('所选记录均已进入执行或完成，暂无可取消任务',true);confirmAction('批量取消待执行任务',`已选 ${state.selected.size} 条，其中 <strong>${eligible.length} 条</strong>可以取消，其余记录保持不变。`,'取消这'+eligible.length+'条',()=>{eligible.forEach(r=>{r.status='已取消';r.issue=''});state.selected.clear();persist();render();toast(`已取消 ${eligible.length} 条任务`)})},
@@ -517,5 +595,7 @@ document.addEventListener('input',e=>{if(e.target.type!=='radio'&&editorChange(e
 document.addEventListener('keydown',e=>{if($('#overlay').hidden)return;if(e.key==='Escape'){if(materialEditor?.selectingCollection)renderNativeMaterialEditor();else{closeModal();materialEditor=null}};if(e.key==='Tab'){const focusables=$$('#overlay button:not(:disabled),#overlay input:not(:disabled),#overlay select,#overlay textarea,#overlay a').filter(el=>el.offsetParent!==null);const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus()}}});
 window.addEventListener('storage',e=>{if(e.key!==STORE||!e.newValue)return;try{const data=JSON.parse(e.newValue);rows=data.rows||rows;accounts=data.accounts||accounts;templates=data.templates||templates;draft=data.draft||null;if(state.page!=='wizard'&&$('#overlay').hidden)render()}catch(_) {}});
 if(new URLSearchParams(location.search).get('annotated'))document.body.classList.add('annotated');
+ensureListActionExamples();
 render();
+window.setInterval(refreshRecordEditAvailability,1000);
 persist();
