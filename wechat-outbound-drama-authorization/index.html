@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>合集池 · 小程序剧目授权</title><link rel="stylesheet" href="/html-prototypes/wechat-outbound-drama-authorization/styles.css" /><script defer src="/html-prototypes/wechat-outbound-drama-authorization/app.js"></script></head>
+<body>
+  <div class="review-bar"><strong>小程序剧目授权 <span>合集池操作 · 交互原型</span></strong><div><label>演示返回 <select id="demoMode"><option value="success">全部成功</option><option value="partial">部分失败</option><option value="failure">请求失败</option><option value="timeout">请求超时</option></select></label><label><input type="checkbox" id="showAnnotations" checked /> 显示标注</label></div></div>
+  <div class="review-canvas">
+    <div class="prototype-stage">
+      <div class="app-shell" id="appShell">
+        <aside class="sidebar"><nav aria-label="绿台导航"><span>◉　抖音号管理</span><span>◉　视频号管理</span><span>◉　快手号管理</span><span class="section">◉　产品运营　⌃</span><span class="sub">◉　用户运营</span><span class="sub">◉　活动运营</span><span class="sub">◉　内容运营　⌃</span><span class="second">内容频道管理</span><span class="second">瀑布流轮播图</span><span class="second active">合集池管理</span></nav></aside>
+        <div class="workspace">
+          <header class="topbar"><button id="toggleNav" aria-label="收起导航">☰</button><span>产品运营 <i>/</i> 合集池管理</span><div class="user"><b>洪</b>洪娟</div></header>
+          <div class="route-tabs"><span>瀑布流轮播图</span><span>内容审核库</span><span class="current">合集池管理</span></div>
+          <main>
+            <section class="filter-panel"><label>池ID <input id="idFilter" /></label><label>池名称 <input id="nameFilter" /></label><label>池类型 <select id="typeFilter"><option value="">全部</option><option>微信</option><option>未知</option></select></label><button class="secondary" id="resetButton">重置</button><button class="primary" id="queryButton">查询</button></section>
+            <section class="pool-table-panel"><div class="pool-table-wrap"><table class="pool-table"><thead><tr><th>池ID</th><th>池名称</th><th>池元素数</th><th>状态</th><th>池类型</th><th>操作</th></tr></thead><tbody id="poolRows"></tbody></table><div id="poolEmpty" class="pool-empty" hidden>暂无符合条件的合集池</div></div><div class="pagination"><span id="poolCount"></span><span>10条/页</span><b>1</b></div></section>
+          </main>
+        </div>
+      </div>
+      <div class="stage-backdrop" id="stageBackdrop" hidden></div>
+
+      <dialog id="manageDialog" class="dialog manage-dialog" aria-labelledby="manageTitle">
+        <header><div><h1 id="manageTitle"><span class="annotation">2</span>小程序剧目授权</h1><small id="currentPoolText"></small></div><button class="close" data-close="manageDialog" aria-label="关闭授权管理">×</button></header>
+        <div class="modal-body">
+          <div class="manage-toolbar"><span id="authorizationCount">共 0 条授权关系</span><button class="primary" id="authorizeButton"><span class="annotation">3</span>剧目授权</button></div>
+          <div id="operationNotice" class="operation-notice" hidden><div class="notice-heading"><strong id="noticeTitle"></strong><button class="link-button" id="dismissNotice" aria-label="关闭操作提示">×</button></div><p id="noticeSummary"></p><div id="noticeDetails"></div><button class="link-button" id="verifyNotice" hidden>核实微信授权结果</button><button class="link-button" id="retryFailures" hidden>重新授权失败项</button></div>
+          <div class="authorization-wrap"><table class="authorization-table"><thead><tr><th><span class="annotation">9</span>合集ID</th><th>剧目ID</th><th>送审小程序</th><th>授权小程序</th><th>操作</th></tr></thead><tbody id="authorizationRows"></tbody></table><div class="authorization-empty" id="authorizationEmpty"><span class="empty-symbol">▤</span><b>暂无授权记录</b><p>点击「剧目授权」，选择过审剧目并填写合作方AppID。</p></div></div>
+          <div class="list-note">仅展示当前合集池已成功授权的关系。</div>
+        </div>
+        <footer><button class="secondary" data-close="manageDialog">关闭</button></footer>
+      </dialog>
+
+      <dialog id="pickDialog" class="dialog pick-dialog" aria-labelledby="pickTitle">
+        <header><h1 id="pickTitle"><span class="annotation">4</span>剧目授权 · 选择剧目</h1><button class="close" data-close="pickDialog" aria-label="关闭选择剧目">×</button></header>
+        <div class="modal-body">
+          <div class="step-line"><span class="active"><b>1</b>选择剧目</span><i></i><span><b>2</b>填写AppID</span></div>
+          <div class="source-note">数据来源：内容审核库 · 微信送审库 <b>审核通过</b><span id="scopeText"></span></div>
+          <div class="picker-filters"><label>合集 / 剧目 <input id="pickerKeyword" placeholder="名称、合集ID或剧目ID" /></label><label>送审小程序 <select id="pickerSource"><option value="">全部</option></select></label><button class="primary" id="pickerQuery">查询</button><button class="secondary" id="pickerReset">重置</button></div>
+          <div class="selection-summary"><span><span class="annotation">5</span>已选择 <b id="selectedCount">0</b> 条过审记录</span><button class="link-button" id="clearSelection">清空选择</button></div>
+          <div class="picker-wrap"><table class="picker-table"><thead><tr><th><input type="checkbox" id="pickerSelectAll" aria-label="选择当前筛选的全部过审剧目" /></th><th>合集ID</th><th>合集名称</th><th>剧目ID</th><th>送审小程序</th><th>审核状态</th></tr></thead><tbody id="pickerRows"></tbody></table><div class="picker-empty" id="pickerEmpty" hidden>当前合集池暂无符合条件的过审记录</div></div>
+          <p class="form-error" id="pickerError" role="alert" hidden></p>
+        </div>
+        <footer><span class="footer-hint">同一合集在不同送审小程序的记录分别选择。</span><button class="secondary" data-close="pickDialog">取消</button><button class="primary" id="nextStep"><span class="annotation">6</span>下一步</button></footer>
+      </dialog>
+
+      <dialog id="appidDialog" class="dialog appid-dialog" aria-labelledby="appidTitle">
+        <header><h1 id="appidTitle">剧目授权 · 填写AppID</h1><button class="close" data-close="appidDialog" aria-label="关闭填写AppID">×</button></header>
+        <div class="modal-body">
+          <div class="step-line"><span class="done"><b>✓</b>选择剧目</span><i></i><span class="active"><b>2</b>填写AppID</span></div>
+          <div class="grant-summary">本次选择 <b id="finalSelectedCount"></b> 条过审记录，授权给同一个外部小程序。</div>
+          <label class="appid-field"><span><span class="annotation">7</span><em>*</em>授权小程序AppID</span><input id="targetAppid" maxlength="64" autocomplete="off" spellcheck="false" placeholder="请输入外部分销商提供的小程序AppID" /><small>示例：wx1122334455667788。提交前请核对合作方提供的AppID。</small></label>
+          <div class="expiry-note">授权有效期：永久有效</div>
+          <div class="selected-preview" id="selectedPreview"></div>
+          <p class="form-error" id="appidError" role="alert" hidden></p>
+        </div>
+        <footer><button class="secondary" id="previousStep">上一步</button><button class="secondary" data-close="appidDialog">取消</button><button class="primary" id="submitGrant"><span class="annotation">8</span>确认授权</button></footer>
+      </dialog>
+
+      <dialog id="revokeDialog" class="dialog revoke-dialog" aria-labelledby="revokeTitle">
+        <header><h1 id="revokeTitle"><span class="annotation">10</span>取消授权确认</h1><button class="close" data-close="revokeDialog" aria-label="关闭取消授权确认">×</button></header>
+        <div class="modal-body"><p class="revoke-intro">取消成功后，该外部小程序将失去此剧目的播放权限。</p><dl id="revokeSummary"></dl><p class="form-error" id="revokeError" hidden role="alert"></p></div>
+        <footer><button class="secondary" data-close="revokeDialog">返回</button><button class="danger" id="submitRevoke">确认取消授权</button></footer>
+      </dialog>
+
+      <dialog id="legacyDialog" class="dialog legacy-dialog" aria-labelledby="legacyTitle"><header><h1 id="legacyTitle"></h1><button class="close" data-close="legacyDialog" aria-label="关闭原有操作">×</button></header><div class="modal-body" id="legacyContent"></div><footer><button class="secondary" data-close="legacyDialog">关闭</button><button class="primary" id="saveLegacy" hidden>保存</button></footer></dialog>
+    </div>
+    <aside class="prd-panel" id="prdPanel" aria-label="右侧产品需求说明"></aside>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
