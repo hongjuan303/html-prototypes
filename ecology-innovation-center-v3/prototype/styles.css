@@ -75,6 +75,18 @@ body.has-modal{overflow:hidden}
 .network-grid article:hover{transform:translateY(-4px);border-color:rgba(var(--accent),.55);box-shadow:0 22px 44px rgba(0,0,0,.25)}
 .network-grid article>span{position:absolute;right:18px;top:18px;padding:5px 8px;border:1px solid rgba(var(--accent),.34);border-radius:4px;color:rgba(var(--accent),.94);background:rgba(var(--accent),.08);font-size:10px;line-height:1}
 .network-grid h3{margin:44px 0 14px;font-size:18px;font-weight:560}
+.network-grid article.contest-entry{--accent:98,228,223;border-color:rgba(var(--teal-rgb),.65);background:#102528;box-shadow:inset 0 3px 0 var(--teal),0 10px 28px rgba(0,0,0,.18)}
+.network-grid .contest-entry>a{position:absolute;inset:0;padding:inherit;display:flex;flex-direction:column;color:var(--text);text-decoration:none;border-radius:inherit;cursor:pointer}
+.network-grid .contest-entry-tag{position:absolute;right:18px;top:18px;padding:5px 8px;border:1px solid rgba(var(--teal-rgb),.38);border-radius:4px;color:#a9f5ef;background:rgba(var(--teal-rgb),.08);font-size:10px;line-height:1}
+.network-grid .contest-entry h3{font-weight:650}
+.network-grid .contest-entry p{color:#c5d7dc}
+.network-grid .contest-entry-cta{margin-top:auto;min-height:38px;padding:7px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:4px;background:var(--teal);color:#092a29;font-size:13px;line-height:24px;font-weight:650;transition:background .18s ease}
+.network-grid .contest-entry-cta>span{font-size:19px;font-weight:500}
+.network-grid article.contest-entry:hover{border-color:var(--teal);box-shadow:inset 0 3px 0 var(--teal),0 14px 32px rgba(0,0,0,.28)}
+.network-grid .contest-entry>a:hover .contest-entry-cta,.network-grid .contest-entry>a:focus-visible .contest-entry-cta{background:#9af2ec}
+.network-grid .contest-entry:focus-within{outline:2px solid #b0fff7;outline-offset:4px}
+.network-grid .contest-entry>a:focus-visible{outline:none}
+@media(prefers-reduced-motion:reduce){.network-grid article.contest-entry,.network-grid .contest-entry-cta{transition:none}.network-grid article.contest-entry:hover{transform:none}}
 .network-grid p{margin:0;color:#a5b1ba;font-size:12px;line-height:1.8}
 .network-grid article>b{position:absolute;left:24px;right:24px;bottom:22px;height:24px;background:linear-gradient(90deg,rgb(var(--accent)) 0 24%,transparent 24%) top/100% 2px no-repeat,linear-gradient(90deg,rgba(var(--accent),.65) 0 62%,transparent 62%) center/100% 1px no-repeat,linear-gradient(90deg,rgba(var(--accent),.35) 0 42%,transparent 42%) bottom/100% 1px no-repeat;opacity:.72}
 
