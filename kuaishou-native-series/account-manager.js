@@ -19,7 +19,7 @@ window.KSAccountManager=(()=>{
   function render(){
     const all=rows(),pages=Math.max(1,Math.ceil(all.length/10));page=Math.min(page,pages);
     const items=all.slice((page-1)*10,page*10),{esc,btn,link,dot}=ui;
-    return `<div class="page-heading"><h1>快手号管理</h1><div class="actions">${btn('新增快手号','account-add',true)}</div></div>
+    return `<div class="page-heading"><h1>快手号管理</h1></div>
     <section class="panel account-management">
       <div class="filter-grid account-management-filters">
         <label><span>快手号</span><input id="accountSearch" placeholder="请输入快手号名称或ID" value="${esc(filters.q)}"></label>
@@ -27,7 +27,7 @@ window.KSAccountManager=(()=>{
         <label><span>授权状态</span><select id="accountStatusFilter"><option value="">全部</option><option value="normal" ${filters.status==='normal'?'selected':''}>正常</option><option value="expired" ${filters.status==='expired'?'selected':''}>失效</option></select></label>
         <div class="filter-actions">${btn('搜索','account-query',true)}${btn('重置','account-reset')}</div>
       </div>
-      <div class="toolbar"><strong>共 ${all.length} 个快手号</strong></div>
+      <div class="toolbar"><strong>共 ${all.length} 个快手号</strong><div class="actions">${btn('新增快手号','account-add',true)}</div></div>
       <div class="table-wrap"><table class="data-table account-management-table"><colgroup><col><col style="width:175px"><col style="width:130px"><col style="width:100px"><col style="width:190px"><col style="width:190px"></colgroup><thead><tr><th>快手号名称</th><th>快手号ID</th><th>运营人员</th><th>授权状态</th><th>最近更新时间</th><th>操作</th></tr></thead><tbody>${items.length?items.map(a=>`<tr><td>${esc(a.name)}</td><td>${esc(a.uid)}</td><td>${esc(employee(a.operatorId))}</td><td>${dot(a.valid?'正常':'失效',a.valid?'green':'red')}</td><td>${esc(a.updatedAt||'—')}</td><td><div class="small-actions">${link('重新授权','account-reauth',`data-id="${esc(a.id)}"`)}${link('编辑','account-edit',`data-id="${esc(a.id)}"`)}</div></td></tr>`).join(''):'<tr><td colspan="6"><div class="account-empty">暂无符合条件的快手号</div></td></tr>'}</tbody></table></div>
       <div class="pagination"><span class="total">共 ${all.length} 条</span><span>10条 / 页</span>${btn('上一页','account-prev',false,page===1?'disabled':'')}<span>${page} / ${pages}</span>${btn('下一页','account-next',false,page===pages?'disabled':'')}</div>
     </section>`;
