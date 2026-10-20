@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>快手原生上剧 · 容量绿台</title>
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%231890ff'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='22' fill='white'%3E容%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/html-prototypes/kuaishou-native-series/styles.css?v=20261020-upload-failure">
+</head>
+<body>
+  <div class="shell" id="shell">
+    <aside class="sidebar" aria-label="主导航">
+      <div class="brand"><b>容</b><strong>容量绿台</strong><small>业务后台</small></div>
+      <nav>
+        <div class="nav-section">内容管理</div>
+        <button class="nav-item" data-action="collections"><span class="nav-icon">▤</span><span>合集列表</span></button>
+        <div class="nav-section">版权管理</div>
+        <button class="nav-item active" data-action="records"><span class="nav-icon">▣</span><span>快手原生上剧</span></button>
+        <div class="nav-section">账号管理</div>
+        <button class="nav-item" data-action="accounts"><span class="nav-icon">♧</span><span>快手账号</span></button>
+      </nav>
+      <div class="sidebar-bottom"><i></i><span>内容运营工作台</span></div>
+    </aside>
+    <section class="main-shell">
+      <header class="topbar">
+        <button class="icon-btn" data-action="collapse" aria-label="收起或展开导航">☰</button>
+        <div class="breadcrumb">版权管理 <span>/</span> <b id="crumb">快手原生上剧</b></div>
+        <div class="top-right"><button class="demo-badge" data-action="demo-tools" aria-label="演示工具" title="查看演示说明或恢复初始示例">交互原型 · 示例数据</button><button class="prototype-notes-jump" data-action="show-notes" aria-controls="prototypeNotes" title="滚动至画布右侧说明">原型说明</button><span class="avatar">运</span><span class="operator">运营人员</span></div>
+      </header>
+      <div class="route-tabs"><button data-action="collections">合集列表</button><button class="active" data-action="records">快手原生上剧</button></div>
+      <div class="prototype-canvas-scroll" id="prototypeCanvas" tabindex="0" aria-label="原型与说明整体画布，可横向滚动">
+      <div class="prototype-layout" id="prototypeLayout">
+        <div class="prototype-viewport" id="prototypeViewport" tabindex="0" aria-label="原型操作区，可纵向滚动"><main id="main"></main></div>
+        <aside class="prototype-notes" id="prototypeNotes" aria-label="原型说明"></aside>
+      </div>
+      </div>
+      <div class="prototype-scroll-controls" aria-label="画布横向滚动">
+        <span>画布</span>
+        <button type="button" id="canvasScrollLeft" aria-label="向左移动画布" title="向左移动画布">‹</button>
+        <input type="range" id="canvasScrollPosition" min="0" max="1000" step="1" value="0" aria-label="左右拖动画布" aria-controls="prototypeCanvas">
+        <button type="button" id="canvasScrollRight" aria-label="向右移动画布" title="向右移动画布">›</button>
+      </div>
+    </section>
+  </div>
+  <div id="overlay" hidden></div><div id="toast" role="status" aria-live="polite"></div>
+  <script src="/html-prototypes/kuaishou-native-series/data.js?v=20261019-range-inline-notes"></script>
+  <script src="/html-prototypes/kuaishou-native-series/model.js?v=20261020-config-defaults"></script>
+  <script src="/html-prototypes/kuaishou-native-series/record-model.js?v=20261019-range-inline-notes"></script>
+  <script src="/html-prototypes/kuaishou-native-series/upload-model.js?v=20261019-range-inline-notes"></script>
+  <script src="/html-prototypes/kuaishou-native-series/prototype-notes.js?v=20261020-config-lock-notes"></script>
+  <script src="/html-prototypes/kuaishou-native-series/canvas-scroll.js?v=20261019-range-inline-notes"></script>
+  <script src="/html-prototypes/kuaishou-native-series/auth-range.js?v=20261019-range-inline-notes"></script>
+  <script src="/html-prototypes/kuaishou-native-series/app.js?v=20261020-config-defaults"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>快手原生上剧 · 原型说明 V1.2</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f2f5f8;color:#354253;font:14px/1.8 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}a{color:#0879d0;text-decoration:none}header{height:65px;background:#fff;border-bottom:1px solid #e1e7ee;padding:0 34px;display:flex;align-items:center;gap:15px;position:sticky;top:0;z-index:3}header>b{font-size:16px}header small{color:#8492a1}header a{margin-left:auto;color:white;background:#1688ee;padding:6px 16px;border-radius:3px;font-size:13px}.layout{display:grid;grid-template-columns:210px minmax(0,1000px);gap:26px;max-width:1280px;margin:26px auto;padding:0 24px}nav{position:sticky;top:91px;align-self:start;font-size:13px;display:flex;flex-direction:column;gap:5px}nav a{padding:8px 13px;color:#66798b;border-radius:3px}nav a:hover{background:#e8f2fc;color:#1688ee}main{min-width:0}section{background:#fff;border:1px solid #e1e8ef;border-radius:4px;padding:28px 32px;margin-bottom:18px;scroll-margin-top:85px}h1{font-size:25px;margin:4px 0 13px;font-weight:600}h2{font-size:17px;margin:0 0 18px;display:flex;align-items:center;gap:10px}h2 span{color:#7ba7ce;font-size:12px}h3{font-size:14px;margin:20px 0 8px}p{margin:8px 0}small{color:#7f91a2}table{border-collapse:collapse;width:100%;font-size:12px;line-height:1.8;margin:15px 0}th,td{padding:11px 13px;text-align:left;border:1px solid #e2e8ee;vertical-align:top}th{background:#f4f7fa;color:#596e81;font-weight:500}th:first-child{width:20%}.note{border-left:3px solid #68aaea;background:#f0f7ff;padding:13px 16px;font-size:13px;margin:17px 0}.warning{border-color:#d7a256;background:#fff9ee}.flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f7f9fc;padding:17px;font-size:13px}.flow b{font-weight:500;color:#376d9b}.flow i{font-style:normal;color:#a9b9c7}li{margin:8px 0}code{font-size:11px;background:#f2f5f8;padding:2px 4px;color:#607285;overflow-wrap:anywhere}.muted{color:#8a98a6}.tag{color:#12855a;background:#edf8f1;padding:2px 7px;font-size:11px;border-radius:3px}.tag.pending{color:#aa7627;background:#fff7e8}.cards{display:grid;grid-template-columns:1fr 1fr;gap:13px}.cards>div{padding:16px;border:1px solid #e2e9f0;border-radius:3px}.cards b{font-size:13px}.cards p{font-size:12px;color:#788b9e}.foot{color:#8b99a7;font-size:12px;text-align:center;padding:0 0 30px}@media(max-width:850px){.layout{display:block;padding:0 14px}nav{position:static;display:flex;flex-direction:row;overflow:auto;margin-bottom:16px;white-space:nowrap}header{padding:0 16px}header small{display:none}section{padding:22px 18px}.cards{grid-template-columns:1fr}table{display:block;overflow:auto}}
+</style></head><body><header><b>快手原生上剧</b><small>原型说明 V1.2 · 2026-10-19</small><a href="/html-prototypes/kuaishou-native-series/">打开交互原型 ↗</a></header><div class="layout"><nav><a href="#goal">需求与范围</a><a href="#pages">页面与流程</a><a href="#accounts">合集与快手账号</a><a href="#management">列表与上架操作</a><a href="#fields">资料映射</a><a href="#rules">校验与批量规则</a><a href="#states">状态与失败恢复</a><a href="#demo">原型体验路径</a><a href="#pending">待确认事项</a><a href="#api">接口依据</a></nav><main>
+<section id="goal"><small>容量绿台 / 内容运营 / 原生短剧</small><h1>从绿台合集，批量上传到快手</h1><p>运营批量选择绿台合集，复用整剧资料和分集视频，补齐快手要求的版权、备案及售卖信息，完成建剧、视频上传与提交审核，并在绿台持续查看每部短剧的处理结果。</p><div class="flow"><b>选择合集</b><i>→</i><b>配置资料</b><i>→</i><b>确认上传</b><i>→</i><b>跟进结果</b></div><p><span class="tag">用户已明确</span> 来源为绿台「合集列表」，目标为快手经营者管理平台「原生短剧」。每部合集可一次上传到多个快手账号；单条配置账号可直接操作，批量设置账号需先勾选合集。上传记录的快手号筛选支持多选。</p><p><span class="tag">当前原型</span> 每个「合集＋快手账号」组合形成一条独立上传记录，分别跟踪上传进度、审核结果和售卖状态。视频完整上传后自动提交审核，发布成功后由运营选择上架或预约上架；自动提审时机与正式菜单位置仍待评审。</p><div class="note">原型使用虚构账号、剧目、封面、材料及状态。全部操作只保存在当前浏览器，不调用快手、绿台、视频下载或上传接口。</div></section>
+<section id="pages"><h2><span>01</span> 页面与流程</h2><div class="cards"><div><b>上传记录</b><p>查询合集、账号、审核状态、售卖状态、日期。分别展示上传进度、审核结果和售卖状态；支持详情、失败重试和导出。</p></div><div><b>合集列表入口</b><p>勾选已有合集后点击「上传到快手」，带着所选合集进入新增流程。现有合集数据保持不变。</p></div><div><b>选择合集</b><p>可直接在每个合集行内选择或调整多个快手账号，无需勾选；批量设置账号时才需勾选合集。账号授权失效不可选择，已有记录的合集与账号组合跳过，其他组合保留。</p></div><div><b>配置资料</b><p>左侧按合集切换；右侧将基础信息、版权与备案、售卖信息按顺序展开在同一页面，每个填写字段独占一行，向下滚动填写，不再分Tab；短剧分类采用下拉多选，最多3项。视频由后台默认上传全集，无业务分集操作。展示每部合集的问题数量，支持定位补齐。</p></div><div><b>确认上传</b><p>展示每部合集的目标账号、合集数、账号数、上传记录数和分集上传总次数，以及每部售卖配置。全部校验通过且勾选确认后才可创建任务。</p></div><div><b>上传详情</b><p>展示本地任务、快手短剧ID、各阶段进度、逐集结果与失败原因。上传失败可继续原记录。</p></div></div><h3>菜单与交互方向</h3><p>本版暂放置于「版权管理 → 快手原生上剧」，并在「合集列表」提供批量入口。采用绿台既有深色侧栏、蓝色操作按钮、紧凑表格与固定操作列，优先保证运营筛选、横向比较和重复操作效率。菜单位置为产品建议。</p></section>
+<section id="accounts"><h2>合集与快手账号</h2><p>账号配置与合集勾选分开处理。可先为单条合集设置账号，再决定本次上传范围；也可先勾选多部合集，再统一设置账号。</p><table><thead><tr><th>操作</th><th>触发条件</th><th>结果</th></tr></thead><tbody>
+<tr><td>单条选择快手号</td><td>无需勾选合集，直接点击该行「选择快手号」或「调整账号」。</td><td>弹窗支持多选，仅修改当前合集的目标账号；确认后不自动勾选合集，未勾选行也显示账号标签。</td></tr>
+<tr><td>批量设置快手账号</td><td>至少勾选一部合集；没有勾选时按钮不可用。</td><td>确认后覆盖勾选合集的账号配置，不修改其他合集。可再逐条调整不同的目标账号。</td></tr>
+<tr><td>选择本次上传范围</td><td>通过合集复选框选择要上传的合集。</td><td>只有勾选合集参与下一步和上传数量统计；每部勾选合集必须至少配置一个有效账号。</td></tr>
+<tr><td>重复与授权检查</td><td>账号授权有效，且该「合集＋账号」组合没有已有记录。</td><td>单条设置禁选已关联账号；批量设置跳过重复组合并提示数量，其他有效组合继续保留。失效账号不可选。</td></tr>
+</tbody></table><div class="note">示例：选择2部合集，每部设置2个快手账号，将生成4条上传记录。若两部合集分别有40集和30集，则源视频共70集，按账号分别上传共140次。</div><p>每部合集在配置资料页维护一份上传资料；提交后为每个目标账号保存独立配置和进度。一个账号的失败、重试或审核结果不影响其他账号。草稿保留各合集的账号分配，包括暂未勾选的合集。</p></section>
+<section id="management"><h2>上传记录列表与操作</h2>
+<h3>筛选项</h3><table><thead><tr><th>筛选项</th><th>规则</th></tr></thead><tbody>
+<tr><td>快手号</td><td>支持多选，返回任一已选账号的记录；未选时查询全部账号。</td></tr>
+<tr><td>快手短剧名称、合集名称</td><td>分别匹配快手侧名称与绿台来源名称，支持模糊查询。</td></tr>
+<tr><td>合集ID、快手短剧ID</td><td>分别按完整ID精确匹配。</td></tr>
+<tr><td>审核状态</td><td>全部、待提交、审核中、发布中、审核未通过、发布成功。</td></tr>
+<tr><td>内容类型</td><td>全部、真人剧、漫剧。</td></tr>
+<tr><td>售卖方式</td><td>全部、全剧付费、单集+全剧付费、观看广告解锁。</td></tr>
+<tr><td>售卖状态</td><td>全部、已上架、已下架。</td></tr>
+<tr><td>创建时间</td><td>支持起止日期，包含起止当天；开始日期不可晚于结束日期。</td></tr>
+</tbody></table><p>筛选项全部常驻展示，不做展开收起；多个筛选条件组合匹配。列表上方不设置「全部记录、上传中、上传失败、审核中、审核未通过」等状态Tab，不提供预约状态筛选。</p>
+<h3>列表字段</h3><table><thead><tr><th>字段</th><th>展示规则</th></tr></thead><tbody>
+<tr><td>快手号</td><td>展示账号名称与账号ID，一条记录对应一个账号。</td></tr>
+<tr><td>快手短剧名称、封面</td><td>合并展示封面、名称和可复制的快手短剧ID；平台ID尚未生成时显示占位。</td></tr>
+<tr><td>绿台合集名称、合集ID</td><td>展示来源合集名称与可复制的合集ID，便于与快手侧记录对应。</td></tr>
+<tr><td>售卖方式、内容类型</td><td>售卖方式为全剧付费、单集+全剧付费、观看广告解锁；内容类型为真人剧、漫剧。</td></tr>
+<tr><td>上传进度</td><td>展示处理阶段、已上传集数与总集数；与审核状态分别展示。</td></tr>
+<tr><td>审核状态、审核原因</td><td>按平台状态口径展示；有审核原因时显示，其他情况为「—」。</td></tr>
+<tr><td>售卖状态</td><td>仅已上架、已下架，预约上架不作为第三种售卖状态。</td></tr>
+<tr><td>操作人</td><td>仅展示最近一次人工操作人；没有后续操作时展示创建人，未知值为「—」。</td></tr>
+<tr><td>创建时间、修改时间</td><td>创建时间为上传记录创建时间；修改时间为最近一次人工资料或上下架操作时间。自动刷新及预约执行不更新人工修改时间。</td></tr>
+<tr><td>操作</td><td>按记录状态展示或禁用详情、编辑、失败重试、上架、下架、预约上架。</td></tr>
+</tbody></table><p>表格内支持横向滚动，桌面端固定短剧名称列和操作列。预约时间、预约状态不设为列表字段，在详情中查看；详情同时保留创建人、最近修改人和操作历史。</p>
+<h3>操作条件</h3><table><thead><tr><th>记录状态</th><th>可用操作与处理</th></tr></thead><tbody>
+<tr><td>待提交／审核未通过</td><td>上传完成的记录允许编辑，提交审核前校验资料完整；编辑草稿按记录独立保存，不替换新增上传草稿。快手账号、合集关联、已上传视频与短剧ID保持。源视频替换未在此版编辑中放开。</td></tr>
+<tr><td>上传失败／处理中</td><td>上传失败提供重试，保留成功分集；处理中的任务不可编辑或上架。</td></tr>
+<tr><td>审核中／发布中</td><td>可查看详情，编辑、上架及预约暂不可用。</td></tr>
+<tr><td>审核状态＝发布成功，售卖状态＝已下架</td><td>必须同时满足这两个条件，才能上架或预约上架；需全部分集上传成功、账号授权有效。</td></tr>
+<tr><td>预约待执行</td><td>预约相关操作仅显示“预约上架”入口，打开时回显当前预约时间，确认后更新原预约。已有待执行预约时，上架按钮不可用；不显示修改预约、取消预约或重新预约按钮，不重复创建预约。</td></tr>
+<tr><td>已上架／已下架</td><td>已上架提供下架；已下架且发布成功才允许上架或预约。平台处置限制单独保留原因，不作为第三种售卖状态；限制未解除时不可再次上架。</td></tr></tbody></table>
+<h3>预约弹窗与执行结果</h3><p>预约相关行内操作统一命名“预约上架”，不设为列表字段；预约状态、预约时间及执行结果在详情中查看。</p><p>展示快手号、短剧名称与ID，时间使用北京时间并精确到秒。新预约时间留空，已有预约从同一入口回显原时间，提交时再次校验为未来时间及当前记录是否仍可操作。预约到期后展示成功或失败，失败原因与审核原因、上传失败原因分别记录。</p><div class="note warning">原型仅在页面打开时模拟预约执行；关闭期间不运行定时器，重新打开会检查到期任务。生产实现应提交快手预约接口并同步平台结果，不能依赖浏览器计时。编辑范围、重审规则及预约状态返回口径仍需联调。</div>
+<h3>体验样例</h3><p>“昨日星辰”可体验上架／下架／预约；“旧巷听雨”通过“预约上架”入口回显并调整已有时间；“星光未眠”预约失败后仍从“预约上架”入口设置；“此心安处”展示已下架及平台处置原因；“南风知归处”可编辑、保存编辑草稿并重新提审。全部为虚构数据。</p></section>
+<section id="fields"><h2><span>02</span> 资料映射与补齐</h2><table><thead><tr><th>快手资料</th><th>绿台来源 / 处理</th><th>原型交互</th></tr></thead><tbody>
+<tr><td>短剧标题、简介</td><td>合集标题、正式简介；不取分享标题或短简介。</td><td>自动带入，可为本次快手上传独立修改。</td></tr>
+<tr><td>整剧封面</td><td>正式封面为候选，需符合8:5比例和格式要求。</td><td>预览、更换示例封面或选择本地图片，检查比例及10M上限。</td></tr>
+<tr><td>类型、制作方式、分类</td><td>短剧类型、内容标签需要映射为快手枚举，不能直接传内部ID。</td><td>真人剧/漫剧；漫剧制作方式条件展示；分类最多3项。示例映射不代表生产映射已确认。</td></tr>
+<tr><td>作者声明、完结状态</td><td>声明需确认实际内容；完结状态需核对现有数据来源。</td><td>声明不预设；逐部填写，布尔选否同样有效。</td></tr>
+<tr><td>版权信息</td><td>现有合集相关附件为候选，文件内容及证明类型仍需核对。</td><td>自有/授权版权；证明材料四类可多选，每类独立上传。授权版权额外提供授权推广文件；组合材料分别上传承诺函与证明。支持多文件、图片/PDF切换及删除，保留有效期与转授权权利字段。</td></tr>
+<tr><td>备案信息</td><td>备案平台、备案号需核对是否满足快手类型。其他平台备案号不能直接等同快手要求。</td><td>有备案号：类型及号码；无备案号：制作、人员、播放等资料。涉及特殊题材时拦截并提示补专项资料。</td></tr>
+<tr><td>制作信息</td><td>制作机构沿用原制作单位，其他字段待补充。</td><td>按截图合并展示制作机构（必填）、税号、许可证编号、制作方国别、归属省份、制作周期（月）及许可证附件，其余均选填。</td></tr>
+<tr><td>制片人信息</td><td>沿用原制作人姓名、性别等资料。</td><td>固定1名，无新增或删除入口；旧多人草稿需先选择保留1名。</td></tr>
+<tr><td>播出平台</td><td>原播放平台、播出途径和时间带入首张卡片。</td><td>至少1张卡片，三个必填字段按一行三列展示，时间选择日期；支持新增/删除，剩1张时删除置灰。</td></tr>
+<tr><td>售卖信息</td><td>快手渠道独立配置，售卖方式按平台提供全剧付费、单集+全剧付费、观看广告解锁三种，金额不预设。</td><td>售卖方式首次不选。全剧付费填写全剧价格；单集+全剧付费填写全剧价格及各集免费/付费价格；观看广告解锁填写广告解锁集数及是否支持小额免广。</td></tr>
+<tr><td>分集标题、封面、视频</td><td>按实际分集稳定ID和集序读取；源URL、封面及后端字段待研发核对。</td><td>由后台读取合集全部分集资料与视频，按原集序上传；业务不选择、编辑或上传分集，异常在上传记录中反馈。</td></tr>
+</tbody></table><p><small>绿台来源依据：2026-09-18已只读核对的合集列表与修改合集记录。本次未重新读取线上绿台；不将其他渠道已确认的映射规则自动套用到快手。</small></p></section>
+<section id="rules"><h2><span>03</span> 校验与批量规则</h2><ul>
+<li><b>资料与源合集分开：</b>本次编辑保存为快手配置，不覆盖绿台合集原资料；草稿保存在绿台侧，正式接入后持久化到服务端。</li>
+<li><b>逐部配置资料：</b>按左侧合集切换，逐部填写基础信息、版权与备案及售卖信息；选择合集时仍可批量设置目标快手账号。</li>
+<li><b>全部校验后提交：</b>本批配置资料存在缺项时列出具体合集、字段并定位；视频检查由后台执行，异常回传上传记录；不静默跳过失败合集，不擅自缩小提交范围。</li>
+<li><b>标题差异：</b>网页显示30字，创建接口限制20字符；本版接口上传按20字符校验，绝不自动截断。需平台确认准确计数和最新上限。</li>
+<li><b>封面：</b>整剧8:5、分集3:4；API列出JPG/PNG/BMP/JPEG、10M以内。网页分集封面另列GIF，本版不将其视为API已支持。</li>
+<li><b>视频：</b>以用户截图中的15秒～20分钟、1G以内、MP4/MOV/OGG/WEBM作为预检候选。URL能否拉取、签名有效期和编码要求须服务端验证。</li>
+<li><b>价格：</b>页面输入元，实际接口转整数分；全剧价格0.10～99999元；单集付费价格0.10～100元。观看广告解锁每次1～8集，零值/未选与否须区分。</li>
+<li><b>按集序关联：</b>创建返回的分集ID列表按集序一一对应原分集。每次URL接口最多10集，由后台自动拆批，原型没有把该限制转为10部合集上限。</li>
+<li><b>防重复：</b>本版以「合集ID＋目标快手账号」保存关联，并校验账号下同名标题。发现已有关联，查看或恢复原记录；支持同合集一次分发到多个账号；账号之间独立创建和跟踪。同一账号下校验同名标题，不同账号允许相同标题。</li>
+<li><b>每日额度：</b>页面提示每日上传限额，但未给数字。正式系统应识别额度/限流错误并保留队列，不能写死推测额度。</li>
+</ul></section>
+<section id="states"><h2><span>04</span> 上传、审核、售卖分别处理</h2><table><thead><tr><th>状态层级</th><th>可展示状态</th><th>处理规则</th></tr></thead><tbody><tr><td>本地上传任务</td><td>等待上传 → 创建短剧 → 上传中 → 提交中 → 上传完成；任一阶段可失败</td><td>记录发生阶段、错误原因、创建结果和每集响应。接口整批成功仍须逐集检查。</td></tr><tr><td>快手审核</td><td>待提交、审核中、发布中、审核未通过、发布成功</td><td>状态文案及顺序按经营者平台截图统一；发布中仍不可上架或预约。提交成功不等于发布成功；审核未通过显示平台原因。本版演示审核未通过后的修改重提，实际可修改字段与重审规则仍需接口联调确认。</td></tr><tr><td>快手售卖</td><td>已上架、已下架</td><td>平台处置原因独立展示，不增加售卖状态枚举。上传与审核不自动改变售卖状态。提供上架、下架、预约上架；已有预约通过同一入口调整时间，操作受审核、售卖、授权及预约状态约束。</td></tr></tbody></table><h3>失败恢复</h3><p>首次创建成功就保存快手短剧ID和分集ID映射。视频失败后继续原任务，保留成功分集，重新取得失败分集可用链接；失败批次之后未发送的分集继续排队。提交阶段失败应只重试提交；创建请求超时应先查重确认远端结果，禁止盲目再次创建。</p><div class="note warning">原型演示视频分集失败与重试，未实测平台幂等语义、超时查重、转码就绪条件和重新拉取URL的行为；正式实现须通过联调确定。</div></section>
+<section id="demo"><h2><span>05</span> 建议体验路径</h2><ol><li>打开原型，查看已有记录，进入「人间四月」详情并点击「更新链接并重试」，观察已上传30集被保留。</li><li>新增批量上传，可不勾选合集直接点击行内「选择快手号」验证单条配置；再勾选「重生后我在城里开书店」与「误入星河」，批量设置「星河短剧」和「青禾漫剧」，将生成4条记录。同账号已有记录的组合会跳过，合集仍可分配到其他账号。</li><li>进入配置，逐部填写作者声明；售卖方式选择「观看广告解锁」，设置每次解锁集数及小额免广。</li><li>在同一页向下填写基础信息、版权与备案、售卖信息。下一步核对全集数量与账号，勾选确认，由后台上传全集视频。</li><li>两个合集分别在两个账号下完成上传后进入审核中。另选「山河入梦」可体验20集后的模拟链接失效；重试仅继续对应账号的记录，保留该账号的快手短剧ID和进度。</li><li>另选「春风知我意」体验缺版权与备案资料；「逆光而来的你」体验第12集缺视频；「第七次心动」体验封面比例待补齐。</li><li>保存草稿后返回记录页，刷新浏览器，点击「继续编辑」恢复。草稿与上传记录保存在当前浏览器，不跨设备。</li></ol></section>
+<section id="pending"><h2><span>06</span> 接入前待确认</h2><table><thead><tr><th>事项</th><th>当前处理</th></tr></thead><tbody><tr><td>账号与菜单</td><td>已支持每合集多账号和批量设置，账号分配按合集保存；版权管理独立菜单仍为方案。实际经营主体、角色权限及授权范围需接入核验。</td></tr><tr><td>源字段与附件</td><td>后端字段名、分集ID与URL、原片/成片选择、各类封面、版权材料来源、父子合集粒度待研发核对。</td></tr><tr><td>文档与页面差异</td><td>标题上限、选填/必填差异、作者声明Integer/Boolean矛盾、GIF格式、无备案条件、成本边界需平台确认。</td></tr><tr><td>无备案细节</td><td>本版展示主要字段和条件拦截。演员卡片已按截图展示姓名、性别、角色、出生日期、国籍、所属公司。导演、编剧、制片人暂沿用人员卡片样式；制片人只允许1名，无新增/删除入口，完整字段及导演/编剧人数上限仍需平台核对；特殊题材需继续细化。</td></tr><tr><td>权限与协议</td><td>应用接入、账号授权scope、相关协议是否在入驻时完成，以及材料文件上传接口尚未核实。不要求运营录入密钥。</td></tr><tr><td>调度与状态</td><td>日配额、限流、转码完成判定、回调或轮询方式、枚举含义、故障恢复与幂等需联调。</td></tr></tbody></table></section>
+<section id="api"><h2><span>07</span> 官方接口与证据</h2><p>本原型沿用前期核对的快手经营者平台截图及官方接口文档作为设计依据。以下为研发接入参考链接；本文描述当前原型行为，接口字段、权限及平台限制在正式接入前复核。</p><table><thead><tr><th>阶段</th><th>官方文档</th><th>用途</th></tr></thead><tbody><tr><td>图片</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3193&amp;menuId=3951" target="_blank" rel="noopener">3193 · 上传图片</a></td><td>取得封面img_key。</td></tr><tr><td>建剧</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3195&amp;menuId=3953" target="_blank" rel="noopener">3195 · 创建基本信息</a></td><td>取得mini_series_id和按集数排序的episode_id_list。</td></tr><tr><td>分集</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3196&amp;menuId=3954" target="_blank" rel="noopener">3196 · URL上传视频</a></td><td>每批最多10集；逐集返回解析结果，不能当作转码或审核完成。</td></tr><tr><td>提交</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3197&amp;menuId=3955" target="_blank" rel="noopener">3197 · 提交</a></td><td>创编最后一步，不等同上架。</td></tr><tr><td>详情</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3274&amp;menuId=4050" target="_blank" rel="noopener">3274 · 基本信息</a></td><td>上传数量、审核、售卖及分集结果。</td></tr><tr><td>列表</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3351&amp;menuId=4149" target="_blank" rel="noopener">3351 · 新短剧列表</a></td><td>按游标查询；旧3081已标废弃。</td></tr><tr><td>上架管理</td><td><a href="https://developers.e.kuaishou.com/docs?docType=SERIES&amp;documentId=3276&amp;menuId=4051" target="_blank" rel="noopener">3276 · 上下架管理</a></td><td>支撑上架、下架、预约、取消预约与修改预约；本版为本地交互演示。</td></tr></tbody></table></section><div class="foot">V1.2 · 产品交互评审稿 · 不连接生产服务</div></main></div></body></html>
