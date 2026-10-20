@@ -6,15 +6,13 @@
   <meta name="color-scheme" content="light">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%231890ff'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='22' fill='white'%3E容%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/html-prototypes/kuaishou-native-series/styles.css?v=20261020-upload-failure">
-  <link rel="stylesheet" href="/html-prototypes/kuaishou-native-series/account-manager.css?v=20261020-list-toolbar">
+  <link rel="stylesheet" href="/html-prototypes/kuaishou-native-series/account-manager.css?v=20261020-scope-navigation">
 </head>
 <body>
   <div class="shell" id="shell">
     <aside class="sidebar" aria-label="主导航">
       <div class="brand"><b>容</b><strong>容量绿台</strong><small>业务后台</small></div>
       <nav>
-        <div class="nav-section">内容管理</div>
-        <button class="nav-item" data-action="collections"><span class="nav-icon">▤</span><span>合集列表</span></button>
         <div class="nav-section">版权管理</div>
         <button class="nav-item active" data-action="records"><span class="nav-icon">▣</span><span>快手原生上剧</span></button>
         <button class="nav-item" data-action="accounts"><span class="nav-icon">♧</span><span>快手号管理</span></button>
@@ -27,7 +25,7 @@
         <div class="breadcrumb">版权管理 <span>/</span> <b id="crumb">快手原生上剧</b></div>
         <div class="top-right"><button class="demo-badge" data-action="demo-tools" aria-label="演示工具" title="查看演示说明或恢复初始示例">交互原型 · 示例数据</button><button class="prototype-notes-jump" data-action="show-notes" aria-controls="prototypeNotes" title="滚动至画布右侧说明">原型说明</button><span class="avatar">运</span><span class="operator">运营人员</span></div>
       </header>
-      <div class="route-tabs"><button data-action="collections">合集列表</button><button class="active" data-action="records">快手原生上剧</button><button data-action="accounts">快手号管理</button></div>
+      <div class="route-tabs"><button class="active" data-action="records">快手原生上剧</button><button data-action="accounts">快手号管理</button></div>
       <div class="prototype-canvas-scroll" id="prototypeCanvas" tabindex="0" aria-label="原型与说明整体画布，可横向滚动">
       <div class="prototype-layout" id="prototypeLayout">
         <div class="prototype-viewport" id="prototypeViewport" tabindex="0" aria-label="原型操作区，可纵向滚动"><main id="main"></main></div>
@@ -47,11 +45,11 @@
   <script src="/html-prototypes/kuaishou-native-series/model.js?v=20261020-config-defaults"></script>
   <script src="/html-prototypes/kuaishou-native-series/record-model.js?v=20261019-range-inline-notes"></script>
   <script src="/html-prototypes/kuaishou-native-series/upload-model.js?v=20261019-range-inline-notes"></script>
-  <script src="/html-prototypes/kuaishou-native-series/prototype-notes.js?v=20261020-list-toolbar"></script>
+  <script src="/html-prototypes/kuaishou-native-series/prototype-notes.js?v=20261020-scope-navigation"></script>
   <script src="/html-prototypes/kuaishou-native-series/canvas-scroll.js?v=20261019-range-inline-notes"></script>
   <script src="/html-prototypes/kuaishou-native-series/auth-range.js?v=20261019-range-inline-notes"></script>
-  <script src="/html-prototypes/kuaishou-native-series/account-model.js?v=20261020-list-toolbar"></script>
-  <script src="/html-prototypes/kuaishou-native-series/account-manager.js?v=20261020-list-toolbar"></script>
-  <script src="/html-prototypes/kuaishou-native-series/app.js?v=20261020-list-toolbar"></script>
+  <script src="/html-prototypes/kuaishou-native-series/account-model.js?v=20261020-scope-navigation"></script>
+  <script src="/html-prototypes/kuaishou-native-series/account-manager.js?v=20261020-scope-navigation"></script>
+  <script src="/html-prototypes/kuaishou-native-series/app.js?v=20261020-scope-navigation"></script>
 </body>
 </html>

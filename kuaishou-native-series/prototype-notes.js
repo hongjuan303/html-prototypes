@@ -95,7 +95,7 @@ window.KSPrototypeNotes = (() => {
       group('筛选项',pickerFilters()),group('列表项',pickerColumns(source)),
       group('操作项',[
         ...queryActions(),
-        ...(source?[A('source-upload','上传到快手','位于筛选区下方、表格上方的列表操作栏。至少选择一部合集后可用；带入所选合集进入选择合集步骤，继续设置目标快手账号。')]:[
+        ...(source?[A('source-upload','上传到快手','至少选择一部合集后可用；带入所选合集进入选择合集步骤，继续设置目标快手账号。')]:[
           A('set-targets','选择快手号 / 调整账号','无需勾选合集，直接操作对应行。初次配置显示“选择快手号”，已有配置显示“调整账号”。只更新当前合集，不自动勾选合集。',...accountRules),
           A('bulk-targets','批量设置快手账号','至少勾选一部合集后可用，只覆盖勾选合集。弹窗初始选中各合集共同的有效账号；不同合集的独有账号需在本次覆盖时重新选择。',...accountRules),
           saveEntry(false),exitEntry(false),
