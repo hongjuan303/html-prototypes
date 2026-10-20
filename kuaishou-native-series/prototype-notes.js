@@ -212,15 +212,36 @@ window.KSPrototypeNotes = (() => {
         '通过后按合集＋账号创建独立记录，清除新增上传草稿，跳转本批次上传记录；后台分别创建平台短剧、读取绿台合集全部视频并按原集序上传、提交审核，记录平台ID、进度与结果。源视频缺失或上传异常在记录中反馈。失败可在上传记录中重试，保留成功分集。')
     ])
   ]});
+  const accountManagement=()=>({title:'快手号管理',intro:'本页是绿台 → 版权管理 → 快手号管理页，菜单位于快手原生上剧下方。',background:'原生上剧需要使用已授权的快手号，并明确各账号的运营人员。',requirement:'添加快手号、维护授权状态及运营人员，供上传流程选择目标账号。',groups:[
+    group('筛选项',[
+      E('#accountSearch','快手号','按快手号名称或ID关键词筛选；默认空，支持回车搜索。'),
+      E('#accountOperatorFilter','运营人员','下拉单选，枚举取容量员工账号；默认全部运营人员。'),
+      E('#accountStatusFilter','授权状态','下拉单选：全部、正常、失效；默认全部。多个条件同时生效。')
+    ]),
+    group('列表项',[
+      T('.account-management-table',1,'快手号名称','展示授权后获取的快手号名称，不在编辑弹窗手动修改。'),
+      T('.account-management-table',2,'快手号ID','展示授权账号唯一ID；重新授权保持同一账号及已有上传记录关联。'),
+      T('.account-management-table',3,'运营人员','展示当前分配的容量员工名称；历史未分配时显示“—”。'),
+      T('.account-management-table',4,'授权状态','仅正常、失效。授权成功后为正常；失效账号不可作为新增上传的目标账号。'),
+      T('.account-management-table',5,'最近更新时间','展示最近新增、重新授权成功或编辑运营人员的时间；失败、取消不更新时间，缺失显示“—”。')
+    ]),
+    group('操作项',[
+      A('account-add','新增快手号','点击打开快手号授权弹窗，居中展示二维码、有效期提示及授权步骤：打开快手App → 扫一扫 → 确认授权。',
+        '<strong>二维码：</strong>过期或授权失败时展示刷新入口；刷新后重新扫码。关闭或按Esc退出不新增账号。',
+        '<strong>授权成功：</strong>自动获取快手号名称与ID，新增一条正常账号记录并刷新列表；运营人员默认当前容量登录员工，后续可编辑。已有同ID账号不重复新增，提示在列表重新授权。'),
+      A('account-reauth','重新授权','正常、失效账号均可操作；打开同样的授权弹窗，展示当前快手号名称及ID。成功后更新原账号授权状态、名称与最近更新时间，保留运营人员、账号ID及上传记录关联；扫码账号不一致时阻止更新并提示。失败或关闭保留原状态。'),
+      A('account-edit','编辑','打开编辑快手号弹窗。<strong>快手号名称：</strong>只读。<strong>快手号ID：</strong>只读。<strong>运营人员：</strong>必选、下拉单选，候选枚举取容量员工账号，默认当前值；原型使用示例员工。',
+        '<strong>保存：</strong>未选择有效员工时提示并保留弹窗；成功后更新运营人员与最近更新时间，提示保存成功。取消、关闭或Esc不应用修改。')
+    ])],pending:'授权二维码及扫码结果需接快手正式授权服务；本原型使用明确标注的示例码，通过“演示授权结果”体验成功、失败、过期，不发起真实授权。二维码两分钟有效沿用本次参考截图，正式有效期及登录步骤以接入接口为准。'});
   // Documentation is exhaustive; annotations identify regions and primary actions only.
-  const primaryActions=new Set(['refresh','new','batch-retry','edit-record','retry','source-upload','set-targets','bulk-targets','validate-all','confirm-edit','next','submit','submit-record']);
+  const primaryActions=new Set(['refresh','new','batch-retry','edit-record','retry','source-upload','set-targets','bulk-targets','validate-all','confirm-edit','next','submit','submit-record','account-add','account-reauth','account-edit']);
   const numberHTML=n=>n?`<span class="prototype-note-number">${n}</span>`:'';
   const findTarget=selector=>[...document.querySelectorAll(`#main :is(${selector})`)].find(n=>n.getClientRects().length);
   let lastSignature='';
   function annotate(content,page,state){
     document.querySelectorAll('#main .prototype-marker, #main .prototype-area-caption').forEach(n=>n.remove());
     document.querySelectorAll('#main .prototype-action-anchor').forEach(n=>n.replaceWith(...n.childNodes));
-    const regions=page==='records'?[['.management-filters',true],['.toolbar>strong']]
+    const regions=page==='accounts'?[['.account-management-filters',true],['.toolbar>strong']]:page==='records'?[['.management-filters',true],['.toolbar>strong']]
       :page==='collections'||page==='select'?[['.search-inline'],['.picker-table th:nth-child(2)']]
       :page==='confirm'?[['.confirm-check'],['.panel-head h2']]
       :[['#config-base>h3'],['#config-rights>h3'],['#config-sale>h3'],['.collection-nav-head>b, .editor-head h2']];
@@ -248,12 +269,12 @@ window.KSPrototypeNotes = (() => {
   }
   function render(state){
     const page=state.editingId?'edit':state.view==='workflow'?({1:'select',2:'configure',3:'confirm'}[state.step]||'select'):state.view;
-    const content=page==='records'?records():page==='collections'?picker(true):page==='select'?picker(false):page==='confirm'?confirm():configuration(state);
+    const content=page==='accounts'?accountManagement():page==='records'?records():page==='collections'?picker(true):page==='select'?picker(false):page==='confirm'?confirm():configuration(state);
     const panel=document.getElementById('prototypeNotes');
     annotate(content,page,state);
     const signature=JSON.stringify([page,content]);if(signature===lastSignature)return;lastSignature=signature;
     panel.dataset.context=page;
-    const source=page==='records'?'绿台上传记录及快手平台返回结果；正式接入后刷新平台状态。':'绿台合集、分集视频及已授权快手账号；配置只写入本次渠道资料。';
+    const source=page==='accounts'?'快手授权服务返回的账号名称、ID与授权状态；运营人员枚举取容量员工账号。账号管理与上传目标账号选择使用同一账号数据。':page==='records'?'绿台上传记录及快手平台返回结果；正式接入后刷新平台状态。':'绿台合集、分集视频及已授权快手账号；配置只写入本次渠道资料。';
     const targetId=item=>item.noteNumber?`id="prototype-note-${item.noteNumber}"`:'';
     const renderEntry=(entry,inline)=>`<li class="prototype-spec-entry${inline?' prototype-inline-entry':''}" ${targetId(entry)} data-note-label="${entry.label}">${inline?`<strong>${entry.label}：</strong><span>${entry.rules.join(' ')}</span>`:`<div class="prototype-entry-title">${numberHTML(entry.noteNumber)}<strong>${entry.label}</strong></div>${list(entry.rules)}`}</li>`;
     panel.innerHTML=`<div class="prototype-notes-head"><span>说明文档</span></div><div class="prototype-notes-body" tabindex="0" aria-label="原型说明内容，可滚动">

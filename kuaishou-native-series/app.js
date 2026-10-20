@@ -32,7 +32,7 @@
     $('#overlay').querySelectorAll('.field').forEach(f=>{const label=f.querySelector('label:not([for])'),control=f.querySelector('input:not([type=hidden]),select,textarea');if(label&&control?.id&&!label.querySelector('input'))label.htmlFor=control.id});
     document.body.style.overflow='hidden';$('#overlay button, #overlay input')?.focus();
   }
-  function closeModal(){const old=dialogFocus;$('#overlay').hidden=true;$('#overlay').innerHTML='';document.body.style.overflow='';lastModal=null;if(old?.isConnected)old.focus()}
+  function closeModal(){KSAccountManager.cleanup();const old=dialogFocus;$('#overlay').hidden=true;$('#overlay').innerHTML='';document.body.style.overflow='';lastModal=null;if(old?.isConnected)old.focus()}
   function options(items,value,placeholder='请选择'){return `<option value="">${placeholder}</option>`+Object.entries(items).map(([v,t])=>`<option value="${esc(v)}" ${String(value)===v?'selected':''}>${esc(t)}</option>`).join('')}
   function accountFilter(){
     const ids=U.unique(state.filters.account);
@@ -67,10 +67,10 @@
   function resetFlow(selected=[]){state={...state,editingId:'',view:'workflow',step:1,account:'',targets:{},selected:[...selected],configs:{},active:'',agreed:false,showErrors:false,collectionQ:'',collectionType:''};for(const id of selected)state.configs[id]=M.createConfig(D.collections.find(c=>c.id===id));render();scrollPrototypeTop()}
   function restoreDraft(){if(!draft)return;state={...state,...M.clone(draft),targets:U.migrateTargets(draft),account:'',editingId:'',view:'workflow',agreed:false};state.configs=Object.fromEntries(Object.entries(state.configs).map(([id,d])=>[id,M.restoreConfig(d,D.collections.find(c=>c.id===id))]));state.step=Math.min(2,state.step||1);render();scrollPrototypeTop()}
   function render(){
-    const y=$('#prototypeViewport').scrollTop;$('#crumb').textContent=state.view==='collections'?'合集列表':state.view==='workflow'?(state.editingId?'编辑短剧':'新增批量上传'):'快手原生上剧';
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.action===(state.view==='collections'?'collections':'records')));
-    document.querySelectorAll('.route-tabs button').forEach(n=>n.classList.toggle('active',n.dataset.action===(state.view==='collections'?'collections':'records')));
-    $('#main').innerHTML=state.view==='workflow'?workflow():state.view==='collections'?collectionsPage():recordsPage();
+    const y=$('#prototypeViewport').scrollTop;$('#crumb').textContent=state.view==='accounts'?'快手号管理':state.view==='collections'?'合集列表':state.view==='workflow'?(state.editingId?'编辑短剧':'新增批量上传'):'快手原生上剧';
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.action===(state.view==='accounts'?'accounts':state.view==='collections'?'collections':'records')));
+    document.querySelectorAll('.route-tabs button').forEach(n=>n.classList.toggle('active',n.dataset.action===(state.view==='accounts'?'accounts':state.view==='collections'?'collections':'records')));
+    $('#main').innerHTML=state.view==='accounts'?KSAccountManager.render():state.view==='workflow'?workflow():state.view==='collections'?collectionsPage():recordsPage();
     KSPrototypeNotes.render(state);
     $('#prototypeViewport').scrollTop=y;
   }
@@ -291,7 +291,7 @@
     <div class="section-title">分集上传结果</div><div class="detail-episodes">${Array.from({length:r.total},(_,i)=>`<span title="第${i+1}集：${i<r.uploaded?'已上传':r.failedSeq?.includes(i+1)?'失败':'待上传'}" class="${i<r.uploaded?'ok':r.failedSeq?.includes(i+1)?'bad':''}">${i+1}</span>`).join('')}</div><p class="bulk-hint">绿色为已上传，红色为上传失败，灰色为待上传。上传完成与审核结果分别处理。</p>
     <h3 style="margin-top:24px">操作记录</h3>${r.logs.length?`<div class="operation-history">${r.logs.slice(0,20).map(log=>`<div><span>${esc(log.time)}</span><b>${esc(log.action)}</b><small>${esc(log.actor)}</small><p>${esc(log.detail||'')}</p></div>`).join('')}</div>`:'<p class="bulk-hint">暂无操作记录；本次操作起开始记录。</p>'}`,`<div class="small-actions">${recordActions(r).replace(link('详情','detail',`data-id="${esc(r.id)}"`),'')}</div>${btn('关闭','close')}`,true);
   }
-  function showAccounts(){modal('快手账号',`<div class="note">当前为演示账号。正式接入须沿用绿台账号授权体系，凭证由服务端维护。</div>${D.accounts.map(a=>`<div class="account-row"><span class="avatar">${a.name[0]}</span><div><b>${a.name}</b><small>${a.uid} · ${a.company}</small></div>${badge(a.valid?'授权有效':'授权已失效',a.valid?'green':'red')}</div>`).join('')}`,btn('关闭','close'));}
+
   function submit(){
     if(!state.agreed)return;if(!checkTargets()||!showIssues())return;
     const batch='B-'+Date.now(),result=U.createRecords({selected:state.selected,targets:state.targets,configs:state.configs,records,accounts:D.accounts,batch,date:now(),failureCollection:D.collections[3].id});
@@ -324,7 +324,7 @@
     if(a==='edit-record')return openRecordEditor(id);
     if(a==='submit-record')return submitRecord();
     if(a==='confirm-record-submit')return submitRecord(true);
-    if(a==='accounts')return showAccounts();
+    if(KSAccountManager.handle(a,id))return;
     if(a==='demo-tools')return modal('演示工具',`<div class="note">此页面使用示例数据，所有操作只保存在当前浏览器。</div><p style="line-height:1.9">建议选择「长街有月」与「山河入梦」体验上传及失败重试。「春风知我意」展示版权和备案缺项，「逆光而来的你」展示后台上传时发现源视频缺失。</p><p class="bulk-hint">恢复初始示例会清除本原型的草稿与演示上传记录，恢复内置样例。</p>`,btn('关闭','close')+btn('恢复初始演示数据','reset-demo'));
     if(a==='reset-demo'){if(running.size)return toast('请等待当前演示上传结束后再恢复');records=M.clone(D.records).map(r=>R.normalize(r,D.collections,D.records));draft=null;editDrafts={};state={...state,view:'records',batch:'',selected:[],configs:{},checked:[],page:1,filters:R.defaultFilters()};persist();closeModal();render();scrollPrototypeTop();return toast('已恢复初始演示数据')}
     if(a==='new')return draft?.selected?.length?modal('已有未提交草稿','<p style="line-height:1.8">继续现有草稿，或新建一份批量上传。新建会替换当前草稿。</p>',btn('取消','close')+btn('新建上传','replace-draft')+btn('继续草稿','resume',true)):resetFlow();
@@ -332,7 +332,7 @@
     if(a==='resume'){closeModal();return restoreDraft();}
     if(a==='delete-draft')return modal('删除草稿','<p>删除当前本地草稿后无法恢复，上传记录不受影响。</p>',btn('取消','close')+btn('删除草稿','confirm-delete-draft',true));
     if(a==='confirm-delete-draft'){draft=null;persist();closeModal();render();return toast('草稿已删除')}
-    if(a==='collections'||a==='records'){if(state.view==='workflow'&&state.selected.length)saveDraft(true);state.view=a;state.editingId='';state.selected=[];state.batch='';render();scrollPrototypeTop();return;}
+    if(a==='collections'||a==='records'||a==='accounts'){if(state.view==='workflow'&&state.selected.length)saveDraft(true);state.view=a;state.editingId='';state.selected=[];state.batch='';render();scrollPrototypeTop();return;}
     if(a==='source-upload')return resetFlow(state.selected);
     if(a==='exit-flow')return exitFlow();
     if(a==='discard-exit'||a==='save-exit'){if(a==='save-exit')saveDraft(true);state.editingId='';closeModal();state.view='records';state.batch='';render();scrollPrototypeTop();return;}
@@ -441,8 +441,9 @@
     if(el.dataset.fileField){const file=el.files[0];if(file){if(!/\.(pdf|png|jpg|jpeg)$/i.test(file.name))return toast('请选择PDF或图片附件');current()[el.dataset.fileField]=file.name;closeModal();render();toast('已记录本地附件名称，仅用于原型预览')}return;}
     if(el.id==='coverFile'&&el.files[0]){const f=el.files[0];if(f.size>10*1024*1024)return toast('封面需在10M以内');if(!/\.(png|jpg|jpeg|bmp)$/i.test(f.name))return toast('封面格式需为JPG、PNG、BMP或JPEG');const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{if(Math.abs(img.width/img.height-1.6)>.015)return toast('短剧封面比例需为8:5');current().coverUrl=reader.result;current().coverValid=true;closeModal();render();toast('封面已更新，仅保存在本地原型')};img.onerror=()=>toast('无法读取该图片，请更换文件');img.src=reader.result};reader.readAsDataURL(f)}
   });
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const menu=$('.category-select[open]');if(menu){menu.open=false;menu.querySelector('summary').focus();e.preventDefault();return;}}if(e.key==='Escape'&&!$('#overlay').hidden)closeModal();if(e.key==='Enter'&&e.target.hasAttribute('data-record-filter'))$('[data-action=query]')?.click();if(e.key==='Enter'&&e.target.id==='collectionSearch')$('[data-action=search-collections]')?.click();if(e.key==='Tab'&&!$('#overlay').hidden){const nodes=[...$('#overlay').querySelectorAll('button:not(:disabled),input:not([type=hidden]),select,textarea,a[href]')].filter(n=>n.offsetParent!==null);if(!nodes.length)return;if(e.shiftKey&&document.activeElement===nodes[0]){e.preventDefault();nodes.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===nodes.at(-1)){e.preventDefault();nodes[0].focus()}}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){const menu=$('.category-select[open]');if(menu){menu.open=false;menu.querySelector('summary').focus();e.preventDefault();return;}}if(e.key==='Escape'&&!$('#overlay').hidden)closeModal();if(e.key==='Enter'&&e.target.hasAttribute('data-record-filter'))$('[data-action=query]')?.click();if(e.key==='Enter'&&e.target.id==='accountSearch')$('[data-action=account-query]')?.click();if(e.key==='Enter'&&e.target.id==='collectionSearch')$('[data-action=search-collections]')?.click();if(e.key==='Tab'&&!$('#overlay').hidden){const nodes=[...$('#overlay').querySelectorAll('button:not(:disabled),input:not([type=hidden]),select,textarea,a[href],summary')].filter(n=>n.offsetParent!==null);if(!nodes.length)return;if(e.shiftKey&&document.activeElement===nodes[0]){e.preventDefault();nodes.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===nodes.at(-1)){e.preventDefault();nodes[0].focus()}}});
   KSAuthRange.bind(current,(start,end)=>{current().authStart=start;current().authEnd=end;render();});
+  KSAccountManager.init({esc,btn,link,dot,modal,close:closeModal,render,toast,now});
   persist();syncSchedules();setInterval(syncSchedules,1000);
   render();records.filter(r=>['queued','creating','uploading','submitting'].includes(r.stage)).forEach(r=>runTask(r.id));
 })();
