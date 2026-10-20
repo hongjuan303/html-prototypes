@@ -47,7 +47,7 @@ window.KSUpload = (() => {
       const d=JSON.parse(JSON.stringify(configs[p.collectionId]));
       const source=window.KSData?.collections.find(c=>c.id===p.collectionId);
       if(source){d.episodes=window.KSModel.sourceEpisodes(d,source);d.total=source.total;}
-      return {id:batch+'-'+i,collectionId:d.id,collectionName:d.name,createdBy:actor,modifiedBy:'',modifiedAt:'',auditReason:'',uploadReason:'',schedule:{status:'none',time:'',reason:''},logs:[],title:d.title,cover:d.cover,coverUrl:d.coverUrl||'',account:p.account,total:d.total,uploaded:0,stage:'queued',audit:'unsubmitted',saleState:'offline',sale:d.sale,miniId:'',date,batch,fail:'',type:d.type,attempt:0,simulateFailure:d.id===failureCollection,config:d};
+      return {id:batch+'-'+i,collectionId:d.id,collectionName:d.name,createdBy:actor,modifiedBy:'',modifiedAt:'',auditReason:'',uploadReason:'',schedule:{status:'none',time:'',reason:''},offlineSchedule:{status:'none',time:'',reason:''},offlineAt:'',logs:[],title:d.title,cover:d.cover,coverUrl:d.coverUrl||'',account:p.account,total:d.total,uploaded:0,stage:'queued',audit:'unsubmitted',saleState:'offline',sale:d.sale,miniId:'',date,batch,fail:'',type:d.type,attempt:0,simulateFailure:d.id===failureCollection,config:d};
     })};
   }
   return {unique,migrateTargets,plan,assign,issues,createRecords};

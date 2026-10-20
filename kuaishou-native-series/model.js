@@ -4,6 +4,23 @@ window.KSModel = (() => {
   const declarationDefaults={'1':'0','2':'1'};
   const filingValue=value=>[true,'true'].includes(value)?'true':[false,'false'].includes(value)?'false':'';
   const limitDescription=value=>[...String(value??'').trim()].slice(0,400).join('');
+  const collectionTerms=(value,ids=false)=>[...new Set(String(value||'').split(ids?/[\s,，、;；]+/:/[\n,，、;；]+/).map(x=>x.trim()).filter(Boolean))];
+  function queryCollections(collections,filters){
+    if(!filters)return [];
+    const names=collectionTerms(filters.names),ids=collectionTerms(filters.ids,true),types=filters.types||[];
+    return collections.filter(c=>(!names.length||names.some(name=>c.name.toLowerCase().includes(name.toLowerCase())))&&(!ids.length||ids.includes(c.id))&&(!types.length||types.includes(c.sourceType)));
+  }
+  function batchEpisodePricing(d,cut,price){
+    const errors=[];
+    if(d.sale!=='2')errors.push({field:'priceBulkAmount',message:'仅单集+全剧付费可批量设置单集价格'});
+    if(!/^[1-9]\d*$/.test(String(cut))||!Number.isSafeInteger(Number(cut))||Number(cut)>=d.total)errors.push({field:'priceBulkCut',message:'卡点集须为大于等于1且小于全集数的正整数'});
+    if(!validPrice(price,100))errors.push({field:'priceBulkAmount',message:'付费金额为0.10～100元，最多两位小数'});
+    if(errors.length)return errors;
+    const amount=Number(price).toFixed(2),start=Number(cut);
+    d.episodes.forEach(e=>{e.free=e.seq<start;e.price=e.free?'':amount;});
+    d.batchPricing={cut:String(start),price:amount};
+    return [];
+  }
   function setContentType(d,type){
     d.type=type;d.declaration=declarationDefaults[type]??'';
   }
@@ -180,5 +197,5 @@ window.KSModel = (() => {
   const audits={unsubmitted:['待提交','muted'],pending:['审核中','orange'],publishing:['发布中','blue'],rejected:['审核未通过','red'],approved:['发布成功','green']};
   const sales={'0':'全剧付费','2':'单集+全剧付费','3':'观看广告解锁'};
   function duplicate(records,account,id){return records.find(r=>r.account===account&&r.collectionId===id);}
-  return {clone,createConfig,restoreConfig,setContentType,sourceContentTypes,limitDescription,validate,videoIssues,episodeIssues,stages,audits,sales,duplicate,peopleGroups,blankPerson,personnel,setPersonnel,sourceEpisodes,broadcastChannels,blankBroadcast,broadcastPlatforms,copyrightKinds,copyrightSlots,copyrightTypes,copyrightUpload,setCopyrightUpload,copyrightFileError,copyrightIssues};
+  return {clone,createConfig,restoreConfig,setContentType,sourceContentTypes,limitDescription,collectionTerms,queryCollections,batchEpisodePricing,validate,videoIssues,episodeIssues,stages,audits,sales,duplicate,peopleGroups,blankPerson,personnel,setPersonnel,sourceEpisodes,broadcastChannels,blankBroadcast,broadcastPlatforms,copyrightKinds,copyrightSlots,copyrightTypes,copyrightUpload,setCopyrightUpload,copyrightFileError,copyrightIssues};
 })();

@@ -7,7 +7,8 @@
   let editDrafts=saved?.editDrafts||{};
   if(saved?.version!==2)for(const seed of D.records.filter(r=>/^R-DEMO-0[678]$/.test(r.id)))if(!records.some(r=>r.id===seed.id))records.push(M.clone(seed));
   records.forEach(r=>R.normalize(r,D.collections,D.records));
-  let state={editingId:'',view:'records',step:1,account:'',targets:{},selected:[],configs:{},active:'',filters:R.defaultFilters(),collectionQ:'',collectionType:'',agreed:false,batch:'',page:1,checked:[]};
+  const emptyPicker=()=>({names:'',ids:'',types:[],results:null});
+  let state={picker:emptyPicker(),editingId:'',view:'records',step:1,account:'',targets:{},selected:[],configs:{},active:'',filters:R.defaultFilters(),collectionQ:'',collectionType:'',agreed:false,batch:'',page:1,checked:[]};
   let toastTimer,dialogFocus,running=new Set(),lastModal=null,assignmentIds=[];
   const persist=()=>{try{localStorage.setItem(key,JSON.stringify({version:2,records,draft,editDrafts}))}catch{toast('本地存储空间不足，请保持当前页面打开')}};
   const scrollPrototypeTop=()=>$('#prototypeViewport').scrollTo({left:0,top:0});
@@ -63,9 +64,9 @@
     if(records.some(r=>r.id!==state.editingId&&targetsFor(d.id).includes(r.account)&&r.title.trim()===d.title.trim()))xs.push({tab:'base',field:'title',message:'目标账号已有同名短剧，请检查上传记录'});
     return xs;
   }
-  function saveDraft(quiet=false){if(state.editingId){editDrafts[state.editingId]={config:M.clone(current()),updated:now()};persist();if(!quiet)toast('编辑草稿已保存，不影响新增上传草稿');return;}draft={targets:M.clone(state.targets),selected:[...state.selected],configs:M.clone(state.configs),active:state.active,step:state.step,updated:now()};persist();if(!quiet)toast('草稿已保存，可在上传记录中继续编辑')}
-  function resetFlow(selected=[]){state={...state,editingId:'',view:'workflow',step:1,account:'',targets:{},selected:[...selected],configs:{},active:'',agreed:false,showErrors:false,collectionQ:'',collectionType:''};for(const id of selected)state.configs[id]=M.createConfig(D.collections.find(c=>c.id===id));render();scrollPrototypeTop()}
-  function restoreDraft(){if(!draft)return;state={...state,...M.clone(draft),targets:U.migrateTargets(draft),account:'',editingId:'',view:'workflow',agreed:false};state.configs=Object.fromEntries(Object.entries(state.configs).map(([id,d])=>[id,M.restoreConfig(d,D.collections.find(c=>c.id===id))]));state.step=Math.min(2,state.step||1);render();scrollPrototypeTop()}
+  function saveDraft(quiet=false){if(state.editingId){editDrafts[state.editingId]={config:M.clone(current()),updated:now()};persist();if(!quiet)toast('编辑草稿已保存，不影响新增上传草稿');return;}draft={picker:M.clone(state.picker),targets:M.clone(state.targets),selected:[...state.selected],configs:M.clone(state.configs),active:state.active,step:state.step,updated:now()};persist();if(!quiet)toast('草稿已保存，可在上传记录中继续编辑')}
+  function resetFlow(selected=[]){state={...state,picker:emptyPicker(),editingId:'',view:'workflow',step:1,account:'',targets:{},selected:[...selected],configs:{},active:'',agreed:false,showErrors:false,collectionQ:'',collectionType:''};for(const id of selected)state.configs[id]=M.createConfig(D.collections.find(c=>c.id===id));render();scrollPrototypeTop()}
+  function restoreDraft(){if(!draft)return;state={...state,...M.clone(draft),picker:draft.picker?M.clone(draft.picker):emptyPicker(),targets:U.migrateTargets(draft),account:'',editingId:'',view:'workflow',agreed:false};state.configs=Object.fromEntries(Object.entries(state.configs).map(([id,d])=>[id,M.restoreConfig(d,D.collections.find(c=>c.id===id))]));state.step=Math.min(2,state.step||1);render();scrollPrototypeTop()}
   function render(){
     const y=$('#prototypeViewport').scrollTop;$('#crumb').textContent=state.view==='accounts'?'快手号管理':state.view==='collections'?'合集列表':state.view==='workflow'?(state.editingId?'编辑短剧':'新增批量上传'):'快手原生上剧';
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.action===(state.view==='accounts'?'accounts':state.view==='collections'?'collections':'records')));
@@ -103,7 +104,7 @@
     let html=link('详情','detail',attrs)+`<button class="link" data-action="edit-record" ${attrs} ${editError?'disabled':''} title="${esc(editError||'修改本条短剧资料')}">${editDrafts[r.id]?'继续编辑':'编辑'}</button>`;
     if(r.stage==='failed')return html+link('重试上传','retry',attrs);
     if(r.schedule.status==='pending')return html+op('预约上架','modify-schedule');
-    if(r.saleState==='online')return html+op('下架','offline');
+    if(r.saleState==='online')return html+op('下架','offline')+op('预约下架','schedule-offline');
     if(!actionReason(r,'online'))html+=op('上架','online')+op('预约上架','schedule');
     return html;
     function op(label,action){const error=actionReason(r,action);return `<button class="link" data-action="manage-record" data-kind="${action}" ${attrs} ${error?'disabled':''} title="${esc(error)}">${label}</button>`;}
@@ -120,20 +121,30 @@
     <td>${timeCell(r.schedule.time)}</td><td>${timeCell(r.offlineAt)}</td><td>${esc(r.modifiedBy||r.createdBy||'—')}</td><td>${timeCell(r.date)}</td><td>${timeCell(r.modifiedAt)}</td><td class="sticky-right"><div class="small-actions">${recordActions(r)}</div></td></tr>`;}
   function manageRecord(id,kind){
     const r=recordById(id);if(!r)return;const error=actionReason(r,kind);if(error)return toast(error);
-    const scheduling=['schedule','modify-schedule'].includes(kind),titles={online:'确认上架',offline:'确认下架',schedule:'设置预约上架','modify-schedule':'设置预约上架'};
-    modal(titles[kind],`<div class="schedule-identity"><div><small>快手号</small><b>${esc(account(r.account).name)} · ${esc(account(r.account).uid)}</b></div><div><small>快手短剧名称</small><b>${esc(r.title)}</b></div><div><small>快手短剧ID</small><b>${esc(r.miniId)}</b></div></div>${scheduling?`<div class="field"><label class="require" for="scheduleTime">预约上架时间（北京时间）</label><input type="datetime-local" id="scheduleTime" step="1" value="${kind==='modify-schedule'?esc(r.schedule.time.replace(' ','T')):''}"><div class="hint">请选择未来的时间；预约上架时间可在列表查看，执行结果在详情中查看。</div><div id="scheduleError" role="alert" class="field-error"></div></div>`:`<div class="note ${kind==='offline'?'warning':''}">${kind==='offline'?'下架后，该短剧将停止售卖。':'当前售卖状态为已下架、审核状态为发布成功，上架后该短剧进入售卖状态。'}</div>`}`,btn('取消','close')+btn(scheduling?'确认预约':titles[kind],'confirm-management',true,`data-id="${id}" data-kind="${kind}"`));
+    const down=kind==='schedule-offline',scheduling=down||['schedule','modify-schedule'].includes(kind),plan=down?r.offlineSchedule:r.schedule;
+    const titles={online:'确认上架',offline:'确认下架',schedule:'设置预约上架','modify-schedule':'设置预约上架','schedule-offline':'设置预约下架'},label=down?'预约下架时间':'预约上架时间';
+    modal(titles[kind],`<div class="schedule-identity"><div><small>快手号</small><b>${esc(account(r.account).name)} · ${esc(account(r.account).uid)}</b></div><div><small>快手短剧名称</small><b>${esc(r.title)}</b></div><div><small>快手短剧ID</small><b>${esc(r.miniId)}</b></div></div>${scheduling?`<div class="field"><label class="require" for="scheduleTime">${label}（北京时间）</label><input type="datetime-local" id="scheduleTime" step="1" value="${plan?.status==='pending'?esc(plan.time.replace(' ','T')):''}"><div class="hint">请选择未来的时间；${down?'预约下架时间与执行结果可在详情查看。':'预约上架时间可在列表查看，执行结果在详情中查看。'}</div><div id="scheduleError" role="alert" class="field-error"></div></div>`:`<div class="note ${kind==='offline'?'warning':''}">${kind==='offline'?'下架后，该短剧将停止售卖。':'当前售卖状态为已下架、审核状态为发布成功，上架后该短剧进入售卖状态。'}</div>`}`,btn('取消','close')+btn(scheduling?'确认预约':titles[kind],'confirm-management',true,`data-id="${id}" data-kind="${kind}"`));
   }
+
   function confirmManagement(id,kind){
     const r=recordById(id);if(!r)return;const error=R.apply(r,kind,{valid:validAccount(r),value:$('#scheduleTime')?.value||''});
     if(error){if($('#scheduleError')){$('#scheduleError').textContent=error;$('#scheduleTime').setAttribute('aria-invalid','true')}return toast(error);}
-    persist();closeModal();render();toast({online:'短剧已上架',offline:'短剧已下架',schedule:'预约设置成功','modify-schedule':'预约时间已更新'}[kind]+'（演示）');
+    persist();closeModal();render();toast({online:'短剧已上架',offline:'短剧已下架',schedule:'预约设置成功','modify-schedule':'预约时间已更新','schedule-offline':'预约下架已保存'}[kind]+'（演示）');
   }
-  function syncSchedules(){let changed=false;for(const r of records)changed=R.executeDue(r,validAccount(r))||changed;if(changed){persist();if(state.view==='records'&&$('#overlay').hidden&&!document.activeElement?.matches('[data-record-filter]'))render();}return changed;}
-  function visibleCollections(){return D.collections.filter(c=>(!state.collectionQ||[c.name,c.id].join(' ').includes(state.collectionQ))&&(!state.collectionType||c.sourceType===state.collectionType))}
+  function syncSchedules(){let changed=false;for(const r of records){const up=R.executeDue(r,validAccount(r)),down=R.executeOfflineDue(r,validAccount(r));changed=up||down||changed;}if(changed){persist();if(state.view==='records'&&$('#overlay').hidden&&!document.activeElement?.matches('[data-record-filter]'))render();}return changed;}
+  function visibleCollections(){if(state.view==='workflow')return M.queryCollections(D.collections,state.picker.results);return D.collections.filter(c=>(!state.collectionQ||[c.name,c.id].join(' ').includes(state.collectionQ))&&(!state.collectionType||c.sourceType===state.collectionType))}
   function collectionTable(isSource=false){
-    const rows=visibleCollections();return rows.length?`<div class="table-wrap"><table class="data-table picker-table multi-target-table"><colgroup><col style="width:42px"><col style="width:250px"><col style="width:85px"><col style="width:100px"><col style="width:130px"><col style="width:110px"><col style="width:275px"></colgroup><thead><tr><th><input data-select-all type="checkbox" aria-label="全选当前筛选合集" ${rows.every(c=>state.selected.includes(c.id))?'checked':''}></th><th>合集信息</th><th>短剧类型</th><th>可用 / 总集数</th><th>内容标签</th><th>更新时间</th><th>${isSource?'快手上传记录':'目标快手账号（可多选）'}</th></tr></thead><tbody>${rows.map(c=>{const selected=state.selected.includes(c.id),ids=targetsFor(c.id);return `<tr class="${selected?'picked':''}"><td><input type="checkbox" data-select="${c.id}" aria-label="选择合集${esc(c.name)}" ${selected?'checked':''}></td><td>${drama(c)}</td><td>${c.sourceType}</td><td><span class="${c.episodes.some(e=>!e.ready)?'orange':''}">${c.episodes.filter(e=>e.ready).length} / ${c.total}</span><div class="meta-line">${c.completed==='true'?'已完结':'连载中'}</div></td><td>${c.tags.map(t=>badge(t)).join(' ')}</td><td class="muted">${c.updated}</td><td>${isSource?(records.some(r=>r.collectionId===c.id)?badge('已关联快手','blue'):badge('可新建','green')):`<div class="target-tags">${ids.length?ids.map(a=>badge(account(a).name,D.accounts.find(x=>x.id===a)?.valid?'blue':'red')).join(''):'<span class="muted">未设置目标账号</span>'}</div>${btn(ids.length?'调整账号':'选择快手号','set-targets',false,`data-id="${c.id}"`)}`}</td></tr>`}).join('')}</tbody></table></div>`:empty('未找到符合条件的合集','换一个名称、合集ID或内容类型试试');
+    const rows=visibleCollections(),pending=!isSource&&!state.picker.results;
+    return `<div class="table-wrap"><table class="data-table picker-table multi-target-table"><colgroup><col style="width:42px"><col style="width:250px"><col style="width:95px"><col style="width:110px"><col style="width:140px">${isSource?'<col style="width:110px">':''}<col style="width:275px"></colgroup><thead><tr><th><input data-select-all type="checkbox" aria-label="全选当前筛选合集" ${rows.length&&rows.every(c=>state.selected.includes(c.id))?'checked':''} ${rows.length?'':'disabled'}></th><th>合集信息</th><th>短剧类型</th><th>可用 / 总集数</th><th>内容标签</th>${isSource?'<th>更新时间</th>':''}<th>${isSource?'快手上传记录':'目标快手账号（可多选）'}</th></tr></thead><tbody>${rows.length?rows.map(c=>{
+      const selected=state.selected.includes(c.id),ids=targetsFor(c.id);
+      return `<tr class="${selected?'picked':''}"><td><input type="checkbox" data-select="${c.id}" aria-label="选择合集${esc(c.name)}" ${selected?'checked':''}></td><td>${drama(c)}</td><td>${c.sourceType}</td><td><span class="${c.episodes.some(e=>!e.ready)?'orange':''}">${c.episodes.filter(e=>e.ready).length} / ${c.total}</span><div class="meta-line">${c.completed==='true'?'已完结':'连载中'}</div></td><td>${c.tags.map(t=>badge(t)).join(' ')}</td>${isSource?`<td class="muted">${c.updated}</td>`:''}<td>${isSource?(records.some(r=>r.collectionId===c.id)?badge('已关联快手','blue'):badge('可新建','green')):`<div class="target-tags">${ids.length?ids.map(a=>badge(account(a).name,D.accounts.find(x=>x.id===a)?.valid?'blue':'red')).join(''):'<span class="muted">未设置目标账号</span>'}</div>${btn(ids.length?'调整账号':'选择快手号','set-targets',false,`data-id="${c.id}"`)}`}</td></tr>`;
+    }).join(''):`<tr><td colspan="${isSource?7:6}">${empty(pending?'请先查询合集':'未找到符合条件的合集',pending?'填写筛选条件后点击查询':'请调整合集名称、合集ID或短剧类型')}</td></tr>`}</tbody></table></div>`;
   }
-  function searchCollections(){return `<div class="search-inline"><input id="collectionSearch" value="${esc(state.collectionQ)}" placeholder="搜索合集名称 / 合集ID" aria-label="搜索合集"><select id="collectionType" aria-label="短剧类型">${options({'AI剧':'AI剧','真人剧':'真人剧'},state.collectionType,'全部短剧类型')}</select>${btn('查询','search-collections')}${link('重置','reset-collections')}<div class="selection-count">已选择 <b>${state.selected.length}</b> 部合集${state.selected.length?' · '+state.selected.reduce((n,id)=>n+(D.collections.find(c=>c.id===id)?.total||0),0)+' 集':''}</div></div>`}
+  function searchCollections(){
+    if(state.view!=='workflow')return `<div class="search-inline"><input id="collectionSearch" value="${esc(state.collectionQ)}" placeholder="搜索合集名称 / 合集ID" aria-label="搜索合集"><select id="collectionType" aria-label="短剧类型">${options({'AI剧':'AI剧','真人剧':'真人剧'},state.collectionType,'全部短剧类型')}</select>${btn('查询','search-collections')}${link('重置','reset-collections')}<div class="selection-count">已选择 <b>${state.selected.length}</b> 部合集</div></div>`;
+    const p=state.picker;
+    return `<div class="search-inline collection-filters"><div class="collection-filter-fields"><label for="collectionNames">合集名称<textarea id="collectionNames" rows="2" placeholder="输入多个合集名称，以逗号或换行分隔">${esc(p.names)}</textarea></label><label for="collectionIds">合集ID<textarea id="collectionIds" rows="2" placeholder="输入多个合集ID，以逗号、空格或换行分隔">${esc(p.ids)}</textarea></label><div class="collection-type-field"><span>短剧类型</span><details class="category-select collection-type-select"><summary aria-label="短剧类型（多选）"><span class="category-selection">${esc(p.types.length?p.types.join('、'):'全部短剧类型')}</span><i>⌄</i></summary><div class="category-menu"><div class="category-options">${Object.keys(M.sourceContentTypes).map(t=>`<label><input type="checkbox" data-collection-type="${t}" ${p.types.includes(t)?'checked':''}><span>${t}</span></label>`).join('')}</div></div></details></div></div><div class="collection-filter-footer"><div class="selection-count">已选择 <b>${state.selected.length}</b> 部合集${state.selected.length?' · '+state.selected.reduce((n,id)=>n+(D.collections.find(c=>c.id===id)?.total||0),0)+' 集':''}</div><div class="actions">${btn('重置','reset-collections')}${btn('查询','search-collections',true)}</div></div></div>`;
+  }
   function collectionsPage(){return `<div class="page-heading"><div><h1>合集列表</h1><p class="sub">选择绿台已有合集，批量上传到快手原生短剧</p></div><div class="actions">${btn('上传到快手','source-upload',true,state.selected.length?'':'disabled')}</div></div><section class="panel">${searchCollections()}${collectionTable(true)}<div class="pagination"><span class="total">共 ${visibleCollections().length} 部合集</span><span>10条 / 页</span><button class="current">1</button></div></section>`}
   function workflow(){
     if(state.editingId)return recordEditor();
@@ -249,11 +260,23 @@
     const error=state.showErrors?issuesFor(d).find(x=>x.field===`episode-price-${e.seq}`):null;
     return `<div class="episode-price-row ${error?'error':''}" id="field-episode-price-${e.seq}"><strong>第${e.seq}集</strong><div><div class="radio-row"><label><input type="radio" name="episode-free-${e.seq}" data-episode-free="${e.seq}" value="true" ${e.free?'checked':''}>免费</label><label><input type="radio" name="episode-free-${e.seq}" data-episode-free="${e.seq}" value="false" ${!e.free?'checked':''}>付费</label></div>${!e.free?`<label class="episode-price-label" for="episode-price-${e.seq}">单集价格（元）</label><input id="episode-price-${e.seq}" aria-label="第${e.seq}集价格（元）" data-episode-price="${e.seq}" type="number" min="0.1" max="100" step="0.01" value="${esc(e.price)}" placeholder="0.10～100">`:''}${error?`<div class="field-error">${esc(error.message)}</div>`:''}</div></div>`;
   }).join('')}</div>`;}
+  function showBulkPricing(){
+    const d=current();if(!d||d.sale!=='2')return;
+    const values=d.batchPricing||{};
+    modal('批量设置单集价格',`<div class="bulk-price-fields"><div class="field"><label class="require" for="priceBulkCut">卡点集</label><input id="priceBulkCut" type="text" inputmode="numeric" value="${esc(values.cut||'')}" placeholder="请输入1～${d.total-1}的正整数"><div class="hint">从卡点集开始付费（含该集），此前各集免费。</div><div class="field-error" id="priceBulkCutError" role="alert"></div></div><div class="field"><label class="require" for="priceBulkAmount">付费金额（元）</label><input id="priceBulkAmount" type="text" inputmode="decimal" value="${esc(values.price||'')}" placeholder="0.10～100.00"><div class="hint">保留两位小数，应用于卡点集及之后的每一集。</div><div class="field-error" id="priceBulkAmountError" role="alert"></div></div></div>`,btn('取消','close')+btn('保存','apply-bulk-price',true));
+  }
+  function applyBulkPricing(){
+    const d=current();if(!d)return;
+    const errors=M.batchEpisodePricing(d,$('#priceBulkCut').value.trim(),$('#priceBulkAmount').value.trim());
+    for(const key of ['priceBulkCut','priceBulkAmount']){const issue=errors.find(x=>x.field===key);$('#'+key+'Error').textContent=issue?.message||'';$('#'+key).setAttribute('aria-invalid',String(!!issue));}
+    if(errors.length){$('#'+errors[0].field).focus();return;}
+    closeModal();render();toast('单集价格已批量设置');
+  }
   function saleForm(d){
     const descriptions={'0':'只允许购买全集付费解锁观看单集内容','2':'单集付费和全集付费两种方式均展示','3':'通过观看激励广告解锁更多剧集'};
     return `<div class="section-title" id="field-sale">售卖方式</div><div class="sale-options" role="group" aria-label="售卖方式">${Object.entries(M.sales).map(([v,l])=>`<button class="sale-option ${d.sale===v?'active':''}" data-action="sale-mode" data-value="${v}" aria-pressed="${d.sale===v}"><span class="radio-mark"></span><span><strong>${l}</strong><small>${descriptions[v]}</small></span></button>`).join('')}</div>${!M.sales[d.sale]?`<div class="note warning">请选择售卖方式。</div>`:''}<div class="form-grid">
       ${['0','2'].includes(d.sale)?field(d,'price','全剧价格（元）',input(d,'price','0.10～99999','number','step="0.01" min="0.1" max="99999"'),'最多两位小数。'):''}
-      ${d.sale==='2'?field(d,'episodePrices','单集价格设置',episodePricing(d),'按原集序展示，仅设置免费或付费及单集价格，视频仍由后台上传。'):''}
+      ${d.sale==='2'?`<div class="field" id="field-episodePrices"><div class="episode-price-heading"><label class="require">单集价格设置</label>${btn('批量设置','bulk-price',false,d.total>1?'':'disabled title="全集数须大于1"')}</div>${episodePricing(d)}<div class="hint">按原集序展示，可继续单独调整每集价格。</div></div>`:''}
       ${d.sale==='3'?`${field(d,'unlock','每次观看广告解锁',select(d,'unlock',Object.fromEntries(Array.from({length:8},(_,i)=>[String(i+1),(i+1)+'集']))))}${field(d,'smallFree','是否支持小额免广',radio(d,'smallFree',{'true':'是','false':'否'}))}<div class="note full" style="grid-column:1/-1">观看广告解锁（IAA）模式的免费卡点由平台规则处理。</div>`:''}
       </div>`;
   }
@@ -284,12 +307,13 @@
     modal(title,`<p class="failure-reason-text">${esc(reason||'暂无'+title)}</p>`);
   }
   function detail(id){
-    const r=recordById(id);if(!r)return;const schedule=r.schedule;
+    const r=recordById(id);if(!r)return;const schedule=r.schedule,offlineSchedule=r.offlineSchedule||{status:'none',time:'',reason:''};
     const kv=(label,value)=>`<div><small>${label}</small><b>${esc(value||'—')}</b></div>`;
     modal('短剧详情',`<div class="detail-summary">${cover(r,false)}<div><h2>${esc(r.title)}</h2><p>${esc(account(r.account).name)} · ${esc(account(r.account).uid)}　快手短剧ID：${esc(r.miniId||'待创建')}</p><div class="detail-badges">${badge(M.stages[r.stage][0],M.stages[r.stage][1])}${badge(M.audits[r.audit][0],M.audits[r.audit][1])}${badge(R.selling[r.saleState],r.saleState==='online'?'green':'muted')}</div></div></div>
     <div class="detail-kv">${kv('绿台合集名称',r.collectionName)}${kv('合集ID',r.collectionId)}${kv('上传集数 / 总集数',r.uploaded+' / '+r.total)}${kv('售卖方式',M.sales[r.sale])}${kv('内容类型',r.type==='1'?'真人剧':'漫剧')}${kv('创建人',r.createdBy)}${kv('创建时间（绿台记录）',r.date)}${kv('最近修改人',r.modifiedBy)}${kv('修改时间（人工操作）',r.modifiedAt)}${kv('下架时间（北京时间）',r.offlineAt)}</div>
     ${r.auditReason?`<div class="note error"><b>审核原因</b><span>${esc(r.auditReason)}</span></div>`:''}${r.stage==='failed'?`<div class="note error"><b>上传失败原因</b><span>${esc(r.fail||r.uploadReason)}。重试保留已上传分集与短剧ID。</span></div>`:''}${r.disposeReason?`<div class="note error"><b>平台处置原因</b><span>${esc(r.disposeReason)}</span></div>`:''}
     <h3>预约上架</h3><div class="detail-kv">${kv('预约状态',R.schedules[schedule.status])}${kv('预约时间（北京时间）',schedule.time)}${kv('实际执行时间',schedule.executedAt)}</div>${schedule.reason?`<div class="note error">${esc(schedule.reason)}</div>`:''}
+    <h3>预约下架</h3><div class="detail-kv">${kv('预约状态',R.schedules[offlineSchedule.status])}${kv('预约下架时间（北京时间）',offlineSchedule.time)}${kv('实际执行时间',offlineSchedule.executedAt)}</div>${offlineSchedule.reason?`<div class="note error">${esc(offlineSchedule.reason)}</div>`:''}
     <div class="section-title">分集上传结果</div><div class="detail-episodes">${Array.from({length:r.total},(_,i)=>`<span title="第${i+1}集：${i<r.uploaded?'已上传':r.failedSeq?.includes(i+1)?'失败':'待上传'}" class="${i<r.uploaded?'ok':r.failedSeq?.includes(i+1)?'bad':''}">${i+1}</span>`).join('')}</div><p class="bulk-hint">绿色为已上传，红色为上传失败，灰色为待上传。上传完成与审核结果分别处理。</p>
     <h3 style="margin-top:24px">操作记录</h3>${r.logs.length?`<div class="operation-history">${r.logs.slice(0,20).map(log=>`<div><span>${esc(log.time)}</span><b>${esc(log.action)}</b><small>${esc(log.actor)}</small><p>${esc(log.detail||'')}</p></div>`).join('')}</div>`:'<p class="bulk-hint">暂无操作记录；本次操作起开始记录。</p>'}`,`<div class="small-actions">${recordActions(r).replace(link('详情','detail',`data-id="${esc(r.id)}"`),'')}</div>${btn('关闭','close')}`,true);
   }
@@ -339,8 +363,8 @@
     if(a==='exit-flow')return exitFlow();
     if(a==='discard-exit'||a==='save-exit'){if(a==='save-exit')saveDraft(true);state.editingId='';closeModal();state.view='records';state.batch='';render();scrollPrototypeTop();return;}
     if(a==='save-draft')return saveDraft();
-    if(a==='search-collections'){state.collectionQ=$('#collectionSearch').value.trim();state.collectionType=$('#collectionType').value;return render()}
-    if(a==='reset-collections'){state.collectionQ='';state.collectionType='';return render()}
+    if(a==='search-collections'){if(state.view==='workflow'){state.picker.results=M.clone({names:state.picker.names,ids:state.picker.ids,types:state.picker.types});}else{state.collectionQ=$('#collectionSearch').value.trim();state.collectionType=$('#collectionType').value;}return render()}
+    if(a==='reset-collections'){state.picker=emptyPicker();state.collectionQ='';state.collectionType='';return render()}
     if(a==='next'){
       if(state.step===1){if(!state.selected.length||!checkTargets())return;state.step=2;state.active=state.selected[0];}
       else {if(!checkTargets()||!showIssues())return;state.step=3;state.agreed=false;}
@@ -349,6 +373,8 @@
     if(a==='prev'){state.step=Math.max(1,state.step-1);state.agreed=false;render();scrollPrototypeTop();return;}
     if(a==='edit-collection'){state.active=id;render();scrollPrototypeTop();return;}
     if(a==='sale-mode'){current().sale=v;return render()}
+    if(a==='bulk-price')return showBulkPricing();
+    if(a==='apply-bulk-price')return applyBulkPricing();
     if(a==='add-broadcast'||a==='delete-broadcast'){
       const platforms=M.broadcastPlatforms(current());
       if(a==='add-broadcast')platforms.push(M.blankBroadcast());
@@ -414,7 +440,7 @@
     rows[Number(el.dataset.personIndex)][el.dataset.personField]=el.value;
     M.setPersonnel(current(),key,rows);return true;
   }
-  document.addEventListener('input',e=>{const el=e.target;if(updateBroadcastInput(el)||updatePersonInput(el))return;if(el.dataset.episodePrice&&current()){current().episodes.find(x=>x.seq===Number(el.dataset.episodePrice)).price=el.value;return;}if(el.id==='targetAccountSearch'){document.querySelectorAll('[data-account-search]').forEach(row=>row.hidden=!row.dataset.accountSearch.toLowerCase().includes(el.value.trim().toLowerCase()));return;}if(el.id==='scheduleTime'){$('#scheduleError').textContent='';el.removeAttribute('aria-invalid')}if(el.dataset.field&&current()){if(el.dataset.field==='desc'){if(!e.isComposing&&[...el.value.trim()].length>400)el.value=M.limitDescription(el.value);if($('#descCount'))$('#descCount').textContent=[...el.value.trim()].length+' / 400';}current()[el.dataset.field]=el.value;}});
+  document.addEventListener('input',e=>{const el=e.target;if(el.id==='collectionNames'){state.picker.names=el.value;return;}if(el.id==='collectionIds'){state.picker.ids=el.value;return;}if(updateBroadcastInput(el)||updatePersonInput(el))return;if(el.dataset.episodePrice&&current()){current().episodes.find(x=>x.seq===Number(el.dataset.episodePrice)).price=el.value;return;}if(el.id==='targetAccountSearch'){document.querySelectorAll('[data-account-search]').forEach(row=>row.hidden=!row.dataset.accountSearch.toLowerCase().includes(el.value.trim().toLowerCase()));return;}if(el.id==='scheduleTime'){$('#scheduleError').textContent='';el.removeAttribute('aria-invalid')}if(el.dataset.field&&current()){if(el.dataset.field==='desc'){if(!e.isComposing&&[...el.value.trim()].length>400)el.value=M.limitDescription(el.value);if($('#descCount'))$('#descCount').textContent=[...el.value.trim()].length+' / 400';}current()[el.dataset.field]=el.value;}});
   document.addEventListener('change',async e=>{
     const el=e.target;
     if(el.dataset.singlePerson&&el.value!==''){const key=el.dataset.singlePerson;M.setPersonnel(current(),key,[M.personnel(current(),key)[Number(el.value)]]);return render();}
@@ -432,6 +458,7 @@
       const error=M.copyrightFileError(slot,upload.mode,files);if(error){el.value='';return toast(error);}
       upload[kind]=files;M.setCopyrightUpload(current(),slot,upload);render();return toast('已添加'+incoming.length+'个附件（本地预览）');
     }
+    if(el.hasAttribute('data-collection-type')){state.picker.types=[...document.querySelectorAll('[data-collection-type]:checked')].map(x=>x.dataset.collectionType);$('.collection-type-select .category-selection').textContent=state.picker.types.length?state.picker.types.join('、'):'全部短剧类型';return;}
     if(el.hasAttribute('data-category'))return updateCategories(el);
     if(el.hasAttribute('data-filter-account')){const ids=[...document.querySelectorAll('[data-filter-account]:checked')].map(x=>x.dataset.filterAccount);$('.account-filter-menu summary span').textContent=ids.length?ids.map(id=>account(id).name).join('、'):'全部快手号';return;}
     if(el.hasAttribute('data-target-account')){$('#targetSelectionCount').textContent='已选择 '+document.querySelectorAll('[data-target-account]:checked').length+' 个账号';return;}

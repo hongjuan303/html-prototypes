@@ -18,7 +18,7 @@ window.KSRecords = (() => {
     // Preserve legacy platform restrictions separately from the two selling states.
     if(r.saleState==='forced_offline'){r.saleState='offline';r.platformRestricted=true;}
     r.platformRestricted??=false;
-    r.disposeReason??='';r.schedule??={status:'none',time:'',reason:''};r.logs??=[];
+    r.disposeReason??='';r.schedule??={status:'none',time:'',reason:''};r.offlineSchedule??={status:'none',time:'',reason:''};r.logs??=[];
     // Only real down-shelf history can supply a missing timestamp; offline status alone cannot.
     if(r.offlineAt==null){
       const times=r.logs.filter(log=>log.action==='下架').map(log=>parseTime(String(log.time||'').replace(' ','T'))).filter(Number.isFinite);
@@ -35,6 +35,7 @@ window.KSRecords = (() => {
     if(!valid)return '快手号授权已失效，请先更新授权';
     if(action==='retry')return r.stage==='failed'?'':'当前没有失败分集';
     if(action==='offline')return r.saleState==='online'?'':'只有已上架短剧可下架';
+    if(action==='schedule-offline')return r.saleState!=='online'?'只有已上架短剧可预约下架':!r.miniId?'请先同步快手短剧ID':'';
     if(r.platformRestricted||r.saleState==='forced_offline')return '短剧被平台强制下架，请先处理平台处置原因';
     if(['queued','creating','uploading','submitting'].includes(r.stage))return '当前任务处理中，请完成后操作';
     if(action==='edit'){
@@ -57,7 +58,12 @@ window.KSRecords = (() => {
   }
   function apply(r,action,{valid=true,time=Date.now(),value='',actor='运营人员'}={}){
     const error=reason(r,action,valid);if(error)return error;
-    if(action==='schedule'||action==='modify-schedule'){
+    if(action==='schedule-offline'){
+      const ms=parseTime(value);if(!Number.isFinite(ms)||ms<=time)return '请选择晚于当前时间的有效预约时间（北京时间）';
+      const existed=r.offlineSchedule?.status==='pending';
+      r.offlineSchedule={status:'pending',time:beijing(ms),reason:''};
+      touch(r,existed?'修改预约下架':'设置预约下架',actor,time,r.offlineSchedule.time+'（北京时间）');
+    }else if(action==='schedule'||action==='modify-schedule'){
       const ms=parseTime(value);if(!Number.isFinite(ms)||ms<=time)return '请选择晚于当前时间的有效预约时间（北京时间）';
       r.schedule={status:'pending',time:beijing(ms),reason:''};
       touch(r,action==='schedule'?'设置预约上架':'修改预约上架',actor,time,r.schedule.time+'（北京时间）');
@@ -65,7 +71,10 @@ window.KSRecords = (() => {
       r.schedule.status='cancelled';r.schedule.reason='';touch(r,'取消预约上架',actor,time,r.schedule.time);
     }else if(action==='online'||action==='offline'){
       r.saleState=action==='online'?'online':'offline';
-      if(action==='offline')r.offlineAt=beijing(time);
+      if(action==='offline'){
+        r.offlineAt=beijing(time);
+        if(r.offlineSchedule?.status==='pending'){r.offlineSchedule.status='cancelled';r.offlineSchedule.reason='已手动下架，预约下架计划终止';}
+      }
       touch(r,action==='online'?'上架':'下架',actor,time);
     }else return '不支持此操作';
     return '';
@@ -79,5 +88,14 @@ window.KSRecords = (() => {
     r.logs.unshift({time:beijing(time),actor:'系统',action:failure?'预约执行失败':'预约上架成功',detail:failure||r.schedule.time});
     return true;
   }
-  return {selling,schedules,defaultFilters,beijing,parseTime,normalize,matches,reason,touch,apply,executeDue};
+  function executeOfflineDue(r,valid=true,time=Date.now()){
+    const schedule=r.offlineSchedule;if(schedule?.status!=='pending')return false;
+    const ms=parseTime(schedule.time.replace(' ','T'));if(!Number.isFinite(ms)||ms>time)return false;
+    const failure=!valid?'预约执行时快手号授权已失效':r.saleState!=='online'?'短剧已下架，预约未执行':!r.miniId?'缺少快手短剧ID':'';
+    schedule.status=failure?'failed':'success';schedule.reason=failure;schedule.executedAt=beijing(time);
+    if(!failure){r.saleState='offline';r.offlineAt=beijing(time);}
+    r.logs.unshift({time:beijing(time),actor:'系统',action:failure?'预约下架失败':'预约下架成功',detail:failure||schedule.time});
+    return true;
+  }
+  return {selling,schedules,defaultFilters,beijing,parseTime,normalize,matches,reason,touch,apply,executeDue,executeOfflineDue};
 })();

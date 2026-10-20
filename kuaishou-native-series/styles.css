@@ -188,3 +188,8 @@
 .range-days>button:hover{background:#eaf4ff;color:#1688ee}.range-days>button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
 .range-days>button.range-between{background:#edf6ff;border-radius:0}.range-days>button.range-today{box-shadow:inset 0 0 0 1px #9fcbf2}
 .range-days>button.range-edge{background:var(--blue);color:#fff}.range-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #edf0f4;margin-top:14px;padding-top:12px;gap:12px;font-size:12px;color:#8693a2}
+
+/* Collection query and episode pricing use existing form and action tokens. */
+.collection-filters{display:block}.collection-filter-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}.collection-filter-fields>label,.collection-type-field{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#596a7c}.collection-filter-fields textarea{width:100%;min-height:64px;resize:vertical;padding:8px 12px;font:inherit;line-height:1.6}.collection-type-field .category-select{width:100%;max-width:none}.collection-filter-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;gap:16px}.collection-filter-footer .selection-count{margin-left:0}.episode-price-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.episode-price-heading>label{margin:0}.episode-price-heading .prototype-action-anchor{margin-left:auto}#priceBulkCutError:empty,#priceBulkAmountError:empty{display:none}
+
+.bulk-price-fields{display:grid;gap:20px}
