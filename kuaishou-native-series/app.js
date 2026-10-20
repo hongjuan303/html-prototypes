@@ -95,7 +95,7 @@
       <div class="record-filter-footer"><div class="actions">${btn('重置','reset-filter')}${btn('查询','query',true)}</div></div>
     </div>
     <div class="toolbar"><strong>短剧列表</strong><small>共 ${rows.length} 条</small>${state.checked.length?`<span class="blue">已选 ${state.checked.length} 条</span>`:''}<div class="actions">${btn('＋ 新增批量上传','new',true)}${btn('刷新状态','refresh')}${btn('重试失败任务','batch-retry',false,state.checked.some(id=>records.find(r=>r.id===id)?.stage==='failed')?'':'disabled')}${link('导出记录','export')}</div></div>
-    ${slice.length?`<div class="table-wrap management-table-wrap" tabindex="0" aria-label="短剧列表，可横向滚动查看全部字段"><table class="data-table management-table"><colgroup>${[42,150,238,195,116,90,142,110,185,140,130,142,142,212].map(w=>`<col style="width:${w}px">`).join('')}</colgroup><thead><tr><th><input type="checkbox" aria-label="全选当前页上传记录" data-record-all ${slice.every(r=>state.checked.includes(r.id))?'checked':''}></th><th>快手号</th><th>快手短剧名称 / 封面</th><th>绿台合集名称 / 合集ID</th><th>售卖方式</th><th>内容类型</th><th>上传进度</th><th>审核状态</th><th>审核原因</th><th>售卖状态</th><th>操作人</th><th>创建时间</th><th>修改时间</th><th class="sticky-right">操作</th></tr></thead><tbody>${slice.map(recordRow).join('')}</tbody></table></div>`:empty()}
+    ${slice.length?`<div class="table-wrap management-table-wrap" tabindex="0" aria-label="短剧列表，可横向滚动查看全部字段"><table class="data-table management-table"><colgroup>${[42,150,238,195,116,90,142,110,185,140,142,142,130,142,142,212].map(w=>`<col style="width:${w}px">`).join('')}</colgroup><thead><tr><th><input type="checkbox" aria-label="全选当前页上传记录" data-record-all ${slice.every(r=>state.checked.includes(r.id))?'checked':''}></th><th>快手号</th><th>快手短剧名称 / 封面</th><th>绿台合集名称 / 合集ID</th><th>售卖方式</th><th>内容类型</th><th>上传进度</th><th>审核状态</th><th>审核原因</th><th>售卖状态</th><th>预约上架时间</th><th>下架时间</th><th>操作人</th><th>创建时间</th><th>修改时间</th><th class="sticky-right">操作</th></tr></thead><tbody>${slice.map(recordRow).join('')}</tbody></table></div>`:empty()}
     <div class="pagination"><span class="total">左右滚动查看全部字段 · 时间均为北京时间</span><span>共 ${rows.length} 条</span><span>10条 / 页</span><button data-action="prev-records" ${state.page===1?'disabled':''} aria-label="上一页">‹</button><button class="current">${state.page}</button><button data-action="next-records" ${state.page*10>=rows.length?'disabled':''} aria-label="下一页">›</button></div></section>`;
   }
   function recordActions(r){
@@ -115,13 +115,13 @@
     <td><span class="drama-title">${esc(r.collectionName||'—')}</span><div class="meta-line">合集ID：${esc(r.collectionId)} <button class="copy-id" data-action="copy-id" data-value="${esc(r.collectionId)}" aria-label="复制${esc(r.title)}合集ID">⧉</button></div></td>
     <td>${M.sales[r.sale]||'—'}</td><td>${r.type==='1'?'真人剧':'漫剧'}</td>
     <td>${badge(s[0],s[1])}<div class="meta-line">${r.uploaded} / ${r.total} 集</div><div class="progress-track ${r.stage==='failed'?'failed':''}"><i style="width:${r.uploaded/r.total*100}%"></i></div>${r.stage==='failed'?`<button class="link reason-link" data-action="upload-failure" data-id="${esc(r.id)}">查看上传失败原因</button>`:''}</td>
-    <td>${dot(a[0],a[1])}</td><td>${r.auditReason?`<div class="reason-preview" title="${esc(r.auditReason)}">${esc(r.auditReason)}</div>${link('展开','detail',`data-id="${r.id}"`)}`:'<span class="muted">—</span>'}</td>
+    <td>${dot(a[0],a[1])}</td><td>${r.auditReason?`<div class="reason-preview" title="${esc(r.auditReason)}">${esc(r.auditReason)}</div>${link('展开','audit-reason',`data-id="${r.id}"`)}`:'<span class="muted">—</span>'}</td>
     <td>${dot(R.selling[r.saleState]||'未知',r.saleState==='online'?'green':'muted')}${r.disposeReason?`<div class="reason-preview" title="${esc(r.disposeReason)}">${esc(r.disposeReason)}</div>`:''}</td>
-    <td>${esc(r.modifiedBy||r.createdBy||'—')}</td><td>${timeCell(r.date)}</td><td>${timeCell(r.modifiedAt)}</td><td class="sticky-right"><div class="small-actions">${recordActions(r)}</div></td></tr>`;}
+    <td>${timeCell(r.schedule.time)}</td><td>${timeCell(r.offlineAt)}</td><td>${esc(r.modifiedBy||r.createdBy||'—')}</td><td>${timeCell(r.date)}</td><td>${timeCell(r.modifiedAt)}</td><td class="sticky-right"><div class="small-actions">${recordActions(r)}</div></td></tr>`;}
   function manageRecord(id,kind){
     const r=recordById(id);if(!r)return;const error=actionReason(r,kind);if(error)return toast(error);
     const scheduling=['schedule','modify-schedule'].includes(kind),titles={online:'确认上架',offline:'确认下架',schedule:'设置预约上架','modify-schedule':'设置预约上架'};
-    modal(titles[kind],`<div class="schedule-identity"><div><small>快手号</small><b>${esc(account(r.account).name)} · ${esc(account(r.account).uid)}</b></div><div><small>快手短剧名称</small><b>${esc(r.title)}</b></div><div><small>快手短剧ID</small><b>${esc(r.miniId)}</b></div></div>${scheduling?`<div class="field"><label class="require" for="scheduleTime">预约上架时间（北京时间）</label><input type="datetime-local" id="scheduleTime" step="1" value="${kind==='modify-schedule'?esc(r.schedule.time.replace(' ','T')):''}"><div class="hint">请选择未来的时间；预约时间和执行结果可在详情中查看。</div><div id="scheduleError" role="alert" class="field-error"></div></div>`:`<div class="note ${kind==='offline'?'warning':''}">${kind==='offline'?'下架后，该短剧将停止售卖。':'当前售卖状态为已下架、审核状态为发布成功，上架后该短剧进入售卖状态。'}</div>`}`,btn('取消','close')+btn(scheduling?'确认预约':titles[kind],'confirm-management',true,`data-id="${id}" data-kind="${kind}"`));
+    modal(titles[kind],`<div class="schedule-identity"><div><small>快手号</small><b>${esc(account(r.account).name)} · ${esc(account(r.account).uid)}</b></div><div><small>快手短剧名称</small><b>${esc(r.title)}</b></div><div><small>快手短剧ID</small><b>${esc(r.miniId)}</b></div></div>${scheduling?`<div class="field"><label class="require" for="scheduleTime">预约上架时间（北京时间）</label><input type="datetime-local" id="scheduleTime" step="1" value="${kind==='modify-schedule'?esc(r.schedule.time.replace(' ','T')):''}"><div class="hint">请选择未来的时间；预约上架时间可在列表查看，执行结果在详情中查看。</div><div id="scheduleError" role="alert" class="field-error"></div></div>`:`<div class="note ${kind==='offline'?'warning':''}">${kind==='offline'?'下架后，该短剧将停止售卖。':'当前售卖状态为已下架、审核状态为发布成功，上架后该短剧进入售卖状态。'}</div>`}`,btn('取消','close')+btn(scheduling?'确认预约':titles[kind],'confirm-management',true,`data-id="${id}" data-kind="${kind}"`));
   }
   function confirmManagement(id,kind){
     const r=recordById(id);if(!r)return;const error=R.apply(r,kind,{valid:validAccount(r),value:$('#scheduleTime')?.value||''});
@@ -277,15 +277,17 @@
     const d=M.clone(current());Object.assign(r,{title:d.title,cover:d.cover,coverUrl:d.coverUrl||'',type:d.type,sale:d.sale,config:d,audit:'pending',auditReason:'',fail:'',stage:'complete'});
     R.touch(r,'修改资料并提交审核');delete editDrafts[r.id];state.editingId='';state.view='records';state.selected=[];closeModal();persist();render();scrollPrototypeTop();toast('修改已提交审核，原短剧关联已保留（演示）');
   }
-  function uploadFailure(id){
+  function showRecordReason(id,kind){
     const r=recordById(id);if(!r)return;
-    modal('上传失败原因',`<p class="failure-reason-text">${esc(r.fail||r.uploadReason||'暂无上传失败原因')}</p>`);
+    const title=kind==='audit'?'审核原因':'上传失败原因';
+    const reason=kind==='audit'?r.auditReason:r.fail||r.uploadReason;
+    modal(title,`<p class="failure-reason-text">${esc(reason||'暂无'+title)}</p>`);
   }
   function detail(id){
     const r=recordById(id);if(!r)return;const schedule=r.schedule;
     const kv=(label,value)=>`<div><small>${label}</small><b>${esc(value||'—')}</b></div>`;
     modal('短剧详情',`<div class="detail-summary">${cover(r,false)}<div><h2>${esc(r.title)}</h2><p>${esc(account(r.account).name)} · ${esc(account(r.account).uid)}　快手短剧ID：${esc(r.miniId||'待创建')}</p><div class="detail-badges">${badge(M.stages[r.stage][0],M.stages[r.stage][1])}${badge(M.audits[r.audit][0],M.audits[r.audit][1])}${badge(R.selling[r.saleState],r.saleState==='online'?'green':'muted')}</div></div></div>
-    <div class="detail-kv">${kv('绿台合集名称',r.collectionName)}${kv('合集ID',r.collectionId)}${kv('上传集数 / 总集数',r.uploaded+' / '+r.total)}${kv('售卖方式',M.sales[r.sale])}${kv('内容类型',r.type==='1'?'真人剧':'漫剧')}${kv('创建人',r.createdBy)}${kv('创建时间（绿台记录）',r.date)}${kv('最近修改人',r.modifiedBy)}${kv('修改时间（人工操作）',r.modifiedAt)}</div>
+    <div class="detail-kv">${kv('绿台合集名称',r.collectionName)}${kv('合集ID',r.collectionId)}${kv('上传集数 / 总集数',r.uploaded+' / '+r.total)}${kv('售卖方式',M.sales[r.sale])}${kv('内容类型',r.type==='1'?'真人剧':'漫剧')}${kv('创建人',r.createdBy)}${kv('创建时间（绿台记录）',r.date)}${kv('最近修改人',r.modifiedBy)}${kv('修改时间（人工操作）',r.modifiedAt)}${kv('下架时间（北京时间）',r.offlineAt)}</div>
     ${r.auditReason?`<div class="note error"><b>审核原因</b><span>${esc(r.auditReason)}</span></div>`:''}${r.stage==='failed'?`<div class="note error"><b>上传失败原因</b><span>${esc(r.fail||r.uploadReason)}。重试保留已上传分集与短剧ID。</span></div>`:''}${r.disposeReason?`<div class="note error"><b>平台处置原因</b><span>${esc(r.disposeReason)}</span></div>`:''}
     <h3>预约上架</h3><div class="detail-kv">${kv('预约状态',R.schedules[schedule.status])}${kv('预约时间（北京时间）',schedule.time)}${kv('实际执行时间',schedule.executedAt)}</div>${schedule.reason?`<div class="note error">${esc(schedule.reason)}</div>`:''}
     <div class="section-title">分集上传结果</div><div class="detail-episodes">${Array.from({length:r.total},(_,i)=>`<span title="第${i+1}集：${i<r.uploaded?'已上传':r.failedSeq?.includes(i+1)?'失败':'待上传'}" class="${i<r.uploaded?'ok':r.failedSeq?.includes(i+1)?'bad':''}">${i+1}</span>`).join('')}</div><p class="bulk-hint">绿色为已上传，红色为上传失败，灰色为待上传。上传完成与审核结果分别处理。</p>
@@ -309,8 +311,8 @@
   function updateTask(){persist();if(state.view==='records'&&!document.activeElement?.matches('#main input,#main select'))render()}
   function retry(id){const r=records.find(x=>x.id===id);if(!r||r.stage!=='failed')return;const error=actionReason(r,'retry');if(error)return toast(error);R.touch(r,'重试失败分集');const source=D.collections.find(c=>c.id===r.collectionId);if(source){const completed=r.config.episodes.filter(e=>e.seq<=r.uploaded);r.config.episodes=[...completed,...M.sourceEpisodes(r.config,source).filter(e=>e.seq>r.uploaded)];r.config.total=source.total;r.total=source.total;}r.attempt=(r.attempt||0)+1;r.stage=r.miniId?'uploading':'queued';r.fail='';r.failedSeq=[];closeModal();persist();render();runTask(id);toast('已开始重试，保留原短剧ID与已完成分集')}
   function exportRecords(){
-    const rows=filteredRecords(),cols=['快手号','快手号ID','快手短剧名称','快手短剧ID','绿台合集名称','合集ID','售卖方式','内容类型','上传集数','总集数','上传状态','审核状态','审核原因','售卖状态','预约状态','预约时间（北京时间）','预约失败原因','创建人','最近修改人','创建时间','修改时间','上传失败原因'];
-    const values=rows.map(r=>[account(r.account).name,account(r.account).uid,r.title,r.miniId,r.collectionName,r.collectionId,M.sales[r.sale],r.type==='1'?'真人剧':'漫剧',r.uploaded,r.total,M.stages[r.stage][0],M.audits[r.audit][0],r.auditReason,R.selling[r.saleState],R.schedules[r.schedule.status],r.schedule.time,r.schedule.reason,r.createdBy,r.modifiedBy,r.date,r.modifiedAt,r.stage==='failed'?r.fail||r.uploadReason:'']);
+    const rows=filteredRecords(),cols=['快手号','快手号ID','快手短剧名称','快手短剧ID','绿台合集名称','合集ID','售卖方式','内容类型','上传集数','总集数','上传状态','审核状态','审核原因','售卖状态','预约状态','预约上架时间（北京时间）','下架时间（北京时间）','预约失败原因','创建人','最近修改人','创建时间','修改时间','上传失败原因'];
+    const values=rows.map(r=>[account(r.account).name,account(r.account).uid,r.title,r.miniId,r.collectionName,r.collectionId,M.sales[r.sale],r.type==='1'?'真人剧':'漫剧',r.uploaded,r.total,M.stages[r.stage][0],M.audits[r.audit][0],r.auditReason,R.selling[r.saleState],R.schedules[r.schedule.status],r.schedule.time,r.offlineAt,r.schedule.reason,r.createdBy,r.modifiedBy,r.date,r.modifiedAt,r.stage==='failed'?r.fail||r.uploadReason:'']);
     const csv=[cols,...values].map(row=>row.map(v=>{let text=String(v??'');if(/^[=+@-]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"'}).join(',')).join('\r\n');
     const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='快手原生上剧-记录.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已发起导出，共'+rows.length+'条记录');
   }
@@ -390,7 +392,8 @@
     if(a==='reset-filter'){state.filters=R.defaultFilters();state.page=1;state.batch='';return render()}
     if(a==='clear-batch'){state.batch='';return render()}
     if(a==='detail')return detail(id);
-    if(a==='upload-failure')return uploadFailure(id);
+    if(a==='upload-failure')return showRecordReason(id,'upload');
+    if(a==='audit-reason')return showRecordReason(id,'audit');
     if(a==='retry')return retry(id);
     if(a==='batch-retry'){const ids=state.checked.filter(x=>records.find(r=>r.id===x)?.stage==='failed');if(!ids.length)return;modal('重试失败任务',`<p style="line-height:1.8">将重试 ${ids.length} 条上传失败任务，保留各自快手短剧ID与已上传分集。</p>`,btn('取消','close')+btn('开始重试','confirm-batch-retry',true));return;}
     if(a==='confirm-batch-retry'){const ids=[...state.checked];closeModal();ids.forEach(retry);state.checked=[];return render()}

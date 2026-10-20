@@ -33,4 +33,18 @@ const migrated=JSON.stringify(legacy);R.normalize(legacy,D.collections,D.records
 assert.equal('scheduleStatus' in R.defaultFilters(),false);
 for(const audit of Object.keys(M.audits)){r=Object.assign(fresh(),{audit});assert.equal(R.matches(r,{...R.defaultFilters(),audit}),true);}
 
+// Actual down-shelf timestamps must survive unrelated edits and subsequent publishing.
+r=fresh();assert.equal(r.offlineAt,'','Initial offline status is not a down-shelf event');
+R.apply(r,'online',{time});R.apply(r,'offline',{time:time+1000});
+const firstOffline=r.offlineAt;assert.equal(firstOffline,'2026-10-19 12:00:01');
+assert.ok(R.apply(r,'offline',{time:time+2000}));assert.equal(r.offlineAt,firstOffline);
+R.touch(r,'编辑资料','运营人员',time+3000);assert.equal(r.offlineAt,firstOffline);
+R.apply(r,'schedule',{time:time+4000,value:'2026-10-19T12:01:00'});
+R.executeDue(r,true,time+60000);assert.equal(r.offlineAt,firstOffline);assert.equal(r.schedule.time,'2026-10-19 12:01:00');
+assert.ok(R.apply(r,'offline',{time:time+61000,valid:false}));assert.equal(r.offlineAt,firstOffline);
+R.apply(r,'offline',{time:time+62000});assert.equal(r.offlineAt,'2026-10-19 12:01:02');
+const historical={...fresh(),modifiedAt:'2026-10-19 17:00:00',logs:[{action:'下架',time:'2026-10-19 10:00:00'},{action:'编辑资料',time:'2026-10-19 17:00:00'},{action:'下架',time:'bad'},{action:'下架',time:'2026-10-19 11:00:00'}]};
+delete historical.offlineAt;R.normalize(historical,D.collections,D.records);assert.equal(historical.offlineAt,'2026-10-19 11:00:00');
+historical.offlineAt='2026-10-19 11:30:00';R.normalize(historical,D.collections,D.records);assert.equal(historical.offlineAt,'2026-10-19 11:30:00','Keep platform timestamps');
+
 console.log('PASS: state guards, scheduling/modification/cancellation/failure, Beijing time, record identity, independent name filters, seed metadata and migration');

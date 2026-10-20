@@ -19,6 +19,11 @@ window.KSRecords = (() => {
     if(r.saleState==='forced_offline'){r.saleState='offline';r.platformRestricted=true;}
     r.platformRestricted??=false;
     r.disposeReason??='';r.schedule??={status:'none',time:'',reason:''};r.logs??=[];
+    // Only real down-shelf history can supply a missing timestamp; offline status alone cannot.
+    if(r.offlineAt==null){
+      const times=r.logs.filter(log=>log.action==='下架').map(log=>parseTime(String(log.time||'').replace(' ','T'))).filter(Number.isFinite);
+      r.offlineAt=times.length?beijing(Math.max(...times)):'';
+    }
     if(!r.config&&seed?.config)r.config=JSON.parse(JSON.stringify(seed.config));
     return r;
   }
@@ -59,7 +64,9 @@ window.KSRecords = (() => {
     }else if(action==='cancel-schedule'){
       r.schedule.status='cancelled';r.schedule.reason='';touch(r,'取消预约上架',actor,time,r.schedule.time);
     }else if(action==='online'||action==='offline'){
-      r.saleState=action==='online'?'online':'offline';touch(r,action==='online'?'上架':'下架',actor,time);
+      r.saleState=action==='online'?'online':'offline';
+      if(action==='offline')r.offlineAt=beijing(time);
+      touch(r,action==='online'?'上架':'下架',actor,time);
     }else return '不支持此操作';
     return '';
   }
