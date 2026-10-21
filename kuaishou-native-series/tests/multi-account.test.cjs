@@ -13,12 +13,34 @@ assert.deepEqual(plain(result.records.map(r=>[r.collectionId,r.account])),[['new
 result.records[0].uploaded=20;result.records[0].config.episodes[0].title='改动';
 assert.equal(result.records[1].uploaded,0);assert.notEqual(result.records[1].config.episodes[0].title,'改动');assert.notEqual(configs['new-1'].episodes[0].title,'改动');
 const dup={account:a,collectionId:'new-1',title:'已上传'};
-const assigned=U.assign(selected,[a,b,bad],{},[dup],D.accounts);
-assert.deepEqual(plain(assigned.targets),{'new-1':[b],'new-2':[a,b]});assert.equal(assigned.skipped.length,3);
-assert.equal(U.createRecords({...input,targets:assigned.targets,records:[dup]}).records.length,3);
-for(const patch of [{targets:{'new-1':[],'new-2':[a]}},{targets:{'new-1':[bad],'new-2':[a]}},{records:[dup]}]){
+const assigned=U.assign(selected,[a,b,bad],{},D.accounts);
+assert.deepEqual(plain(assigned.targets),{'new-1':[a,b],'new-2':[a,b]});assert.equal(assigned.skipped.length,2);
+assert.equal(U.createRecords({...input,targets:assigned.targets,records:[dup]}).records.length,4);
+for(const patch of [{targets:{'new-1':[],'new-2':[a]}},{targets:{'new-1':[bad],'new-2':[a]}}]){
   const before=JSON.stringify(input),failed=U.createRecords({...input,...patch});assert.ok(failed.errors.length);assert.equal(failed.records.length,0);assert.equal(JSON.stringify(input),before);
 }
+// Re-upload the same collection/account under a fresh submission, including the same title.
+for(const stage of ['queued','uploading','failed','complete']){
+  const old=M.clone(result.records);old[0].stage=stage;old[0].miniId='KS-EXISTING';old[0].uploaded=20;
+  old[0].schedule={status:'pending',time:'2026-11-01 12:00:00'};
+  const snapshot=JSON.stringify(old);
+  const repeated=U.createRecords({...input,batch:'B-REPEAT-'+stage,records:old});
+  assert.equal(repeated.errors.length,0);assert.equal(repeated.records.length,4);
+  assert.equal(new Set([...old,...repeated.records].map(r=>r.id)).size,8);
+  assert.ok(repeated.records.every(r=>r.miniId===''&&r.uploaded===0&&r.schedule.status==='none'));
+  repeated.records[0].config.title='仅新任务修改';repeated.records[0].uploaded=10;
+  assert.equal(JSON.stringify(old),snapshot,'History and other uploads stay independent');
+  const replay=U.createRecords({...input,batch:'B-REPEAT-'+stage,records:[...old,...repeated.records]});
+  assert.ok(replay.errors.length);assert.equal(replay.records.length,0,'Same submission cannot create duplicate tasks');
+}
+assert.equal(M.titleConflict([{id:'history',collectionId:'new-1',account:a,title:configs['new-1'].title}],[a],configs['new-1']),false);
+const otherTitle={id:'other',collectionId:'other-collection',account:a,title:configs['new-1'].title};
+assert.equal(M.titleConflict([otherTitle],[a],configs['new-1']),true);
+assert.equal(M.titleConflict([otherTitle],[b],configs['new-1']),false);
+assert.equal(M.titleConflict([otherTitle],[a],configs['new-1'],'other'),false);
+assert.ok(U.createRecords({...input,records:[otherTitle]}).errors.length);
+console.log('PASS: repeated collection/account uploads, original titles, independent history and submission replay protection');
+
 const sameTitles=M.clone(configs);sameTitles['new-2'].title=sameTitles['new-1'].title;
 assert.equal(U.createRecords({...input,configs:sameTitles}).records.length,0);
 assert.equal(U.createRecords({...input,configs:sameTitles,targets:{'new-1':[a],'new-2':[b]}}).records.length,2);
@@ -30,7 +52,7 @@ assert.deepEqual(plain(U.migrateTargets(JSON.parse(JSON.stringify(independent)))
 assert.deepEqual(plain(U.plan(independent.selected,U.migrateTargets(independent))),[{collectionId:'new-1',account:a}]);
 const f=R.defaultFilters(),r={account:a,title:'测试',collectionName:'合集',collectionId:'1',miniId:'2',date:'2026-10-19',schedule:{status:'none'}};
 assert.equal(R.matches(r,{...f,account:[]}),true);assert.equal(R.matches(r,{...f,account:[a,b]}),true);assert.equal(R.matches(r,{...f,account:[b]}),false);assert.equal(R.matches(r,{...f,account:a}),true);
-console.log('PASS: multi-account fan-out, per-account isolation, duplicate/authorization guards, scoped title checks, draft migration and multi-account filtering');
+console.log('PASS: multi-account fan-out, per-account isolation, repeat-upload authorization guards, scoped title checks, draft migration and multi-account filtering');
 
 // Operators configure metadata; the worker resolves the entire source collection.
 const source=D.collections[2],metadata=M.clone(source);

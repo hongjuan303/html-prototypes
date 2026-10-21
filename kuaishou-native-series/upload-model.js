@@ -8,16 +8,16 @@ window.KSUpload = (() => {
   function plan(selected,targets){
     return unique(selected).flatMap(id=>unique(targets[id]).map(account=>({collectionId:id,account})));
   }
-  function assign(selected,accounts,targets,records,available){
+  function assign(selected,accounts,targets,available){
     const next={...targets},skipped=[];
     for(const id of unique(selected))next[id]=unique(accounts).filter(account=>{
-      const error=!available.find(a=>a.id===account)?.valid?'账号授权已失效':records.some(r=>r.account===account&&r.collectionId===id)?'已有上传记录':'';
+      const error=!available.find(a=>a.id===account)?.valid?'账号授权已失效':'';
       if(error)skipped.push({collectionId:id,account,reason:error});
       return !error;
     });
     return {targets:next,skipped};
   }
-  function issues(selected,targets,records,available){
+  function issues(selected,targets,available){
     const errors=[];
     for(const id of unique(selected)){
       const ids=unique(targets[id]);
@@ -25,21 +25,20 @@ window.KSUpload = (() => {
       for(const aid of ids){
         const a=available.find(a=>a.id===aid);
         if(!a?.valid)errors.push({id,message:(a?.name||'目标账号')+'授权已失效，请重新选择'});
-        else if(records.some(r=>r.account===aid&&r.collectionId===id))errors.push({id,message:a.name+'已有本合集上传记录，请移除该账号'});
       }
     }
     return errors;
   }
   function createRecords({selected,targets,configs,records,accounts,batch,date,actor='运营人员',failureCollection=''}){
-    const errors=issues(selected,targets,records,accounts);
+    const errors=issues(selected,targets,accounts);
+    if(records.some(r=>r.batch===batch))errors.push({id:'',message:'本次上传已创建，请查看上传记录'});
     if(!selected.length)errors.push({id:'',message:'请先选择合集'});
     const rows=plan(selected,targets);
     for(const id of unique(selected)){
       const d=configs[id];
       if(!d){errors.push({id,message:'合集资料缺失'});continue;}
       errors.push(...window.KSModel.validate(d).map(x=>({id,message:x.message})));
-      const shared=r=>rows.some(p=>p.collectionId===id&&p.account===r.account);
-      if(records.some(r=>shared(r)&&r.title.trim()===d.title.trim()))errors.push({id,message:'目标账号已有同名短剧'});
+      if(window.KSModel.titleConflict(records,unique(targets[id]),d))errors.push({id,message:'目标账号下其他合集已有同名短剧'});
       if(rows.some(p=>p.collectionId!==id&&configs[p.collectionId]?.title.trim()===d.title.trim()&&rows.some(q=>q.collectionId===id&&q.account===p.account)))errors.push({id,message:'同一账号下存在同名短剧'});
     }
     if(errors.length)return {errors,records:[]};

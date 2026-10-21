@@ -196,6 +196,6 @@ window.KSModel = (() => {
   const stages={queued:['等待上传','muted'],creating:['创建短剧','blue'],uploading:['上传中','blue'],submitting:['提交中','blue'],complete:['上传完成','green'],failed:['上传失败','red']};
   const audits={unsubmitted:['待提交','muted'],pending:['审核中','orange'],publishing:['发布中','blue'],rejected:['审核未通过','red'],approved:['发布成功','green']};
   const sales={'0':'全剧付费','2':'单集+全剧付费','3':'观看广告解锁'};
-  function duplicate(records,account,id){return records.find(r=>r.account===account&&r.collectionId===id);}
-  return {clone,createConfig,restoreConfig,setContentType,sourceContentTypes,limitDescription,collectionTerms,queryCollections,batchEpisodePricing,validate,videoIssues,episodeIssues,stages,audits,sales,duplicate,peopleGroups,blankPerson,personnel,setPersonnel,sourceEpisodes,broadcastChannels,blankBroadcast,broadcastPlatforms,copyrightKinds,copyrightSlots,copyrightTypes,copyrightUpload,setCopyrightUpload,copyrightFileError,copyrightIssues};
+  function titleConflict(records,accounts,d,excludeId=''){return records.some(r=>r.id!==excludeId&&r.collectionId!==d.id&&accounts.includes(r.account)&&r.title.trim()===d.title.trim());}
+  return {clone,createConfig,restoreConfig,setContentType,sourceContentTypes,limitDescription,collectionTerms,queryCollections,batchEpisodePricing,validate,videoIssues,episodeIssues,stages,audits,sales,titleConflict,peopleGroups,blankPerson,personnel,setPersonnel,sourceEpisodes,broadcastChannels,blankBroadcast,broadcastPlatforms,copyrightKinds,copyrightSlots,copyrightTypes,copyrightUpload,setCopyrightUpload,copyrightFileError,copyrightIssues};
 })();

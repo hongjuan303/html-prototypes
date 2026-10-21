@@ -45,15 +45,15 @@
   function showTargetPicker(id){
     assignmentIds=id?[id]:[...state.selected];if(!assignmentIds.length)return toast('请先选择合集');
     const common=targetsFor(assignmentIds[0]).filter(a=>assignmentIds.every(id=>targetsFor(id).includes(a)));
-    modal(id?'设置目标快手账号':'批量设置目标快手账号',`<p class="target-scope">${id?esc(state.configs[id]?.title||D.collections.find(c=>c.id===id)?.name):'已选 '+assignmentIds.length+' 部合集'}</p><p class="bulk-hint">可选择多个快手账号，确认后覆盖所选合集的账号配置；已有上传记录的合集与账号组合会跳过。</p><input class="target-search" id="targetAccountSearch" placeholder="搜索快手账号名称或ID" aria-label="搜索目标快手账号"><div class="target-account-list">${D.accounts.map(a=>{const duplicates=assignmentIds.filter(id=>M.duplicate(records,a.id,id)).length,disabled=!a.valid||duplicates===assignmentIds.length;return `<label class="target-account-option ${disabled?'disabled':''}" data-account-search="${esc(a.name+' '+a.uid)}"><input type="checkbox" data-target-account="${a.id}" ${common.includes(a.id)&&!disabled?'checked':''} ${disabled?'disabled':''}><span><b>${esc(a.name)}</b><small>${esc(a.uid)}</small></span><em>${!a.valid?'授权已失效':duplicates===assignmentIds.length?'已有上传记录':duplicates?duplicates+' 部合集已有记录，将跳过':'授权有效'}</em></label>`}).join('')}</div><p class="bulk-hint" id="targetSelectionCount">已选择 ${common.filter(a=>D.accounts.find(x=>x.id===a)?.valid&&!assignmentIds.every(id=>M.duplicate(records,a,id))).length} 个账号</p>`,btn('取消','close')+btn('确认设置','apply-targets',true));
+    modal(id?'设置目标快手账号':'批量设置目标快手账号',`<p class="target-scope">${id?esc(state.configs[id]?.title||D.collections.find(c=>c.id===id)?.name):'已选 '+assignmentIds.length+' 部合集'}</p><p class="bulk-hint">可选择多个快手账号，确认后覆盖所选合集的账号配置。同一合集可再次上传同一快手号，每次生成独立记录。</p><input class="target-search" id="targetAccountSearch" placeholder="搜索快手账号名称或ID" aria-label="搜索目标快手账号"><div class="target-account-list">${D.accounts.map(a=>{const disabled=!a.valid;return `<label class="target-account-option ${disabled?'disabled':''}" data-account-search="${esc(a.name+' '+a.uid)}"><input type="checkbox" data-target-account="${a.id}" ${common.includes(a.id)&&!disabled?'checked':''} ${disabled?'disabled':''}><span><b>${esc(a.name)}</b><small>${esc(a.uid)}</small></span><em>${!a.valid?'授权已失效':'授权有效'}</em></label>`}).join('')}</div><p class="bulk-hint" id="targetSelectionCount">已选择 ${common.filter(a=>D.accounts.find(x=>x.id===a)?.valid).length} 个账号</p>`,btn('取消','close')+btn('确认设置','apply-targets',true));
   }
   function applyTargets(){
     const ids=[...document.querySelectorAll('[data-target-account]:checked:not(:disabled)')].map(el=>el.dataset.targetAccount);
-    const result=U.assign(assignmentIds,ids,state.targets,records,D.accounts);state.targets=result.targets;
-    closeModal();render();toast(`已更新 ${assignmentIds.length} 部合集的目标账号${result.skipped.length?'，跳过 '+result.skipped.length+' 个已有或不可用组合':''}`);
+    const result=U.assign(assignmentIds,ids,state.targets,D.accounts);state.targets=result.targets;
+    closeModal();render();toast(`已更新 ${assignmentIds.length} 部合集的目标账号${result.skipped.length?'，跳过 '+result.skipped.length+' 个授权失效组合':''}`);
   }
   function checkTargets(){
-    const errors=U.issues(state.selected,state.targets,records,D.accounts);if(!errors.length)return true;
+    const errors=U.issues(state.selected,state.targets,D.accounts);if(!errors.length)return true;
     modal('请完善目标快手账号',`<ul class="issue-list">${errors.map(x=>`<li><div><b>${esc(state.configs[x.id]?.title||x.id)}</b><small>${esc(x.message)}</small></div></li>`).join('')}</ul>`,btn('返回设置','return-targets',true));return false;
   }
   const current=()=>state.configs[state.active];
@@ -61,7 +61,7 @@
   function issuesFor(d){
     const xs=M.validate(d);
     if(selectedConfigs().some(other=>other.id!==d.id&&other.title.trim()===d.title.trim()&&targetsFor(other.id).some(a=>targetsFor(d.id).includes(a))))xs.push({tab:'base',field:'title',message:'本批次存在同名短剧，请修改标题'});
-    if(records.some(r=>r.id!==state.editingId&&targetsFor(d.id).includes(r.account)&&r.title.trim()===d.title.trim()))xs.push({tab:'base',field:'title',message:'目标账号已有同名短剧，请检查上传记录'});
+    if(M.titleConflict(records,targetsFor(d.id),d,state.editingId))xs.push({tab:'base',field:'title',message:'目标账号下其他合集已有同名短剧，请修改标题'});
     return xs;
   }
   function saveDraft(quiet=false){if(state.editingId){editDrafts[state.editingId]={config:M.clone(current()),updated:now()};persist();if(!quiet)toast('编辑草稿已保存，不影响新增上传草稿');return;}draft={picker:M.clone(state.picker),targets:M.clone(state.targets),selected:[...state.selected],configs:M.clone(state.configs),active:state.active,step:state.step,updated:now()};persist();if(!quiet)toast('草稿已保存，可在上传记录中继续编辑')}
@@ -319,10 +319,10 @@
   }
 
   function submit(){
-    if(!state.agreed)return;if(!checkTargets()||!showIssues())return;
-    const batch='B-'+Date.now(),result=U.createRecords({selected:state.selected,targets:state.targets,configs:state.configs,records,accounts:D.accounts,batch,date:now(),failureCollection:D.collections[3].id});
+    if(state.view!=='workflow'||state.step!==3||!state.agreed)return;if(!checkTargets()||!showIssues())return;
+    const batch='B-'+crypto.randomUUID(),result=U.createRecords({selected:state.selected,targets:state.targets,configs:state.configs,records,accounts:D.accounts,batch,date:now(),failureCollection:D.collections[3].id});
     if(result.errors.length)return toast(result.errors[0].message);
-    const newRows=result.records;records.unshift(...newRows);draft=null;state.view='records';state.batch=batch;state.page=1;state.filters=R.defaultFilters();state.checked=[];persist();render();scrollPrototypeTop();newRows.forEach(r=>runTask(r.id));
+    const newRows=result.records;state.agreed=false;records.unshift(...newRows);draft=null;state.view='records';state.batch=batch;state.page=1;state.filters=R.defaultFilters();state.checked=[];persist();render();scrollPrototypeTop();newRows.forEach(r=>runTask(r.id));
   }
   const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   async function runTask(id){if(running.has(id))return;const r=records.find(x=>x.id===id);if(!r||r.stage==='complete'||r.stage==='failed')return;running.add(id);try{
