@@ -1,4 +1,4 @@
-import {BGM_LIBRARY,BGM_LIBRARY_SOURCE,normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261009-update11';
+import {BGM_LIBRARY,BGM_LIBRARY_SOURCE,normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261021-update14s';
 
 // A deterministic fixture for the storyboard prototype, not a production AI
 // matcher. It reads each output's selected words independently; no batch emotion,

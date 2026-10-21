@@ -31,7 +31,7 @@ for index, match in enumerate(matches):
     end = matches[index+1].start() if index+1 < len(matches) else len(body)
     title = re.sub(r'<a class="anchor".*?</a>', '', match.group(3), flags=re.S)
     search_data.append({'id':match.group(2), 'title':shared['plain'](title), 'group':'V7 开发需求', 'text':shared['plain'](body[match.end():end])})
-script = shared['JS'].replace('试试「积分」「模型」或「业务」。','试试「选集」「解说」或「同步」。').replace('__SEARCH_DATA__', json.dumps(search_data, ensure_ascii=False).replace('<', '\\u003c'))
+script = shared['JS'].replace('试试「积分」「模型」或「业务」。','试试「选集」「时长」或「同步」。').replace('__SEARCH_DATA__', json.dumps(search_data, ensure_ascii=False).replace('<', '\\u003c'))
 # Keep the review core visible; dependencies and demo assumptions are optional.
 appendix = re.search(r'(<h2 id="[^"]+">08\. 待确认与演示边界.*?</h2>)(.*)$', body, re.S)
 if appendix:
@@ -58,11 +58,11 @@ html{scroll-padding-top:0}
 @media print{.doc h2{color:#14545b!important}}
 '''
 document = '''<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>短剧混剪与 AI 解说 · V7 PRD</title><style>__CSS__</style></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>智能混剪 · 高光顺剪 · V7 PRD</title><style>__CSS__</style></head>
 <body>
-<header class="topbar"><a class="brand" href="./"><span class="brand-icon" aria-hidden="true">▧</span>短剧混剪与 AI 解说 <small>V7 · 评审版</small></a><div class="top-actions"><button class="button menu-button" id="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button><button class="button print-button" id="print-button" type="button">打印 / 保存 PDF</button><a class="button primary" href="./review.html">原型与说明对照 ↗</a></div></header>
-<aside class="sidebar" id="sidebar" aria-label="文档目录"><div class="sidebar-label">产品需求说明</div><div class="search-wrap"><input id="search" type="search" placeholder="搜索页面、R/T/D 编号或规则" aria-label="搜索文档全文" autocomplete="off"><kbd>/</kbd></div><nav class="nav-scroll" id="navigation">__NAV__</nav><div class="search-results" id="search-results" aria-live="polite"></div><div class="sidebar-footer">2026.10.08 · 需求评审版<br>页面规则 / 共用规则 / 验收<br><a href="./PRD.md" download>下载 Markdown 源文档 ↗</a></div></aside><div class="scrim" aria-hidden="true"></div>
-<main class="reader"><div class="reader-intro"><span><strong>V7 产品需求 · 业务流程与操作规则</strong>　__CHAPTER_COUNT__ 个章节 · 全文可搜索</span><span class="review-tag">精简评审版</span></div><article class="doc" id="v7"><div class="doc-meta"><strong>PRD</strong><span>业务流程 · 页面规则 · 验收</span><a href="./PRD.md" download>下载 Markdown ↗</a></div>__BODY__</article><footer class="page-footer">序号定位原型，R 编号查规则，T 编号验收；待确认项按需展开。</footer></main><button class="back-to-top" id="back-to-top" type="button" aria-label="返回文档顶部">↑ 返回顶部</button><script>__JS__</script>
+<header class="topbar"><a class="brand" href="./"><span class="brand-icon" aria-hidden="true">▧</span>智能混剪 · 高光顺剪 <small>V7 · 评审版</small></a><div class="top-actions"><button class="button menu-button" id="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">目录</button><button class="button print-button" id="print-button" type="button">打印 / 保存 PDF</button><a class="button primary" href="./review.html">原型与说明对照 ↗</a></div></header>
+<aside class="sidebar" id="sidebar" aria-label="文档目录"><div class="sidebar-label">产品需求说明</div><div class="search-wrap"><input id="search" type="search" placeholder="搜索页面、R/T/D 编号或规则" aria-label="搜索文档全文" autocomplete="off"><kbd>/</kbd></div><nav class="nav-scroll" id="navigation">__NAV__</nav><div class="search-results" id="search-results" aria-live="polite"></div><div class="sidebar-footer">2026.10.20 · 需求评审版<br>页面规则 / 共用规则 / 验收<br><a href="./PRD.md" download>下载 Markdown 源文档 ↗</a></div></aside><div class="scrim" aria-hidden="true"></div>
+<main class="reader"><div class="reader-intro"><span><strong>V7 产品需求 · 业务流程与操作规则</strong>　__CHAPTER_COUNT__ 个章节 · 全文可搜索</span><span class="review-tag">精简评审版</span></div><article class="doc" id="v7"><div class="doc-meta"><strong>PRD</strong><span>业务流程 · 页面规则 · 验收</span><a href="./PRD.md" download>下载 Markdown ↗</a></div>__BODY__</article><footer class="page-footer">按原型序号查阅对应页面规则。</footer></main><button class="back-to-top" id="back-to-top" type="button" aria-label="返回文档顶部">↑ 返回顶部</button><script>__JS__</script>
 </body></html>'''
 for key, value in [('__CSS__',style),('__NAV__',navigation),('__BODY__',body),('__JS__',script),('__CHAPTER_COUNT__',str(chapter_count))]:
     document = document.replace(key,value)

@@ -66,7 +66,7 @@ const STATUS_LABELS = {
 
 export function targetForBatch(batch) {
   const source = batch?.config?.source;
-  return source?.kind === 'green' && targetExists(source.market) ? source.market : null;
+  return ['green','cloud','manual'].includes(source?.kind) && targetExists(source.market) ? source.market : null;
 }
 
 export function outputVersion(output) {

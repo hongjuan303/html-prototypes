@@ -2,11 +2,45 @@
 
 .review-tools>a{color:#526367;font-size:13px;text-decoration:none;padding:7px 4px}.review-tools>a:hover{color:var(--green)}
 
-.field-spec{margin:16px 0 20px;border:1px solid #dfe6e7;border-radius:5px;overflow:hidden;background:#fff}.field-spec h4{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;margin:0;padding:11px 13px;background:#f5f8f8;border-bottom:1px solid #e3e9e9;color:#243b3e;font-size:14px;font-weight:650;line-height:1.7}.field-index{color:#087f8c;font-size:12px;font-variant-numeric:tabular-nums}.field-spec h4 small{margin-left:auto;color:#778789;font-size:11px;font-weight:400}.field-spec dl{margin:0;padding:4px 13px}.field-spec dl>div{display:grid;grid-template-columns:89px minmax(0,1fr);gap:10px;padding:9px 0;border-bottom:1px solid #edf1f1;font-size:12.5px;line-height:1.85}.field-spec dl>div:last-child{border:0}.field-spec dt{color:#647c7f;font-weight:500}.field-spec dd{margin:0;overflow-wrap:anywhere;color:#304c50}.enum-spec{padding:0 13px 13px;overflow-x:auto}.enum-label{font-size:12px;font-weight:600;color:#547074;margin:9px 0}.enum-spec table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.75;table-layout:fixed}.enum-spec th{padding:8px;text-align:left;background:#f3f7f7;color:#466569;font-weight:500;border:1px solid #dde7e8}.enum-spec td{padding:8px;border:1px solid #e2e9ea;color:#365257;vertical-align:top;overflow-wrap:anywhere}.enum-spec th:first-child{width:20%}.enum-spec th:nth-child(2){width:27%}.spec-checks{border-left:2px solid #99bdc0;background:#f6f9f9;margin:16px 0 23px;padding:11px 13px;color:#476569}.spec-checks summary{font-size:12px;font-weight:600;cursor:pointer}.spec-checks ul{margin:10px 0 0!important;padding-left:19px!important}.spec-checks li{font-size:12px!important;line-height:1.9!important;color:#466167!important}.field-spec a{color:#087f8c;text-decoration:underline;text-underline-offset:3px}
 
+/* Compact requirements: categories and prose, with prototype numbering intact. */
+#notesContent{padding:20px 24px 40px;font-size:13px;line-height:1.75}
+.page-description{padding:0 0 14px;border-bottom:1px solid var(--line)}
+.page-description h2,.prototype-spec-title,.system-logic>h2{font-size:17px;line-height:1.5;margin:0 0 10px;color:#29484d;font-weight:600}
+.page-description p{margin:5px 0;overflow-wrap:anywhere}.page-description b{font-weight:600}
+.prototype-spec-title{margin:17px 0 0}.note-section{padding:14px 0 16px}
+.note-section h3{font-size:15px;margin:0 0 10px;gap:8px}.note-number{width:24px;height:24px}
+.section-source{font-size:12px;line-height:1.75;margin:4px 0 10px;color:#52696c}
+.spec-group{margin:9px 0 12px}.spec-group h4{font-size:13px;font-weight:650;color:#29484d;margin:0 0 5px}
+.note-section .spec-items{list-style:none;padding:0;margin:0;line-height:1.75;font-size:13px}
+.note-section .spec-items>li{margin:0;padding:5px 0}.note-section .spec-items>li+li{border-top:1px dashed #edf0ed;margin-top:3px}
+.spec-item p{margin:0 0 3px;overflow-wrap:anywhere}.spec-item p:last-child{margin-bottom:0}
+.field-index{font-size:12px;font-variant-numeric:tabular-nums;color:#087f8c;margin-right:4px}
+.spec-main>strong{font-weight:650}.spec-meta,.spec-validation,.spec-enums{color:#415b60}.spec-item b,.spec-enums strong{font-weight:600}
+.spec-checks{margin:10px 0 0;border-left:2px solid #b7cbcc;padding:3px 10px;color:#48656a}
+.spec-checks summary{font-size:12px;cursor:pointer;font-weight:500}.note-section .spec-checks ul{margin:7px 0 0;padding-left:18px;font-size:12px;line-height:1.75}.note-section .spec-checks li+li{margin-top:4px}
+.processing-spec{margin:9px 0 4px;padding:0 0 0 12px;border-left:2px solid #d7e4e5}
+.processing-spec>h5{font-size:13px;font-weight:650;color:#29484d;margin:0 0 8px}
+.processing-spec>ol{list-style:none;padding:0;margin:0}.note-section .processing-step,.processing-step{margin:0 0 10px;padding:0;line-height:1.75}
+.processing-step:last-child{margin-bottom:0}.processing-step h6{font-size:13px;font-weight:650;margin:0 0 3px;color:#29484d}
+.processing-step p{margin:2px 0;font-size:12.5px}.processing-step b{font-weight:600}
+.system-logic{border-top:1px solid var(--line);padding-top:18px;margin-top:20px}
+.compact-bullets{line-height:1.75!important;font-size:13px!important}.compact-bullets li+li{margin-top:6px!important}
 
+@media(max-width:760px){.notes-board{width:calc(100vw - 28px)}#notesContent{padding:18px 20px 32px}.note-unavailable{white-space:normal}}
 
-.page-description{padding:0 0 24px;border-bottom:1px solid #dfe7e8}.page-description h2,.prototype-spec-title{font-size:18px;line-height:1.6;margin:0 0 16px;color:#29484d;font-weight:600}.page-description dl{margin:0}.page-description dl>div{display:grid;grid-template-columns:74px minmax(0,1fr);gap:13px;margin:10px 0;font-size:13px;line-height:1.9}.page-description dt{color:#72868a}.page-description dd{margin:0;overflow-wrap:anywhere;color:#36565b}.prototype-spec-title{margin:25px 0 1px}.prototype-spec-title+.note-section{padding-top:14px}
-.processing-spec{padding:4px 13px 17px;border-top:1px solid #e3e9e9}.processing-spec>h5{font-size:14px;color:#29484d;margin:14px 0 18px;line-height:1.7}.processing-spec>ol{margin:0;padding:0;list-style:none}.processing-step{border-left:2px solid #c6dee0;padding:0 0 18px 13px;margin:0 0 17px}.processing-step:last-child{padding-bottom:0;margin-bottom:0}.processing-step h6{font-size:13px;line-height:1.8;color:#274e54;font-weight:600;margin:0 0 5px}.processing-step h6>span{display:inline-block;color:#087f8c;margin-right:9px;font-size:12px;font-variant-numeric:tabular-nums}.processing-role{font-size:12px;line-height:1.8;color:#54797d;margin:0 0 6px}.field-spec .processing-step dl{padding:0}.field-spec .processing-step dl>div{grid-template-columns:69px minmax(0,1fr);gap:10px;padding:7px 0}
+/* Same specification grammar as 快手短剧上传: inline fields, orange hierarchy. */
+.notes-board{width:520px;flex:0 0 520px}
+#notesContent{padding:24px 24px 40px;font-size:14px;line-height:1.8}
+.page-description h2,.prototype-spec-title,.system-logic h4,.note-section h3,.spec-group h4{color:#F28C18}
+.page-description h2,.prototype-spec-title{font-size:20px}
+.page-description p,.page-intro{font-size:14px;line-height:1.8}
+.page-intro{margin:10px 0 16px;padding-left:20px}.page-intro li+li{margin-top:5px}
+.note-section .spec-items{list-style:disc;padding-left:19px;font-size:14px;line-height:1.8}
+.note-section .spec-items>li{padding:0;margin:0}.note-section .spec-items>li+li{border:0;margin-top:9px}
+.note-section{padding:16px 0}.note-section h3{font-size:16px}.section-source{font-size:13px;color:#5d626b}
+.spec-items strong{font-weight:600}.processing-spec{padding:0;border:0;margin:0}
+.processing-spec>h4{font-size:16px;margin:0 0 12px}.processing-spec ol{padding-left:21px;list-style:decimal;margin:0;font-size:14px;line-height:1.8}.processing-spec li+li{margin-top:12px}
+@media(max-width:1440px){.notes-board{width:440px;flex-basis:440px}}
 
-.system-logic{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.system-logic>h2{font-size:18px;color:var(--ink);margin:0 0 16px}.system-logic .processing-spec{margin-top:0}
+.note-category-title{font-size:17px;font-weight:600;color:#F28C18;margin:22px 0 2px}.note-category .note-section h3{font-size:15px}.note-category .note-section:last-child{border-bottom:0}

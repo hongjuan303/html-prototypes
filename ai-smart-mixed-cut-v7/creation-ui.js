@@ -1,51 +1,38 @@
-import {MODES,CREATION_MODES,RANGES,analysisInfo,estimate,isFullNarration,validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261009-update11';
-import {resolveSource} from './sources.js?v=20261009-update11';
-import {sourceAccess,sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261009-update11';
-
-import {bgmSelectionLabel} from './bgm-model.js?v=20261009-update11';
-
-export function durationLabel(value){
- if(!value)return '待选择时长';
- if(value.endsWith('s'))return '约 '+value.slice(0,-1)+' 秒';
- return value.includes('-')?value.replace('-','–')+' 分钟':'约 '+value+' 分钟';
-}
+import {validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261021-update14s';
+import {resolveSource} from './sources.js?v=20261021-update14s';
+import {sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261021-update14s';
+import {bgmSelectionLabel} from './bgm-model.js?v=20261021-update14s';
+import {durationRange,durationRangeLabel,durationDisplay,durationError,DURATION_PRESETS,secondsLabel} from './duration-range.js?v=20261021-update14s';
+export const durationLabel=value=>durationRangeLabel(typeof value==='object'?value:{duration:value});
 export function renderCreationPreview(c,{esc}){
  if(!isConfiguredSource(c))return '<div class="preview-heading"><h2>预计成片结构</h2></div><p class="helper">请先选择片源</p>';
- const narrated=c.mode==='narrated',full=isFullNarration(c),chosen=!narrated||['mixed','full'].includes(c.narrationStructure);
- const speed=c.narrationSpeed||1,narrationLength='AI 解说';
- const flow=!narrated?[
-  '高光开场 · '+outputSpeed(c)+'×','完整对白推进','悬念收尾'
- ]:full?[
-  '完整剧情解说 · '+speed+'×','匹配原片画面 · 人声关闭'
- ]:chosen?(c.position==='middle'?[
-  '高光原片开场 · '+c.speed+'×',narrationLength+'承接 · '+speed+'×','原片原声推进 · '+c.speed+'×','悬念收尾'
- ]:[narrationLength+'引入 · '+speed+'×','原片原声推进 · '+c.speed+'×','悬念收尾']):['待选择解说结构'];
+ const source=resolveSource(c);if(!source?.totalEpisodes&&source?.importStatus!=='pending')return '<div class="preview-heading"><h2>预计成片结构</h2></div><p class="helper">请先添加视频</p>';
  const title=String(c.titleText||'').trim();
- const modeLabel=!narrated?'高光混剪':full?'全解说':chosen?'解说＋原片':'AI 解说 · 待选择结构';
- return `<div class="preview-heading"><h2>预计成片结构</h2><span class="tag">${esc(c.count)} 条</span></div><div class="preview-cover configuration-cover"><img src="./assets/drama-confrontation.jpg" alt="虚构剧情人物示意"><span class="tag">虚构剧照 · 9:16</span>${c.title?`<div class="preview-title-overlay">${esc(title||'待输入引流小标题')}</div>`:''}${chosen&&(c.subtitles||!full)?`<div class="preview-subtitle-overlay">${full?'解说字幕':narrated&&c.subtitles?'解说与原片字幕':'原片字幕'}</div>`:''}</div><h3>${modeLabel}</h3><p class="preview-duration">${chosen?esc(durationLabel(c.duration)):'待设置时长'} · 第 ${esc(c.start)}–${esc(c.end)} 集</p><p class="helper">按当前设置展示，具体片段生成后查看。</p><ol class="flow-list">${flow.map((text,i)=>`<li><span>${i+1}</span><div>${esc(text)}</div></li>`).join('')}</ol><div class="audio-structure" ${!chosen?'hidden':''}>${narrated&&chosen&&!full&&c.position==='middle'?'<span class="original-band">原片原声</span>':''}<span class="voice-band">${full?'全篇解说':narrated?'解说音轨':'剧情原声'}</span>${narrated&&chosen&&!full?'<span class="original-band">原片原声</span>':''}</div><dl class="preview-settings"><div><dt>字幕</dt><dd>${c.subtitles?'开启':full?'关闭':'保留原片字幕'}</dd></div><div><dt>BGM</dt><dd>${c.bgm?esc(bgmSelectionLabel(c)):'关闭'}</dd></div><div><dt>引流小标题</dt><dd>${c.title?esc(title||'待输入'):'关闭'}</dd></div></dl>`;
+ return `<div class="preview-heading"><h2>预计成片结构</h2><span class="tag">${esc(c.count)} 条</span></div><div class="preview-cover configuration-cover">${source.cover?`<img src="${esc(source.cover)}" alt="当前片源封面">`:''}${c.title?`<div class="preview-title-overlay">${esc(title||'待输入引流小标题')}</div>`:''}</div><h3>高光顺剪</h3><p class="preview-duration">${esc(durationRangeLabel(c))} · 第 ${esc(c.start)}–${esc(c.end)} 集</p><ol class="flow-list">${['高光开场'+(c.outputSpeed===null?'':' · '+outputSpeed(c)+'×'),'按剧情顺序推进','悬念收尾'].map((text,i)=>`<li><span>${i+1}</span><div>${esc(text)}</div></li>`).join('')}</ol><dl class="preview-settings"><div><dt>BGM</dt><dd>${c.bgm?esc(bgmSelectionLabel(c)):'关闭'}</dd></div><div><dt>引流小标题</dt><dd>${c.title?esc(title||'待输入'):'关闭'}</dd></div></dl>`;
+}
+export function durationControl(c,{button,option,esc}){
+ const [min,max]=durationRange(c),error=durationError(c);
+ const bound=(side,label,seconds)=>{const unit=c['duration'+side+'Unit']||'m';return `<div class="duration-bound"><label for="duration${side}">${label}</label><div class="duration-stepper">${button('−','duration-step','',`data-side="${side}" data-step="-1" aria-label="减少${label}"`)}<input id="duration${side}" type="number" inputmode="decimal" min="${unit==='s'?10:0.167}" max="${unit==='s'?1200:20}" step="${unit==='s'?1:'any'}" aria-label="${label}" aria-describedby="durationError" data-duration-bound="${side}" value="${esc(durationDisplay(seconds,unit))}"><select data-duration-unit="${side}" aria-label="${label}单位">${option('s','秒',unit)}${option('m','分',unit)}</select>${button('+','duration-step','',`data-side="${side}" data-step="1" aria-label="增加${label}"`)}</div></div>`;};
+ return `<div class="duration-config" id="durationConfig"><label class="duration-label">最终成片时长</label><div class="duration-slider" style="--range-start:${((min||10)-10)/1190*100}%;--range-end:${((max||10)-10)/1190*100}%"><div class="duration-track"></div><input id="durationMinSlider" type="range" min="10" max="1200" step="1" value="${min||10}" data-duration-slider="Min" aria-label="最短时长滑块"><input id="durationMaxSlider" type="range" min="10" max="1200" step="1" value="${max||1200}" data-duration-slider="Max" aria-label="最长时长滑块"></div><div class="duration-scale"><span>10秒</span><span>20分钟</span></div><div class="duration-presets">${DURATION_PRESETS.map(([a,b])=>button(secondsLabel(a)+'–'+secondsLabel(b),'duration-preset',min===a&&max===b?'active':'',`data-min="${a}" data-max="${b}"`)).join('')}</div><div class="duration-bounds">${bound('Min','最短',min)}${bound('Max','最长',max)}</div><p class="duration-error" id="durationError" role="status" ${error?'':'hidden'}>${esc(error)}</p><small>按变速后的成片计算</small></div>`;
 }
 export function createForm(state,{busy},h){
- const {heading,button,esc,tag,option,field,footer,sourceLabel}=h;
- const c=state.config,access=sourceAccess(state),permissionError=sourcePermissionError(state,c),configured=isConfiguredSource(c)&&!permissionError,info=configured?analysisInfo(state,c):{reused:[],pending:[]},q=estimate(state,c,c.count),s=configured?resolveSource(c):null;
- const narrated=c.mode==='narrated',full=isFullNarration(c),chosen=!narrated||['mixed','full'].includes(c.narrationStructure),error=permissionError||validate(c);
- const blocked=busy||Boolean(error);
- footer(error?'<strong>待完成设置</strong>':`<span>预计最高</span><strong>${q.total}</strong><span>积分</span>${tag('示例计费','orange')}`,error||`新增分析 ${q.analysis} 分 + 制作 ${q.production} 分 · 使用平台积分`,button('费用明细','quote','text-btn',error?'disabled':'')+button(busy?'正在处理…':'生成视频','direct','primary',blocked?'disabled':''));
- const durations=full?['30s','60s','90s','120s','3','5','3-5','5-7','10']:Object.keys(RANGES).filter(k=>!k.endsWith('s'));
- return heading('制作素材','')+`
- <div class="create-grid"><div>
- <section class="section"><div class="section-heading"><h2><span class="number">1</span>片源与选集</h2><div class="actions">${access.canUseCollections?button('绿台合集','source-picker','text-btn'):''}${button('本地上传','upload','text-btn')}</div></div>
- <div class="source-card">${s?.cover?`<img class="poster" src="${esc(s.cover)}" alt="剧目封面">`:`<span class="poster source-local-placeholder" aria-hidden="true">▹</span>`}<div class="source-info"><strong>${esc(s?.title||'请选择片源')}</strong><p>${esc(s?.description||'')}</p>${configured?tag(sourceLabel())+' '+tag('原片 V'+(c.source.fileVersion||1)):''}</div><div class="source-card-actions">${configured?button('更换',access.canUseCollections?'source-picker':'upload','text-btn'):''}${c.source?.kind==='manual'&&c.source.simulated!==true&&Array.isArray(c.source.files)&&c.source.files.length?button('添加视频','append-local-source','text-btn'):''}</div></div>
- ${configured?` <div class="range-row"><label>本次选集</label><div class="pills">${[10,20,30].map(n=>button('前 '+n+' 集','range',c.start===1&&c.end===n?'active':'','data-value="'+n+'"')).join('')}</div><label>第 <input type="number" min="1" max="${s?.totalEpisodes||1}" data-config="start" aria-label="起始集数" value="${c.start}"> — <input type="number" min="1" max="${s?.totalEpisodes||1}" data-config="end" aria-label="结束集数" value="${c.end}"> 集</label></div>
- <div class="analysis-bar"><span>已分析可复用 <b>${info.reused.length}</b> 集 · 本次新增 <b>${info.pending.length}</b> 集</span>${button('查看成片','current-drama','text-btn')}</div>`:''}</section>
- <section class="section"><div class="section-heading"><h2><span class="number">2</span>制作方式</h2></div>
- <div class="mode-grid two-modes">${CREATION_MODES.map((id,i)=>`<button class="mode-card ${id===c.mode?'active':''}" data-action="mode" data-value="${id}" aria-pressed="${id===c.mode}"><span class="mode-icon">${i?'≋':'✧'}</span><strong>${MODES[id].name}</strong><p>${i?'用解说讲述剧情，支持混合与全解说结构':'提炼剧情高光，保留人物原声与完整对白'}</p></button>`).join('')}</div>
- ${narrated?`<div class="narration-choice"><div class="structure-heading"><b>解说结构 <span class="required">*</span></b></div><div class="structure-options" role="group" aria-label="解说结构">${[['mixed','解说＋原片','解说与原片原声衔接，可前置或穿插'],['full','全解说','全篇解说承担叙事，原片提供对应画面']].map(([id,title,desc])=>`<button class="structure-option ${c.narrationStructure===id?'selected':''}" data-action="narration-structure" data-value="${id}" aria-pressed="${c.narrationStructure===id}"><span class="radio-dot"></span><div><b>${title}</b><p>${desc}</p></div></button>`).join('')}</div>${!chosen?'<p class="structure-hint">请选择解说结构</p>':full?'<p class="helper">全篇解说配原片画面，原片人声关闭。</p>':''}</div>`:''}
- <div class="fields">
- ${field('生成条数',`<div class="count-field">${button('−','count-minus','', 'aria-label="减少条数"')}<input aria-label="生成条数" type="number" min="1" max="20" data-config="count" value="${c.count}">${button('+','count-plus','','aria-label="增加条数"')}<div class="shortcut">${[5,10,20].map(n=>button(n+'条','count','',`data-value="${n}"`)).join('')}</div></div>`,'最多 20 条')}
- ${chosen?field('最终成片时长',`<select aria-label="最终成片时长" data-config="duration">${durations.includes(c.duration)?'':option('','请选择成片时长',c.duration)}${durations.map(d=>option(d,durationLabel(d),c.duration)).join('')}</select>`,full?'':narrated?'包含变速后的原片与解说':'按变速后的成片计算'):''}
- ${field('成片速度',`<div class="speed-config"><select aria-label="成片速度" data-config="outputSpeed">${OUTPUT_SPEEDS.map(n=>option(n,n+'×',outputSpeed(c))).join('')}</select>${narrated&&c.narrationStructure==='mixed'?`<label class="speed-override"><input type="checkbox" data-config="independentNarrationSpeed" ${c.independentNarrationSpeed?'checked':''}>单独调整解说语速</label>${c.independentNarrationSpeed?`<div class="voice-speed-override"><label for="narrationSpeedOverride">解说语速</label><select id="narrationSpeedOverride" aria-label="单独解说语速" data-config="narrationSpeed">${OUTPUT_SPEEDS.map(n=>option(n,n+'×'+(n===1?' · 自然语速':''),c.narrationSpeed||1)).join('')}</select></div>`:''}`:''}</div>`,full?'控制全篇解说语速':narrated&&chosen?(c.independentNarrationSpeed?'解说使用单独设置的语速':'原片与解说使用相同速度'):'按此速度编排最终成片')}
- ${narrated&&c.narrationStructure==='mixed'?field('解说位置',`<select aria-label="解说位置" data-config="position">${option('intro','开头引入',c.position)}${option('middle','剧情中承接',c.position)}</select>`):''}
+ const {heading,button,esc,tag,option,field,footer,sourceLabel}=h,c=state.config,permissionError=sourcePermissionError(state,c),configured=isConfiguredSource(c)&&!permissionError,s=configured?resolveSource(c):null;
+ const error=permissionError||validate(c),blocked=busy||Boolean(error);
+ const sourceFiles=c.source?.files||[],selectedFiles=sourceFiles.filter((file,index)=>{const episode=file.episode||file.order||index+1;return episode>=c.start&&episode<=c.end;});
+ const durationKnown=selectedFiles.length===c.end-c.start+1&&selectedFiles.length>0&&selectedFiles.every(file=>Number.isFinite(Number(file.duration))&&Number(file.duration)>0);
+ const pointsLink=button('查看积分明细','platform-points','text-btn inline-points-link');
+ const costNotice=configured?`${durationKnown?'':'当前未拿到原片总时长，所以积分预估不准，'}预计原片分析成本0.5元/分钟，具体积分消耗详情可前往${pointsLink}查看。`:pointsLink;
+ footer(configured?'<strong class="cost-notice-title">积分消耗提示</strong>':'<strong class="cost-notice-title">待导入合集</strong>',`<span id="creationCostNotice">${costNotice}</span>${configured&&error?`<span class="creation-error">${esc(error)}</span>`:''}`,button(busy?'正在处理…':'生成视频','direct','primary',blocked?'disabled':''));
+
+ return heading('制作素材','')+`<div class="create-grid"><div>
+ <section class="section"><div class="section-heading"><h2>片源与选集</h2><div class="actions">${button('导入合集','import-collection','text-btn')}</div></div>
+ <div class="source-card">${s?.cover?`<img class="poster" src="${esc(s.cover)}" alt="剧目封面">`:`<span class="poster source-local-placeholder" aria-hidden="true">▹</span>`}<div class="source-info"><strong>${esc(s?.title||'请选择片源')}</strong>${configured?tag(sourceLabel().replace('国内短剧','国内合集').replace('海外短剧','海外合集')):''}</div><div class="source-card-actions">${configured?button('更换','import-collection','text-btn'):''}${c.source?.kind==='manual'&&c.source.simulated!==true&&Array.isArray(c.source.files)?button('添加视频','append-local-source','text-btn'):''}</div></div>
+ ${configured&&(s.totalEpisodes>0||s.importStatus==='pending')?` <div class="range-row"><label>本次选集</label><div class="pills">${[10,20,30].map(n=>button('前 '+n+' 集','range',c.start===1&&c.end===n?'active':'','data-value="'+n+'"')).join('')}</div><label>第 <input type="number" min="1" max="${s?.totalEpisodes||s?.requestedRange?.end||1}" data-config="start" aria-label="起始集数" value="${c.start}"> — <input type="number" min="1" max="${s?.totalEpisodes||s?.requestedRange?.end||1}" data-config="end" aria-label="结束集数" value="${c.end}"> 集</label></div>`:''}</section>
+ <section class="section" id="creationSettings"><div class="section-heading"><h2>制作设置</h2><span class="tag">高光顺剪</span></div><div class="fields">
+ ${field('生成条数',`<div class="count-field">${button('−','count-minus','','aria-label="减少条数"')}<input aria-label="生成条数" type="number" min="1" max="20" data-config="count" value="${esc(c.count)}" placeholder="填写条数">${button('+','count-plus','','aria-label="增加条数"')}<div class="shortcut">${[5,10,20].map(n=>button(n+'条','count','',`data-value="${n}"`)).join('')}</div></div>`,'最多20条')}
+ ${field('成片速度',`<select aria-label="成片速度" data-config="outputSpeed">${option('','请选择速度',c.outputSpeed===null?'':c.outputSpeed)}${OUTPUT_SPEEDS.map(n=>option(n,n+'×',c.outputSpeed)).join('')}</select>`)}
+ ${durationControl(c,h)}
  </div></section>
- <section class="section"><div class="section-heading"><h2><span class="number">3</span>字幕与包装</h2></div><div class="packaging">${[['subtitles',full?'解说字幕':'字幕'],['bgm','BGM'],['title','引流小标题']].map(([k,l])=>`<label class="check-label"><input type="checkbox" data-config="${k}" ${c[k]?'checked':''}>${l}</label>`).join('')}</div>${c.bgm?`<div class="bgm-selection"><div><span class="muted">BGM</span><b>${esc(bgmSelectionLabel(c))}</b></div>${button('更换BGM','bgm-picker','text-btn')}</div>`:''}${c.title?`<div class="inline-title-field">${field('引流小标题',`<input type="text" data-config="titleText" aria-label="引流小标题" maxlength="24" placeholder="输入引流小标题，最多24字" value="${esc(c.titleText||'')}">`)}</div>`:''}</section>
+ <section class="section" id="packagingSettings"><div class="section-heading"><h2>包装设置</h2></div><div class="packaging">${[['bgm','BGM'],['title','引流小标题']].map(([k,l])=>`<label class="check-label"><input type="checkbox" data-config="${k}" ${c[k]?'checked':''}>${l}</label>`).join('')}</div>${c.bgm?`<div class="bgm-selection"><div><span class="muted">BGM</span><b>${esc(bgmSelectionLabel(c))}</b></div>${button('更换BGM','bgm-picker','text-btn')}</div>`:''}${c.title?`<div class="inline-title-field">${field('引流小标题',`<input type="text" data-config="titleText" aria-label="引流小标题" maxlength="24" placeholder="输入引流小标题，最多24字" value="${esc(c.titleText||'')}">`)}</div>`:''}</section>
  </div><aside class="preview-panel" aria-live="polite">${renderCreationPreview(c,h)}</aside></div>`;
 }

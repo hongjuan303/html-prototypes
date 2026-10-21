@@ -1,4 +1,4 @@
-import {platformAccount,readPlatformUsage,subscribePlatformUsage} from './platform-context.js?v=20261009-update11';
+import {platformAccount,readPlatformUsage,subscribePlatformUsage} from './platform-context.js?v=20261021-update14s';
 const $=s=>document.querySelector(s);
 const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const paths={
@@ -20,11 +20,11 @@ export function updatePlatformBalance(balance=readPlatformUsage().balance){
 }
 function showPlatformDialog(title,body){
  const dialog=$('#dialog');dialog.className='platform-dialog';delete dialog.dataset.syncJob;
- $('#dialogTitle').textContent=title;$('#dialogBody').innerHTML=body;
+ $('#dialogTitle').textContent=title;$('#dialogTitle').title=title;$('#dialogBody').innerHTML=body;
  $('#dialogActions').innerHTML='<button type="button" data-action="close">关闭</button>';
  if(!dialog.open)dialog.showModal();
 }
-function showPoints(){
+export function showPoints(){
  const u=readPlatformUsage();pointsSignature=usageSignature(u);
  const spent=u.settled;
  showPlatformDialog('积分明细',`<div class="platform-balance-summary"><div class="stat"><strong>${u.balance.toLocaleString()}</strong><span>可用积分</span></div><div class="stat"><strong>${u.frozen}</strong><span>冻结积分</span></div><div class="stat"><strong>${spent}</strong><span>混剪已结算</span></div></div><div class="table-wrap"><table class="platform-ledger-table"><thead><tr><th>时间</th><th>功能 / 项目</th><th>积分变化</th><th>说明</th></tr></thead><tbody>${u.ledger.length?u.ledger.slice(0,30).map(l=>`<tr><td>${escape(new Date(l.at).toLocaleString('zh-CN'))}</td><td>智能混剪<p>${escape(l.type)}</p></td><td>${l.points>0?'+':''}${l.points}</td><td>${l.settled?'从冻结额度结算 '+l.settled+' 积分':escape(l.batch||'剧集分析')}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">暂无消费记录</td></tr>'}</tbody></table></div><p class="helper">平台账户共用积分 · 当前为演示数据</p>`);
@@ -44,5 +44,5 @@ export function renderToolbox(){
  const review=new URLSearchParams(location.search).get('review')==='1'&&window.parent!==window;
  const entry=review?'./review.html':'./index.html';
  $('#app').classList.add('platform-toolbox');
- $('#app').innerHTML=`<div class="tool-grid" aria-label="工具箱">${[['music','配音创作'],['spark','图片创作'],['video','视频创作'],['canvas','创建/进入无限画布']].map(([icon,label])=>`<div class="tool-card" title="沿用平台现有功能"><span class="tool-icon">${platformIcon(icon)}</span><span class="tool-name">${label}</span></div>`).join('')}<a class="tool-card mixed-cut-entry" href="${entry}" target="_blank" rel="noopener" aria-label="智能混剪，在新页面打开"><span class="tool-icon">${platformIcon('cut')}</span><span class="tool-name">智能混剪 <small aria-hidden="true">↗</small></span><span class="tool-description">高光混剪 · AI 解说</span></a></div>`;
+ $('#app').innerHTML=`<div class="tool-grid" aria-label="工具箱">${[['music','配音创作'],['spark','图片创作'],['video','视频创作'],['canvas','创建/进入无限画布']].map(([icon,label])=>`<div class="tool-card" title="沿用平台现有功能"><span class="tool-icon">${platformIcon(icon)}</span><span class="tool-name">${label}</span></div>`).join('')}<a class="tool-card mixed-cut-entry" href="${entry}" target="_blank" rel="noopener" aria-label="智能混剪，在新页面打开"><span class="tool-icon">${platformIcon('cut')}</span><span class="tool-name">智能混剪 <small aria-hidden="true">↗</small></span><span class="tool-description">高光顺剪 · AI 解说</span></a></div>`;
 }

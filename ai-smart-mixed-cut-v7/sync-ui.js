@@ -1,6 +1,6 @@
-import { TARGETS, TARGET_DATA, SYNC_SCHEMA_VERSION, businessDate, designerForAccount, targetForBatch, outputVersion, validateSyncForm, getOutputSync, prepareSync } from './sync-model.js?v=20261009-update11';
-import { platformAccount } from './platform-context.js?v=20261009-update11';
-import { dramaKey, findDrama } from './dramas.js?v=20261009-update11';
+import { TARGETS, TARGET_DATA, SYNC_SCHEMA_VERSION, businessDate, designerForAccount, targetForBatch, outputVersion, validateSyncForm, getOutputSync, prepareSync } from './sync-model.js?v=20261021-update14s';
+import { platformAccount } from './platform-context.js?v=20261021-update14s';
+import { dramaKey, findDrama } from './dramas.js?v=20261021-update14s';
 
 // Only simulates delivery state; no target system or local video is contacted.
 export function createSyncUI(api) {
@@ -36,16 +36,17 @@ export function createSyncUI(api) {
  }
  function rowAction(b,o) {
   const r=current(b,o);
-  if(r&&['success','pending','processing','unknown'].includes(r.status))return button(r.status==='success'?'同步记录':'查看同步','sync-record-one','text-btn','data-id="'+o.id+'"');
+  if(r?.status==='success')return '<span class="muted">已同步</span>';
+  if(r&&['pending','processing','unknown'].includes(r.status))return button('查看同步结果','sync-record-one','text-btn','data-id="'+o.id+'"');
   return button(r?.status==='failed'?'重试同步':'同步素材','sync-open-one','text-btn','data-id="'+o.id+'" '+(!canSync(b,o)?'disabled title="请先确认当前成片可用"':''));
  }
  function reviewActions(b,o) {
   return button('同步到素材管理','sync-open-one','primary','data-id="'+o.id+'" '+(!canSync(b,o)?'disabled title="仅当前已确认且未同步的版本可同步"':''))+(history(b,o).length?button('同步记录','sync-record-one','secondary','data-id="'+o.id+'"'):'');
  }
  function reviewNotice(b,o) {
-  if(!history(b,o).length)return '';
-  const old=history(b,o).some(j=>j.items.some(i=>i.outputId===o.id&&i.status==='success'));
-  return '<div class="sync-review-notice"><span>当前成片 V'+outputVersion(o)+' · '+(confirmed(o)?'剪辑已确认':'待剪辑确认')+'</span>'+badgeFor(b,o)+(old?'<p>已同步版本保留在素材管理中。此处修改、退款或取消确认不会自动替换或撤回旧素材。</p>':'<p>确认当前版本没有问题后，可同步到对应投放系统。</p>')+'</div>';
+  const r=current(b,o);if(!r||r.status==='success')return '';
+  const text={pending:'等待同步',processing:'正在同步素材',unknown:'同步结果待核实，请查询同步结果',failed:'同步失败，可重试同步'}[r.status];
+  return text?'<div class="sync-review-notice"><span>'+text+'</span></div>':'';
  }
  const dramaName=b=>findDrama(getState(),dramaKey(b.config))?.title||b.sourceTitle||'';
  const recordName=j=>j.labels?.materialName||j.labels?.dramaName||j.labels?.drama||j.form?.materialName||j.form?.dramaName||'';
@@ -134,7 +135,7 @@ export function createSyncUI(api) {
  function renderJobBody(j) {
   const success=j.items.filter(i=>i.status==='success').length,failed=j.items.filter(i=>i.status==='failed').length,unknown=j.items.filter(i=>i.status==='unknown').length;
   $('#dialogBody').innerHTML='<div class="sync-route-band"><strong>'+targets(j.target).systemLabel+' · 素材管理</strong></div><div class="sync-job-summary"><h3>'+ (j.status==='processing'?'正在同步':j.status==='success'?'同步完成':unknown?'同步结果待核实':'部分素材未同步')+'</h3><p>成功 '+success+' / '+j.items.length+' 条'+(failed?' · 失败 '+failed+' 条':'')+(unknown?' · 待核实 '+unknown+' 条':'')+'</p></div>'+recordMeta(j)+'<div class="sync-job-items">'+j.items.map(i=>'<div class="sync-job-row"><div><strong>'+esc(i.title)+' · V'+i.version+'</strong><p>'+statusName(i.status)+(i.materialId?' · 素材 ID：'+esc(i.materialId):'')+'</p>'+(i.syncedAt?'<small>'+new Date(i.syncedAt).toLocaleString('zh-CN')+'</small>':'')+(i.error?'<small class="error-text">'+esc(i.error)+'</small>':'')+'</div>'+tag(statusName(i.status),i.status==='success'?'green':i.status==='failed'||i.status==='unknown'?'orange':'gray')+'</div>').join('')+'</div><p class="sync-modal-note">记录对应提交时的成片版本。</p>';
-  $('#dialogActions').innerHTML=button('全部同步记录','sync-records')+(unknown?button('查询同步结果','sync-query','secondary','data-job="'+j.id+'"'):'')+(failed?button('仅重试失败 '+failed+' 条','sync-retry','sync-primary','data-job="'+j.id+'"'):'')+button('关闭','close');
+  $('#dialogActions').innerHTML=(unknown?button('查询同步结果','sync-query','secondary','data-job="'+j.id+'"'):'')+(failed?button('仅重试失败 '+failed+' 条','sync-retry','sync-primary','data-job="'+j.id+'"'):'')+button('关闭','close');
  }
  function records(b,outputId=null) {
   activeJob=null;const records=jobs().filter(j=>j.batchId===b.id&&(!outputId||j.items.some(i=>i.outputId===outputId)));

@@ -4,7 +4,7 @@ export function narrationActions(b,o,locked,{button}){
  const full=b.config.narrationStructure==='full',media=full?(o.segments||[]).filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||''];
  const draft=Array.isArray(o.narrationDraft)?o.narrationDraft:null,texts=(draft||media).map(text=>String(text).trim());
  const valid=texts.length===media.length&&texts.length>0&&texts.every(Boolean),saved=!!draft&&valid&&JSON.stringify(texts)===JSON.stringify(o.narrationSavedDraft);
- return `<div class="narration-actions">${button('试听文案','speak','text-btn',locked||!valid?'disabled':'')}<div class="actions narration-edit-actions" role="group" aria-label="处理文案修改">${button('放弃修改','discard-narration','text-btn',locked||!draft?'disabled':'')}${button('保存草稿',full?'save-full-narration':'save-narration','secondary',locked||!draft||!valid||saved?'disabled':'')}${button('应用修改','apply-narration','primary',locked||!saved?'disabled':'')}</div></div>`;
+ return `<div class="narration-actions">${button('试听文案','speak','text-btn',locked||!valid?'disabled':'')}<div class="actions narration-edit-actions" role="group" aria-label="处理文案修改">${draft?button('放弃修改','discard-narration','text-btn',locked||!draft?'disabled':''):''}${draft?button('保存草稿',full?'save-full-narration':'save-narration','secondary',locked||!draft||!valid||saved?'disabled':''):''}${draft?button('应用修改','apply-narration','primary',locked||!saved?'disabled':''):''}</div></div>`;
 }
 export function fullNarrationPanel(b,o,{open=false,locked=false}={},h){
  const {button,esc,fmt}=h,segments=(o.segments||[]).filter(s=>s.type==='narration');

@@ -1,10 +1,10 @@
 /* Drama library projection. Only registerDrama writes to state.dramas;
  * listDramas/findDrama are pure reads and never touch the wallet or catalogs.
  */
-import {isConfiguredSource} from './source-access.js?v=20261009-update11';
-import {assetKey, clone} from './engine.js?v=20261009-update11';
-import {resolveSource} from './sources.js?v=20261009-update11';
-import {getOutputSync, outputVersion} from './sync-model.js?v=20261009-update11';
+import {isConfiguredSource} from './source-access.js?v=20261021-update14s';
+import {assetKey, clone} from './engine.js?v=20261021-update14s';
+import {resolveSource} from './sources.js?v=20261021-update14s';
+import {getOutputSync, outputVersion} from './sync-model.js?v=20261021-update14s';
 
 const array = value => Array.isArray(value) ? value : [];
 const stamp = value => typeof value === 'string' && Number.isFinite(Date.parse(value)) ? value : '';
@@ -23,8 +23,8 @@ export function dramaKey(config = {}) {
 function sourceFor(config) {
   const configured = config?.source || {};
   const resolved = resolveSource(config);
-  // Collection metadata belongs to its source catalog. A task snapshot cannot
-  // rename a collection or override its current cover/episode total.
+  // Legacy catalog entries supply the cover and episode total; a saved
+  // library display name may override the title without changing the catalog.
   const source = configured.kind === 'green'
     ? {...configured, ...(resolved || {})}
     : {...(resolved || {}), ...configured};
@@ -51,7 +51,7 @@ export function registerDrama(state, config, {touch = true} = {}) {
   const entry = {
     id,
     title: sourceFor(config).title,
-    // A local display name is library metadata, separate from file names and
+    // A display name is library metadata, separate from file names and
     // immutable generation snapshots. Registering a new task must preserve it.
     ...(previous?.displayName ? {displayName: previous.displayName} : {}),
     config: clone(config),
@@ -65,11 +65,11 @@ export function registerDrama(state, config, {touch = true} = {}) {
   return clone(entry);
 }
 
-/** Rename a local-upload library entry without rewriting task/file snapshots. */
+/** Rename any library entry without rewriting task/file snapshots. */
 export function renameDrama(state, id, value) {
   const title = String(value || '').trim();
   const drama = findDrama(state, id);
-  if (!drama || drama.source.kind !== 'manual' || !title || Array.from(title).length > 80) return null;
+  if (!drama || !title || Array.from(title).length > 80) return null;
   const entry = registerDrama(state, drama.config, {touch: false});
   entry.displayName = title;
   entry.updatedAt = new Date().toISOString();
@@ -137,10 +137,11 @@ export function listDramas(state = {}) {
       if (getOutputSync(batch.id, output, state.syncJobs)?.status === 'success') syncedCount++;
     }
     return {
-      id: entry.id, title: source.kind === 'manual' && entry.displayName ? entry.displayName : source.title,
-      displayName: source.kind === 'manual' ? entry.displayName || '' : '', config: entry.config, source,
+      id: entry.id, title: entry.displayName || source.title,
+      displayName: entry.displayName || '', config: entry.config, source,
       updatedAt: latest(entry.updatedAt, cache?.updatedAt),
-      totalEpisodes: source.totalEpisodes, availableCount: available.size, analyzedCount: analyzed.size,
+      totalEpisodes: source.importStatus==='pending'?null:source.kind==='cloud'?source.availableEpisodes.length:source.totalEpisodes, availableCount: available.size, analyzedCount: analyzed.size,
+      taskCount: entry.batches.length + (state.productionJobs||[]).filter(j=>!j.batchId&&dramaKey(j.config)===entry.id).length,
       batches: entry.batches, generatedCount, reviewCount, confirmedCount, syncedCount,
       runningCount: entry.batches.filter(batch => batch.status === 'running' || array(batch.outputs).some(output => (output.status === 'pending' || output.reworkPending))).length,
       failedCount: entry.batches.filter(batch => batch.status === 'failed' || array(batch.outputs).some(output => output.status === 'failed')).length,

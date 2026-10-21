@@ -1,25 +1,16 @@
-import {outputTable} from './workflow-ui.js?v=20261009-update11';
-
-const currentConfirmed=o=>o.status==='ready'&&o.confirmed&&o.confirmedVersion===o.contentVersion&&!o.narrationDraft;
-export function materialMatches(o,config,filters){
- const mode=o.mode||config.mode,normalized=mode==='original'?'highlight':mode;
- if(filters.mode!=='all'&&normalized!==filters.mode)return false;
- const running=['pending','checking'].includes(o.status)||o.reworkPending||o.repairing;
- if(filters.status==='running')return Boolean(running);
- if(filters.status==='review')return ['ready','issue'].includes(o.status)&&!currentConfirmed(o)&&!running;
- if(filters.status==='failed')return o.status==='failed';
- return true;
+import {outputTable} from './workflow-ui.js?v=20261021-update14s';
+import {failureOf} from './production-tasks.js?v=20261021-update14s';
+const confirmed=o=>o.status==='ready'&&o.confirmed&&o.confirmedVersion===o.contentVersion&&!o.narrationDraft;
+export function materialMatches(o,c,f){
+ if(!['ready','issue'].includes(o.status))return false;
+ const mode=(o.mode||c.mode)==='original'?'highlight':(o.mode||c.mode),structure=o.narrationStructure||c.narrationStructure;
+ if(f.mode==='highlight'&&mode!=='highlight')return false;if(f.mode==='narrated'&&mode!=='narrated')return false;if(['mixed','full'].includes(f.mode)&&(mode!=='narrated'||structure!==f.mode))return false;
+ const running=o.status==='pending'||o.reworkPending||o.repairing;
+ if(f.status==='running')return !!running;if(f.status==='review')return ['ready','issue'].includes(o.status)&&!confirmed(o);if(f.status==='confirmed')return confirmed(o);if(f.status==='failed')return o.status==='failed'&&!o.cancelled;if(f.status==='cancelled')return !!o.cancelled;return true;
 }
-
 export function renderMaterials(rows,{h,syncUI,selected,selectionBatchId,selectedRows,canSelect}){
- const {button,esc}=h;
- const operationId=selectionBatchId||rows.find(({b,o})=>canSelect(b,o))?.b.id;
- const visibleSyncable=rows.some(({b,o})=>(!selectionBatchId||b.id===selectionBatchId)&&syncUI.canSync(b,o));
- const attrs=selectionBatchId?`data-batch="${esc(selectionBatchId)}"`:'';
- const confirmable=selectedRows.length&&selectedRows.every(o=>o.status==='ready');
- const selectedBatch=rows.find(({b})=>b.id===selectionBatchId)?.b;
- const syncable=selectedBatch&&selectedRows.length&&selectedRows.every(o=>syncUI.canSync(selectedBatch,o));
- return `<div class="toolbar materials-toolbar" id="materialsToolbar"><div class="actions">${button('选已确认未同步','select-syncable','text-btn',attrs+(visibleSyncable?'':' disabled'))}${button('确认选中可用','confirm-selected','secondary',attrs+(confirmable?'':' disabled'))}${button('同步选中素材','sync-open-selected','primary',attrs+(syncable?'':' disabled'))}</div></div>`
- +outputTable(rows,{h,syncUI,selected,selectionBatchId,operationId,selectable:true})
- +`<div class="table-footer" id="materialsFooter"><span>已选 ${selected.size} 条${selected.size?' · 同一制作任务':''}</span><details class="workflow-more"><summary>更多</summary>${button('导出选中方案','export-selected','text-btn',attrs+(selectedRows.length?'':' disabled'))}</details></div>`;
+ const {button,esc}=h,operationId=selectionBatchId||rows.find(({b,o})=>canSelect(b,o))?.b.id,b=rows.find(row=>row.b.id===selectionBatchId)?.b,attrs=b?`data-batch="${esc(b.id)}"`:'';
+ const confirmable=selectedRows.length&&selectedRows.every(o=>o.status==='ready'&&!o.narrationDraft&&!o.reworkPending&&!o.repairing),syncable=b&&selectedRows.length&&selectedRows.every(o=>syncUI.canSync(b,o)),retryable=selectedRows.length&&selectedRows.every(o=>o.status==='failed'&&!o.cancelled&&!o.replacementJobId&&failureOf(o).retryable);
+ const tools=selectedRows.length?`<div class="materials-selection" id="materialsToolbar"><span>已选 <b>${selectedRows.length}</b> 条 · 同一任务</span><div class="actions">${button('确认可用','confirm-selected','secondary',attrs+(confirmable?'':' disabled'))}${button('同步 '+selectedRows.length+' 条','sync-open-selected','primary',attrs+(syncable?'':' disabled'))}${button('下载','download-selected','secondary',attrs+(confirmable?'':' disabled'))}${button('取消选择','clear-selection','text-btn')}</div></div>`:'';
+ return tools+outputTable(rows,{h,syncUI,selected,selectionBatchId,operationId,selectable:true})+`<div class="table-footer" id="materialsFooter"><span>共 ${rows.length} 条素材</span></div>`;
 }

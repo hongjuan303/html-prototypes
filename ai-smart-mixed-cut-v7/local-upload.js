@@ -68,23 +68,25 @@ async function inspectVideo(file, url) {
 }
 
 export function createLocalUpload({modal, closeModal, button, esc, toast, onImport, onAppend}) {
-  let rows = [], session = 0, active = false, committing = false, appendSource = null;
+  let rows = [], session = 0, active = false, committing = false, appendSource = null, pendingRemoval = null, importOptions = null;
   const release = () => { for (const row of rows) if (row.url) URL.revokeObjectURL(row.url); rows = []; };
-  function cancel() { session++; active = false; committing = false; appendSource = null; release(); }
+  function cancel() { session++; active = false; committing = false; appendSource = null; pendingRemoval = null; importOptions = null; release(); }
   function render() {
-    if (!active) return;
+    if (!active || (importOptions?.isVisible && !importOptions.isVisible())) return;
     const added = rows.filter(row => !row.existing), ready = added.filter(row => row.status === 'ready').length, append = !!appendSource;
-    const count = append ? ' · 已导入 ' + appendSource.files.length + ' 集 · 新增 ' + added.length + ' 集' : rows.length ? ' · ' + rows.length + ' 集' : '';
+    const removed = append ? appendSource.files.length - rows.filter(row => row.existing).length : 0;
+    const changed = added.length > 0 || removed > 0;
+    const count = append ? ' · 共 ' + rows.length + ' 集 · 新增 ' + added.length + ' · 删除 ' + removed : rows.length ? ' · ' + rows.length + ' 集' : '';
     const body = `<div class="local-upload-toolbar"><div><b>原片视频</b><span class="muted">${count}</span></div><label class="local-file-button ${committing ? 'disabled' : ''}">添加视频<input type="file" id="localFile" aria-label="选择原片视频" accept="video/*,.mp4,.mov,.m4v,.webm" multiple ${committing ? 'disabled' : ''}></label></div>
-      <p class="helper local-upload-hint">${append ? '新视频追加到已有集数后，已有集序保持不变。' : '每个视频作为一集，按列表顺序混剪。可添加、删除或调整顺序。'}</p>
-      <div class="local-upload-list ${rows.length ? '' : 'is-empty'}">${rows.length ? `<table class="local-file-table"><thead><tr><th>集序</th><th>视频</th><th>时长 / 大小</th><th>状态</th><th>操作</th></tr></thead><tbody>${rows.map((row, index) => `<tr data-local-id="${esc(row.id)}" data-local-existing="${!!row.existing}" class="${row.existing ? 'local-existing-row' : ''}"><td>${index + 1}</td><td><div class="local-file-name">${row.cover ? `<img src="${row.cover}" alt="视频封面">` : '<span class="local-file-placeholder" aria-hidden="true">▹</span>'}<span title="${esc(row.file.name)}">${esc(row.file.name)}</span></div></td><td>${row.duration ? timeLabel(row.duration) : '—'}<small>${sizeLabel(row.file.size)}</small></td><td><span class="${row.status === 'error' ? 'error-text' : row.status === 'ready' ? 'local-ready' : 'muted'}">${row.existing ? '已导入' : row.status === 'ready' ? append ? '待追加' : '已添加' : row.status === 'error' ? '添加失败' : '读取中…'}</span>${row.error ? `<small class="error-text">${esc(row.error)}</small>` : ''}</td><td>${row.existing ? '<span class="local-existing-note">已有剧集</span>' : `<div class="local-file-actions">${button('↑', 'local-up', 'icon-btn', `data-id="${row.id}" aria-label="上移第 ${index + 1} 集" ${!index || rows[index - 1]?.existing || committing ? 'disabled' : ''}`)}${button('↓', 'local-down', 'icon-btn', `data-id="${row.id}" aria-label="下移第 ${index + 1} 集" ${index === rows.length - 1 || committing ? 'disabled' : ''}`)}${row.status === 'error' ? button('重试', 'local-retry', 'text-btn', `data-id="${row.id}" ${committing ? 'disabled' : ''}`) : ''}${button('删除', 'local-remove', 'text-btn danger', `data-id="${row.id}" aria-label="删除 ${esc(row.file.name)}" ${committing ? 'disabled' : ''}`)}</div>`}</td></tr>`).join('')}</tbody></table>` : '<div class="local-upload-empty"><span aria-hidden="true">＋</span><b>添加原片视频</b><p>支持一次选择多个视频</p></div>'}</div>`;
-    modal(append ? '添加视频' : '导入本地原片', body, button('取消', 'close', 'secondary', committing ? 'disabled' : '') + button(committing ? append ? '正在追加…' : '正在导入…' : (append ? '确认追加' : '确认导入') + (added.length ? ' ' + added.length + ' 集' : ''), 'local-confirm', 'primary', !added.length || ready !== added.length || committing ? 'disabled' : ''));
-    const dialog = document.querySelector('#dialog'); dialog.classList.add('wide', 'local-upload-dialog');
+      <p class="helper local-upload-hint">${append ? '确认后保存增删结果；已有任务和成片不受影响。' : '每个视频作为一集，按列表顺序混剪。可添加、删除或调整顺序。'}</p>
+      <div class="local-upload-list ${rows.length ? '' : 'is-empty'}">${rows.length ? `<table class="local-file-table"><thead><tr><th>集序</th><th>视频</th><th>时长 / 大小</th><th>状态</th><th>操作</th></tr></thead><tbody>${rows.map((row, index) => `<tr data-local-id="${esc(row.id)}" data-local-existing="${!!row.existing}" class="${row.existing ? 'local-existing-row' : ''}"><td>${index + 1}</td><td><div class="local-file-name">${row.cover ? `<img src="${row.cover}" alt="视频封面">` : '<span class="local-file-placeholder" aria-hidden="true">▹</span>'}<span title="${esc(row.file.name)}">${esc(row.file.name)}</span></div></td><td>${row.duration ? timeLabel(row.duration) : '—'}<small>${sizeLabel(row.file.size)}</small></td><td><span class="${row.status === 'error' ? 'error-text' : row.status === 'ready' ? 'local-ready' : 'muted'}">${row.existing ? '已导入' : row.status === 'ready' ? append ? '待追加' : '已添加' : row.status === 'error' ? '添加失败' : '读取中…'}</span>${row.error ? `<small class="error-text">${esc(row.error)}</small>` : ''}</td><td>${row.existing ? `<div class="local-file-actions">${pendingRemoval===row.id?button('取消','local-cancel-remove','text-btn')+button('确认删除','local-confirm-remove','text-btn danger',`data-id="${row.id}"`):button('删除','local-remove','text-btn danger',`data-id="${row.id}" aria-label="删除 ${esc(row.file.name)}" ${committing?'disabled':''}`)}</div>` : `<div class="local-file-actions">${button('↑', 'local-up', 'icon-btn', `data-id="${row.id}" aria-label="上移第 ${index + 1} 集" ${!index || rows[index - 1]?.existing || committing ? 'disabled' : ''}`)}${button('↓', 'local-down', 'icon-btn', `data-id="${row.id}" aria-label="下移第 ${index + 1} 集" ${index === rows.length - 1 || committing ? 'disabled' : ''}`)}${row.status === 'error' ? button('重试', 'local-retry', 'text-btn', `data-id="${row.id}" ${committing ? 'disabled' : ''}`) : ''}${button('删除', 'local-remove', 'text-btn danger', `data-id="${row.id}" aria-label="删除 ${esc(row.file.name)}" ${committing ? 'disabled' : ''}`)}</div>`}</td></tr>`).join('')}</tbody></table>` : '<div class="local-upload-empty"><span aria-hidden="true">＋</span><b>添加原片视频</b><p>支持一次选择多个视频</p></div>'}</div>`;
+    modal(importOptions ? '导入合集' : append ? '添加视频' : '导入本地原片', (importOptions?.header?.() || '') + (importOptions ? '<section id="localImportFiles">'+body+'</section>' : body), button('取消', 'close', 'secondary', committing ? 'disabled' : '') + button(committing ? '正在保存…' : append ? '确认更新' : (importOptions ? '导入合集' : '确认导入') + (added.length ? ' ' + added.length + ' 集' : ''), 'local-confirm', 'primary', (!append&&!added.length) || (append&&!changed) || ready !== added.length || committing ? 'disabled' : ''));
+    const dialog = document.querySelector('#dialog'); dialog.classList.add('wide', 'local-upload-dialog');if(importOptions){dialog.classList.add('cloud-import-dialog');dialog.dataset.importMode='local';}else delete dialog.dataset.importMode;
     dialog.querySelector('[aria-label="关闭弹窗"]').disabled = committing;
   }
-  function open() { cancel(); active = true; render(); }
+  function open(options = null) { cancel(); importOptions = options; active = true; render(); }
   function openAppend(source) {
-    if (source?.kind !== 'manual' || source.simulated === true || !Array.isArray(source.files) || !source.files.length) { toast('请先导入本地原片'); return; }
+    if (source?.kind !== 'manual' || source.simulated === true || !Array.isArray(source.files)) { toast('请先导入本地原片'); return; }
     cancel();
     appendSource = JSON.parse(JSON.stringify(source));
     rows = appendSource.files.map(file => ({...file, existing: true, file: {name: file.name, size: file.size, type: file.type, lastModified: file.lastModified}, status: 'ready'}));
@@ -112,24 +114,30 @@ export function createLocalUpload({modal, closeModal, button, esc, toast, onImpo
     if (!action.startsWith('local-')) return false;
     if (!active || committing) return true;
     const index = rows.findIndex(row => row.id === element.dataset.id), editable = index >= 0 && !rows[index].existing;
+    if(action==='local-remove'&&index>=0&&rows[index].existing){pendingRemoval=rows[index].id;render();}
+    if(action==='local-cancel-remove'){pendingRemoval=null;render();}
+    if(action==='local-confirm-remove'&&index>=0&&rows[index].existing){rows.splice(index,1);pendingRemoval=null;render();}
     if (action === 'local-remove' && editable) { URL.revokeObjectURL(rows[index].url); rows.splice(index, 1); render(); }
     if (['local-up', 'local-down'].includes(action) && editable) { const next = index + (action === 'local-up' ? -1 : 1); if (rows[next] && !rows[next].existing) { [rows[index], rows[next]] = [rows[next], rows[index]]; render(); } }
     if (action === 'local-retry' && editable) inspect(rows[index], session);
     if (action === 'local-confirm') {
       const added = rows.filter(row => !row.existing), previous = appendSource;
-      if (!added.length || added.some(row => row.status !== 'ready')) { toast('请先完成视频添加，或删除失败的视频'); return true; }
+      if ((!previous&&!added.length) || (previous&&!added.length&&rows.length===previous.files.length) || added.some(row => row.status !== 'ready')) { toast('请先完成视频添加，或删除失败的视频'); return true; }
+      const metadata = !previous && importOptions ? importOptions.metadata() : null;
+      if(!previous && importOptions && !metadata){render();return true;}
       committing = true; render();
       try {
         await retainFiles(added);
-        const offset = previous?.files.length || 0;
+        const retained=rows.filter(row=>row.existing).map(row=>previous.files.find(file=>file.id===row.id));
+        const offset = retained.length;
         const newFiles = added.map((row, index) => ({id: row.id, name: row.file.name, size: row.file.size, type: row.file.type, lastModified: row.file.lastModified, duration: row.duration, width: row.width, height: row.height, cover: row.cover, order: offset + index + 1, status: 'ready'}));
-        const files = previous ? [...previous.files, ...newFiles] : newFiles;
+        const files = [...retained,...newFiles].map((file,index)=>({...file,order:index+1}));
         const source = previous
-          ? {...previous, market: null, files, fileVersion: (Number(previous.fileVersion) || 1) + 1, title: previous.title || previous.files[0].name, cover: previous.cover || previous.files[0].cover || '', totalEpisodes: files.length, availableEpisodes: files.map((file, index) => !file.status || file.status === 'ready' ? index + 1 : null).filter(Boolean), simulated: false}
-          : {kind: 'manual', market: null, assetId: 'local-' + crypto.randomUUID(), fileVersion: 1, files, title: files[0].name, cover: files[0].cover, totalEpisodes: files.length, availableEpisodes: files.map(file => file.order), simulated: false};
+          ? {...previous, files, fileVersion: (Number(previous.fileVersion) || 1) + 1, title: previous.title || previous.files[0]?.name || '本地剧目', cover: previous.cover || previous.files[0]?.cover || '', totalEpisodes: files.length, availableEpisodes: files.map((file, index) => !file.status || file.status === 'ready' ? index + 1 : null).filter(Boolean), simulated: false}
+          : {kind: 'manual', market: metadata?.market || null, assetId: 'local-' + crypto.randomUUID(), fileVersion: 1, files, title: metadata?.title || files[0].name, cover: files[0].cover, totalEpisodes: files.length, availableEpisodes: files.map(file => file.order), simulated: false};
         if (previous) await onAppend(source, previous); else await onImport(source);
         cancel(); document.querySelector('#dialog [aria-label="关闭弹窗"]').disabled = false; closeModal();
-        toast(previous ? '已追加 ' + newFiles.length + ' 集' : '已导入 ' + files.length + ' 集');
+        toast(previous ? '已更新，共 ' + files.length + ' 集' : '已导入 ' + files.length + ' 集');
       } catch (error) {
         committing = false; render();
         const sourceErrors = ['当前片源已变化，请重新添加视频', '已有片源已变化，请重新添加视频'];
@@ -138,5 +146,5 @@ export function createLocalUpload({modal, closeModal, button, esc, toast, onImpo
     }
     return true;
   }
-  return {open, openAppend, add, handle, cancel, isBusy: () => committing};
+  return {open, openAppend, add, handle, cancel, refresh:render, isBusy: () => committing};
 }

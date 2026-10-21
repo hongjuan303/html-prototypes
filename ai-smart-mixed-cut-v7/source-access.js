@@ -14,7 +14,7 @@ export function sourceAccess(state={}){
 export function canAccessMarket(state,market){return sourceAccess(state).markets.includes(market);}
 export function isConfiguredSource(config={}){
  const source=config.source;
- return !!source&&(source.kind==='green'&&!!source.collectionId||source.kind==='manual'&&(source.simulated===true||Array.isArray(source.files)&&source.files.length>0));
+ return !!source&&(source.kind==='cloud'&&!!source.assetId&&Array.isArray(source.availableEpisodes)||source.kind==='green'&&!!source.collectionId||source.kind==='manual'&&(source.simulated===true||Array.isArray(source.files)&&!!source.assetId));
 }
 export function sourcePermissionError(state,config={}){
  if(!isConfiguredSource(config))return '请选择片源';

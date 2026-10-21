@@ -1,6 +1,6 @@
-import {assignBgmSnapshot} from './bgm-assignment.js?v=20261009-update11';
-import {compareContent,curateCandidates} from './content-model.js?v=20261009-update11';
-import {clone,planBatch,assetKey} from './engine.js?v=20261009-update11';
+import {assignBgmSnapshot} from './bgm-assignment.js?v=20261021-update14s';
+import {compareContent,curateCandidates} from './content-model.js?v=20261021-update14s';
+import {clone,planBatch,assetKey} from './engine.js?v=20261021-update14s';
 
 const round=value=>Math.round(value*100)/100;
 const amount=value=>Number.isFinite(value)?Math.max(0,value):0;
@@ -79,8 +79,22 @@ export function beginRework(state,b,o,{kind='creative',direction='opening',instr
  const summary=costSummary(state,b);
  b.cost.quoted=summary.quoted+cost;b.cost.released=summary.released;b.cost.refunded=summary.refunded;
  if(cost){state.balance=round(state.balance-cost);b.cost.frozen=round(amount(b.cost.frozen)+cost);state.ledger.unshift({id:operationId+'-freeze',batch:b.id,output:o.id,operationId,type:'创作重做 · 冻结制作额度',points:-cost,at:job.startedAt});}
+ const owner=(state.productionJobs||[]).find(j=>j.batchId===b.id);if(owner)delete owner.dismissed;
  o.reworkPending=job;
  return job;
+}
+
+export function beginFailedRework(state,b,o){
+ const result=o.lastReworkResult,request=result?.request;
+ if(result?.success!==false||result.version!==o.contentVersion||!request||request.fromVersion!==o.contentVersion)throw Error('原重做参数不可用，请在成片详情重新发起');
+ if(!reviewable(o)||o.narrationDraft)throw Error('素材状态已变化，请重新选择');
+ const cost=amount(request.cost);if(cost>amount(state.balance))throw Error('积分不足，请减少选择数量');
+ const summary=costSummary(state,b),operationId='RW-'+Date.now().toString(36).toUpperCase()+'-'+(++sequence).toString(36).toUpperCase();
+ const job={...clone(request),operationId,startedAt:now()};
+ b.cost.quoted=summary.quoted+cost;b.cost.released=summary.released;b.cost.refunded=summary.refunded;
+ if(cost){state.balance=round(state.balance-cost);b.cost.frozen=round(amount(b.cost.frozen)+cost);state.ledger.unshift({id:operationId+'-freeze',batch:b.id,output:o.id,operationId,type:'重做失败重新生成 · 冻结制作额度',points:-cost,at:job.startedAt});}
+ const owner=(state.productionJobs||[]).find(j=>j.batchId===b.id);if(owner)delete owner.dismissed;
+ o.reworkPending=job;return job;
 }
 
 export function finishRework(state,b,o,success=true){
@@ -93,7 +107,7 @@ export function finishRework(state,b,o,success=true){
  b.cost.frozen=round(Math.max(0,amount(b.cost.frozen)-cost));
  if(!success){
   if(cost){state.balance=round(state.balance+cost);b.cost.released=round(amount(b.cost.released)+cost);state.ledger.unshift({id:job.operationId+'-release',batch:b.id,output:o.id,operationId:job.operationId,type:'重做失败 · 释放额度',points:cost,at});}
-  const result={success:false,operationId:job.operationId,cost,version:o.contentVersion,released:cost};
+  const result={success:false,operationId:job.operationId,cost,version:o.contentVersion,released:cost,request:clone(job)};
   delete o.reworkPending;o.lastReworkResult=result;return result;
  }
  const previous=clone(o);
@@ -103,7 +117,7 @@ export function finishRework(state,b,o,success=true){
  const candidate=clone(job.candidate);delete candidate.reworkRule;
  // Sync jobs live outside outputs and retain their original (id, version) keys.
  // Only this output is replaced; sibling materials are never changed here.
- Object.assign(o,candidate,{id,planId:candidate.id,contentVersion:version,confirmed:false,confirmedVersion:null,status:'ready',issues:[],revisions,versionHistory:[history,...versionHistory],qualityBaseline:clone(candidate)});
+ Object.assign(o,candidate,{id,title:o.materialName||o.title,planId:candidate.id,contentVersion:version,confirmed:false,confirmedVersion:null,status:'ready',issues:[],revisions,versionHistory:[history,...versionHistory],qualityBaseline:clone(candidate)});
  delete o.confirmedAt;delete o.narrationDraft;delete o.narrationTimingDirty;delete o.repairing;delete o.reworkPending;
  delete o.mixLevel;
  o.revisions.unshift({version,description:job.kind==='quality'?'恢复完整制作方案，待重新检查':'按'+({opening:'更换开头',context:'加强铺垫',angle:'更换剧情角度'}[job.direction])+'选择差异方案，待重新检查',at,operationId:job.operationId});
@@ -131,6 +145,7 @@ export function beginNarrationUpdate(state,b,o,texts){
  const job={operationId,kind:'narration',type:'narration-update',fromVersion:o.contentVersion,draftSignature:signature,texts:clone(draft),bgmSnapshot,cost,config:clone(b.config),startedAt:now()};
  b.cost.quoted=summary.quoted+cost;b.cost.released=summary.released;b.cost.refunded=summary.refunded;
  if(cost){state.balance=round(state.balance-cost);b.cost.frozen=round(amount(b.cost.frozen)+cost);state.ledger.unshift({id:operationId+'-freeze',batch:b.id,output:o.id,operationId,type:'文案应用 · 冻结制作额度',points:-cost,at:job.startedAt});}
+ const owner=(state.productionJobs||[]).find(j=>j.batchId===b.id);if(owner)delete owner.dismissed;
  o.reworkPending=job;return job;
 }
 export function finishNarrationUpdate(state,b,o,success=true){
@@ -142,7 +157,7 @@ export function finishNarrationUpdate(state,b,o,success=true){
  b.cost.frozen=round(Math.max(0,amount(b.cost.frozen)-cost));
  if(!success){
   if(cost){state.balance=round(state.balance+cost);b.cost.released=round(amount(b.cost.released)+cost);state.ledger.unshift({id:job.operationId+'-release',batch:b.id,output:o.id,operationId:job.operationId,type:'文案应用失败 · 释放额度',points:cost,at});}
-  delete o.reworkPending;o.lastNarrationResult={success:false,operationId:job.operationId,released:cost,version:o.contentVersion};return o.lastNarrationResult;
+  delete o.reworkPending;o.lastNarrationResult={success:false,operationId:job.operationId,released:cost,version:o.contentVersion,request:clone(job)};return o.lastNarrationResult;
  }
  const previous=clone(o);for(const key of ['reworkPending','versionHistory','qualityBaseline','narrationDraft','narrationSavedDraft','narrationDraftSavedAt','lastNarrationResult'])delete previous[key];
  o.versionHistory=[{...previous,version:o.contentVersion,archivedAt:at,reason:'应用解说文案修改'},...(o.versionHistory||[])];

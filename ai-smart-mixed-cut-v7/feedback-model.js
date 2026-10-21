@@ -1,4 +1,4 @@
-import {isFullNarration} from './engine.js?v=20261009-update11';
+import {isFullNarration} from './engine.js?v=20261021-update14s';
 
 // Labels are shared by the picker, saved feedback, and preview. Category controls
 // the next action; a creative suggestion must never become a free quality repair.
@@ -51,8 +51,8 @@ export function feedbackRange({scope,start,end},duration){
  if(scope==='all')return {scope:'all',at:0,endAt:duration};
  if(scope!=='segment')throw Error('请选择反馈范围');
  const at=parseTimeCode(start),endAt=String(end??'').trim()?parseTimeCode(end):null;
- if(at===null||!Number.isFinite(at)||at<0||at>duration)throw Error('请填写成片范围内的起始时间');
- if(String(end??'').trim()&&(endAt===null||!Number.isFinite(endAt)||endAt<=at||endAt>duration))throw Error('结束时间需晚于起始时间，且不超过成片时长');
+ if(at===null||!Number.isFinite(at)||at<0||at>=duration)throw Error('请填写成片范围内的开始时间');
+ if(String(end??'').trim()&&(endAt===null||!Number.isFinite(endAt)||endAt<=at||endAt>duration))throw Error('结束时间需晚于开始时间，且不超过成片时长');
  return {scope:'segment',at,endAt};
 }
 export function duplicateFeedback(list,type,range){

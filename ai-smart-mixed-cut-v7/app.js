@@ -1,23 +1,30 @@
-import {createBgmUI} from './bgm-ui.js?v=20261009-update11';
-import {assertBgmAvailable} from './bgm-model.js?v=20261009-update11';
-import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261009-update11';
-import {createLocalUpload} from './local-upload.js?v=20261009-update11';
-import {feedbackForm,feedbackItems} from './feedback-ui.js?v=20261009-update11';
-import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261009-update11';
-import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261009-update11';
-import {contentSimilarity} from './content-ui.js?v=20261009-update11';
-import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261009-update11';
-import {qualitySummary} from './workflow-ui.js?v=20261009-update11';
-import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261009-update11';
-import {updatePlatformBalance} from './platform-shell.js?v=20261009-update11';
-import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261009-update11';
-import {listCollections,getCollection} from './sources.js?v=20261009-update11';
-import {createSyncUI} from './sync-ui.js?v=20261009-update11';
-import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261009-update11';
-import {renderLibrary} from './library-ui.js?v=20261009-update11';
-import {createForm,renderCreationPreview} from './creation-ui.js?v=20261009-update11';
-import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261009-update11';
-import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261009-update11';
+import {createVideoPreview} from './video-preview.js?v=20261021-update14s';
+import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261021-update14s';
+import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261021-update14s';
+import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261021-update14s';
+import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261021-update14s';
+import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261021-update14s';
+import {createBgmUI} from './bgm-ui.js?v=20261021-update14s';
+import {assertBgmAvailable} from './bgm-model.js?v=20261021-update14s';
+import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261021-update14s';
+import {createCloudImport} from './cloud-import.js?v=20261021-update14s';
+import {createLocalUpload} from './local-upload.js?v=20261021-update14s';
+import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261021-update14s';
+import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261021-update14s';
+import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261021-update14s';
+import {contentSimilarity} from './content-ui.js?v=20261021-update14s';
+import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261021-update14s';
+import {qualitySummary} from './workflow-ui.js?v=20261021-update14s';
+import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261021-update14s';
+import {updatePlatformBalance,showPoints} from './platform-shell.js?v=20261021-update14s';
+import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261021-update14s';
+import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261021-update14s';
+import {createSyncUI} from './sync-ui.js?v=20261021-update14s';
+import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261021-update14s';
+import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261021-update14s';
+import {createForm,renderCreationPreview} from './creation-ui.js?v=20261021-update14s';
+import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261021-update14s';
+import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261021-update14s';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
@@ -25,16 +32,19 @@ const button=(label,action,cls='secondary',attrs='')=>`<button type="button" cla
 const tag=(t,c='')=>`<span class="tag ${c}">${esc(t)}</span>`;
 const icon=()=>'<svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor"/><path d="m8 6 5 4-5 4V7Z" fill="currentColor"/></svg>';
 const KEY=MIXED_CUT_STORAGE_KEY;let state;try{state=JSON.parse(localStorage.getItem(KEY))||initialState();}catch{state=initialState();}
+ensureTaskVersions(state);
+ensureMaterialIdentity(state);
 state.config=normalizeCreationConfig(state.config);
 if(state.sourceAccessScenario===undefined)state.sourceAccessScenario='domestic';clearUnavailableSource(state);
-let view='create',currentBatch=null,currentOutput=null,busy=false,reviewTab='junction',picker=null,localVideo=null,playerTimer=null,playerAt=0,genTimers=new Set(),toolsScenario='normal',selectionBatchId=null;
+let view=['create','assets','tasks','task-detail'].includes(state.ui?.view)?state.ui.view:'create',currentBatch=null,currentOutput=null,busy=false,reviewTab='junction',picker=null,localVideo=null,playerTimer=null,playerAt=0,genTimers=new Set(),toolsScenario='normal',selectionBatchId=null;
+let selectedTaskId=state.ui?.selectedTaskId||null,taskPaging={page:1,pageSize:10,...state.ui?.taskPaging},submissionJobId=null;
 const taskSelections=new Map();
 function selectionFor(id=currentBatch){if(!id)return new Set();if(!taskSelections.has(id))taskSelections.set(id,new Set());return taskSelections.get(id);}
 function clearTaskSelection(){taskSelections.clear();selectionBatchId=null;}
-function canSelectMaterial(b,o){return o.status==='ready'&&reviewable(o)&&!o.narrationDraft&&!syncUI.locked(b,o);}
+function canSelectMaterial(b,o){return (o.status==='ready'&&reviewable(o)&&!o.narrationDraft&&!syncUI.locked(b,o));}
 function filteredMaterials(){
  const dramas=new Map(listDramas(state).map(d=>[d.id,d]));
- return state.batches.flatMap(b=>b.outputs.map(o=>({b,o,drama:dramas.get(dramaKey(b.config))}))).filter(({b,o})=>(taskFilters.drama==='all'||dramaKey(b.config)===taskFilters.drama)&&materialMatches(o,b.config,taskFilters));
+ return state.batches.flatMap(b=>b.outputs.map(o=>({b,o,drama:dramas.get(dramaKey(b.config))}))).filter(({b,o})=>(taskFilters.drama==='all'||dramaKey(b.config)===taskFilters.drama)&&(taskFilters.task==='all'||b.id===taskFilters.task||b.productionJobId===taskFilters.task)&&materialMatches(o,b.config,taskFilters));
 }
 function selectTaskContext(id,{notify=false}={}){
  if(selectionBatchId&&selectionBatchId!==id){taskSelections.clear();if(notify)toast('已切换制作任务，请重新勾选素材');}
@@ -46,40 +56,61 @@ function selectedVisibleMaterials(){
  return b.outputs.filter(o=>visible.has(o.id)&&selectionFor(b.id).has(o.id));
 }
 let reviewQueue=null,confirmFollowup=null,reworkDraft=null,narrationApplyContext=null,relatedOrigin=null,feedbackContext=null;
-let libraryFilters={query:'',market:'all',status:'all'},taskFilters={drama:'all',mode:'all',status:'all'};
+const defaultLibraryFilters=()=>({query:'',market:'all'}),defaultTaskFilters=()=>({drama:'all',mode:'all',status:'all',task:'all'});
+let libraryFilters={...defaultLibraryFilters(),...state.ui?.libraryFilters},taskFilters={...defaultTaskFilters(),...state.ui?.taskFilters};
+if(!['all','domestic','overseas'].includes(libraryFilters.market))libraryFilters.market='all';
+if(!['all','highlight'].includes(taskFilters.mode))taskFilters.mode='all';
+let libraryDraft={...libraryFilters,...state.ui?.libraryDraft},taskDraft={...taskFilters,...state.ui?.taskDraft},replacementContext=null;
+if(!['all','domestic','overseas'].includes(libraryDraft.market))libraryDraft.market='all';
+if(!['all','highlight'].includes(taskDraft.mode))taskDraft.mode='all';
+if(!['all','running','done','partial','failed'].includes(taskFilters.status))taskFilters.status='all';
+if(!['all','running','done','partial','failed'].includes(taskDraft.status))taskDraft.status='all';
+state.productionJobs||=[];
+function persistUI(){state.ui={view:view==='review'?'task-detail':view,selectedTaskId,taskPaging,libraryFilters,taskFilters,libraryDraft,taskDraft};}
 const batch=()=>state.batches.find(b=>b.id===currentBatch),output=()=>batch()?.outputs.find(o=>o.id===currentOutput);
 let editingSessionActive=true,generationPending=false;
-const save=()=>{if(!editingSessionActive)return;clearUnavailableSource(state);if(isConfiguredSource(state.config))registerDrama(state,state.config,{touch:false});try{localStorage.setItem(KEY,JSON.stringify(state));updatePlatformBalance(state.balance);}catch{toast('本地存储空间不足，本次刷新后可能无法保留');}};
+const save=()=>{if(!editingSessionActive)return;persistUI();clearUnavailableSource(state);if(isConfiguredSource(state.config))registerDrama(state,state.config,{touch:false});try{localStorage.setItem(KEY,JSON.stringify(state));updatePlatformBalance(state.balance);}catch{toast('本地存储空间不足，本次刷新后可能无法保留');}};
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toast.t);toast.t=setTimeout(()=>$('#toast').classList.remove('visible'),3300);}
-function modal(title,body,actions=button('关闭','close')){$('#dialog').className='';$('#dialog [aria-label="关闭弹窗"]').disabled=false;delete $('#dialog').dataset.syncJob;$('#dialogTitle').textContent=title;$('#dialogBody').innerHTML=body;$('#dialogActions').innerHTML=actions;if(!$('#dialog').open)$('#dialog').showModal();}
-function closeModal(){if(localUpload.isBusy()||bgmUI.isBusy())return;localUpload.cancel();bgmUI.cancel();narrationApplyContext=null;feedbackContext=null;$('#dialog').close();}
+function modal(title,body,actions=button('关闭','close')){$('#dialog').className='';delete $('#dialog').dataset.failureJob;$('#dialog [aria-label="关闭弹窗"]').disabled=false;delete $('#dialog').dataset.syncJob;$('#dialogTitle').textContent=title;$('#dialogTitle').title=title;$('#dialogBody').innerHTML=body;$('#dialogActions').innerHTML=actions;if(!$('#dialog').open)$('#dialog').showModal();}
+function completeSubmission(){if(!submissionJobId)return;submissionJobId=null;state.config=emptyCreationConfig();state.plan=null;replacementContext=null;localVideo=null;save();render();}
+function closeModal(){if(localUpload.isBusy()||bgmUI.isBusy())return;completeSubmission();localUpload.cancel();cloudImport.cancel();bgmUI.cancel();narrationApplyContext=null;feedbackContext=null;$('#dialog').close();}
 function stopPlayer(){clearInterval(playerTimer);playerTimer=null;const control=$('[data-action="play"]');if(control)control.textContent='▶';}
-function nav(next){stopPlayer();window.speechSynthesis?.cancel();playerAt=0;if(next==='create'){state.config=normalizeCreationConfig(state.config);save();}if(next!=='review')relatedOrigin=null;view=next;clearTaskSelection();render();window.scrollTo({top:0});}
-function sourceLabel(c=state.config){const s=c.source;return s?.kind==='green'?(s.market==='domestic'?'国内短剧':'海外短剧'):'本地上传';}
+function nav(next){stopPlayer();window.speechSynthesis?.cancel();playerAt=0;if(next==='create'){state.config=normalizeCreationConfig(state.config);save();}if(next!=='review')relatedOrigin=null;view=next;clearTaskSelection();save();render();window.scrollTo({top:0});}
+function sourceLabel(c=state.config){const s=c.source;return ['green','cloud'].includes(s?.kind)?(s.market==='domestic'?'国内短剧':'海外短剧'):'本地上传';}
 function heading(title,desc,actions='',eyebrow=''){return `<div class="page-head"><div>${eyebrow?`<div class="eyebrow">${eyebrow}</div>`:''}<h1>${title}</h1>${desc?`<p>${desc}</p>`:''}</div><div class="head-actions">${actions}</div></div>`;}
 const option=(value,label,current)=>`<option value="${esc(value)}" ${String(value)===String(current)?'selected':''}>${esc(label)}</option>`;
 function episodeSummary(ids){return ids.length>4?'第 '+ids[0]+'–'+ids.at(-1)+' 集 · '+ids.length+' 集取材':'第 '+ids.join('、')+' 集';}
 function field(label,control,help=''){return `<div class="field"><label>${label}</label>${control}${help?`<small>${help}</small>`:''}</div>`;}
 function footer(main,help,actions){$('#actionBar').hidden=false;$('#actionBar').innerHTML=`<div><div class="price-line">${main}</div><p class="footer-help">${help}</p></div><div class="actions">${actions}</div>`;}
 const uiHelpers={heading,button,esc,tag,option,sourceLabel,fmt,field,footer};
+const videoPreview=createVideoPreview({modal,esc,fmt,toast});
+function acceptImportedSource(source,start,end){
+ if(!editingSessionActive)throw Error('当前页面已在其他窗口继续');
+ const inLibrary=view==='assets';
+ const imported=normalizeCreationConfig({...(inLibrary?{title:false,titleText:''}:state.config),source,start,end});
+ const next={...state,dramas:clone(state.dramas||{})};
+ if(!inLibrary){next.config=imported;next.plan=null;}
+ registerDrama(next,imported);
+ // Persist before applying so a storage failure keeps both the library and draft intact.
+ localStorage.setItem(KEY,JSON.stringify(next));state=next;
+ if(inLibrary){libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};}
+ else localVideo=null;
+ nav(inLibrary?'assets':'create');
+}
 const localUpload=createLocalUpload({modal,closeModal,button,esc,toast,onImport:source=>{
- registerDrama(state,state.config,{touch:false});
- state.config={...state.config,source,start:1,end:source.totalEpisodes};state.plan=null;
- registerDrama(state,state.config);localVideo=null;save();
- nav(view==='assets'?'assets':'create');
+ acceptImportedSource(source,1,source.totalEpisodes);
 },onAppend:(source,previous)=>{
  if(!editingSessionActive||state.config.source.kind!=='manual'||state.config.source.assetId!==previous.assetId||(Number(state.config.source.fileVersion)||1)!==(Number(previous.fileVersion)||1))throw Error('当前片源已变化，请重新添加视频');
- const oldTotal=previous.files.length,nextConfig={...state.config,source,end:Number(state.config.end)===oldTotal?source.totalEpisodes:state.config.end};
- const fileIdentity=file=>JSON.stringify([file.id,file.order,file.name,file.size,file.lastModified??null]);
  const currentFiles=state.config.source.files||[];
- const unchanged=currentFiles.length===oldTotal&&previous.files.every((file,index)=>fileIdentity(file)===fileIdentity(currentFiles[index])&&fileIdentity(file)===fileIdentity(source.files[index]));
- if(!unchanged)throw Error('已有片源已变化，请重新添加视频');
+ if(JSON.stringify(currentFiles)!==JSON.stringify(previous.files))throw Error('已有片源已变化，请重新添加视频');
+ const oldTotal=previous.files.length,kept=new Map(source.files.map((file,index)=>[file.id,index+1]));
+ const oldSelection=previous.files.slice(Math.max(0,state.config.start-1),state.config.end).map(file=>kept.get(file.id)).filter(Boolean);
+ const fullRange=state.config.start===1&&state.config.end===oldTotal;
+ const nextConfig={...state.config,source,start:fullRange||!oldSelection.length?1:Math.min(...oldSelection),end:fullRange||!oldSelection.length?source.totalEpisodes:Math.max(...oldSelection)};
  const nextState={...state,config:nextConfig,plan:null,dramas:clone(state.dramas||{}),assets:{...state.assets}};
- const oldKey=assetKey(state.config),cache=state.assets[oldKey];
+ const cache=state.assets[assetKey(state.config)];
  if(previous.simulated===false&&cache&&cache.seeded!==true&&cache.simulated!==true&&Array.isArray(cache.episodes)){
-  const readyEpisodes=new Set(previous.files.map((file,index)=>!file.status||file.status==='ready'?index+1:null).filter(Boolean));
-  const inherited=clone(cache);inherited.episodes=[...new Set(inherited.episodes.filter(id=>readyEpisodes.has(id)))];
-  delete inherited.contentPool;
+  const inherited=clone(cache);inherited.episodes=[...new Set(cache.episodes.map(id=>kept.get(previous.files[id-1]?.id)).filter(Boolean))];delete inherited.contentPool;
   nextState.assets[assetKey(nextConfig)]=inherited;
  }
  registerDrama(nextState,nextConfig);
@@ -88,13 +119,14 @@ const localUpload=createLocalUpload({modal,closeModal,button,esc,toast,onImport:
  localStorage.setItem(KEY,JSON.stringify(nextState));
  state=nextState;localVideo=null;updatePlatformBalance(state.balance);nav('create');
 }});
+const cloudImport=createCloudImport({modal,closeModal,button,esc,toast,localUpload,onImport:acceptImportedSource});
 $('#dialog').addEventListener('cancel',event=>{if(localUpload.isBusy()||bgmUI.isBusy())event.preventDefault();});
-$('#dialog').addEventListener('close',()=>localUpload.cancel());
-function openRenameDrama(id){const d=findDrama(state,id);if(!d||d.config.source?.kind!=='manual'){toast('仅本地上传的剧目支持重命名');return;}
+$('#dialog').addEventListener('close',()=>{completeSubmission();localUpload.cancel();cloudImport.cancel();});
+function openRenameDrama(id){const d=findDrama(state,id);if(!d){toast('剧目已失效，请重新选择');return;}
  modal('重命名剧目',`<div class="field rename-drama-field"><label for="dramaRename">剧目名称 <span class="required">*</span></label><input id="dramaRename" aria-label="剧目名称" maxlength="160" value="${esc(d.title)}"><small>修改剧目名称，不改变原片文件名。</small></div>`,button('取消','close')+button('保存','save-drama-name','primary',`data-id="${esc(id)}"`));$('#dramaRename').focus();}
 
-function createView(){return createForm(state,{busy},uiHelpers);}
-function refreshCreationPreview(){if(view!=='create')return;const panel=$('.preview-panel');if(panel)panel.innerHTML=renderCreationPreview(state.config,uiHelpers);createForm(state,{busy},uiHelpers);const info=analysisInfo(state,state.config),label=$('.analysis-bar>span');if(label)label.innerHTML=`已分析可复用 <b>${info.reused.length}</b> 集 · 本次新增 <b>${info.pending.length}</b> 集`;}
+function createView(){return (replacementContext?`<div class="replacement-banner">${tag('调整后重做')}<span>仅重做 ${replacementContext.outputIds?.length||replacementContext.count} 条；已有成功素材保留。</span>${button('取消调整','cancel-replacement','text-btn')}</div>`:'')+createForm(state,{busy},uiHelpers);}
+function refreshCreationPreview(){if(view!=='create')return;const panel=$('.preview-panel');if(panel)panel.innerHTML=renderCreationPreview(state.config,uiHelpers);createForm(state,{busy},uiHelpers);}
 const bgmUI=createBgmUI({getConfig:()=>state.config,modal,closeModal,toast,button,esc,onApply:selection=>{
  if(!editingSessionActive)throw Error('当前页面已在其他窗口继续');
  const nextState={...state,config:normalizeCreationConfig({...state.config,...selection,bgm:true}),plan:null};
@@ -103,12 +135,12 @@ const bgmUI=createBgmUI({getConfig:()=>state.config,modal,closeModal,toast,butto
 function openBgmPicker(){bgmUI.open();}
 function validateSourceSelection(c){return validate({...c,mode:'highlight',duration:'3-5',speed:1.5,count:1,title:false,bgm:false});}
 
-function refreshSyncState(){if(['assets','tasks'].includes(view))render();else if(view==='review'){const b=batch(),o=output();if(!b||!o)return;const a=$('#reviewSyncActions'),n=$('.sync-review-notice');if(a)a.innerHTML=o.confirmed?syncUI.reviewActions(b,o):'';if(n)n.outerHTML=syncUI.reviewNotice(b,o);const q=$('.review-queue');if(q)q.outerHTML=reviewQueueBar(b,o);}}
+function refreshSyncState(){if(['assets','tasks'].includes(view))render();else if(view==='review'){const b=batch(),o=output();if(!b||!o)return;const a=$('#reviewSyncActions'),n=$('.sync-review-notice');if(a)a.innerHTML=reviewDelivery(b,o);if(n)n.outerHTML=syncUI.reviewNotice(b,o);const q=$('.review-queue');if(q)q.outerHTML=reviewQueueBar(b,o);}}
 const syncUI=createSyncUI({getState:()=>state,save,render,refreshSyncState,toast,modal,closeModal,button,esc,icon,formatTime:fmt,getBatch:batch,getOutput:output,getSelectedOutputs:()=>batch()?.id===selectionBatchId?selectedVisibleMaterials():[]});
 // Let a newly opened demo take over only after every local write operation settles.
 // The old document then navigates away before its Web Lock can be acquired again.
 export function relinquishEditingSession(){
- if(!editingSessionActive||busy||generationPending||genTimers.size||localUpload.isBusy()||bgmUI.isBusy()||syncUI.isBusy()||state.batches.some(b=>b.outputs.some(o=>o.status==='pending'||o.repairing||o.reworkPending)))return false;
+ if(!editingSessionActive||busy||runningJobs.size||startingBatches.size||generationPending||genTimers.size||localUpload.isBusy()||bgmUI.isBusy()||syncUI.isBusy()||state.batches.some(b=>b.outputs.some(o=>o.status==='pending'&&!o.demoHeld||o.repairing||o.reworkPending)))return false;
  editingSessionActive=false;
  document.documentElement.inert=true;
  stopPlayer();bgmUI.cancel();
@@ -116,13 +148,13 @@ export function relinquishEditingSession(){
  for(const type of ['click','input','change','keydown','submit'])document.addEventListener(type,event=>{event.preventDefault();event.stopImmediatePropagation();},{capture:true});
  return true;
 }
-function render(){clearUnavailableSource(state);stopPlayer();const names={create:'制作素材',assets:'剧目管理',tasks:'成片管理',review:'成片预览'};$('#breadcrumb').innerHTML=`<a href="./toolbox.html${window.parent!==window?'?review=1':''}">工具箱</a><span> / </span><span>智能混剪</span><b hidden>${names[view]}</b>`;updatePlatformBalance(state.balance);$$('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===(view==='review'?'tasks':view)));$('#actionBar').hidden=true;$('#app').innerHTML=({create:createView,assets:libraryView,tasks:tasksView,review:reviewView}[view]||createView)();if(view==='review'&&output())locate(Math.min(playerAt,output().duration));}
+function render(){const focused=document.activeElement,focusId=focused?.id,selectionStart=focused?.selectionStart;clearUnavailableSource(state);stopPlayer();const names={create:'制作素材',assets:'剧目管理',tasks:'成片管理','task-detail':'任务详情',review:'成片预览'};$('#breadcrumb').innerHTML=`<a href="./toolbox.html${window.parent!==window?'?review=1':''}">工具箱</a><span> / </span><span>智能混剪</span><b hidden>${names[view]}</b>`;updatePlatformBalance(state.balance);$$('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===(['review','task-detail'].includes(view)?'tasks':view)));$('#actionBar').hidden=true;$('#app').innerHTML=({create:createView,assets:libraryView,tasks:tasksView,'task-detail':taskDetailView,review:reviewView}[view]||createView)();if(view==='review'&&output())locate(Math.min(playerAt,output().duration));if(focusId){const target=document.getElementById(focusId);if(target&&target!==focused){target.focus({preventScroll:true});if(typeof selectionStart==='number'&&target.setSelectionRange)try{target.setSelectionRange(selectionStart,selectionStart);}catch{}}}}
 // Page functions are declared below. They are resolved before the first render.
 function remainingPlans(){const p=state.plan;if(!p)return [];const used=new Set(state.batches.filter(b=>b.planSession===p.id).flatMap(b=>b.outputs.filter(o=>o.status!=='failed').map(o=>o.planId)));return p.candidates.filter(x=>!used.has(x.id));}
-function libraryView(){return renderLibrary(state,libraryFilters,uiHelpers);}
+function libraryView(){return renderLibrary(state,libraryFilters,uiHelpers,libraryDraft);}
 function openDramaOutputs(id){
  const d=findDrama(state,id);if(!d){toast('剧目已失效，请重新选择');return;}
- taskFilters={drama:id,mode:'all',status:'all'};currentBatch=d.batches[0]?.id||null;nav('tasks');
+ taskPaging.page=1;taskFilters={...defaultTaskFilters(),drama:id};taskDraft={...taskFilters};currentBatch=d.batches[0]?.id||null;nav('tasks');
 }
 function makeDrama(id){
  const d=findDrama(state,id);if(!d){toast('剧目已失效，请重新选择');return;}
@@ -131,31 +163,16 @@ function makeDrama(id){
  if(localVideo)URL.revokeObjectURL(localVideo);localVideo=null;save();nav('create');
 }
 function tasksView(){
- const dramas=listDramas(state),drama=dramas.find(d=>d.id===taskFilters.drama),rows=filteredMaterials();
- if(selectionBatchId){
-  const visible=new Set(rows.filter(({b,o})=>b.id===selectionBatchId&&canSelectMaterial(b,o)).map(({o})=>o.id));
-  for(const id of selectionFor(selectionBatchId))if(!visible.has(id))selectionFor(selectionBatchId).delete(id);
-  if(!state.batches.some(b=>b.id===selectionBatchId)||!rows.some(({b})=>b.id===selectionBatchId))clearTaskSelection();
- }
- const selected=selectionFor(selectionBatchId),selectedRows=selectedVisibleMaterials();
- const makeButton=drama?button('新建剪辑','make-drama','primary',`data-id="${esc(drama.id)}"`):button('制作素材','create','primary');
- const noOutputs=drama&&!state.batches.some(b=>dramaKey(b.config)===drama.id&&b.outputs.length);
- const empty=`<div class="empty"><h2>${noOutputs?'该剧暂无成片':'暂无符合条件的素材'}</h2><p>${drama?'可以为当前剧目新建剪辑，或调整筛选条件。':'选择片源和制作方式，开始制作素材。'}</p>${makeButton}${taskFilters.drama!=='all'||taskFilters.mode!=='all'||taskFilters.status!=='all'?button('清空筛选','clear-task-filters','text-btn'):''}</div>`;
- return heading('成片管理','',makeButton)+`<div class="library-filters"><select id="taskDrama" aria-label="按剧目名称筛选素材">${option('all','全部剧目',taskFilters.drama)}${dramas.map(d=>option(d.id,d.title,taskFilters.drama)).join('')}</select><select id="taskMode" aria-label="按制作方式筛选素材">${option('all','全部制作方式',taskFilters.mode)}${Object.entries(MODES).filter(([v])=>v!=='original').map(([v,m])=>option(v,m.name,taskFilters.mode)).join('')}</select><select id="taskStatus" aria-label="按素材状态筛选">${[['all','全部状态'],['running','制作中'],['review','待确认'],['failed','制作失败']].map(([v,l])=>option(v,l,taskFilters.status)).join('')}</select>${button('清空筛选','clear-task-filters','text-btn')}</div>`+(rows.length?renderMaterials(rows,{h:uiHelpers,syncUI,selected,selectionBatchId,selectedRows,canSelect:canSelectMaterial}):empty);
+ const dramas=listDramas(state),p=taskListPage(state,taskFilters,taskPaging);taskPaging={page:p.page,pageSize:p.pageSize};
+ const fields=`<div class="library-filters" id="materialFilters"><select id="taskDrama" aria-label="按剧目筛选任务">${option('all','全部剧目',taskDraft.drama)}${dramas.map(d=>option(d.id,d.title,taskDraft.drama)).join('')}</select><select id="taskMode" aria-label="剪辑类型">${option('all','全部剪辑类型',taskDraft.mode)}${option('highlight','高光顺剪',taskDraft.mode)}</select><select id="taskStatus" aria-label="剪辑状态">${[['all','全部状态'],['running','剪辑中'],['done','已完成'],['partial','部分失败'],['failed','已失败']].map(([v,l])=>option(v,l,taskDraft.status)).join('')}</select><div class="filter-actions">${button('查询','query-tasks','primary')}${button('重置','clear-task-filters','secondary')}</div></div>`;
+ return heading('成片管理','')+fields+renderTaskCards(p,uiHelpers);
 }
+function openTask(id){const j=taskCards(state).find(j=>j.id===id||j.batchId===id);if(!j){toast('任务不存在，请刷新后重试');return;}selectedTaskId=j.id;currentBatch=j.batchId||null;closeModal();nav('task-detail');}
+function taskDetailView(){const j=taskCards(state).find(j=>j.id===selectedTaskId);if(!j)return heading('任务详情','',button('返回任务列表','back-tasks'))+'<div class="empty">任务不存在，请返回列表查看。</div>';currentBatch=j.batchId||null;return renderTaskDetail(j,{...uiHelpers,fmt});}
 
-function reviewView(){
- const b=batch(),o=output();if(!o)return tasksView();
- const full=isFullNarration(b.config),narrated=b.config.mode==='narrated',locked=syncUI.locked(b,o)||o.repairing||Boolean(o.reworkPending);
- const blocked=locked||Boolean(o.narrationDraft),records=feedbackItems(b,o,blocked,uiHelpers);
- const script=narrated?(full?fullNarrationPanel:mixedNarrationPanel)(b,o,{open:reviewTab==='narration',locked},uiHelpers):'';
- const versions=o.revisions.length?`<details class="review-versions"><summary>版本记录</summary>${o.revisions.map(r=>`<p>V${r.version} · ${esc(r.description)}</p>`).join('')}</details>`:'';
- return heading(o.title,`${modeLabel(b.config)} · ${fmt(o.duration)} · ${speedSummary(b.config)} · V${o.contentVersion}`,button('返回成片管理','back-tasks')+button('单条返工','rework','secondary',`data-batch="${b.id}" data-id="${o.id}" ${blocked?'disabled':''}`)+`<span id="reviewSyncActions">${o.confirmed?syncUI.reviewActions(b,o):''}</span>`)
- +(relatedOrigin?`<div class="review-origin">${button('返回原素材','return-related','text-btn')}</div>`:'')+reviewQueueBar(b,o)+qualitySummary(o,uiHelpers)+syncUI.reviewNotice(b,o)
- +narrationDraftNotice(o)
- +`<div class="review-grid review-simple" data-review-mode="${full?'full':narrated?'narrated':'highlight'}"><aside class="player"><div class="story-screen"><img src="./assets/drama-confrontation.jpg" alt="虚构剧情故事板"><span class="screen-mark">故事板 · 无真实音轨</span><div class="screen-text" id="screenText">${esc(o.segments[0]?.text||'')}</div></div><div class="player-controls">${button('▶','play','icon-btn','aria-label="播放故事板"')}<input type="range" min="0" max="${o.duration}" value="0" aria-label="故事板进度" id="scrubber"><span id="playerTime">0:00 / ${fmt(o.duration)}</span></div><div class="player-feedback">${button('反馈问题','report-issue','secondary',blocked?'disabled':'')}</div></aside><div class="review-main">${contentSimilarity(state,b,o,uiHelpers)}${script}<section class="section issue-section" id="feedbackRecords"><div class="section-heading"><h2>反馈记录</h2></div>${records||'<p class="feedback-empty">暂无反馈</p>'}${versions}</section></div></div>`;
-}
-function quoteDialog(){const c=state.config,q=estimate(state,c,c.count);modal('费用明细',`<p>由平台积分账户结算。当前展示演示费率，正式费率沿用平台配置。</p>${isFullNarration(c)?`<div class="subtle-box">计划解说约 ${targetSeconds(c)} 秒；每条制作 32 分＋解说 ${Math.ceil(targetSeconds(c)/30)} 档 × 18 分（每 30 秒一档）。</div>`:''}<div class="cost-breakdown"><span>新增分析 ${q.analysis} 集 × 1 分</span><strong>${q.analysis} 分</strong><span>${modeLabel(c)} ${c.count} 条 × ${q.unit} 分</span><strong>${q.production} 分</strong><span>预计最高消耗</span><strong>${q.total} 分</strong></div><div class="info">提交生成后先分析新增剧集，完成后结算；有效分析可复用。开始制作时按实际条数冻结额度，成功结算、失败释放。数量不足时先确认实际条数；返回调整不收制作费。</div><p class="helper">系统问题修复与素材同步不重复收费。</p>`);}
+function reviewView(){return taskDetailView();}
+
+
 function openPicker(){
  const access=sourceAccess(state);if(!access.canUseCollections){localUpload.open();return;}
  const source=state.config.source,market=access.markets.includes(source?.market)?source.market:access.markets[0];
@@ -163,65 +180,208 @@ function openPicker(){
 }
 function renderPicker(){
  const access=sourceAccess(state);if(!access.canUseCollections){picker=null;localUpload.open();return;}
- if(!picker||!canAccessMarket(state,picker.market)){picker={market:access.markets[0],id:null,start:1,end:1,query:''};}
- const items=listCollections(picker.market,picker.query),picked=getCollection(picker.market,picker.id);
- const controls=access.markets.length>1?access.markets.map(market=>button(market==='domestic'?'国内短剧':'海外短剧','picker-market',picker.market===market?'active':'',`data-value="${market}"`)).join(''):'';
- modal('选择合集',`<div class="pills">${controls}${button('本地上传','upload','')}</div><input class="search" id="collectionSearch" aria-label="搜索合集" placeholder="搜索合集名称或 ID" value="${esc(picker.query)}"><div class="source-picker"><div class="collection-list">${items.map(item=>`<button class="collection ${picker.id===item.id?'active':''}" data-action="picker-collection" data-id="${item.id}"><img class="poster" src="${esc(item.cover||'./assets/drama-confrontation.jpg')}" alt="合集封面"><div><strong>${esc(item.title)}</strong><p>${item.id} · 可用 ${item.availableEpisodes.length} / ${item.totalEpisodes} 集</p></div></button>`).join('')||'<div class="empty">没有找到合集</div>'}</div><div class="subtle-box"><h3>${picked?'配置混剪集数':'先选择一个合集'}</h3>${picked?`<p class="helper">${esc(picked.description)}</p><div class="range-row">第 <input aria-label="合集起始集数" id="pickerStart" type="number" value="${picker.start}"> — <input aria-label="合集结束集数" id="pickerEnd" type="number" value="${picker.end}"> 集</div><div class="pills" style="margin-top:15px">${[10,20,30].map(n=>button('前'+n+'集','picker-range','',`data-value="${n}"`)).join('')}</div>`:''}</div></div>`,button('取消','close')+button('使用合集与选集','apply-source','primary',picked?'':'disabled'));$('#dialog').classList.add('wide');
+ if(!picker){picker={market:access.markets[0],id:null,start:1,end:1,query:''};}
+ const permitted=canAccessMarket(state,picker.market),items=permitted?listCollections(picker.market,picker.query):[],picked=permitted?getCollection(picker.market,picker.id):null;
+ const controls=['domestic','overseas'].map(market=>button(market==='domestic'?'国内合集':'海外合集','picker-market',picker.market===market?'active':'',`data-value="${market}"`)).join('');
+ modal('选择合集',`<div class="pills">${controls}</div><input class="search" id="collectionSearch" aria-label="搜索合集" placeholder="搜索合集名称或 ID" value="${esc(picker.query)}"><div class="source-picker"><div class="collection-list">${items.map(item=>`<button class="collection ${picker.id===item.id?'active':''}" data-action="picker-collection" data-id="${item.id}"><img class="poster" src="${esc(item.cover||'./assets/drama-confrontation.jpg')}" alt="合集封面"><div><strong>${esc(item.title)}</strong><p>${collectionNumber(item.id)} · 可用 ${item.availableEpisodes.length} / ${item.totalEpisodes} 集</p></div></button>`).join('')||(permitted?'<div class="empty">没有找到合集</div>':'<div class="empty">暂无此数据源的访问权限</div>')}</div><div class="subtle-box"><h3>${picked?'配置混剪集数':'先选择一个合集'}</h3>${picked?`<p class="helper">${esc(picked.description)}</p><div class="range-row">第 <input aria-label="合集起始集数" id="pickerStart" type="number" value="${picker.start}"> — <input aria-label="合集结束集数" id="pickerEnd" type="number" value="${picker.end}"> 集</div><div class="pills" style="margin-top:15px">${[10,20,30].map(n=>button('前'+n+'集','picker-range','',`data-value="${n}"`)).join('')}</div>`:''}</div></div>`,button('取消','close')+button('使用合集与选集','apply-source','primary',picked?'':'disabled'));$('#dialog').classList.add('wide');
 }
 function applySourceAccess(scenario){
  state.sourceAccessScenario=SOURCE_ACCESS_SCENARIOS.some(item=>item.id===scenario)?scenario:'unmatched';
- if(busy&&sourcePermissionError(state,prepare.config||state.config)){prepare.operation=null;busy=false;}
- clearUnavailableSource(state);libraryFilters.market='all';picker=null;
+  clearUnavailableSource(state);libraryFilters.market='all';picker=null;
  for(const b of state.batches){if(!sourcePermissionError(state,b.config))continue;for(const o of b.outputs){
-  if(o.status==='pending'){o.attempt=(o.attempt||0)+1;settleOutput(state,b,o,false);o.permissionRevoked=true;}
+  if(o.status==='pending'){o.attempt=(o.attempt||0)+1;settleOutput(state,b,o,false);o.permissionRevoked=true;o.failure={kind:'source',label:'合集访问权限已变化'};}
   if(o.reworkPending)finishRework(state,b,o,false);
   if(o.repairing)o.repairing=false;
  }}
 }
-function showCapacityDialog(){
- const p=state.plan,count=Math.min(remainingPlans().length,p.config.count);
- const reason=p.reason||(count?'所选剧情可用高光有限，已排除重复或过度相似的内容。':'所选剧情无法满足当前制作时长，请增加集数或调整时长。');
- modal('可生成数量不足',`<div class="capacity-summary"><h3>计划 ${p.config.count} 条，可生成 ${count} 条</h3><p class="helper">${esc(reason)}</p>${p.excluded?`<p class="helper">已排除 ${p.excluded} 个内容过度相似的方向。</p>`:''}</div><div class="cost-breakdown"><span>已完成分析</span><strong>${p.analysisCharge} 积分</strong><span>本次制作 · ${count} 条</span><strong>${count*productionRate(p.config)} 积分</strong></div><p class="helper">按实际生成条数计费；返回调整不收制作费，已完成分析可复用。</p>`,button('返回调整','create')+(count?button('生成 '+count+' 条','generate-available','primary'):''));
+const runningJobs=new Map(),startingBatches=new Set();
+let progressPaging={page:1,pageSize:10};
+function refreshWork(){save();if(['tasks','assets','task-detail'].includes(view))render();if($('#dialog').open&&$('#dialog').classList.contains('production-drawer'))renderProgress();else if($('#dialog').open&&$('#dialog').dataset.failureJob)showTaskFailures($('#dialog').dataset.failureJob);}
+function focusTask(id){openTask(id);}
+function renderProgress({scrollTop=false}={}){
+ const p=progressPage(state,progressPaging);progressPaging={page:p.page,pageSize:p.pageSize};
+ const body=$('#dialogBody'),top=body.scrollTop,focused=document.activeElement,focusId=focused?.id;
+ const draft=focusId==='progressPageNumber'?focused.value:null;
+ body.innerHTML=progressDrawer(state,uiHelpers,p);$('#dialogActions').innerHTML=progressPagination(p,uiHelpers);
+ body.scrollTop=scrollTop?0:top;
+ if(!scrollTop&&['progressPageNumber','progressPageSize'].includes(focusId)){const input=document.getElementById(focusId);if(input){if(draft!==null)input.value=draft;input.focus({preventScroll:true});}}
+}
+function openProgress(){closeModal();nav('tasks');}
+
+function changeProgressPage(value){
+ const p=progressPage(state,progressPaging),next=Number(value);
+ if(!String(value).trim()||!Number.isInteger(next)||next<1||next>p.pages){toast('请输入1至'+p.pages+'之间的整数页码');$('#progressPageNumber').value=p.page;return;}
+ progressPaging.page=next;renderProgress({scrollTop:true});
+}
+
+// Opt-in review fixtures use the normal local job lifecycle; never reset user work.
+async function addTaskExamples(samples=[['partial-three',10],['all-fail',3],['analysis-fail',3]]){
+ samples=samples.filter(([kind])=>!state.productionJobs.some(j=>j.demoExampleKind===kind));
+ if(!samples.length){closeModal();nav('tasks');openProgress();return;}
+ const template=normalizeCreationConfig(initialState().config);
+ if(!canAccessMarket(state,'domestic'))template.source=canAccessMarket(state,'overseas')?{...template.source,market:'overseas'}:{kind:'manual',simulated:true,assetId:'failure-example-source',displayName:'失败处理示例剧目'};
+ const version=Date.now(),configs=samples.map(([kind,count],i)=>({kind,config:{...clone(template),count,source:{...clone(template.source),fileVersion:version+i}}}));
+ if(configs.reduce((sum,{config})=>sum+estimate(state,config,config.count).total,0)>state.balance){toast('示例积分不足，暂不能添加任务样例');return;}
+ const jobs=configs.map(({kind,config})=>{const j=newJob(state,config,kind);j.demoExampleKind=kind;registerDrama(state,config);return j;});
+ save();closeModal();nav('tasks');openProgress();
+ for(const j of jobs)await runJob(j);
+}
+function showCapacityDialog(id){
+ const j=state.productionJobs.find(j=>j.id===id),p=j?.plan;if(!p||j.stage!=='waiting')return;
+ const count=Math.min(p.candidates.length,j.requestedCount);
+ modal('可生成数量不足',`<div class="capacity-summary"><h3>计划 ${j.requestedCount} 条，可生成 ${count} 条</h3><p>${esc(p.reason||'所选剧情可用方向有限，请确认实际制作条数。')}</p></div><div class="cost-breakdown"><span>已完成分析</span><strong>${p.analysisCharge} 积分</strong><span>制作 ${count} 条</span><strong>${count*productionRate(j.config)} 积分</strong></div>`,button('稍后处理','close')+button('调整制作','adjust-job','secondary',`data-job="${j.id}"`)+(count?button('生成 '+count+' 条','generate-available','primary',`data-job="${j.id}"`):''));
 }
 async function prepare(){
- if(busy)return;
- if(state.config.source?.kind==='manual'&&state.config.source.simulated===false){toast('本地片源已保存；当前原型尚未接入真实剧情分析与视频生成。');return;}
- const c=clone(state.config),error=sourcePermissionError(state,c)||validate(c);
- if(error){toast(error);return;}
- const info=analysisInfo(state,c),required=estimate(state,c,c.count).total;
- if(required>state.balance){toast('积分不足，请减少条数或调整时长');return;}
- busy=true;const operation=Symbol('prepare');prepare.operation=operation;prepare.config=c;render();
- try{await assertBgmAvailable(c);}catch(error){if(prepare.operation===operation){busy=false;render();toast(error.message);}return;}
- if(prepare.operation!==operation)return;
- if(sourcePermissionError(state,c)){busy=false;render();toast('合集权限已变化，请重新选择片源');return;}
- modal('整理所选剧情',`<h3>${info.pending.length?'补分析 '+info.pending.length+' 集':'复用已有剧情分析'}</h3><p class="helper">复用 ${info.reused.length} 集 · 新增 ${info.pending.length} 集，分析完成扣 ${info.pending.length} 积分。</p><div class="progress-track"><i></i></div>`,button('取消分析','cancel-analysis'));
- await new Promise(r=>setTimeout(r,1100));if(prepare.operation!==operation)return;
- if(sourcePermissionError(state,c)){busy=false;closeModal();clearUnavailableSource(state);save();render();toast('合集权限已变化，请重新选择片源');return;}
- const result=analyze(state,c);ensureContentPool(state,c);state.balance-=info.pending.length;
- if(info.pending.length)state.ledger.unshift({id:'AN-'+Date.now(),type:'新增剧集分析',points:-info.pending.length,at:new Date().toISOString()});
- busy=false;const rule=clone(activeRule(state));registerDrama(state,c);
- const planned=planBatch(c,rule,result.cache);const curated=curateCandidates(planned.candidates,c,state);planned.candidates=curated.candidates;planned.capacity=curated.candidates.length;planned.excluded+=curated.contentExcluded;if(curated.contentExcluded&&planned.capacity<c.count)planned.reason='已排除内容重复的候选，剩余 '+planned.capacity+' 个可用方向；可调整集数、时长或生成现有条数。';
- state.plan={id:'PLAN-'+Date.now(),config:c,rule,...planned,reused:info.reused.length,newCount:info.pending.length,analysisCharge:info.pending.length,analysisAllocated:false,analysisRevision:result.cache.revision};
- save();closeModal();nav('create');
- if(planned.capacity>=c.count)generate();else showCapacityDialog();
+ if(busy||submissionJobId)return;const c=clone(state.config),error=sourcePermissionError(state,c)||validate(c);
+ if(error){toast(error);return;}if(c.source?.importStatus!=='pending'&&estimate(state,c,c.count).total>state.balance){toast('积分不足，请减少条数或调整时长');return;}
+ const previous=clone(state);let j;
+ try{j=newJob(state,c,toolsScenario);registerDrama(state,c);persistUI();localStorage.setItem(KEY,JSON.stringify(state));}
+ catch{state=previous;toast('任务提交失败，请稍后重试');return;}
+ submissionJobId=j.id;
+ modal('任务已提交','<div class="submission-message" id="submissionMessage"><span class="submission-icon" aria-hidden="true">✓</span><h3>视频生成中</h3><p>稍后可前往成片管理查看任务进度。</p></div>',button('继续制作','close','secondary')+button('查看任务','submitted-task','primary',`data-job="${esc(j.id)}"`));
+ $('#dialog').classList.add('submission-dialog');runJob(j);
 }
-function generate(){
- const p=state.plan;if(!p)return;
- const error=sourcePermissionError(state,p.config)||validate(p.config);if(error){toast(error);return;}
- const plans=remainingPlans().slice(0,p.config.count);
- if(!plans.length){toast('当前没有可生成的内容，请调整片源或时长');return;}
- if(state.assets[assetKey(p.config)]?.revision!==p.analysisRevision||p.rule.id!==state.activeRule){
-  modal('制作依据已更新','<p>剧情分析或制作标准已更新，请重新提交生成。</p>',button('返回调整','create','primary'));return;
- }
- doGenerate(plans);
-}
-async function doGenerate(plans){const p=state.plan;if(!p||generationPending)return;const error=sourcePermissionError(state,p.config)||validate(p.config);if(error){toast(error);return;}generationPending=true;try{await assertBgmAvailable(p.config);if(state.plan!==p||!editingSessionActive||sourcePermissionError(state,p.config))throw Error('制作配置或权限已变化，请重新生成');const b=createBatch(state,p.config,plans,p.analysisAllocated?0:p.analysisCharge);b.rule=clone(p.rule);b.planSession=p.id;registerDrama(state,p.config);p.analysisAllocated=true;currentBatch=b.id;view='tasks';taskFilters={drama:'all',mode:'all',status:'all'};clearTaskSelection();save();render();b.outputs.forEach((o,i)=>scheduleGenerated(b,o,i,toolsScenario));}catch(e){toast(e.message);}finally{generationPending=false;}}
 
+async function runJob(j){
+ if(runningJobs.has(j.id)||!['analyzing','planning'].includes(j.stage))return;
+ const token=Symbol(j.id);runningJobs.set(j.id,token);const valid=()=>runningJobs.get(j.id)===token&&state.productionJobs.includes(j)&&['analyzing','planning'].includes(j.stage);
+ const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ try{
+  if(sourcePermissionError(state,j.config))throw {kind:'source',message:'所选合集暂无访问权限，请处理片源'};
+  try{await assertBgmAvailable(j.config);}catch(e){throw {kind:'config',message:e.message};}
+  if(!valid())return;
+  if(j.stage==='analyzing'){
+   await wait(1300);if(!valid())return;
+   if(['manual','cloud'].includes(j.config.source.kind)&&j.config.source.simulated===false)throw {kind:'source',message:'片源分析暂不可用，请稍后重试'};
+   if(j.scenario==='analysis-fail')throw {kind:'timeout',message:'片源分析服务暂时异常'};
+   if(sourcePermissionError(state,j.config))throw {kind:'source',message:'合集访问权限已变化'};
+   const info=analysisInfo(state,j.config);
+   if(!j.analysisSettled){if(state.balance<info.pending.length)throw {kind:'config',message:'当前积分不足，请补充后重新制作'};analyze(state,j.config);ensureContentPool(state,j.config);j.analysisCharge=info.pending.length;j.analysisSettled=true;state.balance-=info.pending.length;if(info.pending.length)state.ledger.unshift({id:j.id+'-analysis',jobId:j.id,batch:j.id,type:'新增剧集分析',points:-info.pending.length,at:new Date().toISOString()});}
+   j.stage='planning';refreshWork();
+  }
+  await wait(850);if(!valid())return;
+  const rule=clone(activeRule(state)),cache=state.assets[assetKey(j.config)],planned=planBatch(j.config,rule,cache);
+  const curated=curateCandidates(planned.candidates,j.config,state);planned.candidates=curated.candidates;planned.capacity=curated.candidates.length;planned.excluded+=curated.contentExcluded;
+  j.plan={id:'PLAN-'+j.id,config:clone(j.config),rule,...planned,analysisCharge:j.analysisCharge||0,analysisRevision:cache?.revision};state.plan=j.plan;
+  if(!planned.capacity){j.failedStage='planning';j.stage='failed';j.failureKind='content';j.error=planned.reason||GENERATION_ERROR;j.completedAt=new Date().toISOString();refreshWork();return;}
+  j.stage='waiting';refreshWork();
+  await generateJob(j);
+ }catch(e){if(valid()){j.failedStage=j.stage;j.stage='failed';j.failureKind=e.kind||'timeout';j.error=e.message||GENERATION_ERROR;j.completedAt=new Date().toISOString();refreshWork();}}
+ finally{if(runningJobs.get(j.id)===token)runningJobs.delete(j.id);}
+}
+async function generateJob(j){
+ if(j.stage!=='waiting'||j.batchId||startingBatches.has(j.id))return;startingBatches.add(j.id);
+ try{
+  const error=sourcePermissionError(state,j.config)||validate(j.config);if(error)throw Error(error);
+  await assertBgmAvailable(j.config);if(j.stage!=='waiting'||!state.productionJobs.includes(j))return;
+  const p=j.plan;if(!p||state.assets[assetKey(j.config)]?.revision!==p.analysisRevision)throw Error('片源分析已变化，请调整后重新制作');
+  const plans=p.candidates.slice(0,j.requestedCount);const b=createBatch(state,j.config,plans,j.analysisCharge||0);
+  b.rule=clone(p.rule);b.planSession=p.id;b.productionJobId=j.id;b.taskVersion=j.taskVersion;b.parentTask=j.replacement||null;nameBatch(b,j.number,j.created);j.batchId=b.id;j.stage='generating';currentBatch=b.id;
+  refreshWork();b.outputs.forEach((o,i)=>scheduleGenerated(b,o,i,j.scenario));
+ }catch(e){j.failedStage='generating';j.stage='failed';j.failureKind='config';j.error=e.message;j.completedAt=new Date().toISOString();refreshWork();}
+ finally{startingBatches.delete(j.id);}
+}
+let failureSelection=new Set(),failureRegenerationBusy=false,failureRegenerationError='';
+function showTaskFailures(id){
+ const entry=taskEntries(state).find(j=>j.id===id),b=state.batches.find(b=>b.id===entry?.batchId);if(!b)return;
+ if(!$('#dialog').open||$('#dialog').dataset.failureJob!==id){failureSelection=new Set();failureRegenerationError='';}
+ const items=[...failedOutputs(b),...b.outputs.filter(failedRevision)],eligible=items.filter(o=>regenerationAvailability(o).kind&&!syncUI.locked(b,o));
+ const allowed=new Set(eligible.map(o=>o.id));failureSelection=new Set([...failureSelection].filter(id=>allowed.has(id)));
+ const count=failureSelection.size,all=eligible.length>0&&count===eligible.length;
+ const rows=items.map(o=>{const availability=regenerationAvailability(o),kind=failedRevision(o),reason=kind?(kind==='narration'?'文案应用失败':'重做失败'):failureOf(o).label,extra=availability.reason||(!allowed.has(o.id)?'当前素材同步中':'');return `<tr><td class="failure-select"><input type="checkbox" data-failure-output="${esc(o.id)}" aria-label="选择失败素材 ${esc(o.title)}" ${failureSelection.has(o.id)?'checked':''} ${!allowed.has(o.id)||failureRegenerationBusy?'disabled':''}></td><td class="failure-name">${esc(o.title)}</td><td>${esc(reason)}${extra?`<small>${esc(extra)}</small>`:''}</td></tr>`;}).join('');
+ modal('处理失败',`<div class="failure-table table-wrap" id="failureItems"><table><thead><tr><th class="failure-select"><input id="failureSelectAll" type="checkbox" aria-label="全选可重新生成的失败素材" ${all?'checked':''} ${!eligible.length||failureRegenerationBusy?'disabled':''}></th><th>素材名称</th><th>失败原因</th></tr></thead><tbody>${rows||'<tr><td colspan="3">暂无失败素材</td></tr>'}</tbody></table></div>${failureRegenerationError?`<p class="error-text" role="alert">${esc(failureRegenerationError)}</p>`:''}`,button('返回制作进度','production-progress')+button(failureRegenerationBusy?'提交中…':'重新生成'+(count?'（'+count+'）':''),'regenerate-failures','primary',`data-batch="${b.id}" ${!count||failureRegenerationBusy?'disabled':''}`));
+ $('#dialog').classList.add('failure-dialog');$('#dialog').dataset.failureJob=id;$('#failureSelectAll').indeterminate=count>0&&!all;
+}
+async function regenerateFailures(b){
+ if(failureRegenerationBusy||!failureSelection.size)return;
+ const ids=[...failureSelection],jobId=$('#dialog').dataset.failureJob;failureRegenerationBusy=true;failureRegenerationError='';showTaskFailures(jobId);
+ try{
+  const error=sourcePermissionError(state,b.config);if(error)throw Error(error);await assertBgmAvailable(b.config);
+  const jobs=prepareFailedRegeneration(state,b,ids,o=>syncUI.locked(b,o));
+  for(const [i,id] of jobs.initial.entries())scheduleGenerated(b,b.outputs.find(o=>o.id===id),i,'normal');
+  for(const job of jobs.revisions){const o=b.outputs.find(o=>o.id===job.id);afterWork(()=>{if(o.reworkPending?.operationId!==job.operationId)return;const success=!sourcePermissionError(state,b.config),result=job.kind==='narration'?finishNarrationUpdate(state,b,o,success):finishRework(state,b,o,success);recordFeedback(state,b,o,{kind:job.kind==='narration'?'narration-update-result':'rework-result',reason:result.success?'重新生成完成':'重新生成失败',operationId:job.operationId});refreshWork();},1300);}
+  failureSelection.clear();closeModal();refreshWork();openProgress();toast('已提交 '+ids.length+' 条素材重新生成');
+ }catch(e){failureRegenerationError=e.message;toast(e.message);}
+ finally{failureRegenerationBusy=false;if($('#dialog').open&&$('#dialog').dataset.failureJob===jobId)showTaskFailures(jobId);}
+}
+document.addEventListener('change',e=>{
+ const el=e.target,id=$('#dialog').dataset.failureJob;if(!id||failureRegenerationBusy)return;
+ if(el.dataset.failureOutput){el.checked?failureSelection.add(el.dataset.failureOutput):failureSelection.delete(el.dataset.failureOutput);showTaskFailures(id);}
+ else if(el.id==='failureSelectAll'){const entry=taskEntries(state).find(j=>j.id===id),b=state.batches.find(b=>b.id===entry?.batchId);failureSelection=new Set(el.checked?b.outputs.filter(o=>regenerationAvailability(o).kind&&!syncUI.locked(b,o)).map(o=>o.id):[]);showTaskFailures(id);}
+});
+function showFailure(b,o){const f=failureOf(o);modal('制作失败',`<div id="failureSummary"><h3>${esc(o.title)}</h3><p class="error-text">${esc(f.label)}</p><p>${esc(f.help)}</p>${o.failure?.episode?`<p>问题剧集：第 ${o.failure.episode} 集</p>`:''}<p class="helper">本条未成功制作的积分已释放；其他素材保留。</p></div>`,button('关闭','close')+(o.replacementJobId?button('查看重做任务','view-job','primary',`data-job="${o.replacementJobId}"`):button(f.action,f.retryable?'retry-output':'adjust-failed','primary',`data-batch="${b.id}" data-id="${o.id}"`)));}
+function showJobFailure(j){if(!j)return;const f=FAILURE_TYPES[j.failureKind]||FAILURE_TYPES.timeout;modal('制作失败',`<div id="failureSummary"><h3>${esc(j.sourceTitle)}</h3><p>任务 ${esc(j.number)} · 失败阶段：${esc(JOB_STAGES[j.failedStage||'analyzing'])}</p><p class="error-text">${esc(j.error)}</p><p>${esc(f.help)}</p><p class="helper">尚未创建成片。已完成的有效分析保留。</p></div>`,button('关闭','close')+button(f.retryable?'重试':f.action,f.retryable?'retry-job':'adjust-job','primary',`data-job="${j.id}"`));}
+function adjustFailed(b,ids){const items=b.outputs.filter(o=>ids.includes(o.id)&&o.status==='failed');if(!items.length)return;replacementContext={batchId:b.id,outputIds:items.map(o=>o.id),count:items.length};state.config=normalizeCreationConfig(clone(b.config));state.config.count=items.length;const d=findDrama(state,dramaKey(b.config));if(d)state.config.source=clone(d.config.source);closeModal();save();nav('create');}
+async function retryOutputs(b,items){
+ if(!items.length||items.some(o=>o.status!=='failed'||o.cancelled||o.replacementJobId||!failureOf(o).retryable)){toast('包含需先处理片源或配置的素材，请分别处理');return;}
+ if(items.some(o=>o.retryStarting))return;items.forEach(o=>o.retryStarting=true);
+ try{const error=sourcePermissionError(state,b.config);if(error)throw Error(error);await assertBgmAvailable(b.config);
+  if(items.some(o=>o.status!=='failed'||o.cancelled||o.replacementJobId))throw Error('素材状态已变化，请重新选择');
+  const amount=items.length*b.cost.unit;if(state.balance<amount)throw Error('积分不足，请减少重试数量');
+  state.balance-=amount;b.cost.frozen+=amount;b.status='running';const owner=state.productionJobs.find(j=>j.batchId===b.id);if(owner)delete owner.dismissed;state.ledger.unshift({id:'RE-'+crypto.randomUUID(),batch:b.id,type:'失败项重试冻结',points:-amount,at:new Date().toISOString()});
+  for(const [index,o] of items.entries()){(o.failureHistory||=[]).push({failure:clone(o.failure||{}),at:new Date().toISOString(),attempt:o.attempt});o.status='pending';delete o.failure;delete o.failureDismissed;scheduleGenerated(b,o,index,'normal');}
+  closeModal();clearTaskSelection();refreshWork();openProgress();toast('正在重试 '+items.length+' 条素材');
+ }catch(e){toast(e.message);}finally{items.forEach(o=>delete o.retryStarting);}
+}
+function exportDramaList(){const rows=filteredDramas(state,libraryFilters),cell=x=>'"'+String(x??'').replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"';const text='\ufeff'+[['剧目名称','来源','集数','制作任务','成片数量'],...rows.map(d=>[d.title,sourceName(d),d.totalEpisodes??'—',d.taskCount,d.generatedCount])].map(row=>row.map(cell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='剧目列表.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);toast('已导出 '+rows.length+' 部剧目');}
+
+function downloadMaterials(items){if(!items.length)return;if(items.some(o=>!o.mediaUrl)){toast('成片下载文件尚未就绪');return;}for(const o of items){const a=document.createElement('a');a.href=o.mediaUrl;a.download=o.title+'.mp4';a.click();}}
 function retime(o){let t=0;for(const s of o.segments){const d=s.end-s.start;s.start=Math.round(t*100)/100;t+=d;s.end=Math.round(t*100)/100;}o.duration=Math.round(t*100)/100;}
 function locate(t){const o=output();if(!o)return;playerAt=t;const s=o.segments.find(x=>t>=x.start&&t<x.end)||o.segments.at(-1);if($('#screenText'))$('#screenText').textContent=s.text;if($('#scrubber'))$('#scrubber').value=t;if($('#playerTime'))$('#playerTime').textContent=fmt(t)+' / '+fmt(o.duration);}
 function exportPlans(outputs,b=batch()){if(outputs.some(o=>o.narrationDraft)){toast('请先应用或放弃文案修改，再导出');return;}if(!outputs.length){toast('请先选择素材');return;}const blob=new Blob([JSON.stringify({demo:true,notice:'故事板方案，非真实视频',source:b.config.source,config:b.config,rule:b.rule,analysis:b.analysisSnapshot,outputs},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='mixed-cut-v7-'+b.id+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);toast('已导出包含来源与版本的剪辑方案');}
-document.addEventListener('click',async e=>{const el=e.target.closest('button,[data-action]');if(!el||el.disabled)return;if(el.dataset.nav){nav(el.dataset.nav);return;}const a=el.dataset.action;if(!a)return;const contextBatch=el.dataset.batch;if(contextBatch&&!['review-related','return-related','submit-narration-update','apply-issue','apply-full-issue'].includes(a)){if(!state.batches.some(b=>b.id===contextBatch)){toast('制作任务已失效，请刷新后重试');return;}currentBatch=contextBatch;}if(a.startsWith('local-')){await localUpload.handle(a,el);return;}if(a.startsWith('bgm-')&&a!=='bgm-picker'){await bgmUI.handle(a,el);return;}if(view==='review'&&output()?.narrationDraft&&['confirm-output','confirm-next','confirm-sync','report-issue','repair','rework'].includes(a)){toast('请先应用或放弃文案修改');reviewTab='narration';render();return;}if(a.startsWith('sync-')){if(el.dataset.batch)currentBatch=el.dataset.batch;syncUI.handle(a,el);return;}if(['save-narration','save-full-narration','apply-narration','report-issue','repair','confirm-output','confirm-next','confirm-sync'].includes(a)&&batch()&&output()&&(syncUI.locked(batch(),output())||output().repairing||output().reworkPending)){toast('当前版本同步中或待核实，请先查询同步结果');return;}
+
+function refreshDurationInputs(skipInput=null){
+ const c=state.config,[min,max]=durationRange(c),box=$('#durationConfig');if(!box)return;
+ for(const side of ['Min','Max']){
+  const seconds=c['duration'+side+'Seconds'],unit=c['duration'+side+'Unit']||'m',input=$('#duration'+side),slider=$('#duration'+side+'Slider');
+  if(input&&input!==skipInput)input.value=durationDisplay(seconds,unit);
+  if(slider)slider.value=Number.isFinite(seconds)?Math.max(10,Math.min(1200,seconds)):10;
+ }
+ const track=box.querySelector('.duration-slider');track.style.setProperty('--range-start',((Number(min)||10)-10)/1190*100+'%');track.style.setProperty('--range-end',((Number(max)||10)-10)/1190*100+'%');
+ const error=durationError(c);$('#durationError').textContent=error;$('#durationError').hidden=!error;
+ box.querySelectorAll('[data-action="duration-preset"]').forEach(b=>b.classList.toggle('active',Number(b.dataset.min)===min&&Number(b.dataset.max)===max));
+ refreshCreationPreview();
+}
+document.addEventListener('input',e=>{
+ const el=e.target,side=el.dataset.durationBound||el.dataset.durationSlider;if(!side)return;
+ let value=el.dataset.durationSlider?Number(el.value):durationInput(el.value,state.config['duration'+side+'Unit']);
+ if(el.dataset.durationSlider){const other=state.config[side==='Min'?'durationMaxSeconds':'durationMinSeconds'];if(Number.isFinite(other))value=side==='Min'?Math.min(value,other):Math.max(value,other);}
+ state.config['duration'+side+'Seconds']=value;save();refreshDurationInputs(el);
+});
+document.addEventListener('change',e=>{const side=e.target.dataset.durationUnit;if(!side)return;state.config['duration'+side+'Unit']=e.target.value;const input=$('#duration'+side);input.min=e.target.value==='s'?'10':'0.167';input.max=e.target.value==='s'?'1200':'20';input.step=e.target.value==='s'?'1':'any';save();refreshDurationInputs();});
+
+document.addEventListener('click',async e=>{const el=e.target.closest('button,[data-action]');if(!el||el.disabled)return;if(el.dataset.nav){nav(el.dataset.nav);return;}const a=el.dataset.action;if(!a)return;if(a==='duration-preset'){state.config.durationMinSeconds=Number(el.dataset.min);state.config.durationMaxSeconds=Number(el.dataset.max);state.config.durationMinUnit=Number(el.dataset.min)<60?'s':'m';state.config.durationMaxUnit=Number(el.dataset.max)<60?'s':'m';save();render();return;}if(a==='duration-step'){const side=el.dataset.side,key='duration'+side+'Seconds',unit=state.config['duration'+side+'Unit'],current=state.config[key];state.config[key]=Math.max(10,Math.min(1200,(Number.isFinite(current)?current:side==='Min'?180:300)+Number(el.dataset.step)*(unit==='s'?1:60)));save();refreshDurationInputs();return;}const contextBatch=el.dataset.batch;if(contextBatch&&!['review-related','return-related','submit-narration-update','apply-issue','apply-full-issue'].includes(a)){if(!state.batches.some(b=>b.id===contextBatch)){toast('制作任务已失效，请刷新后重试');return;}currentBatch=contextBatch;}if(a.startsWith('cloud-')){await cloudImport.handle(a,el);return;}if(a.startsWith('local-')){await localUpload.handle(a,el);return;}if(a.startsWith('bgm-')&&a!=='bgm-picker'){await bgmUI.handle(a,el);return;}if(view==='review'&&output()?.narrationDraft&&['confirm-output','confirm-next','confirm-sync','report-issue','repair','rework'].includes(a)){toast('请先应用或放弃文案修改');reviewTab='narration';render();return;}if(a.startsWith('sync-')||['confirm-sync','confirm-output','confirm-selected','confirm-row','apply-confirm','retry-job','retry-output','retry-selected','regenerate-failures','handle-failures','failure-detail','job-error','adjust-failed','adjust-job'].includes(a)){return;}if(a.startsWith('sync-')){if(el.dataset.batch)currentBatch=el.dataset.batch;syncUI.handle(a,el);return;}if(['save-narration','save-full-narration','apply-narration','report-issue','repair','confirm-output','confirm-next','confirm-sync'].includes(a)&&batch()&&output()&&(syncUI.locked(batch(),output())||output().repairing||output().reworkPending)){toast('当前版本同步中或待核实，请先查询同步结果');return;}
  switch(a){
+ case 'submitted-task':openTask(el.dataset.job);break;
+ case 'task-detail':openTask(el.dataset.job);break;
+ case 'back-task-detail':openTask(selectedTaskId);break;
+ case 'task-page':taskPaging.page=Number(el.dataset.page);save();render();break;
+ case 'production-progress':openProgress({preservePage:el.textContent.trim()==='返回制作进度'});break;
+ case 'progress-page':changeProgressPage(el.dataset.page);break;
+ case 'failure-examples':await addTaskExamples();break;
+ case 'progress-example':await addTaskExamples([['progress-hold',10]]);break;
+ case 'finish-progress-example':{for(const j of state.productionJobs.filter(j=>j.demoExampleKind==='progress-hold')){const b=state.batches.find(b=>b.id===j.batchId);if(!b)continue;j.scenario='normal';for(const [i,o] of b.outputs.entries())if(o.status==='pending'&&o.demoHeld){delete o.demoHeld;scheduleGenerated(b,o,i,'normal');}}closeModal();refreshWork();openProgress();break;}
+ case 'handle-failures':showTaskFailures(el.dataset.job);break;
+ case 'view-job-progress':openProgress({jobId:el.dataset.job});document.querySelector('[data-job-id="'+el.dataset.job+'"]')?.scrollIntoView({block:'center'});break;
+ case 'regenerate-failures':{const b=batch();if(b)await regenerateFailures(b);break;}
+ case 'retry-revision':{const b=batch(),o=b?.outputs.find(o=>o.id===el.dataset.id);if(!o)return;const kind=failedRevision(o);closeModal();currentBatch=b.id;currentOutput=o.id;nav('review');if(kind==='narration'){reviewTab='narration';render();openNarrationApply();}else openRework(b.id,o.id);break;}
+ case 'view-job':focusTask(el.dataset.job);break;
+ case 'job-capacity':showCapacityDialog(el.dataset.job);break;
+ case 'job-error':showJobFailure(state.productionJobs.find(j=>j.id===el.dataset.job));break;
+ case 'failure-detail':{const b=batch(),o=b?.outputs.find(o=>o.id===el.dataset.id);if(o)showFailure(b,o);break;}
+ case 'retry-output':{const b=batch(),o=b?.outputs.find(o=>o.id===el.dataset.id);if(o)await retryOutputs(b,[o]);break;}
+ case 'retry-selected':{const b=batch();if(b)await retryOutputs(b,selectedVisibleMaterials());break;}
+ case 'clear-selection':clearTaskSelection();render();break;
+ case 'retry-job':{const j=state.productionJobs.find(j=>j.id===el.dataset.job);if(!j||j.stage!=='failed'||j.batchId)return;delete j.error;j.stage=j.analysisSettled?'planning':'analyzing';j.scenario='normal';delete j.dismissed;closeModal();refreshWork();openProgress();runJob(j);break;}
+ case 'adjust-failed':{const b=batch();if(b)adjustFailed(b,[el.dataset.id]);break;}
+ case 'adjust-job':{const j=state.productionJobs.find(j=>j.id===el.dataset.job);if(!j)return;replacementContext={jobId:j.id,count:j.requestedCount};state.config=normalizeCreationConfig(clone(j.config));closeModal();save();nav('create');break;}
+ case 'cancel-replacement':replacementContext=null;render();break;
+ case 'cancel-job-prompt':case 'dismiss-job-prompt':{const j=taskEntries(state).find(j=>j.id===el.dataset.job);if(!j)return;if(a==='cancel-job-prompt'&&(j.running||j.stage!=='waiting')){toast('制作中的任务不支持取消');return;}modal(a==='cancel-job-prompt'?'取消待确认任务':'不再处理此任务',`<p>${a==='cancel-job-prompt'?'取消此待确认任务，已完成的有效分析保留。':'保留失败记录，将任务移出待处理列表。'}</p>`,button('返回','close')+button('确认','resolve-job','primary',`data-job="${j.id}" data-dismiss="${a==='dismiss-job-prompt'}"`));break;}
+ case 'resolve-job':{const entry=taskEntries(state).find(j=>j.id===el.dataset.job);if(!entry)return;const j=state.productionJobs.find(j=>j.id===entry.id),b=state.batches.find(b=>b.id===entry.batchId),dismiss=el.dataset.dismiss==='true';if(!dismiss&&(entry.running||entry.stage!=='waiting')){toast('任务状态已变化，无法取消');return;}if(j){if(dismiss)j.dismissed=true;else if(!j.batchId){j.stage='cancelled';runningJobs.delete(j.id);}}
+  for(const o of b?.outputs||[]){if(dismiss&&o.status==='failed')o.failureDismissed=true;if(dismiss&&failedRevision(o))o.dismissedRevisionFailures=[...(o.dismissedRevisionFailures||[]),o.lastReworkResult?.operationId,o.lastNarrationResult?.operationId].filter(Boolean);if(!dismiss&&o.status==='pending'){o.attempt=(o.attempt||0)+1;settleOutput(state,b,o,false);o.cancelled=true;}}
+  closeModal();refreshWork();toast(dismiss?'已移出待处理任务':'待确认任务已取消');break;}
+ case 'download-one':{const o=batch()?.outputs.find(o=>o.id===el.dataset.id);if(o)downloadMaterials([o]);break;}
+ case 'download-selected':downloadMaterials(selectedVisibleMaterials());break;
  case 'close':closeModal();break;
  case 'create':case 'assets':case 'tasks':closeModal();nav(a);break;
  case 'mode':{const c=state.config;if(isFullNarration(c))c.fullDuration=c.duration;else c.mixedDuration=c.duration;c.mode=el.dataset.value;c.duration=isFullNarration(c)?c.fullDuration||'':c.mixedDuration||'3-5';state.config=normalizeCreationConfig(c);save();render();break;}
@@ -229,23 +389,26 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'range':state.config.start=1;state.config.end=Number(el.dataset.value);save();render();break;
  case 'speed':state.config.speed=Number(el.dataset.value);save();render();break;
  case 'count':state.config.count=Number(el.dataset.value);save();render();break;
- case 'count-plus':case 'count-minus':state.config.count=Math.max(1,Math.min(20,state.config.count+(a==='count-plus'?1:-1)));save();render();break;
- case 'quote':quoteDialog();break;
+ case 'count-plus':case 'count-minus':state.config.count=Math.max(1,Math.min(20,(Number(state.config.count)||0)+(a==='count-plus'?1:-1)));save();render();break;
+ case 'platform-points':showPoints();break;
  case 'direct':prepare();break;
- case 'generate-available':closeModal();generate();break;
- case 'cancel-analysis':prepare.operation=null;busy=false;closeModal();render();toast('已取消本次模拟分析，未扣积分');break;
- case 'source-picker':openPicker();break;
- case 'add-drama':openPicker();break;
+ case 'generate-available':{const j=state.productionJobs.find(j=>j.id===el.dataset.job);closeModal();if(j)await generateJob(j);break;}
+ case 'new-drama':case 'import-collection':case 'source-picker':cloudImport.open();break;
+
  case 'open-drama':openDramaOutputs(el.dataset.id);break;
  case 'rename-drama':openRenameDrama(el.dataset.id);break;
- case 'save-drama-name':{const name=$('#dramaRename').value.trim();if(!name||Array.from(name).length>80){toast('请输入1–80字的剧目名称');return;}const renamed=renameDrama(state,el.dataset.id,name);if(!renamed){toast('仅本地上传的剧目支持重命名');return;}if(dramaKey(state.config)===el.dataset.id)state.config.source.displayName=name;save();closeModal();render();toast('剧目名称已更新');break;}
+ case 'save-drama-name':{const name=$('#dramaRename').value.trim();if(!name||Array.from(name).length>80){toast('请输入1–80字的剧目名称');return;}const renamed=renameDrama(state,el.dataset.id,name);if(!renamed){toast('剧目已失效，请重新选择');return;}if(dramaKey(state.config)===el.dataset.id)state.config.source.displayName=name;save();closeModal();render();toast('剧目名称已更新');break;}
  case 'make-drama':makeDrama(el.dataset.id);break;
  case 'current-drama':if(isConfiguredSource(state.config)&&!sourcePermissionError(state,state.config))openDramaOutputs(dramaKey(state.config));break;
- case 'clear-drama-filters':libraryFilters={query:'',market:'all',status:'all'};render();break;
- case 'clear-task-filters':taskFilters={drama:'all',mode:'all',status:'all'};clearTaskSelection();render();break;
+ case 'query-dramas':libraryFilters={...libraryDraft};save();render();break;
+ case 'export-dramas':exportDramaList();break;
+ case 'clear-drama-filters':libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};save();render();break;
+ case 'query-tasks':taskPaging.page=1;taskFilters={...taskDraft};clearTaskSelection();save();render();break;
+ case 'clear-task-filters':taskPaging.page=1;taskFilters=defaultTaskFilters();taskDraft={...taskFilters};clearTaskSelection();save();render();break;
+ case 'clear-task-scope':taskFilters.task='all';taskDraft.task='all';clearTaskSelection();save();render();break;
  case 'batch-drama':if(batch())openDramaOutputs(dramaKey(batch().config));break;
  case 'review-item':startReview(el.dataset.batch,el.dataset.id);break;
- case 'picker-market':if(!picker||!canAccessMarket(state,el.dataset.value)){toast('暂无此合集权限');return;}picker.market=el.dataset.value;picker.id=null;picker.query='';renderPicker();break;
+ case 'picker-market':if(!picker||!['domestic','overseas'].includes(el.dataset.value))return;picker.market=el.dataset.value;picker.id=null;picker.query='';renderPicker();break;
  case 'picker-collection':if(!picker||!canAccessMarket(state,picker.market)||!getCollection(picker.market,el.dataset.id)){toast('合集不可用，请重新选择');return;}picker.id=el.dataset.id;picker.start=1;picker.end=Math.min(30,getCollection(picker.market,picker.id).totalEpisodes);renderPicker();break;
  case 'picker-range':if(!picker||!canAccessMarket(state,picker.market))return;picker.start=1;picker.end=Number(el.dataset.value);renderPicker();break;
  case 'apply-source':{if(!picker||!canAccessMarket(state,picker.market)){toast('合集权限已变化，请重新选择');return;}const c={...state.config,source:{kind:'green',market:picker.market,collectionId:picker.id,fileVersion:1},start:Number($('#pickerStart').value),end:Number($('#pickerEnd').value)};const err=validateSourceSelection(c);if(err){toast(err);return;}registerDrama(state,state.config,{touch:false});state.config=c;state.plan=null;registerDrama(state,c);localVideo=null;save();closeModal();if(view==='assets')nav('assets');else render();break;}
@@ -266,7 +429,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'quality-locate':stopPlayer();locate(Number(el.dataset.at));break;
  case 'review-related':{const b=batch(),o=output();if(!b||!o)return;relatedOrigin||={batchId:b.id,outputId:o.id,queue:clone(reviewQueue),playerAt,reviewTab};startReview(el.dataset.batch,el.dataset.id,null,{related:true});break;}
  case 'return-related':{const origin=relatedOrigin,b=state.batches.find(b=>b.id===origin?.batchId),o=b?.outputs.find(o=>o.id===origin?.outputId);if(!o||!reviewable(o)){toast('原素材正在处理，请稍后返回');return;}currentBatch=b.id;currentOutput=o.id;reviewQueue=origin.queue;reviewTab=origin.reviewTab;relatedOrigin=null;nav('review');locate(Math.min(origin.playerAt,o.duration));break;}
- case 'rework':openRework(el.dataset.batch||currentBatch,el.dataset.id||currentOutput,{kind:el.dataset.kind,direction:el.dataset.direction,reason:el.dataset.reason,preferenceId:el.dataset.preference});break;
+ case 'rework':toast('本版仅记录反馈，请下载后调整或新建制作任务');break;
+ case 'legacy-rework':openRework(el.dataset.batch||currentBatch,el.dataset.id||currentOutput,{kind:el.dataset.kind,direction:el.dataset.direction,reason:el.dataset.reason,preferenceId:el.dataset.preference});break;
  case 'rework-kind':reworkDraft.kind=el.dataset.value;showRework();break;
  case 'submit-rework':submitRework();break;
  case 'confirm-output':{const o=output();if(o.confirmed){o.confirmed=false;o.confirmedVersion=null;save();render();}else confirmModal([o]);break;}
@@ -281,17 +445,15 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'submit-narration-update':submitNarrationUpdate();break;
  case 'speak':{const o=output();if(!o)return;const texts=o.narrationDraft||(isFullNarration(batch().config)?o.segments.filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||'']);if(!texts.length||texts.some(text=>!String(text).trim())){toast('请填写完整解说文案后试听');return;}if(!window.speechSynthesis){toast('当前浏览器不支持试听');return;}speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(texts.map(text=>String(text).trim()).join('\n\n'));utterance.rate=Number(normalizeCreationConfig(batch().config).narrationSpeed||1);utterance.lang=batch().config.language==='en'?'en-US':'zh-CN';speechSynthesis.speak(utterance);toast('浏览器语音试听');break;}
  case 'report-issue':{stopPlayer();const b=batch(),o=output();if(!o||!reviewable(o)||syncUI.locked(b,o))return;const full=isFullNarration(b.config);feedbackContext={batchId:b.id,outputId:o.id,version:o.contentVersion};modal(full?'记录全解说问题':'记录当前成片的问题',feedbackForm(b.config,o,playerAt,uiHelpers),button('取消','close')+button('记录问题',full?'apply-full-issue':'apply-issue','primary',`data-batch="${esc(b.id)}" data-id="${esc(o.id)}" data-version="${o.contentVersion}"`));break;}
- case 'issue-scope':{const all=el.dataset.value==='all';$$('[data-action="issue-scope"]').forEach(b=>{const active=b===el;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});$('#issueTimeRange').hidden=all;break;}
- case 'apply-full-issue':case 'apply-issue':{try{const d=feedbackContext,b=state.batches.find(b=>b.id===d?.batchId),o=b?.outputs.find(o=>o.id===d?.outputId);if(!o||currentBatch!==d.batchId||currentOutput!==d.outputId||o.contentVersion!==d.version||!reviewable(o)||syncUI.locked(b,o)||o.narrationDraft){toast('素材状态已变化，请重新打开问题反馈');return;}const scope=$('[data-action="issue-scope"].active').dataset.value,range=feedbackRange({scope,start:$('#issueStart').value,end:$('#issueEnd').value},o.duration),item=recordOutputIssue(o,b.config,$('#issueType').value,range,$('#issueDetail').value);recordFeedback(state,b,o,{kind:item.category==='quality'?'quality':'creative-preference',reason:item.label,...range,detail:item.detail});save();closeModal();render();}catch(error){toast(error.message);}break;}
+ case 'issue-scope':{const all=el.dataset.value==='all';$$('[data-action="issue-scope"]').forEach(b=>{const active=b===el;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});$('#issueTimeRange').hidden=all;$$('#issueTimeRange input').forEach(input=>{input.disabled=all;if(input.id.startsWith('issueStart')){input.required=!all;input.setAttribute('aria-required',String(!all));}});break;}
+ case 'apply-full-issue':case 'apply-issue':{try{const d=feedbackContext,b=state.batches.find(b=>b.id===d?.batchId),o=b?.outputs.find(o=>o.id===d?.outputId);if(!o||currentBatch!==d.batchId||currentOutput!==d.outputId||o.contentVersion!==d.version||!reviewable(o)||syncUI.locked(b,o)||o.narrationDraft){toast('素材状态已变化，请重新打开问题反馈');return;}const scope=$('[data-action="issue-scope"].active').dataset.value,range=feedbackRange({scope,start:scope==='all'?0:readFeedbackTime(document,'issueStart','开始时间',{required:true}),end:scope==='all'?'':readFeedbackTime(document,'issueEnd','结束时间')},o.duration),item=recordOutputIssue(o,b.config,$('#issueType').value,range,$('#issueDetail').value);recordFeedback(state,b,o,{kind:item.category==='quality'?'quality':'creative-preference',reason:item.label,...range,detail:item.detail});save();closeModal();render();}catch(error){toast(error.message);}break;}
  case 'repair':{const b=batch(),o=output();if(sourcePermissionError(state,b.config)){toast(sourcePermissionError(state,b.config));return;}const i=Number(el.dataset.index),issue=o.issues[i];if(o.repairing||o.reworkPending||!issue)return;o.repairing=true;save();render();afterWork(()=>{if(!o.repairing||sourcePermissionError(state,b.config)){o.repairing=false;save();render();return;}o.issues=o.issues.filter(x=>x!==issue);o.repairing=false;o.status=o.issues.length?'issue':'ready';revise(o,'局部修复：'+issue.label);o.quality={status:o.issues.length?'attention':'passed',repaired:true,checkedAt:new Date().toISOString()};recordFeedback(state,b,o,{kind:'remedy',reason:'局部修复完成',at:issue.at,endAt:issue.endAt??null,scope:issue.scope||'segment',detail:issue.label});save();if(['review','assets','tasks'].includes(view))render();toast('局部修复完成，未新增扣费；请重新检查');},900);break;}
- case 'cancel-one-generation':{const b=batch(),o=b?.outputs.find(o=>o.id===el.dataset.id);if(!o||o.status!=='pending')return;o.attempt=(o.attempt||0)+1;settleOutput(state,b,o,false);o.cancelled=true;save();render();toast('已取消这条素材，冻结积分已释放');break;}
- case 'retry-output':{if(el.dataset.batch)currentBatch=el.dataset.batch;const b=batch(),o=b?.outputs.find(o=>o.id===el.dataset.id);if(!o)return;const accessError=sourcePermissionError(state,b.config);if(accessError){toast(accessError);return;}if(o.status!=='failed')return;if(state.balance<b.cost.unit){toast('示例积分不足');return;}state.balance-=b.cost.unit;b.cost.frozen+=b.cost.unit;o.status='pending';delete o.cancelled;b.status='running';state.ledger.unshift({id:'RE-'+Date.now(),batch:b.id,type:'补生成冻结',points:-b.cost.unit,at:new Date().toISOString()});scheduleGenerated(b,o,0,'normal');save();render();break;}
  case 'export-selected':exportPlans(selectedVisibleMaterials());break;
  case 'new-source-version':closeModal();state.config.source.fileVersion=(state.config.source.fileVersion||1)+1;save();render();toast('已切换新的示例原片版本，需要重新分析');break;
- case 'demo-tools':modal('演示设置',`<div class="list-row"><div><b>员工合集权限</b></div><select id="employeeAccessScenario" aria-label="员工合集权限">${SOURCE_ACCESS_SCENARIOS.map(item=>option(item.id,item.label,sourceAccess(state).scenario)).join('')}</select></div><div class="list-row"><div><b>生成场景</b><p>仅影响下一批</p></div><select id="generationScenario" aria-label="生成场景">${option('normal','全部成功',toolsScenario)}${option('partial','最后一条制作失败',toolsScenario)}${option('qc-repair','自动修复后通过',toolsScenario)}${option('qc-attention','一条需人工核对',toolsScenario)}${option('qc-fail','一条检查失败释放积分',toolsScenario)}</select></div><div class="list-row"><div><b>单条返工场景</b><p>不影响其他成片</p></div><select id="reworkScenario" aria-label="单条返工场景">${option('normal','成功生成新版本',state.reworkScenario||'normal')}${option('failed','失败保留原片',state.reworkScenario||'normal')}</select></div><div class="list-row"><div><b>素材同步场景</b><p>同步为本地模拟</p></div><select id="syncScenario" aria-label="素材同步场景">${option('normal','全部成功',state.syncScenario)}${option('partial','最后一条失败',state.syncScenario)}${option('unknown','结果待核实',state.syncScenario)}</select></div><div class="list-row"><div><b>原片版本</b><p>演示重新分析新版本</p></div>${button('更换原片版本','new-source-version','secondary')}</div><div class="list-row"><div><b>手动片源示例</b><p>同步时选择国内或海外</p></div>${button('切换','manual-source','secondary')}</div><div class="list-row"><div><b>重置本版演示</b><p>只清除 V7 本机示例记录</p></div>${button('重置','reset-prompt','text-btn danger')}</div>`,button('保存设置','save-tools','primary'));break;
- case 'save-tools':{const scenario=$('#employeeAccessScenario').value;toolsScenario=$('#generationScenario').value;state.syncScenario=$('#syncScenario').value;state.reworkScenario=$('#reworkScenario').value;applySourceAccess(scenario);save();closeModal();render();toast('演示设置已保存');break;}
+ case 'demo-tools':modal('演示设置',`<div class="list-row"><div><b>制作中样例</b><p>3条成功、7条制作中；保持进度供评审。</p></div><div class="actions">${button(state.productionJobs.some(j=>j.demoExampleKind==='progress-hold')?'查看样例':'添加样例','progress-example','secondary')}${state.batches.some(b=>b.outputs.some(o=>o.status==='pending'&&o.demoHeld))?button('完成样例','finish-progress-example','secondary'):''}</div></div><div class="list-row"><div><b>制作失败样例</b><p>部分失败、全部失败、分析失败；使用示例片源与积分。</p></div>${button(state.productionJobs.some(j=>['partial-three','all-fail','analysis-fail'].includes(j.demoExampleKind))?'查看样例':'添加样例','failure-examples','secondary')}</div><div class="list-row"><div><b>员工合集权限</b></div><select id="employeeAccessScenario" aria-label="员工合集权限">${SOURCE_ACCESS_SCENARIOS.map(item=>option(item.id,item.label,sourceAccess(state).scenario)).join('')}</select></div><div class="list-row"><div><b>生成场景</b><p>仅影响下一批</p></div><select id="generationScenario" aria-label="生成场景">${option('normal','全部成功',toolsScenario)}${option('partial','最后一条制作失败',toolsScenario)}${option('partial-three','最后三条分别失败：超时/片源/配置',toolsScenario)}${option('all-fail','全部制作失败',toolsScenario)}${option('analysis-fail','分析阶段失败（无成片）',toolsScenario)}${option('qc-repair','自动修复后通过',toolsScenario)}${option('qc-attention','一条需人工核对',toolsScenario)}${option('qc-fail','一条检查失败释放积分',toolsScenario)}</select></div><div hidden class="list-row"><div><b>单条返工场景</b><p>不影响其他成片</p></div><select id="reworkScenario" aria-label="单条返工场景">${option('normal','成功生成新版本',state.reworkScenario||'normal')}${option('failed','失败保留原片',state.reworkScenario||'normal')}</select></div><div class="list-row"><div><b>原片版本</b><p>演示重新分析新版本</p></div>${button('更换原片版本','new-source-version','secondary')}</div><div class="list-row"><div><b>手动片源示例</b><p>使用虚构故事板验证制作流程</p></div>${button('切换','manual-source','secondary')}</div><div class="list-row"><div><b>重置本版演示</b><p>只清除 V7 本机示例记录</p></div>${button('重置','reset-prompt','text-btn danger')}</div>`,button('保存设置','save-tools','primary'));break;
+ case 'save-tools':{const scenario=$('#employeeAccessScenario').value;toolsScenario=$('#generationScenario').value;state.reworkScenario=$('#reworkScenario').value;applySourceAccess(scenario);save();closeModal();render();toast('演示设置已保存');break;}
  case 'reset-prompt':modal('重置 V7 演示','<p>清除本机 V7 示例任务、分析、标准与积分记录。其他版本不受影响。</p>',button('取消','close')+button('重置示例','reset','primary'));break;
- case 'reset':genTimers.forEach(clearTimeout);genTimers.clear();prepare.operation=null;busy=false;state=initialState();clearTaskSelection();libraryFilters={query:'',market:'all',status:'all'};taskFilters={drama:'all',mode:'all',status:'all'};syncUI.reset();currentBatch=null;currentOutput=null;reviewQueue=null;confirmFollowup=null;reworkDraft=null;narrationApplyContext=null;relatedOrigin=null;toolsScenario='normal';localVideo=null;save();closeModal();nav('create');break;
+ case 'reset':genTimers.forEach(clearTimeout);genTimers.clear();prepare.operation=null;busy=false;state=initialState();runningJobs.clear();startingBatches.clear();replacementContext=null;clearTaskSelection();libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};taskFilters=defaultTaskFilters();taskDraft={...taskFilters};syncUI.reset();currentBatch=null;currentOutput=null;reviewQueue=null;confirmFollowup=null;reworkDraft=null;narrationApplyContext=null;relatedOrigin=null;toolsScenario='normal';localVideo=null;save();closeModal();nav('create');break;
  }
 });
 function savedNarrationReady(o){return Array.isArray(o?.narrationDraft)&&Array.isArray(o.narrationSavedDraft)&&o.narrationSavedDraft.length>0&&JSON.stringify(o.narrationDraft.map(text=>String(text).trim()))===JSON.stringify(o.narrationSavedDraft)&&o.narrationSavedDraft.every(text=>String(text).trim());}
@@ -323,50 +485,40 @@ function submitNarrationUpdate(){
 }
 function afterWork(fn,ms){const timer=setTimeout(()=>{genTimers.delete(timer);fn();},ms);genTimers.add(timer);return timer;}
 function scheduleGenerated(b,o,index,scenario){
- const attempt=(o.attempt||0)+1;o.attempt=attempt;o.quality={status:'generating'};
- const active=()=>{if(o.attempt!==attempt||o.status!=='pending'||!state.batches.includes(b))return false;if(sourcePermissionError(state,b.config)){o.attempt++;settleOutput(state,b,o,false);o.permissionRevoked=true;save();if(['assets','tasks','review'].includes(view))render();return false;}return true;};
- const paint=()=>{save();if(['assets','tasks','review'].includes(view))render();};
- const finish=(success,status='passed',repaired=false)=>{
-  if(!active())return;
-  settleOutput(state,b,o,success);o.quality={status,repaired,repairType:repaired?'music':null,checkedAt:new Date().toISOString()};
-  if(status==='attention'){o.status='issue';o.issues.push({type:'continuity',label:'剧情衔接需核对',at:Math.round(o.segments[1]?.start||0),detail:'这一处回叙承接需人工核对，可定位检查或申请整条修复。',source:'auto'});}
-  paint();
- };
- afterWork(()=>{
-  if(!active())return;
-  const special=index===b.outputs.length-1||b.outputs.length===1;
-  if(special&&scenario==='partial'){finish(false,'failed');return;}
-  o.quality={status:'checking'};paint();
-  afterWork(()=>{
-   if(!active())return;
-   if(special&&scenario==='qc-fail'){finish(false,'failed');return;}
-   if(special&&scenario==='qc-attention'){finish(true,'attention');return;}
-   if(special&&scenario==='qc-repair'){o.quality={status:'repairing'};paint();afterWork(()=>finish(true,'passed',true),700);return;}
-   finish(true);
-  },650);
- },650+index*200);
+ const attempt=(o.attempt||0)+1;o.attempt=attempt;o.quality={status:'generating'};o.generationScenario=scenario;
+ // Keep an explicit review fixture in progress across reloads; regular jobs still finish.
+ if(scenario==='progress-hold'&&index>=3){o.demoHeld=true;delete o.simulatedDueAt;save();return;}
+ const active=()=>{if(o.attempt!==attempt||o.status!=='pending'||!state.batches.includes(b))return false;if(sourcePermissionError(state,b.config)){o.attempt++;settleOutput(state,b,o,false);o.failure={kind:'source',label:'合集访问权限已变化'};refreshWork();return false;}return true;};
+ const finish=(success,status='passed',kind=null)=>{if(!active())return;settleOutput(state,b,o,success);o.quality={status,checkedAt:new Date().toISOString()};if(!success)o.failure={kind:kind||'timeout',...(kind==='source'?{episode:b.config.start,label:'第 '+b.config.start+' 集无法读取'}:{})};else{delete o.failure;o.generatedAt=new Date().toISOString();}if(status==='attention'){o.status='issue';o.issues.push({type:'continuity',label:'剧情衔接需核对',at:Math.round(o.segments[1]?.start||0),detail:'请核对回叙衔接。',source:'auto'});}refreshWork();};
+ const delay=Math.max(250,(o.simulatedDueAt||Date.now()+2600+index*450)-Date.now());o.simulatedDueAt=Date.now()+delay;save();
+ afterWork(()=>{if(!active())return;const special=index===b.outputs.length-1;
+  if(scenario==='all-fail'){o.autoRetryCount=2;finish(false,'failed','timeout');return;}
+  if(scenario==='partial-three'&&index>=Math.max(0,b.outputs.length-3)){const offset=index-Math.max(0,b.outputs.length-3),kind=['timeout','source','config'][offset];o.autoRetryCount=kind==='timeout'?2:0;finish(false,'failed',kind);return;}
+  if(special&&scenario==='partial'){o.autoRetryCount=2;finish(false,'failed','timeout');return;}
+  if(special&&scenario==='qc-fail'){finish(false,'failed','quality');return;}
+  if(special&&scenario==='qc-attention'){finish(true,'attention');return;}
+  if(special&&scenario==='qc-repair'){o.quality={status:'repairing'};refreshWork();afterWork(()=>finish(true),700);return;}
+  finish(true);
+ },delay);
 }
-function startReview(batchId,outputId,ids=null,{related=false}={}){
+
+function startReview(batchId,outputId){
  const b=state.batches.find(b=>b.id===batchId),o=b?.outputs.find(o=>o.id===outputId);
- if(!o||!reviewable(o)){toast('这条素材正在处理，请稍后检查');return;}
- if(!related)relatedOrigin=null;currentBatch=b.id;currentOutput=o.id;reviewTab='junction';
- const all=ids||b.outputs.filter(reviewable).map(o=>o.id),at=all.indexOf(o.id);reviewQueue={batchId:b.id,ids:[...all.slice(at),...all.slice(0,at)],index:0};
- nav('review');
+ if(!o||!reviewable(o)){toast('这条素材正在处理，请稍后查看');return;}
+ currentBatch=b.id;currentOutput=o.id;videoPreview.open(o);
 }
+
+function reviewDelivery(){return '';}
+
 function reviewQueueBar(b,o){
  if(!reviewQueue||reviewQueue.batchId!==b.id||!reviewQueue.ids.includes(o.id))reviewQueue={batchId:b.id,ids:b.outputs.filter(reviewable).map(o=>o.id),index:0};
  reviewQueue.index=reviewQueue.ids.indexOf(o.id);
- const at=reviewQueue.index,last=at===reviewQueue.ids.length-1,locked=syncUI.locked(b,o)||!reviewable(o),confirmed=o.confirmed&&o.confirmedVersion===o.contentVersion;
- const confirmable=o.status==='ready'&&!o.narrationDraft&&!locked;
- return `<div class="review-queue"><div class="queue-position">检查 ${at+1} / ${reviewQueue.ids.length}<small>当前任务 · 逐条检查</small></div><div class="actions">${button('上一条','review-prev','secondary',at>0?'':'disabled')}${button(last?'完成本轮':'稍后处理，下一条','review-defer','text-btn')}${confirmed?button('取消确认','confirm-output','text-btn',locked||o.narrationDraft?'disabled':''):button('确认并同步','confirm-sync','secondary',confirmable?'':'disabled')}${button(confirmed?(last?'查看检查结果':'已确认，下一条'):(last?'确认并完成':'确认并下一条'),'confirm-next','primary',confirmable?'':'disabled')}</div></div>`;
+ const at=reviewQueue.index,canMove=dir=>reviewQueue.ids.some((id,i)=>(dir<0?i<at:i>at)&&reviewable(b.outputs.find(o=>o.id===id))),locked=syncUI.locked(b,o)||!reviewable(o)||o.narrationDraft,attrs=`data-batch="${b.id}" data-id="${o.id}"`;
+ return `<div class="review-queue"><div class="actions review-navigation">${button('上一条','review-prev','secondary',canMove(-1)?'':'disabled')}${button('下一条','review-next','secondary',canMove(1)?'':'disabled')}</div><div class="actions review-delivery">${button('下载','download-one','secondary',attrs+(!reviewable(o)?' disabled':''))}</div></div>`;
 }
 function moveReview(delta){
- if(!reviewQueue)return;
- const b=batch();let at=reviewQueue.index+delta;
+ if(!reviewQueue)return;const b=batch();let at=reviewQueue.index+delta;
  while(at>=0&&at<reviewQueue.ids.length){const o=b.outputs.find(o=>o.id===reviewQueue.ids[at]);if(o&&reviewable(o)){reviewQueue.index=at;currentOutput=o.id;reviewTab='junction';nav('review');return;}at+=delta;}
- if(delta<0)return;
- const items=reviewQueue.ids.map(id=>b.outputs.find(o=>o.id===id)).filter(Boolean),confirmed=items.filter(o=>o.confirmed&&o.confirmedVersion===o.contentVersion).length;
- modal('本轮检查完成',`<div id="reviewCompletion"><h3>本轮检查已结束</h3><div class="completion-numbers"><div><b>${items.length}</b><span>本轮素材</span></div><div><b>${confirmed}</b><span>已确认</span></div><div><b>${items.length-confirmed}</b><span>待处理</span></div></div></div>`,button('返回成片管理','back-tasks')+(items.length>confirmed?button('查看待处理素材','review-remaining','primary'):''));
 }
 function openRework(batchId,outputId,options={}){
  const b=state.batches.find(b=>b.id===batchId),o=b?.outputs.find(o=>o.id===outputId);
@@ -391,20 +543,25 @@ function submitRework(){
  }catch(e){toast(e.message);}
 }
 
-function confirmModal(items,followup=null){confirmFollowup=followup;if(items.some(o=>o.narrationDraft)){toast('所选素材有未应用的文案，请先应用或放弃修改');return;}if(!items.length||items.some(o=>o.status!=='ready'||!reviewable(o)||syncUI.locked(batch(),o))){toast('请选择已生成且无待处理问题的当前版本');return;}modal('确认 '+items.length+' 条素材可用',`<p>${isFullNarration(batch().config)?'请检查全文解说是否完整、文案与画面是否对应、配音时长和字幕是否合适，原片人声是否关闭。':'请检查剧情是否连贯、对白是否完整、字幕与 BGM 是否合适。'}系统检查通过不等于已经人工验收。</p><label class="check-confirm"><input id="confirmCheck" type="checkbox">已检查所选素材，确认当前版本可以使用</label>`,button('返回检查','close')+button(followup==='sync'?'确认并填写上传信息':followup==='next'?'确认并继续':'确认可用','apply-confirm','primary',`data-batch="${esc(batch().id)}" data-versions="${esc(JSON.stringify(items.map(o=>({id:o.id,version:o.contentVersion}))))}"`));}
-document.addEventListener('change',e=>{const el=e.target;if(el.id==='issueType'){const item=ISSUE_TYPES.find(t=>t.id===el.value);$('#issueCategoryHint').textContent=item?.category==='creative'?'创作调整将在重做前确认费用。':'质量问题按修复流程处理。';return;}if(el.id==='reworkFeedback'&&reworkDraft){reworkDraft.reason=el.value;return;}if(el.name==='reworkDirection'&&reworkDraft){reworkDraft.direction=el.value;return;}const filters={dramaMarket:[libraryFilters,'market'],taskDrama:[taskFilters,'drama'],taskMode:[taskFilters,'mode'],taskStatus:[taskFilters,'status']};if(filters[el.id]){filters[el.id][0][filters[el.id][1]]=el.value;if(el.id.startsWith('task'))clearTaskSelection();render();return;}if(el.dataset.config){const key=el.dataset.config;if(key==='titleText')return;if(key==='bgm'&&el.checked){render();openBgmPicker();return;}if(key==='outputSpeed')applyOutputSpeed(state.config,Number(el.value));else if(key==='independentNarrationSpeed'){state.config.independentNarrationSpeed=el.checked;if(!el.checked)state.config.narrationSpeed=state.config.outputSpeed;else state.config.narrationSpeed=state.config.narrationSpeedOverride||1;}else if(key==='narrationSpeed'){state.config.narrationSpeedOverride=Number(el.value);state.config.narrationSpeed=Number(el.value);}else state.config[key]=el.type==='checkbox'?el.checked:['start','end','count','speed','narrationSpeed'].includes(key)?Number(el.value):el.value;state.config=normalizeCreationConfig(state.config);save();if(!$('#dialog').open){if(el.type==='number'){refreshCreationPreview();return;}render();if(key==='title'&&state.config.title)$('[data-config="titleText"]')?.focus();}}if(el.dataset.output){const b=state.batches.find(b=>b.id===el.dataset.batch),o=b?.outputs.find(o=>o.id===el.dataset.output);if(!o)return;if(el.checked&&canSelectMaterial(b,o)){const selected=selectTaskContext(b.id,{notify:true});selected.add(o.id);}else if(selectionBatchId===b.id)selectionFor(b.id).delete(o.id);render();}if(el.id==='pickerStart')picker.start=Number(el.value);if(el.id==='pickerEnd')picker.end=Number(el.value);if(el.id==='localFile'){localUpload.add([...el.files]);}});
-document.addEventListener('input',e=>{if(e.target.id==='dramaRename'){if(Array.from(e.target.value).length>80)e.target.value=Array.from(e.target.value).slice(0,80).join('');return;}if(e.target.id==='reworkReason'&&reworkDraft){reworkDraft.instruction=e.target.value;return;}if(e.target.id==='narrationEdit'||e.target.hasAttribute('data-full-narration')){const o=output();if(!o||o.reworkPending||o.repairing||syncUI.locked(batch(),o))return;const hadDraft=Boolean(o.narrationDraft),full=isFullNarration(batch().config),texts=full?$$('[data-full-narration]').map(el=>el.value):[e.target.value],original=full?o.segments.filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||''];if(texts.some((text,index)=>String(text).trim()!==String(original[index]||'').trim()))o.narrationDraft=texts;else {delete o.narrationDraft;delete o.narrationSavedDraft;delete o.narrationDraftSavedAt;}save();const notice=$('#narrationDraftNotice');if(notice)notice.outerHTML=narrationDraftNotice(o);const actions=$('#narrationScript .narration-actions');if(actions)actions.outerHTML=narrationActions(batch(),o,false,uiHelpers);if(hadDraft!==Boolean(o.narrationDraft)){refreshSyncState();$$('.page-head [data-action="rework"],.player-feedback [data-action="report-issue"],#feedbackRecords [data-action="repair"],#feedbackRecords [data-action="rework"]').forEach(button=>button.disabled=Boolean(o.narrationDraft));}return;}if(e.target.id==='dramaSearch'){const pos=e.target.selectionStart;libraryFilters.query=e.target.value;render();$('#dramaSearch').focus();$('#dramaSearch').setSelectionRange(pos,pos);return;}if(e.target.dataset.config&&(e.target.type==='number'||e.target.dataset.config==='titleText')){state.config[e.target.dataset.config]=e.target.type==='number'?Number(e.target.value):e.target.value;save();refreshCreationPreview();}if(e.target.id==='collectionSearch'){const pos=e.target.selectionStart;picker.query=e.target.value;renderPicker();$('#collectionSearch').focus();$('#collectionSearch').setSelectionRange(pos,pos);}if(e.target.id==='scrubber'){stopPlayer();locate(Number(e.target.value));}});
-// An interrupted local simulation releases pending work, never fabricates success.
-for(const b of state.batches){for(const o of b.outputs){if(o.status==='pending')settleOutput(state,b,o,false);if(o.repairing)o.repairing=false;if(o.reworkPending)finishRework(state,b,o,false);} }
+function confirmModal(items,followup=null){confirmFollowup=followup;if(items.some(o=>o.narrationDraft)){toast('所选素材有未应用的文案，请先应用或放弃修改');return;}if(!items.length||items.some(o=>o.status!=='ready'||!reviewable(o)||syncUI.locked(batch(),o))){toast('请选择已生成且无待处理问题的当前版本');return;}modal('确认 '+items.length+' 条素材可用',`<label class="check-confirm"><input id="confirmCheck" type="checkbox">已检查所选素材，确认当前版本可以使用</label>`,button('返回检查','close')+button(followup==='sync'?'确认并填写上传信息':followup==='next'?'确认并继续':'确认可用','apply-confirm','primary',`data-batch="${esc(batch().id)}" data-versions="${esc(JSON.stringify(items.map(o=>({id:o.id,version:o.contentVersion}))))}"`));}
+document.addEventListener('keydown',e=>{if(e.target.id==='progressPageNumber'&&e.key==='Enter'){e.preventDefault();changeProgressPage(e.target.value);}});
+document.addEventListener('change',e=>{const el=e.target;if(el.id?.startsWith('cloud')){cloudImport.input(el);return;}if(el.id==='taskPageSize'){taskPaging={page:1,pageSize:Number(el.value)};save();render();return;}if(el.id==='progressPageSize'){progressPaging={page:1,pageSize:Number(el.value)};renderProgress({scrollTop:true});return;}if(el.id==='progressPageNumber'){changeProgressPage(el.value);return;}if(el.id==='issueType'){const item=ISSUE_TYPES.find(t=>t.id===el.value);$('#issueCategoryHint').textContent=item?.category==='creative'?'提交后记录该素材的调整建议。':'提交后记录该素材的问题。';return;}if(el.id==='reworkFeedback'&&reworkDraft){reworkDraft.reason=el.value;return;}if(el.name==='reworkDirection'&&reworkDraft){reworkDraft.direction=el.value;return;}const filters={dramaMarket:[libraryDraft,'market'],taskDrama:[taskDraft,'drama'],taskMode:[taskDraft,'mode'],taskStatus:[taskDraft,'status']};if(filters[el.id]){filters[el.id][0][filters[el.id][1]]=el.value;save();return;}if(el.dataset.config){const key=el.dataset.config;if(key==='titleText')return;if(key==='bgm'&&el.checked){render();openBgmPicker();return;}if(key==='outputSpeed')applyOutputSpeed(state.config,el.value===''?null:Number(el.value));else if(key==='independentNarrationSpeed'){state.config.independentNarrationSpeed=el.checked;if(!el.checked)state.config.narrationSpeed=state.config.outputSpeed;else state.config.narrationSpeed=state.config.narrationSpeedOverride||1;}else if(key==='narrationSpeed'){state.config.narrationSpeedOverride=Number(el.value);state.config.narrationSpeed=Number(el.value);}else state.config[key]=el.type==='checkbox'?el.checked:['start','end','count','speed','narrationSpeed','narrationSeconds'].includes(key)?Number(el.value):el.value;state.config=normalizeCreationConfig(state.config);save();if(!$('#dialog').open){if(el.type==='number'){refreshCreationPreview();return;}render();if(key==='title'&&state.config.title)$('[data-config="titleText"]')?.focus();}}if(el.dataset.output){const b=state.batches.find(b=>b.id===el.dataset.batch),o=b?.outputs.find(o=>o.id===el.dataset.output);if(!o)return;if(el.checked&&canSelectMaterial(b,o)){const selected=selectTaskContext(b.id,{notify:true});selected.add(o.id);}else if(selectionBatchId===b.id)selectionFor(b.id).delete(o.id);render();}if(el.id==='pickerStart')picker.start=Number(el.value);if(el.id==='pickerEnd')picker.end=Number(el.value);if(el.id==='localFile'){localUpload.add([...el.files]);}});
+document.addEventListener('input',e=>{if(e.target.id?.startsWith('cloud')){cloudImport.input(e.target);return;}if(e.target.id==='dramaRename'){if(Array.from(e.target.value).length>80)e.target.value=Array.from(e.target.value).slice(0,80).join('');return;}if(e.target.id==='reworkReason'&&reworkDraft){reworkDraft.instruction=e.target.value;return;}if(e.target.id==='narrationEdit'||e.target.hasAttribute('data-full-narration')){const o=output();if(!o||o.reworkPending||o.repairing||syncUI.locked(batch(),o))return;const hadDraft=Boolean(o.narrationDraft),full=isFullNarration(batch().config),texts=full?$$('[data-full-narration]').map(el=>el.value):[e.target.value],original=full?o.segments.filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||''];if(texts.some((text,index)=>String(text).trim()!==String(original[index]||'').trim()))o.narrationDraft=texts;else {delete o.narrationDraft;delete o.narrationSavedDraft;delete o.narrationDraftSavedAt;}save();const notice=$('#narrationDraftNotice');if(notice)notice.outerHTML=narrationDraftNotice(o);const actions=$('#narrationScript .narration-actions');if(actions)actions.outerHTML=narrationActions(batch(),o,false,uiHelpers);if(hadDraft!==Boolean(o.narrationDraft)){refreshSyncState();$$('.review-queue [data-action="rework"],.player-feedback [data-action="report-issue"],#feedbackRecords [data-action="repair"],#feedbackRecords [data-action="rework"]').forEach(button=>button.disabled=Boolean(o.narrationDraft));}return;}if(e.target.id==='dramaSearch'){libraryDraft.query=e.target.value;save();return;}if(e.target.dataset.config&&(e.target.type==='number'||e.target.dataset.config==='titleText')){state.config[e.target.dataset.config]=e.target.type==='number'?Number(e.target.value):e.target.value;save();refreshCreationPreview();}if(e.target.id==='collectionSearch'){const pos=e.target.selectionStart;picker.query=e.target.value;renderPicker();$('#collectionSearch').focus();$('#collectionSearch').setSelectionRange(pos,pos);}if(e.target.id==='scrubber'){stopPlayer();locate(Number(e.target.value));}});
+// Restore durable simulated job records. Real services run independently of the page.
+for(const b of state.batches){for(const o of b.outputs){if(o.repairing)o.repairing=false;if(o.reworkPending)finishRework(state,b,o,false);} }
 save();render();
+for(const j of state.productionJobs)if(['analyzing','planning'].includes(j.stage))runJob(j);
+for(const b of state.batches)for(const [index,o] of b.outputs.entries())if(o.status==='pending')scheduleGenerated(b,o,index,o.generationScenario||'normal');
 // Optional agent access uses the same local demo actions as the visible UI.
 if(document.modelContext?.registerTool){
  const lifecycle=new AbortController();
  const registrations=[
   {name:'inspect_mixed_cut_demo',title:'查看混剪演示状态',description:'Read the current local fictional demo configuration, planned count and example balance; does not call AI or external systems.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true},execute:()=>({view,config:clone(state.config),balance:state.balance,plans:state.plan?.candidates.length||0,batches:state.batches.length,simulated:true})},
-  {name:'configure_and_generate_mixed_cut_demo',title:'配置并生成混剪演示素材',description:'Configure and submit the same generation flow as the UI. Automatically analyzes and generates fictional outputs, deducting example points; insufficient content opens quantity confirmation. Does not call AI, spend money, or sync outputs.',inputSchema:{type:'object',properties:{mode:{type:'string',enum:['highlight','narrated']},start:{type:'integer',minimum:1},end:{type:'integer',minimum:1,maximum:40},count:{type:'integer',minimum:1,maximum:20},narrationStructure:{type:'string',enum:['mixed','full']},outputSpeed:{type:'number',enum:[0.8,1,1.1,1.2,1.5]},independentNarrationSpeed:{type:'boolean'},narrationSpeed:{type:'number',enum:[0.8,1,1.1,1.2,1.5]},duration:{type:'string',enum:Object.keys(RANGES)}},required:['mode','start','end','count'],additionalProperties:false},annotations:{readOnlyHint:false},execute:async input=>{if(!editingSessionActive)throw Error('Editor session has moved');if(busy)throw Error('分析进行中');if(localVideo)throw Error('本地文件仅预览，请先切换虚构片源');if(!input||typeof input!=='object'||Object.keys(input).some(k=>!['mode','start','end','count','narrationStructure','outputSpeed','independentNarrationSpeed','narrationSpeed','duration'].includes(k)))throw Error('无效配置');const c=normalizeCreationConfig({...state.config,...input,...(input.narrationSpeed!==undefined?{narrationSpeedOverride:input.narrationSpeed}:{})});const error=sourcePermissionError(state,c)||validate(c);if(error)throw Error(error);state.config=c;save();await prepare();return {view,candidates:state.plan?.candidates.length||0,balance:state.balance,simulated:true};}}
+  {name:'configure_and_generate_mixed_cut_demo',title:'配置并生成混剪演示素材',description:'Configure and submit the same generation flow as the UI. Automatically analyzes and generates fictional outputs, deducting example points; partial output availability is reflected in task status. Does not call AI, spend money, or sync outputs.',inputSchema:{type:'object',properties:{mode:{type:'string',enum:['highlight']},start:{type:'integer',minimum:1},end:{type:'integer',minimum:1,maximum:40},count:{type:'integer',minimum:1,maximum:20},outputSpeed:{type:'number',enum:[0.8,1,1.1,1.2,1.5]},durationMinSeconds:{type:'integer',minimum:10,maximum:1200},durationMaxSeconds:{type:'integer',minimum:10,maximum:1200}},required:['mode','start','end','count'],additionalProperties:false},annotations:{readOnlyHint:false},execute:async input=>{if(!editingSessionActive)throw Error('Editor session has moved');if(busy)throw Error('分析进行中');if(localVideo)throw Error('本地文件仅预览，请先切换虚构片源');if(!input||typeof input!=='object'||Object.keys(input).some(k=>!['mode','start','end','count','narrationStructure','outputSpeed','independentNarrationSpeed','narrationSpeed','durationMinSeconds','durationMaxSeconds'].includes(k)))throw Error('无效配置');const c=normalizeCreationConfig({...state.config,...input,...(input.narrationSpeed!==undefined?{narrationSpeedOverride:input.narrationSpeed}:{})});const error=sourcePermissionError(state,c)||validate(c);if(error)throw Error(error);state.config=c;save();await prepare();return {view,candidates:state.plan?.candidates.length||0,balance:state.balance,simulated:true};}}
  ];for(const tool of registrations){try{Promise.resolve(document.modelContext.registerTool(tool,{signal:lifecycle.signal})).catch(()=>{});}catch{}}
  window.addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
 }
 
 document.addEventListener('toggle',event=>{if(event.target.id==='narrationScript')reviewTab=event.target.open?'narration':'junction';},true);
+
+document.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.id==='dramaSearch'){libraryFilters={...libraryDraft};save();render();}});

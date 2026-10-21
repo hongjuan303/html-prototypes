@@ -1,4 +1,4 @@
-import {platformAccount} from './platform-context.js?v=20261009-update11';
+import {platformAccount} from './platform-context.js?v=20261021-update14s';
 
 // The catalog represents the platform material library in this prototype.
 // Audition files are original, synthesized demonstration music, not production catalog assets.
