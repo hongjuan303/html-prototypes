@@ -36,21 +36,28 @@ window.KSRecords = (() => {
     if(action==='retry')return r.stage==='failed'?'':'当前没有失败分集';
     if(action==='offline')return r.saleState==='online'?'':'只有已上架短剧可下架';
     if(action==='schedule-offline')return r.saleState!=='online'?'只有已上架短剧可预约下架':!r.miniId?'请先同步快手短剧ID':'';
+    if(action==='edit'){
+      // Creating and submitting are internal phases of the unfinished upload flow.
+      if(['queued','creating','uploading','submitting'].includes(r.stage))return '待上传或上传中的记录暂不可编辑';
+      if(['pending','publishing','approved'].includes(r.audit))return '审核中、发布中或发布成功的记录不可编辑';
+      return '';
+    }
     if(r.platformRestricted||r.saleState==='forced_offline')return '短剧被平台强制下架，请先处理平台处置原因';
     if(['queued','creating','uploading','submitting'].includes(r.stage))return '当前任务处理中，请完成后操作';
-    if(action==='edit'){
-      if(r.stage==='failed')return '请先重试失败的上传任务';
-      if(r.stage!=='complete'||r.uploaded!==r.total)return '请先完成全部分集上传';
-      if(!['unsubmitted','rejected'].includes(r.audit))return '仅待提交或审核未通过的记录可编辑';
-      if(r.saleState!=='offline'||r.schedule.status==='pending')return '请先下架并取消预约';
-      return r.config?'':'历史记录缺少完整资料，请先同步平台资料';
-    }
     if(r.stage!=='complete'||r.uploaded!==r.total||!r.miniId)return '请先完成全部分集上传';
     if(r.audit!=='approved')return '审核状态为发布成功后才可上架或预约上架';
     if(r.saleState!=='offline')return '短剧已上架';
     if(['modify-schedule','cancel-schedule'].includes(action))return r.schedule.status==='pending'?'':'当前没有待执行预约';
     if(['online','schedule'].includes(action)&&r.schedule.status==='pending')return '已有待执行预约，请修改或取消预约';
     return '';
+  }
+  function saveEditedRecord(r,config,{valid=true,time=Date.now(),actor='运营人员'}={}){
+    const error=reason(r,'edit',valid);if(error)return {error,resume:false};
+    const d=JSON.parse(JSON.stringify(config)),resume=r.stage==='failed'||r.uploaded<r.total||!r.miniId;
+    Object.assign(r,{title:d.title,cover:d.cover,coverUrl:d.coverUrl||'',type:d.type,sale:d.sale,config:d,audit:resume?'unsubmitted':'pending',auditReason:'',fail:'',uploadReason:'',failedSeq:[],stage:resume?'queued':'complete'});
+    if(resume)r.attempt=(r.attempt||0)+1;
+    touch(r,resume?'修改资料并继续上传':'修改资料并提交审核',actor,time);
+    return {error:'',resume};
   }
   function touch(r,action,actor='运营人员',time=Date.now(),detail=''){
     r.modifiedAt=beijing(time);r.modifiedBy=actor;
@@ -97,5 +104,5 @@ window.KSRecords = (() => {
     r.logs.unshift({time:beijing(time),actor:'系统',action:failure?'预约下架失败':'预约下架成功',detail:failure||schedule.time});
     return true;
   }
-  return {selling,schedules,defaultFilters,beijing,parseTime,normalize,matches,reason,touch,apply,executeDue,executeOfflineDue};
+  return {selling,schedules,defaultFilters,beijing,parseTime,normalize,matches,reason,saveEditedRecord,touch,apply,executeDue,executeOfflineDue};
 })();

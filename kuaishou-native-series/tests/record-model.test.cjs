@@ -21,7 +21,24 @@ for(const patch of [{audit:'pending'},{audit:'publishing'},{platformRestricted:t
   r=fresh();R.apply(r,'schedule',{time,value:'2026-10-19T12:01:00'});Object.assign(r,patch);
   assert.equal(R.executeDue(r,true,time+60000),true);assert.equal(r.schedule.status,'failed');assert.notEqual(r.saleState,'online');
 }
-r=fresh();assert.ok(R.reason(r,'edit'));r.audit='rejected';assert.equal(R.reason(r,'edit'),'');r.audit='unsubmitted';assert.equal(R.reason(r,'edit'),'');assert.ok(R.reason(r,'edit',false));
+// Edit eligibility depends only on upload stage, audit status and account authorization.
+for(const stage of Object.keys(M.stages))for(const audit of Object.keys(M.audits))for(const valid of [true,false])for(const saleState of ['online','offline']){
+  r=Object.assign(fresh(),{stage,audit,saleState,uploaded:1,platformRestricted:true,config:null,schedule:{status:'pending',time:'2026-12-01 12:00:00',reason:''}});
+  const allowed=valid&&!['queued','creating','uploading','submitting'].includes(stage)&&!['pending','publishing','approved'].includes(audit);
+  assert.equal(R.reason(r,'edit',valid)==='',allowed,`${stage}/${audit}/${valid}/${saleState}`);
+}
+// Saving edits to failed/incomplete records resumes uploads without inventing completion.
+r=Object.assign(fresh(),{stage:'failed',audit:'unsubmitted',uploaded:12,saleState:'online',platformRestricted:true,failedSeq:[13],fail:'原失败',uploadReason:'原失败',schedule:{status:'pending',time:'2026-12-01 12:00:00',reason:''}});
+const stable=JSON.stringify({id:r.id,miniId:r.miniId,uploaded:r.uploaded,total:r.total,saleState:r.saleState,schedule:r.schedule,date:r.date}),edited=M.clone(r.config);edited.title='编辑后标题';
+assert.equal(R.saveEditedRecord(r,edited,{time}).resume,true);assert.equal(r.stage,'queued');assert.equal(r.audit,'unsubmitted');assert.equal(r.title,'编辑后标题');
+assert.equal(JSON.stringify({id:r.id,miniId:r.miniId,uploaded:r.uploaded,total:r.total,saleState:r.saleState,schedule:r.schedule,date:r.date}),stable);assert.equal(r.uploadReason,'');assert.equal(r.failedSeq.length,0);
+edited.title='外部修改';assert.equal(r.config.title,'编辑后标题');
+r=Object.assign(fresh(),{audit:'rejected',saleState:'online'});assert.equal(R.saveEditedRecord(r,r.config,{time}).resume,false);assert.equal(r.audit,'pending');assert.equal(r.saleState,'online');assert.equal(r.stage,'complete');
+for(const patch of [{audit:'pending'},{audit:'publishing'},{audit:'approved'},{audit:'unsubmitted',stage:'uploading'}]){
+  r=Object.assign(fresh(),patch);const before=JSON.stringify(r);assert.ok(R.saveEditedRecord(r,r.config,{time}).error);assert.equal(JSON.stringify(r),before);
+}
+r=Object.assign(fresh(),{audit:'rejected'});const unauthorized=JSON.stringify(r);assert.ok(R.saveEditedRecord(r,r.config,{valid:false,time}).error);assert.equal(JSON.stringify(r),unauthorized);
+
 r=fresh();r.title='快手渠道新标题';r.collectionName='原始绿台合集';const f=R.defaultFilters();assert.equal(R.matches(r,{...f,title:'渠道',collectionName:'绿台',miniId:r.miniId,start:r.date.slice(0,10),end:r.date.slice(0,10)}),true);assert.equal(R.matches(r,{...f,collectionName:'渠道'}),false);assert.equal(R.matches(r,{...f,miniId:'KS-DEMO'}),false);
 for(const seed of D.records){r=R.normalize(M.clone(seed),D.collections,D.records);assert.deepEqual(Array.from(M.validate(r.config)),[],seed.title+' fixture must have editable complete metadata');}
 const old={id:'old',collectionId:D.collections[0].id,title:'渠道改名',date:'2026-10-16 00:00',audit:'pending',stage:'complete'};R.normalize(old,D.collections,D.records);assert.equal(old.collectionName,'长街有月');assert.equal(old.modifiedBy,'');assert.equal(old.title,'渠道改名');
