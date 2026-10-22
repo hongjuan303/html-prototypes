@@ -1,4 +1,4 @@
-import {REVIEW_NOTES} from './review-notes.js?v=20261021-update14s';
+import {REVIEW_NOTES} from './review-notes.js?v=20261022-update15e';
 const frame=document.querySelector('#prototypeFrame'),stage=document.querySelector('#reviewStage'),scroller=document.querySelector('#notesScroller'),content=document.querySelector('#notesContent');
 const toolboxEntry=new URLSearchParams(location.search).get('entry')==='toolbox';
 let context='',contextOwner='',available=[],focused=null,focusTimer;

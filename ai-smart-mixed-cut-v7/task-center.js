@@ -1,12 +1,12 @@
-import {taskEntries} from './production-tasks.js?v=20261021-update14s';
-import {dramaKey} from './dramas.js?v=20261021-update14s';
-import {productionTime} from './material-identity.js?v=20261021-update14s';
-import {modeLabel,normalizeCreationConfig} from './engine.js?v=20261021-update14s';
+import {taskEntries} from './production-tasks.js?v=20261022-update15e';
+import {dramaKey} from './dramas.js?v=20261022-update15e';
+import {productionTime} from './material-identity.js?v=20261022-update15e';
+import {modeLabel,normalizeCreationConfig} from './engine.js?v=20261022-update15e';
 
 export const TASK_STATUS={running:'剪辑中',done:'已完成',partial:'部分失败',failed:'已失败'};
 export const GENERATION_ERROR='生成异常，请联系技术排查';
 export const taskFailureMessage=j=>j.status==='failed'?GENERATION_ERROR:'部分生成异常，请联系技术排查';
-export function emptyCreationConfig(){return normalizeCreationConfig({source:{kind:'empty'},start:null,end:null,count:null,outputSpeed:null,speed:null,durationMinSeconds:null,durationMaxSeconds:null,bgm:false,bgmSource:'smart',bgmTrack:'auto',bgmLocal:null,title:false,titleText:''});}
+export function emptyCreationConfig(){return normalizeCreationConfig({source:{kind:'empty'},start:null,end:null,count:null,outputSpeed:null,speed:null,durationMinSeconds:null,durationMaxSeconds:null,bgm:false,bgmSource:'library',bgmTrack:null,bgmLocal:null,title:false,titleText:''});}
 export function ensureTaskVersions(state){
  const counters=new Map();
  for(const j of [...taskEntries(state)].reverse()){

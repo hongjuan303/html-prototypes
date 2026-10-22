@@ -1,10 +1,10 @@
 /* Drama library projection. Only registerDrama writes to state.dramas;
  * listDramas/findDrama are pure reads and never touch the wallet or catalogs.
  */
-import {isConfiguredSource} from './source-access.js?v=20261021-update14s';
-import {assetKey, clone} from './engine.js?v=20261021-update14s';
-import {resolveSource} from './sources.js?v=20261021-update14s';
-import {getOutputSync, outputVersion} from './sync-model.js?v=20261021-update14s';
+import {isConfiguredSource} from './source-access.js?v=20261022-update15e';
+import {assetKey, clone} from './engine.js?v=20261022-update15e';
+import {resolveSource} from './sources.js?v=20261022-update15e';
+import {getOutputSync, outputVersion} from './sync-model.js?v=20261022-update15e';
 
 const array = value => Array.isArray(value) ? value : [];
 const stamp = value => typeof value === 'string' && Number.isFinite(Date.parse(value)) ? value : '';

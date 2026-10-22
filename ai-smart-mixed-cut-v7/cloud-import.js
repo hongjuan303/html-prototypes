@@ -10,7 +10,7 @@ export function cloudRangeError(start,end){
 }
 export function createCloudImport({modal,closeModal,button,esc,onImport,toast,localUpload}){
  let draft=null,localOpened=false;
- const required='<span class="required">*</span>';
+ const required='<span class="required" aria-hidden="true">*</span>';
  function formValues(){
   if(!draft)return;
   draft.title=document.querySelector('#cloudTitle')?.value??draft.title;
@@ -23,8 +23,8 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
  function commonHeader(){
   const disabled=localUpload.isBusy()?'disabled':'';
   return `<div class="import-mode-tabs" id="importModes" role="tablist" aria-label="导入方式">${[['cloud','网盘导入'],['local','本地上传']].map(([value,label])=>button(label,'cloud-mode',draft.mode===value?'active':'',`data-mode="${value}" role="tab" aria-selected="${draft.mode===value}" ${disabled}`)).join('')}</div>
-   <section id="cloudBasics"><div class="field"><label for="cloudTitle">短剧名称 ${required}</label><input id="cloudTitle" maxlength="80" placeholder="请输入短剧名称" value="${esc(draft.title)}" required ${disabled}></div>
-   <div class="field"><label for="cloudMarket">业务类型 ${required}</label><select id="cloudMarket" required ${disabled}><option value="">请选择业务类型</option><option value="domestic" ${draft.market==='domestic'?'selected':''}>国内短剧</option><option value="overseas" ${draft.market==='overseas'?'selected':''}>海外短剧</option></select></div></section>`;
+   <section id="cloudBasics"><div class="field"><label for="cloudTitle">${required}短剧名称</label><input id="cloudTitle" maxlength="80" placeholder="请输入短剧名称" value="${esc(draft.title)}" required ${disabled}></div>
+   <div class="field"><label for="cloudMarket">${required}业务类型</label><select id="cloudMarket" required ${disabled}><option value="">请选择业务类型</option><option value="domestic" ${draft.market==='domestic'?'selected':''}>国内短剧</option><option value="overseas" ${draft.market==='overseas'?'selected':''}>海外短剧</option></select></div></section>`;
  }
  function metadata(){
   formValues();const title=draft.title.trim();
@@ -41,8 +41,8 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
 
   modal('导入合集',`<div class="cloud-form">
    ${commonHeader()}
-   <section id="cloudShare"><div class="field"><label for="cloudLink">网盘链接 ${required}</label><textarea id="cloudLink" rows="2" placeholder="粘贴完整网盘分享内容（含链接和提取码）" required>${esc(draft.link)}</textarea></div></section>
-   <section id="cloudEpisodes"><label class="cloud-section-label">选集 ${required}</label><div class="cloud-range"><label for="cloudStart">第</label><input id="cloudStart" type="number" min="1" step="1" aria-label="导入起始集数" value="${draft.start??''}"><span>—</span><input id="cloudEnd" type="number" min="1" step="1" aria-label="导入结束集数" value="${draft.end??''}"><span>集</span></div><div class="cloud-shortcuts">${[10,20,30].map(n=>button('前'+n+'集','cloud-range','',`data-count="${n}"`)).join('')}</div></section>
+   <section id="cloudShare"><div class="field"><label for="cloudLink">${required}网盘链接</label><textarea id="cloudLink" rows="2" placeholder="粘贴完整网盘分享内容（含链接和提取码）" required>${esc(draft.link)}</textarea></div></section>
+   <section id="cloudEpisodes"><label class="cloud-section-label">${required}选集</label><div class="cloud-range"><label for="cloudStart">第</label><input id="cloudStart" type="number" min="1" step="1" required aria-required="true" aria-label="导入起始集数" value="${draft.start??''}"><span>—</span><input id="cloudEnd" type="number" min="1" step="1" required aria-required="true" aria-label="导入结束集数" value="${draft.end??''}"><span>集</span></div><div class="cloud-shortcuts">${[10,20,30].map(n=>button('前'+n+'集','cloud-range','',`data-count="${n}"`)).join('')}</div></section>
    <p id="cloudError" class="cloud-error" role="alert" ${draft.error?'':'hidden'}>${esc(draft.error||'')}</p>
   </div>`,button('取消','close')+button('导入合集','cloud-confirm','primary'));
   document.querySelector('#dialog').classList.add('cloud-import-dialog');document.querySelector('#dialog').dataset.importMode='cloud';

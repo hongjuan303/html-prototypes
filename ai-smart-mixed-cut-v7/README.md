@@ -1,10 +1,12 @@
-# 智能混剪 V7 · update14s
+# 智能混剪 V7 · update15e
 
-2026-10-21，发布版本 update14s。V6保留。
+2026-10-22，更新固定字体的标题样式及横纵位置调节、BGM音量和按原片信息展示积分预估；必填红星放字段名前，BGM仅系统曲库/本地上传；本次发布update15e，V6保留。
 
 ## 查看
 
-- 在线原型与说明：[V7 update14s](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261021-update14s)
+- 本地原型与说明：[V7 update15e](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261022-update15e)
+
+- 在线原型与说明：[V7 update15e](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261022-update15e)
 
 - 原型与右侧说明：`review.html`
 - 独立原型：`index.html`
@@ -12,9 +14,13 @@
 - 精简PRD：`prd.html` / `PRD.md`
 - 逐字段规则：`FIELD-SPEC.md`，来自与右侧相同的`review-notes.js`。
 
-本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261021-update14s 。
+本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261022-update15e 。
 
 ## 本版
+
+- update15e：标题固定单一商用字体，取消字体下拉及置顶/置底枚举；改为色块选择字体/描边颜色，滑块及输入调整描边宽度、字号、行距、标题宽度和横纵位置。即时预览、校验、保存及说明同步。本地用已打包的思源黑体演示，正式接入主平台固定字体文件/版本；未核实截图所用具体字库。默认颜色/22px/2px/0px/80%参考截图，取值区间和320px缩放基准为本版交互口径。
+
+- update15d：原片时长完整时显示预估积分并可打开本次分析/制作明细，网盘未取得时长才显示参考成本提示。数值沿用既有本地示例计费（新增分析1积分/集、高光制作32积分/条），不代表正式费率，不将0.5元/分钟自行兑换为积分；上线接平台报价服务。仅补预估展示，未改变账务结算或历史记录。
 
 - update14s：剧目列表移除合集ID，所有来源支持重命名；网盘无需点击解析，提交请求后由后台异步处理。右侧按筛选项/列表项/操作项组织，移除分页说明但保留控件。
 

@@ -1,5 +1,5 @@
-import {sourcePermissionError} from './source-access.js?v=20261021-update14s';
-import {listDramas} from './dramas.js?v=20261021-update14s';
+import {sourcePermissionError} from './source-access.js?v=20261022-update15e';
+import {listDramas} from './dramas.js?v=20261022-update15e';
 export const sourceName=d=>['green','cloud'].includes(d.config.source?.kind)?(d.config.source.market==='domestic'?'国内合集':'海外合集'):'本地上传';
 export function filteredDramas(state,filters){const query=filters.query.trim().toLowerCase();return listDramas(state).filter(d=>(filters.market==='all'||d.source.market===filters.market)&&(!query||d.title.toLowerCase().includes(query)));}
 export function renderLibrary(state,filters,h,draft=filters){

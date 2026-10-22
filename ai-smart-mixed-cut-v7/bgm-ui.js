@@ -1,4 +1,5 @@
-import {BGM_LIBRARY, normalizeBgmSelection, validateBgmSelection, bgmLocalMetadata, listBgmLocalAssets, getBgmLocalAsset, commitBgmLocalAssets, inspectBgmFile} from './bgm-model.js?v=20261021-update14s';
+import {bgmVolume} from './packaging.js?v=20261022-update15e';
+import {BGM_LIBRARY, normalizeBgmSelection, validateBgmSelection, bgmLocalMetadata, listBgmLocalAssets, getBgmLocalAsset, commitBgmLocalAssets, inspectBgmFile} from './bgm-model.js?v=20261022-update15e';
 
 const durationLabel = seconds => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
 const sizeLabel = size => size < 1048576 ? Math.max(1, Math.round(size / 1024)) + ' KB' : (size / 1048576).toFixed(1) + ' MB';
@@ -59,11 +60,10 @@ export function createBgmUI({getConfig, onApply, modal, closeModal, toast, butto
     if (!active) return;
     stopPreview();
     const source = draft.bgmSource, visibleRows = rows.filter(row => !removed.has(row.id)), reading = rows.some(row => !removed.has(row.id) && row.status === 'reading');
-    const tabs = `<div id="bgmSourceTabs" class="bgm-source-tabs" role="tablist" aria-label="BGM方式">${[['library', '系统曲库'], ['local', '本地上传'], ['smart', '智能匹配']].map(([value, label]) => button(label, 'bgm-source', source === value ? 'is-active' : '', `id="bgmTab-${value}" role="tab" aria-selected="${source === value}" aria-controls="bgmPanel" data-value="${value}" ${committing ? 'disabled' : ''}`)).join('')}</div>`;
+    const tabs = `<div id="bgmSourceTabs" class="bgm-source-tabs" role="tablist" aria-label="BGM方式">${[['library', '系统曲库'], ['local', '本地上传']].map(([value, label]) => button(label, 'bgm-source', source === value ? 'is-active' : '', `id="bgmTab-${value}" role="tab" aria-selected="${source === value}" aria-controls="bgmPanel" data-value="${value}" ${committing ? 'disabled' : ''}`)).join('')}</div>`;
     let panel;
-    if (source === 'library') panel = `<div class="bgm-list-heading"><span>曲目</span><span>时长</span><span>操作</span></div><div id="bgmLibraryList" class="bgm-track-list" role="radiogroup" aria-label="选择系统 BGM">${BGM_LIBRARY.map(track => trackRow(track)).join('')}</div>${draft.bgmTrack && !BGM_LIBRARY.some(track => track.id === draft.bgmTrack) ? '<p class="bgm-inline-error">原选曲目已不可用，请重新选择。</p>' : ''}`;
-    else if (source === 'local') panel = `<div class="bgm-local-toolbar"><div><b>我的音频</b><span>${visibleRows.length ? ' · ' + visibleRows.length + ' 首' : ''}</span></div><label class="bgm-upload-button ${committing || loading ? 'disabled' : ''}">上传音频<input id="bgmLocalFile" type="file" aria-label="上传 BGM 音频" accept=".mp3,.wav,.m4a,.aac,.ogg,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg" multiple ${committing || loading ? 'disabled' : ''}></label></div><p class="bgm-upload-hint">支持 MP3、WAV、M4A、AAC、OGG，选择一首用于本次生成。</p><div id="bgmLocalList" class="bgm-track-list bgm-local-list" role="radiogroup" aria-label="选择本地 BGM">${loading ? '<div class="bgm-empty">正在读取音频…</div>' : loadError ? `<div class="bgm-empty"><p class="error-text">${esc(loadError)}</p>${button('重新读取', 'bgm-reload', 'secondary')}</div>` : visibleRows.length ? visibleRows.map(track => trackRow(track, true)).join('') : `<div class="bgm-empty"><span class="bgm-empty-symbol">${noteIcon}</span><b>还没有上传音频</b><p>上传后可试听并选择 BGM</p></div>`}</div>`;
-    else if (source === 'smart') panel = `<div class="bgm-smart-panel"><span class="bgm-smart-symbol">${noteIcon}</span><div><h3>为每条成片智能选曲</h3><p>根据每条成片的剧情与节奏，从系统曲库匹配 BGM。</p></div></div>`;
+    if (source === 'library') panel = `<div class="bgm-list-heading"><span><span class="required" aria-hidden="true">*</span>曲目</span><span>时长</span><span>操作</span></div><div id="bgmLibraryList" class="bgm-track-list" role="radiogroup" aria-required="true" aria-label="选择系统 BGM">${BGM_LIBRARY.map(track => trackRow(track)).join('')}</div>${draft.bgmTrack && !BGM_LIBRARY.some(track => track.id === draft.bgmTrack) ? '<p class="bgm-inline-error">原选曲目已不可用，请重新选择。</p>' : ''}`;
+    else if (source === 'local') panel = `<div class="bgm-local-toolbar"><div><b><span class="required" aria-hidden="true">*</span>我的音频</b><span>${visibleRows.length ? ' · ' + visibleRows.length + ' 首' : ''}</span></div><label class="bgm-upload-button ${committing || loading ? 'disabled' : ''}">上传音频<input id="bgmLocalFile" type="file" aria-label="上传 BGM 音频" accept=".mp3,.wav,.m4a,.aac,.ogg,audio/mpeg,audio/wav,audio/mp4,audio/aac,audio/ogg" multiple ${committing || loading ? 'disabled' : ''}></label></div><p class="bgm-upload-hint">支持 MP3、WAV、M4A、AAC、OGG，选择一首用于本次生成。</p><div id="bgmLocalList" class="bgm-track-list bgm-local-list" role="radiogroup" aria-required="true" aria-label="选择本地 BGM">${loading ? '<div class="bgm-empty">正在读取音频…</div>' : loadError ? `<div class="bgm-empty"><p class="error-text">${esc(loadError)}</p>${button('重新读取', 'bgm-reload', 'secondary')}</div>` : visibleRows.length ? visibleRows.map(track => trackRow(track, true)).join('') : `<div class="bgm-empty"><span class="bgm-empty-symbol">${noteIcon}</span><b>还没有上传音频</b><p>上传后可试听并选择 BGM</p></div>`}</div>`;
     else panel = '<p class="bgm-inline-error">原 BGM 方式已不可用，请重新选择。</p>';
     const disabled = committing || reading || (source === 'local' && (loading || !!loadError)) || !!selectionError();
     modal('选择BGM', `${tabs}<div id="bgmPanel" role="tabpanel" aria-labelledby="bgmTab-${esc(source)}">${panel}</div><div id="bgmPreviewStatus" class="bgm-preview-status" role="status" hidden></div>`, button('取消', 'bgm-cancel', 'secondary', committing ? 'disabled' : '') + button(committing ? '正在保存…' : '使用BGM', 'bgm-apply', 'primary', disabled ? 'disabled' : ''));
@@ -83,7 +83,7 @@ export function createBgmUI({getConfig, onApply, modal, closeModal, toast, butto
     if (ownsDialog(token)) { loading = false; render(); }
   }
   function open() {
-    cancel(); active = true; draft = normalizeBgmSelection(getConfig());
+    cancel(); active = true; draft = normalizeBgmSelection(getConfig()); audio.volume = bgmVolume(getConfig()) / 100;
     libraryChoice = draft.bgmSource === 'library' ? draft.bgmTrack : null;
     localChoice = draft.bgmSource === 'local' ? draft.bgmLocal : null;
     render(); loadLocal(session);
@@ -158,9 +158,9 @@ export function createBgmUI({getConfig, onApply, modal, closeModal, toast, butto
     if (!active || committing) return true;
     if (action === 'bgm-source') {
       const source = element.dataset.value;
-      if (!['library', 'local', 'smart'].includes(source)) return true;
+      if (!['library', 'local'].includes(source)) return true;
       removingId = null;
-      draft = normalizeBgmSelection({bgmSource: source, bgmTrack: source === 'library' ? libraryChoice : 'auto', bgmLocal: source === 'local' ? localChoice : null}); render();
+      draft = normalizeBgmSelection({bgmSource: source, bgmTrack: source === 'library' ? libraryChoice : null, bgmLocal: source === 'local' ? localChoice : null}); render();
     } else if (action === 'bgm-preview') await preview(element.dataset.id);
     else if (action === 'bgm-remove') { removingId = element.dataset.id; render(); }
     else if (action === 'bgm-remove-cancel') { removingId = null; render(); }

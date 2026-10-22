@@ -1,30 +1,31 @@
-import {createVideoPreview} from './video-preview.js?v=20261021-update14s';
-import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261021-update14s';
-import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261021-update14s';
-import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261021-update14s';
-import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261021-update14s';
-import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261021-update14s';
-import {createBgmUI} from './bgm-ui.js?v=20261021-update14s';
-import {assertBgmAvailable} from './bgm-model.js?v=20261021-update14s';
-import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261021-update14s';
-import {createCloudImport} from './cloud-import.js?v=20261021-update14s';
-import {createLocalUpload} from './local-upload.js?v=20261021-update14s';
-import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261021-update14s';
-import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261021-update14s';
-import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261021-update14s';
-import {contentSimilarity} from './content-ui.js?v=20261021-update14s';
-import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261021-update14s';
-import {qualitySummary} from './workflow-ui.js?v=20261021-update14s';
-import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261021-update14s';
-import {updatePlatformBalance,showPoints} from './platform-shell.js?v=20261021-update14s';
-import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261021-update14s';
-import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261021-update14s';
-import {createSyncUI} from './sync-ui.js?v=20261021-update14s';
-import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261021-update14s';
-import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261021-update14s';
-import {createForm,renderCreationPreview} from './creation-ui.js?v=20261021-update14s';
-import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261021-update14s';
-import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261021-update14s';
+import {bgmVolumeError,TITLE_CONTROLS,TITLE_COLORS,titleControlError} from './packaging.js?v=20261022-update15e';
+import {createVideoPreview} from './video-preview.js?v=20261022-update15e';
+import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261022-update15e';
+import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261022-update15e';
+import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261022-update15e';
+import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261022-update15e';
+import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261022-update15e';
+import {createBgmUI} from './bgm-ui.js?v=20261022-update15e';
+import {assertBgmAvailable} from './bgm-model.js?v=20261022-update15e';
+import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261022-update15e';
+import {createCloudImport} from './cloud-import.js?v=20261022-update15e';
+import {createLocalUpload} from './local-upload.js?v=20261022-update15e';
+import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261022-update15e';
+import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261022-update15e';
+import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261022-update15e';
+import {contentSimilarity} from './content-ui.js?v=20261022-update15e';
+import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261022-update15e';
+import {qualitySummary} from './workflow-ui.js?v=20261022-update15e';
+import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261022-update15e';
+import {updatePlatformBalance,showPoints} from './platform-shell.js?v=20261022-update15e';
+import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261022-update15e';
+import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261022-update15e';
+import {createSyncUI} from './sync-ui.js?v=20261022-update15e';
+import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261022-update15e';
+import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261022-update15e';
+import {createForm,renderCreationPreview,creationQuoteDetails} from './creation-ui.js?v=20261022-update15e';
+import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261022-update15e';
+import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261022-update15e';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
@@ -159,7 +160,7 @@ function openDramaOutputs(id){
 function makeDrama(id){
  const d=findDrama(state,id);if(!d){toast('剧目已失效，请重新选择');return;}
  const error=sourcePermissionError(state,d.config);if(error){toast(error);return;}
- registerDrama(state,state.config,{touch:false});state.config=clone(d.config);if(d.displayName)state.config.source.displayName=d.displayName;
+ registerDrama(state,state.config,{touch:false});state.config=normalizeCreationConfig(d.config);if(d.displayName)state.config.source.displayName=d.displayName;
  if(localVideo)URL.revokeObjectURL(localVideo);localVideo=null;save();nav('create');
 }
 function tasksView(){
@@ -343,6 +344,16 @@ function refreshDurationInputs(skipInput=null){
  refreshCreationPreview();
 }
 document.addEventListener('input',e=>{
+ const el=e.target,key=el.dataset.titleStyle,colorKey=el.dataset.titleColor;
+ if(colorKey&&['titleColor','titleStrokeColor'].includes(colorKey)&&TITLE_COLORS.some(p=>p.value===el.value)){state.config[colorKey]=el.value;save();refreshCreationPreview();return;}
+ if(!key||!TITLE_CONTROLS.some(p=>p.key===key))return;
+ const control=TITLE_CONTROLS.find(p=>p.key===key);state.config[key]=el.value===''?null:Number(el.value);
+ const error=titleControlError(state.config,key);
+ document.querySelectorAll(`[data-title-style="${key}"]`).forEach(peer=>{if(peer!==el)peer.value=peer.type==='range'&&error?control.value:(state.config[key]??'');peer.setAttribute('aria-invalid',String(Boolean(error)));});
+ const hint=document.getElementById(key+'Error');if(hint){hint.textContent=error||'';hint.hidden=!error;}
+ save();refreshCreationPreview();
+});
+document.addEventListener('input',e=>{if(e.target.hasAttribute('data-bgm-volume')){const el=e.target;state.config.bgmVolume=el.value===''?null:Number(el.value);const error=bgmVolumeError(state.config);document.querySelectorAll('[data-bgm-volume]').forEach(peer=>{if(peer!==el)peer.value=state.config.bgmVolume??'';peer.setAttribute('aria-invalid',String(Boolean(error)));});const hint=$('#bgmVolumeError');if(hint){hint.textContent=error||'';hint.hidden=!error;}save();refreshCreationPreview();return;}
  const el=e.target,side=el.dataset.durationBound||el.dataset.durationSlider;if(!side)return;
  let value=el.dataset.durationSlider?Number(el.value):durationInput(el.value,state.config['duration'+side+'Unit']);
  if(el.dataset.durationSlider){const other=state.config[side==='Min'?'durationMaxSeconds':'durationMinSeconds'];if(Number.isFinite(other))value=side==='Min'?Math.min(value,other):Math.max(value,other);}
@@ -391,6 +402,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'count':state.config.count=Number(el.dataset.value);save();render();break;
  case 'count-plus':case 'count-minus':state.config.count=Math.max(1,Math.min(20,(Number(state.config.count)||0)+(a==='count-plus'?1:-1)));save();render();break;
  case 'platform-points':showPoints();break;
+ case 'creation-quote':{const details=creationQuoteDetails(state,uiHelpers);if(!details){toast('原片信息或配置已变化，请重新查看预估');render();break;}modal('预估积分明细',details,button('查看账户积分明细','platform-points','text-btn')+button('关闭','close','secondary'));break;}
  case 'direct':prepare();break;
  case 'generate-available':{const j=state.productionJobs.find(j=>j.id===el.dataset.job);closeModal();if(j)await generateJob(j);break;}
  case 'new-drama':case 'import-collection':case 'source-picker':cloudImport.open();break;

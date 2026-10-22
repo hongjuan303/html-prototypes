@@ -1,4 +1,5 @@
-import {platformAccount} from './platform-context.js?v=20261021-update14s';
+import {bgmVolumeError} from './packaging.js?v=20261022-update15e';
+import {platformAccount} from './platform-context.js?v=20261022-update15e';
 
 // The catalog represents the platform material library in this prototype.
 // Audition files are original, synthesized demonstration music, not production catalog assets.
@@ -16,17 +17,17 @@ export function bgmLocalMetadata(value) {
 }
 
 export function normalizeBgmSelection(config = {}) {
-  const source = config.bgmSource || (config.bgmTrack && config.bgmTrack !== 'auto' ? 'library' : 'smart');
-  if (source === 'smart') return {bgmSource: 'smart', bgmTrack: 'auto', bgmLocal: null};
+  // Migrate an obsolete automatic draft to an unselected library; never pick music for the user.
+  const source = !config.bgmSource || config.bgmSource === 'smart' ? 'library' : config.bgmSource;
   if (source === 'local') return {bgmSource: 'local', bgmTrack: null, bgmLocal: bgmLocalMetadata(config.bgmLocal)};
   // Keep unknown IDs and sources invalid: a saved choice must never turn into a different track.
-  return {bgmSource: source, bgmTrack: typeof config.bgmTrack === 'string' ? config.bgmTrack : null, bgmLocal: null};
+  return {bgmSource: source, bgmTrack: typeof config.bgmTrack === 'string' && config.bgmTrack !== 'auto' ? config.bgmTrack : null, bgmLocal: null};
 }
 
 export function validateBgmSelection(config = {}) {
   if (config.bgm === false) return null;
+  if (bgmVolumeError(config)) return bgmVolumeError(config);
   const selection = normalizeBgmSelection(config);
-  if (selection.bgmSource === 'smart') return BGM_LIBRARY.length ? null : '系统曲库暂无可用 BGM';
   if (selection.bgmSource === 'library') return BGM_LIBRARY.some(track => track.id === selection.bgmTrack) ? null : '请选择一首可用的系统 BGM';
   if (selection.bgmSource === 'local') {
     const local = selection.bgmLocal;
@@ -37,8 +38,8 @@ export function validateBgmSelection(config = {}) {
 
 export function bgmSelectionLabel(config = {}) {
   const selection = normalizeBgmSelection(config);
-  if (selection.bgmSource === 'smart') return '智能匹配';
   if (selection.bgmSource === 'local') return selection.bgmLocal?.name ? selection.bgmLocal.name + ' · 本地上传' : '请选择本地 BGM';
+  if (selection.bgmSource === 'library' && !selection.bgmTrack) return '请选择系统 BGM';
   if (selection.bgmSource === 'library') return (BGM_LIBRARY.find(track => track.id === selection.bgmTrack)?.name || '曲目不可用') + ' · 系统曲库';
   return '请选择 BGM 方式';
 }

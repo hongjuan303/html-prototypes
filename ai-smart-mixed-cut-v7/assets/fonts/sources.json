@@ -1,0 +1,14 @@
+[
+  {
+    "family": "sans",
+    "commit": "a4f7cf94edfb9d7ffbdfc4841de276358bd7e0f2",
+    "file": "SourceHanSansSC-Bold.otf",
+    "source": "https://raw.githubusercontent.com/adobe-fonts/source-han-sans/a4f7cf94edfb9d7ffbdfc4841de276358bd7e0f2/OTF/SimplifiedChinese/SourceHanSansSC-Bold.otf"
+  },
+  {
+    "family": "serif",
+    "commit": "7889f11bf31170b5d092a083b357c8c8130f89e0",
+    "file": "SourceHanSerifSC-Bold.otf",
+    "source": "https://raw.githubusercontent.com/adobe-fonts/source-han-serif/7889f11bf31170b5d092a083b357c8c8130f89e0/OTF/SimplifiedChinese/SourceHanSerifSC-Bold.otf"
+  }
+]
