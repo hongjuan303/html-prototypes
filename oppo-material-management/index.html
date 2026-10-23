@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="绿台OPPO合集池添加素材交互原型，支持本地视频上传、字段校验、推送与重试，附右侧需求说明。">
+  <title>OPPO合集池 · 添加素材原型</title>
+  <link rel="stylesheet" href="/html-prototypes/oppo-material-management/styles.css">
+</head>
+<body>
+  <div class="review-tools"><strong>OPPO 添加素材</strong><span>交互原型 · 示例数据 · 本地上传仅在当前页面演示</span><div><label>回执演示 <select id="scenario"><option value="success">全部成功</option><option value="partial">部分失败</option><option value="missing">漏回结果</option><option value="timeout">请求超时</option></select></label><button id="resetDemo">重置示例</button><button id="goNotes">查看说明 →</button></div></div>
+  <div class="review-canvas">
+    <section class="prototype-stage" aria-label="绿台原型画布">
+      <div class="app-shell">
+        <aside class="sidebar"><div class="brand"><span>容</span>内容运营平台</div><nav><div>◉　抖音号管理 <i>⌄</i></div><div>◉　视频号管理 <i>⌄</i></div><div>◉　快手号管理 <i>⌄</i></div><div class="section">◉　产品运营 <i>⌃</i></div><div class="sub">◉　用户运营 <i>⌄</i></div><div class="sub">◉　活动运营 <i>⌄</i></div><div class="sub">◉　内容运营 <i>⌃</i></div><div class="second">内容频道管理</div><div class="second">瀑布流轮播图</div><button class="second active" data-action="pools">合集池管理</button></nav></aside>
+        <div class="workspace"><header class="topbar"><span class="hamburger">☰</span><span>产品运营 <i>/</i> 内容运营 <i>/</i> <b>合集池管理</b></span><span class="account"><b>洪</b>洪娟⌄</span></header><div class="route-tabs"><span>爬虫账号配置 ×</span><span>作者管理 ×</span><span>小说管理 ×</span><span>瀑布流轮播图 ×</span><button class="current" data-action="pools">合集池管理</button></div><main id="main"></main></div>
+      </div>
+      <div id="popover" class="popover" hidden></div>
+      <div id="modal" class="modal-mask" hidden></div>
+    </section>
+    <aside class="notes" id="notes" aria-label="页面与原型说明"></aside>
+  </div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/html-prototypes/oppo-material-management/notes.js"></script>
+  <script src="/html-prototypes/oppo-material-management/app.js"></script>
+</body>
+</html>
