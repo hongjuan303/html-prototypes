@@ -1,12 +1,12 @@
-# 智能混剪 V7 · update15e
+# 智能混剪 V7 · update17b
 
-2026-10-22，更新固定字体的标题样式及横纵位置调节、BGM音量和按原片信息展示积分预估；必填红星放字段名前，BGM仅系统曲库/本地上传；本次发布update15e，V6保留。
+2026-10-23，update17b恢复网盘“分析链接→查看剧集→选集导入”，同步右侧说明及PRD。BGM/标题沿update15e，V6保留。
 
 ## 查看
 
-- 本地原型与说明：[V7 update15e](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261022-update15e)
+- 本地原型与说明：[V7 update17b](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261023-update17b)
 
-- 在线原型与说明：[V7 update15e](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261022-update15e)
+- 在线原型与说明：[V7 update17b](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261023-update17b)
 
 - 原型与右侧说明：`review.html`
 - 独立原型：`index.html`
@@ -14,9 +14,11 @@
 - 精简PRD：`prd.html` / `PRD.md`
 - 逐字段规则：`FIELD-SPEC.md`，来自与右侧相同的`review-notes.js`。
 
-本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261022-update15e 。
+本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261023-update17b 。
 
 ## 本版
+
+- update17～17b：网盘新增分析链接（处理中显示不可点击的“分析中”）、剧集列表与范围联动，修改链接及关闭会失效旧请求，未成功分析不能导入。两种导入入口共用。仅链接文件分析不收费，剧情分析仍在生成阶段。
 
 - update15e：标题固定单一商用字体，取消字体下拉及置顶/置底枚举；改为色块选择字体/描边颜色，滑块及输入调整描边宽度、字号、行距、标题宽度和横纵位置。即时预览、校验、保存及说明同步。本地用已打包的思源黑体演示，正式接入主平台固定字体文件/版本；未核实截图所用具体字库。默认颜色/22px/2px/0px/80%参考截图，取值区间和320px缩放基准为本版交互口径。
 
@@ -41,7 +43,7 @@
 
 ## 原型边界
 
-静态HTML/JS交互原型；片源及原声内容为虚构故事板，未接真实AI、MP4渲染、主平台计费或投放素材接口。积分是本地示例，不代表正式费率或成本达标。真实本地视频保留历史管理能力，不套用虚构分析。网盘导入仅保存异步请求与选集范围，不返回虚构文件列表、集数或时长；没有访问真实网盘或下载视频。mockImport资产不套用虚构剧情，不代表已接入解析/转存服务。
+静态HTML/JS交互原型；片源及原声内容为虚构故事板，未接真实AI、MP4渲染、主平台计费或投放素材接口。积分是本地示例，不代表正式费率或成本达标。真实本地视频保留历史管理能力，不套用虚构分析。网盘链接分析使用固定30集文件名样例，支持分析等待、格式报错、重新分析、范围校验及取消；没有访问真实网盘或下载视频，不生成虚构时长。analyzeShare适配器需替换为真实目录解析服务；成功不等于视频已下载。mockImport资产不套用虚构剧情，不代表已接入解析/转存服务。
 
 旧结构模块保留用于读取已有任务和失败请求，新建入口只支持首版。草稿、素材和积分保存于各访问来源的localStorage；127.0.0.1和localhost数据相互隔离。多标签页使用编辑会话锁防止并发覆盖，不清空用户数据排错。
 

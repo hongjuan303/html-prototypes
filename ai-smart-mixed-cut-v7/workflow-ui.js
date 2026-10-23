@@ -1,9 +1,9 @@
-import {collectionNumber} from './sources.js?v=20261022-update15e';
-import {productionTime} from './material-identity.js?v=20261022-update15e';
-import {failureOf} from './production-tasks.js?v=20261022-update15e';
-import {currentPreferences} from './feedback-model.js?v=20261022-update15e';
-import {modeLabel} from './engine.js?v=20261022-update15e';
-import {reviewable} from './workflow-model.js?v=20261022-update15e';
+import {collectionNumber} from './sources.js?v=20261023-update17b';
+import {productionTime} from './material-identity.js?v=20261023-update17b';
+import {failureOf} from './production-tasks.js?v=20261023-update17b';
+import {currentPreferences} from './feedback-model.js?v=20261023-update17b';
+import {modeLabel} from './engine.js?v=20261023-update17b';
+import {reviewable} from './workflow-model.js?v=20261023-update17b';
 
 export function outputStatus(o){
  if(o.status==='pending')return ['制作中','orange'];

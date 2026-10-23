@@ -36,7 +36,7 @@ def processing(steps):
     return result
 
 
-body = ['# 智能混剪 V7 字段交互与测试说明', '2026-10-22', '按页面、原型序号及筛选项、列表项、操作项查阅。']
+body = ['# 智能混剪 V7 字段交互与测试说明', '2026-10-23', '按页面、原型序号及筛选项、列表项、操作项查阅。']
 for context, note in notes.items():
     body += ['## ' + note['title'], '### 页面说明', '**页面路径：** ' + note['path'], '**功能作用：** ' + note['purpose']]
     for path in dict.fromkeys(note.get('pathByOwner', {}).values()):
@@ -64,6 +64,8 @@ for context, note in notes.items():
                     main.append('默认：' + text(item['default']))
                 main += [text(item[key]) for key in ['behavior', 'copy'] if item.get(key)]
                 body.append(f"- **{item['name']}：** " + ' '.join(main))
+                for state in item.get('states', []):
+                    body.append(f"  - **{state['name']}：** {text(state['definition'])}")
                 if item.get('values'):
                     body.append('  枚举：' + '；'.join(f"**{value['label']}**（{text(value.get('meaning', ''))}）" for value in item['values']) + '。')
                 for key, label in [('source', '数据源'), ('validation', '校验')]:

@@ -1,4 +1,4 @@
-import {REVIEW_NOTES} from './review-notes.js?v=20261022-update15e';
+import {REVIEW_NOTES} from './review-notes.js?v=20261023-update17b';
 const frame=document.querySelector('#prototypeFrame'),stage=document.querySelector('#reviewStage'),scroller=document.querySelector('#notesScroller'),content=document.querySelector('#notesContent');
 const toolboxEntry=new URLSearchParams(location.search).get('entry')==='toolbox';
 let context='',contextOwner='',available=[],focused=null,focusTimer;
@@ -27,7 +27,7 @@ function renderSpec(section){
   if(item.source)parts.push('数据源：'+specText(item.source));
   if(item.validation)parts.push('校验：'+specText(item.validation));
   const body=parts.filter(Boolean).join(' ');
-  return `<li class="spec-item"><strong>${esc(item.name)}：</strong>${body}${renderProcessing(item.processing)}</li>`;
+  return `<li class="spec-item"><strong>${esc(item.name)}：</strong>${body}${item.states?.length?`<ul class="spec-states">${item.states.map(state=>`<li><strong>${esc(state.name)}：</strong>${specText(state.definition)}</li>`).join('')}</ul>`:''}${renderProcessing(item.processing)}</li>`;
  };
  return (section.source?`<p class="section-source"><b>数据源：</b>${specText(section.source)}</p>`:'')+[...groups].map(([group,items])=>`<div class="spec-group">${group===section.title||section.category?'':`<h4>${group}</h4>`}<ul class="spec-items">${items.map(renderItem).join('')}</ul></div>`).join('');
 }

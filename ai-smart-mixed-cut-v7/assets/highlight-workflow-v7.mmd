@@ -1,8 +1,8 @@
 flowchart TD
  importSource["导入合集：手填剧名、国内或海外业务类型"] --> importMode{"导入方式"}
- importMode -->|网盘导入| cloud["分享内容含提取码、起止集数；提交后后台异步解析获取"]
+ importMode -->|网盘导入| cloud["分享内容含提取码 → 分析链接 → 查看剧集并选集导入"]
  importMode -->|本地上传| local["多视频上传、增删及调整集序"]
- cloud --> library["保存独立剧目；未知集数显示占位；均可重命名"]
+ cloud --> library["保存独立剧目与所选集数；后台获取原片；均可重命名"]
  local --> library
  library --> configure["制作素材：选集、条数、最短及最长时长、速度、BGM与小标题"]
  configure --> submit{"提交是否受理成功"}
