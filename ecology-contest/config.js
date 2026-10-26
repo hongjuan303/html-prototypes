@@ -10,14 +10,40 @@ export const trackTypeLabel = name => ({'剧本':'剧本赛道','AI漫剧样片'
 export const trackLabel = t => trackTypeLabel(t.title || t.name);
 export const trackHistoryLabel = text => text.replace(/^获得 (剧本|AI漫剧样片|AI漫剧成片) 赛道晋级资格$/, (_,name) => '获得 '+trackTypeLabel(name)+' 晋级资格');
 export const publicEvents = s => s.events.filter(e=>!['草稿','已取消'].includes(e.status));
+export const publicEventStatus = e => ({'征集中':'正在进行','评审中':'征集结束','结果公示':'征集结束'})[e.status] || e.status;
+export const SCRIPT_NOTICE = '请上传包含故事大纲、人物小传及剧本正文的完整剧本文件。缺少必要材料或内容不完整，可能导致审核不通过，请确认后再提交。';
+export const VIDEO_NOTICE = '可选择本人在容量万相漫剧制作平台项目中的已完成视频，也可上传外部平台制作的视频作品。支持 MP4 等视频格式。';
+export const VIDEO_SUPPORT_NOTICE = '使用容量万相漫剧制作平台完成的项目，可咨询积分扶持。具体扶持内容及申请条件，请联系商务客服。';
+// 本地 Demo 的平台来源名单；历史工作台本地上传不能冒充平台制作成果。
+const platformDemoIds = ['p1','p-history','p-progress','p-sample'];
+export const isPlatformProject = p => !!p && (p.source==='platform' || platformDemoIds.includes(p.id));
+export const platformOutputs = p => isPlatformProject(p) && p.ready ? (p.outputs||[]).filter(o=>!o.file && o.source!=='local' && o.duration!=='本地上传') : [];
 export const projectOwner = p => p.user || 'me';
+export const myScripts = s => [
+  ...(s.scripts||[]).filter(x=>x.user==='me'),
+  ...s.works.filter(w=>w.user==='me'&&w.track==='剧本'&&!w.sourceScript&&w.files?.length).map(w=>({id:'work:'+w.id,user:'me',title:w.title,summary:w.summary,content:'',files:w.files,updated:w.updated,sourceWork:w.id}))
+];
+export const scriptBy = (s,id) => myScripts(s).find(x=>x.id===id);
+export const eventLayout = (count,preference='') => ['wide','grid'].includes(preference)?preference:count<=8?'wide':'grid';
 export function trackDefaults(t) {
-  return {...t,title:trackLabel(t),requirements:t.requirements||(t.name==='剧本'?'提交原创剧本正文，可附故事大纲与人物介绍。支持 Word、PDF 等格式。':'提交可完整播放的'+t.name+'视频；可上传文件或选择容量万相平台项目中的已完成作品。支持 MP4 等视频格式。'),
+  return {...t,title:trackLabel(t),requirements:t.requirements||(t.name==='剧本'?SCRIPT_NOTICE:VIDEO_NOTICE),
     reviewStart:t.reviewStart||addDays(t.end,1),reviewEnd:t.reviewEnd||addDays(t.end,10),resultStart:t.resultStart||addDays(t.end,11),resultEnd:t.resultEnd||addDays(t.end,17)};
 }
 export const examplePrizes = tracks => tracks.map((t,i)=>({track:t.name,rank:i===0?'一等奖':'二等奖',count:i===0?1:3,cash:i===0?30000:10000,credits:i===0?20000:10000,goods:i===0?'创作礼盒 × 1':''}));
+function currentRules(s) {
+  for (const e of s.events) {
+    // 只替换旧示例默认文案，不覆盖运营自定义资料或删除历史赛制信息。
+    e.intro=e.intro?.replace('本赛事采用关联晋级形式。入选作品可沿所开放的赛道继续创作，赛道入口与时间以本页安排为准。','本赛事的各赛道独立参赛，请按照对应赛道的时间和材料要求提交作品。');
+    for (const t of e.tracks) {
+      if(t.requirements==='提交原创剧本正文，可附故事大纲与人物介绍。支持 Word、PDF 等格式。')t.requirements=SCRIPT_NOTICE;
+      if(t.name!=='剧本'&&['提交可完整播放的'+t.name+'视频；可上传文件或选择容量万相平台项目中的已完成作品。支持 MP4 等视频格式。','仅支持选择本人在容量万相漫剧制作平台创建的项目，并提交已完成的视频作品，不支持本地上传。'].includes(t.requirements))t.requirements=VIDEO_NOTICE;
+      if(t.brief==='使用容量万相漫剧制作平台，以叙事片段呈现故事风格与角色。')t.brief='以完整的叙事片段呈现故事风格与角色，可使用容量万相漫剧制作平台。';
+    }
+  }
+  return s;
+}
 export function upgrade(s) {
-  if(s.version===2)return s;
+  if(s.version===2)return currentRules(s);
   const intros={
     yandang:'山海之间，藏着许多尚未被讲述的故事。本次示例赛事以雁荡山的山水意象、村落生活与地方文化为灵感，邀请创作者通过剧本或 AI 漫剧，把风景转化为有角色、有情感的叙事。\n创作可以从一个普通人的相遇出发，也可以让传说与当代生活交织。我们期待作品中的山水不只是背景，而能推动人物选择、形成故事冲突。\n创意示例：一名年轻录音师沿山路收集声音，从一段旧录音里寻找祖辈的故事；一位返乡青年修复老店招牌，意外串起几代人的记忆；雨夜迷路的旅人循着钟声，进入只存在于传说中的村庄。以上仅作灵感示例，不限制题材或风格。',
     city:'每座城市都有自己的节奏，也有被匆忙忽略的人。本次示例创作计划聚焦街巷、职业与日常生活，鼓励创作者用一个具体的人物，讲述城市的温度。\n创意示例：深夜末班车司机遇见一位寻找旧地址的乘客；老桥修缮前，摄影师为附近居民拍下最后一张合影；一名实习生在旧地图上发现家人从未提及的往事。\n本赛事采用关联晋级形式。入选作品可沿所开放的赛道继续创作，赛道入口与时间以本页安排为准。',
@@ -38,17 +64,15 @@ export function upgrade(s) {
   if(!s.works.some(w=>w.id==='w8')&&pending)s.works.push({...pending,id:'w8',title:'山路的另一端',status:'待复审',files:[],project:'',history:[{at:'2026-10-08 10:00',text:'提交作品'},{at:'2026-10-13 11:30',text:'初审通过'}]});
   s.projects=s.projects.map(p=>({...p,user:p.user||'me',image:p.image||'mountains.png',outputs:p.outputs||(p.ready?[{id:p.id+'-video',title:p.title+' · 导出视频',duration:'02:18'}]:[])}));
   for(const p of [{id:'p-history',title:'城市里的第七封信',track:'AI漫剧成片',ready:true,created:'2026-09-10 15:20',image:'city.png'},{id:'p-progress',title:'风穿过旧街',track:'AI漫剧样片',ready:false,created:'2026-10-14 09:30',image:'city.png'},{id:'p-sample',title:'雨后 · 故事片段',track:'AI漫剧样片',ready:true,created:'2026-08-20 18:00',image:'studio.jpg'}])if(!s.projects.some(x=>x.id===p.id))s.projects.push({...p,user:'me',event:'',outputs:p.ready?[{id:p.id+'-video',title:p.title+' · 导出视频',duration:'01:36'}]:[]});
-  s.version=2;return s;
+  s.version=2;return currentRules(s);
 }
 export function validateEvent(e) {
   if(!e.title?.trim()||!e.host?.trim()||!e.intro?.trim())throw Error('请填写赛事名称、主办单位和赛事介绍');
   if(!e.tracks.length)throw Error('至少开放一个赛道');
-  if(e.mode==='逐级晋级'&&e.tracks.length<2)throw Error('逐级晋级至少需要两个赛道；单赛道请选择独立赛道');
   for(const [i,t] of e.tracks.entries()){
     const dates=[t.start,t.end,t.reviewStart,t.reviewEnd,t.resultStart,t.resultEnd];
     if(dates.some(d=>!/^\d{4}-\d{2}-\d{2}$/.test(d||''))||dates.some((d,j)=>j&&d<dates[j-1]))throw Error(trackLabel(t)+'：请按作品提交、主办单位审核、结果公示的顺序设置完整起止日期');
     if(!t.title?.trim()||!t.brief?.trim()||!t.requirements?.trim())throw Error(trackTypeLabel(t.name)+'：请补全赛道名称、创作方向及提交材料');
-    if(e.mode==='逐级晋级'&&i>0&&t.start<=e.tracks[i-1].resultEnd)throw Error('后续赛道须在上一赛道结果公示结束后开始');
   }
   if(!e.prizes.length)throw Error('请至少配置一项奖励');
   for(const p of e.prizes)if(!e.tracks.some(t=>t.name===p.track)||!p.rank.trim()||!Number.isInteger(p.count)||p.count<1||!Number.isFinite(p.cash)||p.cash<0||!Number.isInteger(p.credits)||p.credits<0||!(p.cash||p.credits||p.goods.trim()))throw Error('请检查奖项的赛道、名称、正整数名额及奖励内容');

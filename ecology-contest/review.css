@@ -1,0 +1,13 @@
+:root{--note-width:520px;--prototype-width:100vw;--note-orange:#F28C18;color-scheme:light}
+*{box-sizing:border-box}html{background:#edf0f3;overflow-x:auto}body{margin:0;color:#303946;font:14px/1.85 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.review-canvas{display:flex;align-items:stretch;gap:24px;width:max-content;padding-right:24px;height:calc(100dvh - 18px)}
+#prototype{display:block;flex:0 0 var(--prototype-width);width:var(--prototype-width);height:100%;border:0;background:#0c0f13}
+#notes{flex:0 0 var(--note-width);width:var(--note-width);height:100%;overflow-y:auto;background:white;border:1px solid #e1e5e9;scrollbar-gutter:stable}
+.notes-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 22px;background:#fff;border-bottom:1px solid #edf0f3;position:sticky;top:0;z-index:2;font-size:12px;color:#74808c}
+.notes-toolbar button{cursor:pointer;border:0;background:transparent;color:#596875;padding:5px 0;font:inherit}
+#notes-content{padding:8px 26px 60px}h1{font-size:22px;line-height:1.5;color:var(--note-orange);margin:24px 0 14px;font-weight:650}h2{display:flex;align-items:flex-start;gap:9px;font-size:16px;line-height:1.6;color:var(--note-orange);margin:0 0 12px}p{margin:10px 0}ul{padding-left:19px;margin:8px 0 16px}li{padding:2px 0;overflow-wrap:anywhere}li>ul{list-style-type:circle;margin:4px 0 8px}b{font-weight:600}
+.note-section{padding:16px 0 10px;border-bottom:1px solid #edf0f3;scroll-margin-top:70px;transition:background-color .2s}.note-section.is-focused{background:#fff4e5;box-shadow:0 0 0 10px #fff4e5;border-radius:2px}.note-number{display:inline-flex;flex:0 0 24px;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#F28C18;color:#fff;font:700 13px/1 Arial,sans-serif}
+.note-risk{color:#cf3b30}.change-log{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0 24px}.change-log th,.change-log td{padding:8px;border:1px solid #e3e7eb;text-align:left}.change-log th{background:#f6f8fa;font-weight:600}.change-log td:nth-child(2){white-space:nowrap;color:#cf3b30}.note-scope{font-size:12px;color:#78828d}.notes-source{font-size:13px;color:#66717d}
+button:focus-visible{outline:2px solid #F28C18;outline-offset:3px}
+@media(max-width:1360px){:root{--note-width:440px}#notes-content{padding-left:22px;padding-right:22px}}
+@media(prefers-reduced-motion:reduce){.note-section{transition:none}}
