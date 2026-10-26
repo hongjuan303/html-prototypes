@@ -11,3 +11,5 @@
 @keyframes spin{to{transform:rotate(360deg)}}@media(max-width:1440px){:root{--notes:440px}.review-tools>span{max-width:310px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.notes{padding:22px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 
 .dialog-body .spinner{border-color:#c6e2ff;border-top-color:var(--blue)}
+
+.material-toolbar-actions{display:flex;align-items:center;gap:12px}.material-toolbar-actions>span{display:inline-flex;align-items:center}
