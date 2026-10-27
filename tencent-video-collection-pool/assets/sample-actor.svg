@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="320" viewBox="0 0 240 320">
+  <rect width="240" height="320" rx="8" fill="#eef2f5"/>
+  <circle cx="120" cy="111" r="43" fill="#bdcbd4"/>
+  <path d="M37 253c0-54 37-91 83-91s83 37 83 91" fill="#bdcbd4"/>
+  <text x="120" y="289" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#617687">演员照片示例</text>
+</svg>

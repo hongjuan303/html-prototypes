@@ -4,6 +4,12 @@ window.TV = (() => {
   const keywords=['主旋律','脱贫攻坚','青春校园','职业剧','情感','都市','喜剧','古装','科幻','奇幻','玄幻','公安刑侦','乡村','犯罪','年代剧','探险','美食','武侠','体育竞技','战争军旅'].map((label,i)=>[String(123130782+i),label]);
   const types=['未知','抖音','快手','微信','QQ浏览器','华为视频百花号','OPPO','全民K歌','腾讯视频'];
   const assets='/html-prototypes/tencent-video-collection-pool/assets/';
+  const submissionStates=['未提交','提交中','提交成功','提交失败'];
+  function normalizeSubmissionStatus(d){
+    const legacy={'未推送':'未提交','待完善':'未提交','待提交分集':'未提交','推送中':'提交中','结果待确认':'提交中','已提交':'提交成功','推送失败':'提交失败'};
+    d.status=d.unknownStage?'提交中':submissionStates.includes(d.status)?d.status:legacy[d.status]||'未提交';
+    return d;
+  }
   const basic=[
     {key:'kind',label:'内容品类',type:'select',options:[['duanfan','短番'],['ai','AI真人短剧']],desc:'必填，按品类调用对应专辑接口；短番的is_ai_real_person_short_drama传false，AI真人短剧传true。普通真人实拍短剧的适用范围待腾讯确认。'},
     {key:'user_title',label:'专辑名称',desc:'必填，默认带入合集名称，可维护腾讯专辑名称，不回写源合集。'},
@@ -26,14 +32,18 @@ window.TV = (() => {
     {key:'plot_year_drama',label:'年代',type:'select',options:[['92630','古代'],['92631','近代'],['92632','现代'],['92633','当代']],desc:'AI真人短剧必填，选择古代、近代、现代或当代。'},
     {key:'micro_series_guzhuang',label:'是否古装',type:'select',options:[['1','非古装'],['2','古装']],desc:'AI真人短剧必填，非古装传字符串1，古装传字符串2。'},
     {key:'micro_series_keyword',label:'关键词',type:'keywords',options:keywords,desc:'AI真人短剧必填，至少选择2项腾讯关键词；从20项枚举中选择。'},
-    {key:'is_adapted_from_ip',label:'是否IP改编',type:'select',options:[['false','否'],['true','是']],desc:'AI真人短剧必填；选择是时，在证明材料中上传IP改编授权PDF。'}
+    {key:'is_adapted_from_ip',label:'是否IP改编',type:'select',options:[['false','否'],['true','是']],desc:'由绿台合集内容来源映射，内容来源为IP改编时传true；本页不重复编辑。'}
   ];
   const covers=[
     {key:'user_new_pic_hz',label:'横版封面',desc:'必填，上传横版图片，使用腾讯专辑封面上传接口返回的URL，对应user_new_pic_hz。'},
-    {key:'user_new_pic_vt',label:'竖版封面',desc:'必填，上传竖版图片，使用腾讯专辑封面上传接口返回的URL，对应user_new_pic_vt。'},
+    {key:'user_new_pic_vt',label:'竖版封面',desc:'必填，默认取绿台合集列表的封面并展示预览，可手动更换；已有手动选择优先，保存不回写合集封面。合集无封面或主动移除后需手动上传，移除后不自动补回。推送时上传该图片取得腾讯封面URL，对应user_new_pic_vt。'},
     {key:'user_karios_ranklist_pic',label:'火龙榜单',desc:'必填，上传榜单图片，使用腾讯专辑封面上传接口返回的URL，对应user_karios_ranklist_pic。'}
   ];
   const copyrightTypes=[['agreement','协议声明文件'],['certificate','版权证书文件'],['personal','个人承诺函＋版权补充材料']];
+  const conditionalAttachments=[
+    {key:'record_url',label:'上线备案文件',desc:'本页“是否重点备案”选择“是”时展示且必传PDF；选择“否”时隐藏，不参与校验和提交。切换为否保留已选文件，再选是时恢复；备案号仍从合集资料映射。对应record_url。'},
+    {key:'micro_series_ipfile',label:'IP改编文件',desc:'绿台合集“内容来源”为“IP改编”时展示且必传PDF；其他来源时隐藏，不参与校验、上传和提交。仅按内容来源判断，不限制内容品类；内容来源从绿台合集映射，本页不提供切换。对应micro_series_ipfile。'}
+  ];
   function selectedProofTypes(d){
     if(d.has_own_copyright==='1543607')return ['chain'];
     // 兼容既有单一路径草稿；空数组代表用户主动取消所有勾选。
@@ -48,11 +58,16 @@ window.TV = (() => {
     if(selected.includes('personal'))a.push({key:'personal_commitment_letter_file',label:'个人承诺函',desc:'勾选个人承诺函＋版权补充材料时必传PDF；对应personal_commitment_letter_file。'},{key:'rights_supplementary_files',label:'版权补充材料',multiple:true,desc:'与个人承诺函一并必传，支持多个PDF；对应rights_supplementary_files数组。'});
     return a;
   }
+  function copyrightGroups(d){
+    const slots={chain:['auth_chain_files'],agreement:['rights_agreement_file'],certificate:['certificate_file'],personal:['personal_commitment_letter_file','rights_supplementary_files']};
+    const labels=Object.fromEntries([['chain','版权链文件'],...copyrightTypes]),fields=copyrightAttachments(d);
+    return selectedProofTypes(d).map(key=>({key,label:labels[key],fields:fields.filter(f=>slots[key].includes(f.key))}));
+  }
   function attachments(d){
     const a=[{key:'other_micro_cover_costing',label:'成本配置',desc:'所有专辑必传PDF；投资成本为0也不自动免除该文件。对应other_micro_cover_costing。'}];
     if(d.is_ai_creation)a.push({key:'ai_creation_declaration',label:'AI创作声明',desc:'AI创作时必传PDF；AI真人短剧强制必传。对应ai_creation_declaration。'},{key:'rights_non_infringement_declaration',label:'权利声明',desc:'AI创作时必传PDF；AI真人短剧强制必传。对应rights_non_infringement_declaration。'});
-    if(d.is_cp_key_record)a.push({key:'record_url',label:'上线备案文件',desc:'合集映射为有重点备案时必传PDF，备案号由合集映射；对应record_url。'});
-    if(d.kind==='ai'&&d.is_adapted_from_ip)a.push({key:'micro_series_ipfile',label:'IP改编文件',desc:'AI真人短剧改编自IP时必传PDF；对应micro_series_ipfile。'});
+    if(d.is_cp_key_record)a.push(conditionalAttachments[0]);
+    if(d.content_source==='IP改编')a.push(conditionalAttachments[1]);
     a.push(...copyrightAttachments(d));
     return a;
   }
@@ -85,20 +100,65 @@ window.TV = (() => {
     return out;
   }
   function file(name,kind='pdf',uploaded=false){return {name,size:kind==='image'?185320:98240,kind,preview:assets+(kind==='image'?'sample-cover.svg':'sample-document.pdf'),uploaded,ref:uploaded?'demo_reference':''};}
-  function fresh(id,title,kind='duanfan',count=8){return {id,title,sourceIntro:'讲述主人公在命运转折中重新出发，与伙伴共同寻找答案的成长故事。',count,kind,user_title:title,second_title:'以热爱奔赴每一个明天',user_description:'讲述主人公在命运转折中重新出发，与伙伴共同寻找答案的成长故事。',micro_comic_theme:'123134904',budget:30,total_episode:count,micro_series_duration:3,is_end_update:true,is_ai_creation:true,aboard_area_limit:'1337734',auth_duration:3,granted_rights:['123133206'],cover_video_ratio:'vt',plot_year_drama:'92633',micro_series_guzhuang:'1',micro_series_keyword:['123130784','123130786'],is_adapted_from_ip:false,is_cp_key_record:false,record_num_text:'',has_own_copyright:'1543606',proofMode:'certificate',roles:[{name:'林知夏',image:null},{name:'陈予安',image:null}],files:{},cid:'',status:'未推送',submitted:0,lastTime:'',unknownStage:'',logs:[],saved:false,episodes:Array.from({length:count},(_,i)=>({index:i+1,title:`第${i+1}集`,ready:true,uploaded:false,coverUploaded:false}))};}
-  function fill(d,uploaded=false){covers.forEach(f=>d.files[f.key]=[file(f.label+'.png','image',uploaded)]);d.roles.forEach(r=>r.image=file(r.name+'剧照.png','image',uploaded));attachments(d).forEach(f=>d.files[f.key]=[file(f.label+'.pdf','pdf',uploaded)]);d.saved=true;return d;}
+  function actorPhoto(name){return {...file(name+'-演员照片.svg','image'),preview:assets+'sample-actor.svg'};}
+  function mappedRole(name){const actor_photo=actorPhoto(name);return {name,actor_photo,image:{...actor_photo,origin:'actor'}};}
+  function fresh(id,title,kind='duanfan',count=8){return {id,title,sourceIntro:'讲述主人公在命运转折中重新出发，与伙伴共同寻找答案的成长故事。',count,kind,user_title:title,second_title:'以热爱奔赴每一个明天',user_description:'讲述主人公在命运转折中重新出发，与伙伴共同寻找答案的成长故事。',micro_comic_theme:'123134904',budget:30,total_episode:count,micro_series_duration:3,is_end_update:true,is_ai_creation:true,aboard_area_limit:'1337734',auth_duration:3,granted_rights:['123133206'],cover_video_ratio:'vt',plot_year_drama:'92633',micro_series_guzhuang:'1',micro_series_keyword:['123130784','123130786'],is_adapted_from_ip:false,is_cp_key_record:false,record_num_text:'',has_own_copyright:'1543606',proofMode:'certificate',roles:[mappedRole('林知夏'),mappedRole('陈予安')],files:{},cid:'',status:'未提交',submitted:0,lastTime:'',unknownStage:'',logs:[],saved:false,episodes:Array.from({length:count},(_,i)=>({index:i+1,title:`第${i+1}集`,ready:true,uploaded:false,coverUploaded:false}))};}
+  function fill(d,uploaded=false){covers.forEach(f=>d.files[f.key]=[file(f.label+'.png','image',uploaded)]);d.roles.forEach(r=>r.image=r.actor_photo?{...r.actor_photo,origin:'actor',uploaded,ref:uploaded?'demo_reference':''}:file(r.name+'剧照.png','image',uploaded));attachments(d).forEach(f=>d.files[f.key]=[file(f.label+'.pdf','pdf',uploaded)]);d.saved=true;return d;}
+  function prepareConditionalExample(db){
+    if(db.conditionalExampleVersion===1)return false;
+    const d=db.dramas.find(d=>d.id===900321);
+    if(d){
+      // 仅将用户当前评审的虚构样例调整为正向条件，不重置已选文件、版权类型或提交记录。
+      Object.assign(d,{kind:'ai',is_cp_key_record:true,record_num_text:'示例备案-2026-0321',is_adapted_from_ip:true});
+      conditionalAttachments.forEach(f=>{if(!Object.prototype.hasOwnProperty.call(d.files,f.key))d.files[f.key]=[file(f.label+'.pdf')];});
+    }
+    db.conditionalExampleVersion=1;
+    return true;
+  }
+  function prepareContentSourceExamples(db){
+    let changed=false;
+    db.dramas.forEach(d=>{
+      // 为旧版虚构样例补入绿台内容来源；已有映射及用户文件保持原值。
+      if(!Object.prototype.hasOwnProperty.call(d,'content_source')){d.content_source=[900321,900322].includes(d.id)?'IP改编':'';changed=true;}
+      if(d.content_source==='IP改编'&&!Object.prototype.hasOwnProperty.call(d.files,'micro_series_ipfile')){d.files.micro_series_ipfile=[file('IP改编文件.pdf')];changed=true;}
+    });
+    return changed;
+  }
+  function prepareCollectionCoverDefaults(db){
+    if(db.collectionCoverDefaultsVersion===1)return false;
+    db.dramas.forEach(d=>{
+      // 旧版虚构合集补入源封面；只替换原始占位图，保留手动选择和主动移除。
+      if(!Object.prototype.hasOwnProperty.call(d,'collection_cover')&&d.id>=900321&&d.id<=900327)d.collection_cover=file(d.title+'-合集封面.svg','image');
+      const selected=d.files.user_new_pic_vt,source=d.collection_cover;
+      const legacyDemo=selected?.length===1&&selected[0].name==='竖版封面.png'&&selected[0].preview===assets+'sample-cover.svg';
+      if(source?.kind==='image'&&source.preview&&(!Object.prototype.hasOwnProperty.call(d.files,'user_new_pic_vt')||legacyDemo))d.files.user_new_pic_vt=[{...source,origin:'collection',uploaded:false,ref:''}];
+    });
+    db.collectionCoverDefaultsVersion=1;
+    return true;
+  }
+  function prepareActorPhotoDefaults(db){
+    if(db.actorPhotoDefaultsVersion===1)return false;
+    db.dramas.forEach(d=>d.roles.forEach(r=>{
+      const legacyDemo=r.image?.name===r.name+'剧照.png'&&r.image.preview===assets+'sample-cover.svg';
+      if(!Object.prototype.hasOwnProperty.call(r,'actor_photo'))r.actor_photo=legacyDemo?actorPhoto(r.name):null;
+      if(r.actor_photo?.kind==='image'&&r.actor_photo.preview&&(r.image===undefined||legacyDemo))r.image={...r.actor_photo,origin:'actor',uploaded:false,ref:''};
+    }));
+    db.actorPhotoDefaultsVersion=1;
+    return true;
+  }
   function seed(){
     const dramas=[fill(fresh(900321,'雾隐山河录')),fill(fresh(900322,'重启人生的她','ai',12)),fill(fresh(900323,'山海食光','duanfan',6),true),fill(fresh(900324,'星河来信','ai',10)),fill(fresh(900325,'掌心微光','duanfan',6),true),fill(fresh(900326,'风起长安','ai',6),true),fresh(900327,'云端茶馆','duanfan',4)];
     // 既有单一路径作为版权材料多选的初始值，其他条件继续由合集映射。
     Object.assign(dramas[1],{is_cp_key_record:true,record_num_text:'示例备案-2026-0322',is_adapted_from_ip:true,proofMode:'personal'});delete dramas[1].files.certificate_file;fill(dramas[1]);
     dramas[3].proofMode='agreement';delete dramas[3].files.certificate_file;fill(dramas[3]);
     dramas[4].has_own_copyright='1543607';delete dramas[4].files.certificate_file;fill(dramas[4],true);
-    dramas[0].files.other_micro_cover_costing=[];dramas[0].roles[1].image=null;dramas[0].status='待完善';
-    dramas[2].cid='mzc_demo_900323';dramas[2].status='待提交分集';
-    dramas[3].status='推送失败';dramas[3].lastTime='2026-10-26 10:20';dramas[3].logs=[{id:'DEMO-TV-900324-01',time:'2026-10-26 10:20',stage:'素材上传',state:'明确失败',message:'图片上传请求明确失败，尚未创建专辑。可重新推送。',request:'DEMO-REQ-0324',count:10}];
-    dramas[4].status='结果待确认';dramas[4].unknownStage='专辑创建';dramas[4].lastTime='2026-10-26 10:18';dramas[4].logs=[{id:'DEMO-TV-900325-01',time:'2026-10-26 10:18',stage:'专辑创建',state:'结果待确认',message:'创建专辑请求超时，CID发放结果未知。核实前禁止重复创建。',request:'DEMO-REQ-0325',count:6}];
-    dramas[5].cid='mzc_demo_900326';dramas[5].status='已提交';dramas[5].submitted=6;dramas[5].lastTime='2026-10-26 09:40';dramas[5].episodes.forEach(e=>{e.uploaded=true;e.coverUploaded=true;});dramas[5].logs=[{id:'DEMO-TV-900326-01',time:'2026-10-26 09:40',stage:'分集提交',state:'提交成功',message:'专辑和6集分集已被接口接收；审核及上线结果另行核实。',request:'DEMO-REQ-0326',count:6}];
-    return {version:1,dramas,pools:[{id:36,name:'腾讯视频漫剧合作池',type:'腾讯视频',enabled:true,ids:dramas.slice(0,6).map(d=>d.id)},{id:37,name:'腾讯视频待推送合集池',type:'腾讯视频',enabled:false,ids:[900321,900327]},{id:26,name:'OPPO精品短剧推送池',type:'OPPO',enabled:true,ids:[900323]},{id:28,name:'全民K歌精品短剧推送池',type:'全民K歌',enabled:true,ids:[900322]},{id:3,name:'公号推广合集池',type:'微信',enabled:true,ids:[900321,900323]}],nextPool:38};
+    dramas[0].files.other_micro_cover_costing=[];dramas[0].status='未提交';
+    dramas[2].cid='mzc_demo_900323';dramas[2].status='未提交';
+    dramas[3].status='提交失败';dramas[3].lastTime='2026-10-26 10:20';dramas[3].logs=[{id:'DEMO-TV-900324-01',time:'2026-10-26 10:20',stage:'素材上传',state:'明确失败',message:'图片上传请求明确失败，尚未创建专辑。可重新推送。',request:'DEMO-REQ-0324',count:10}];
+    dramas[4].status='提交中';dramas[4].unknownStage='专辑创建';dramas[4].lastTime='2026-10-26 10:18';dramas[4].logs=[{id:'DEMO-TV-900325-01',time:'2026-10-26 10:18',stage:'专辑创建',state:'结果待确认',message:'创建专辑请求超时，CID发放结果未知。核实前禁止重复创建。',request:'DEMO-REQ-0325',count:6}];
+    dramas[5].cid='mzc_demo_900326';dramas[5].status='提交成功';dramas[5].submitted=6;dramas[5].lastTime='2026-10-26 09:40';dramas[5].episodes.forEach(e=>{e.uploaded=true;e.coverUploaded=true;});dramas[5].logs=[{id:'DEMO-TV-900326-01',time:'2026-10-26 09:40',stage:'分集提交',state:'提交成功',message:'专辑和6集分集已被接口接收；审核及上线结果另行核实。',request:'DEMO-REQ-0326',count:6}];
+    const db={version:1,dramas,pools:[{id:36,name:'腾讯视频漫剧合作池',type:'腾讯视频',enabled:true,ids:dramas.slice(0,6).map(d=>d.id)},{id:37,name:'腾讯视频待推送合集池',type:'腾讯视频',enabled:false,ids:[900321,900327]},{id:26,name:'OPPO精品短剧推送池',type:'OPPO',enabled:true,ids:[900323]},{id:28,name:'全民K歌精品短剧推送池',type:'全民K歌',enabled:true,ids:[900322]},{id:3,name:'公号推广合集池',type:'微信',enabled:true,ids:[900321,900323]}],nextPool:38};
+    prepareConditionalExample(db);prepareContentSourceExamples(db);prepareCollectionCoverDefaults(db);prepareActorPhotoDefaults(db);return db;
   }
-  return {themes,keywords,types,basic,auth,ai,covers,copyrightTypes,selectedProofTypes,copyrightAttachments,attachments,assetList,validate,file,seed};
+  return {themes,keywords,types,basic,auth,ai,covers,submissionStates,normalizeSubmissionStatus,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
 })();
