@@ -1,6 +1,6 @@
-import {clone,validate} from './engine.js?v=20261027-update18a';
-import {failedRevision} from './production-tasks.js?v=20261027-update18a';
-import {beginFailedRework,beginNarrationUpdate} from './workflow-model.js?v=20261027-update18a';
+import {clone,validate} from './engine.js?v=20261027-update19c';
+import {failedRevision} from './production-tasks.js?v=20261027-update19c';
+import {beginFailedRework,beginNarrationUpdate} from './workflow-model.js?v=20261027-update19c';
 
 export function regenerationAvailability(o){
  if(o.status==='failed'&&!o.cancelled){

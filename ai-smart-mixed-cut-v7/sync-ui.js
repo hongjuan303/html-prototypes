@@ -1,6 +1,6 @@
-import { TARGETS, TARGET_DATA, SYNC_SCHEMA_VERSION, businessDate, designerForAccount, targetForBatch, outputVersion, validateSyncForm, getOutputSync, prepareSync } from './sync-model.js?v=20261027-update18a';
-import { platformAccount } from './platform-context.js?v=20261027-update18a';
-import { dramaKey, findDrama } from './dramas.js?v=20261027-update18a';
+import { TARGETS, TARGET_DATA, SYNC_SCHEMA_VERSION, businessDate, designerForAccount, targetForBatch, outputVersion, validateSyncForm, getOutputSync, prepareSync } from './sync-model.js?v=20261027-update19c';
+import { platformAccount } from './platform-context.js?v=20261027-update19c';
+import { dramaKey, findDrama } from './dramas.js?v=20261027-update19c';
 
 // Only simulates delivery state; no target system or local video is contacted.
 export function createSyncUI(api) {

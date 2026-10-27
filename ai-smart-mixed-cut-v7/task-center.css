@@ -2,3 +2,5 @@
 @media(max-width:1000px){.task-card{align-items:flex-start}.task-card-actions{flex-direction:column;align-items:flex-end;gap:12px}.task-card-title h2{max-width:300px}}
 
 .task-material-table .material-name-link{display:block;max-width:100%;padding:4px 0;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:inherit}.task-material-table .material-name-link:hover{text-decoration:underline}.task-material-table .material-name-link:focus-visible{outline:2px solid #71d6db;outline-offset:2px}
+
+.task-detail-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px}.task-detail-footer .task-error{margin:0}.task-detail-actions{display:flex;justify-content:flex-end;gap:12px;margin-left:auto}.task-card-actions{gap:16px}.task-card-actions button{white-space:nowrap}

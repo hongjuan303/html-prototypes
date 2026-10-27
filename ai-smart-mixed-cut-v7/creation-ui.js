@@ -1,11 +1,11 @@
-import {titleStyleControls} from './title-style-ui.js?v=20261027-update18a';
-import {creationQuote,sourceMinutes} from './creation-cost.js?v=20261027-update18a';
-import {validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261027-update18a';
-import {resolveSource} from './sources.js?v=20261027-update18a';
-import {sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261027-update18a';
-import {bgmSelectionLabel} from './bgm-model.js?v=20261027-update18a';
-import {durationRange,durationRangeLabel,durationDisplay,durationError,DURATION_PRESETS,secondsLabel} from './duration-range.js?v=20261027-update18a';
-import {titlePreviewStyle,bgmVolumeError} from './packaging.js?v=20261027-update18a';
+import {titleStyleControls} from './title-style-ui.js?v=20261027-update19c';
+import {creationQuote} from './creation-cost.js?v=20261027-update19c';
+import {validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261027-update19c';
+import {resolveSource} from './sources.js?v=20261027-update19c';
+import {sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261027-update19c';
+import {bgmSelectionLabel} from './bgm-model.js?v=20261027-update19c';
+import {durationRange,durationRangeLabel,durationDisplay,durationError,DURATION_PRESETS,secondsLabel} from './duration-range.js?v=20261027-update19c';
+import {titlePreviewStyle,bgmVolumeError} from './packaging.js?v=20261027-update19c';
 const requiredMark='<span class="required" aria-hidden="true">*</span>';
 export const durationLabel=value=>durationRangeLabel(typeof value==='object'?value:{duration:value});
 export function renderCreationPreview(c,{esc}){
@@ -25,7 +25,7 @@ export function createForm(state,{busy},h){
  const quote=configured?creationQuote(state,c):{status:'empty'};
  let price='<strong class="cost-notice-title">待导入合集</strong>',help='';
  if(quote.status==='quoted'){
-  price=`<span>预估积分消耗</span>${button(quote.total.toLocaleString()+' 积分','creation-quote','estimated-points','aria-label="查看本次预估积分明细"')}`;
+  price=`<span>预估积分消耗</span><strong class="estimated-points">${quote.total.toLocaleString()} 积分</strong>`;
  }else if(configured){
   price='<strong class="cost-notice-title">积分消耗提示</strong>';
   help=quote.status==='unknown'&&quote.cloud?`当前未拿到原片总时长，所以积分预估不准，预计原片分析成本0.5元/分钟，具体积分消耗以平台实际扣费记录为准。`:quote.status==='unknown'?`原片信息暂未完整，暂无法预估积分。`:`完善制作配置后展示预估积分。`;
@@ -43,10 +43,4 @@ export function createForm(state,{busy},h){
  </div></section>
  <section class="section" id="packagingSettings"><div class="section-heading"><h2>包装设置</h2></div><div class="packaging">${[['bgm','BGM'],['title','引流小标题']].map(([k,l])=>`<label class="check-label"><input type="checkbox" data-config="${k}" ${c[k]?'checked':''}>${l}</label>`).join('')}</div>${c.bgm?`<div class="bgm-selection"><div><span class="muted">BGM</span><b>${esc(bgmSelectionLabel(c))}</b></div>${button('更换BGM','bgm-picker','text-btn')}</div><div class="bgm-volume-field"><label for="bgmVolumeSlider">${requiredMark}BGM音量</label><div class="bgm-volume-control"><input id="bgmVolumeSlider" data-bgm-volume type="range" min="0" max="100" step="1" value="${c.bgmVolume??20}" aria-label="BGM音量滑块"><div class="volume-number"><input id="bgmVolumeNumber" data-bgm-volume type="number" min="0" max="100" step="1" value="${c.bgmVolume??''}" required aria-required="true" aria-label="BGM音量百分比" aria-invalid="${Boolean(bgmVolumeError(c))}" aria-describedby="bgmVolumeError"><span>%</span></div></div><small id="bgmVolumeError" class="packaging-error" role="status" ${bgmVolumeError(c)?'':'hidden'}>${esc(bgmVolumeError(c)||'')}</small></div>`:''}${c.title?`<div class="inline-title-field">${field(requiredMark+'引流小标题',`<input type="text" data-config="titleText" required aria-required="true" aria-label="引流小标题" maxlength="24" placeholder="输入引流小标题，最多24字" value="${esc(c.titleText||'')}">`)}${titleStyleControls(c,h)}</div>`:''}</section>
  </div><aside class="preview-panel" aria-live="polite">${renderCreationPreview(c,h)}</aside></div>`;
-}
-
-export function creationQuoteDetails(state,{esc}){
- const q=creationQuote(state),c=state.config;
- if(q.status!=='quoted')return null;
- return `<div id="creationQuoteSummary" class="quote-summary"><span>本次预估消耗</span><strong>${q.total.toLocaleString()}<small> 积分</small></strong><p>${esc(resolveSource(c).title)} · 第 ${c.start}–${c.end} 集</p></div><dl id="creationQuoteBreakdown" class="quote-breakdown"><div><dt>原片总时长</dt><dd>${sourceMinutes(q.seconds)} 分钟</dd></div><div><dt>原片分析</dt><dd>${q.analysis.toLocaleString()} 积分</dd></div><div><dt>高光顺剪（${c.count}条）</dt><dd>${q.production.toLocaleString()} 积分</dd></div></dl><p class="helper">预估按当前配置计算，以实际结算为准。</p>`;
 }

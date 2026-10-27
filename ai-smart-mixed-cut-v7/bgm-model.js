@@ -1,5 +1,5 @@
-import {bgmVolumeError} from './packaging.js?v=20261027-update18a';
-import {platformAccount} from './platform-context.js?v=20261027-update18a';
+import {bgmVolumeError} from './packaging.js?v=20261027-update19c';
+import {platformAccount} from './platform-context.js?v=20261027-update19c';
 
 // The catalog represents the platform material library in this prototype.
 // Audition files are original, synthesized demonstration music, not production catalog assets.

@@ -19,4 +19,10 @@ flowchart TD
  results --> tasks
  tasks --> detail["查看详情：成功素材列表"]
  detail --> preview["点击素材名称打开播放器；可下载成功素材"]
- detail --> partial["部分失败：部分生成异常，请联系技术排查；成功素材仍可使用"]
+ detail --> partial["部分失败：可恢复提示重试，其余联系技术；成功素材仍可使用"]
+
+ analyze -->|结果解析或校验失败| validateRetry["重试：仅校验已有分析结果，不重新调用模型"]
+ validateRetry -->|通过| highlights
+ validateRetry -->|仍失败| failed
+ results -->|存在可恢复的合成失败| composeRetry["重试：仅失败项复用原方案合成，成功素材保持"]
+ composeRetry --> results

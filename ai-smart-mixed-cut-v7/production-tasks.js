@@ -1,8 +1,8 @@
-import {dramaKey} from './dramas.js?v=20261027-update18a';
-import {clone,modeLabel} from './engine.js?v=20261027-update18a';
-import {resolveSource} from './sources.js?v=20261027-update18a';
-import {nextTaskNumber,productionTime} from './material-identity.js?v=20261027-update18a';
-export const JOB_STAGES={analyzing:'分析片源',planning:'编排内容',waiting:'待确认条数',generating:'制作中',failed:'已失败',cancelled:'已取消',done:'已完成'};
+import {dramaKey} from './dramas.js?v=20261027-update19c';
+import {clone,modeLabel} from './engine.js?v=20261027-update19c';
+import {resolveSource} from './sources.js?v=20261027-update19c';
+import {nextTaskNumber,productionTime} from './material-identity.js?v=20261027-update19c';
+export const JOB_STAGES={validating:'重新校验中',analyzing:'分析片源',planning:'编排内容',waiting:'待确认条数',generating:'制作中',failed:'已失败',cancelled:'已取消',done:'已完成'};
 export const FAILURE_TYPES={
  timeout:{label:'生成服务暂时异常',action:'重试',retryable:true,help:'服务暂时异常，可按原参数重试。'},
  source:{label:'片源无法读取',action:'处理片源',retryable:false,help:'核对问题剧集及访问权限，修正后只重做失败项。'},
@@ -21,7 +21,7 @@ export function newJob(state,config,scenario='normal',replacement=null){
 export function jobForBatch(state,b){return (state.productionJobs||[]).find(j=>j.batchId===b.id);}
 export function taskEntries(state){
  const fromBatch=(b,j)=>{const outputs=b.outputs,failed=failedOutputs(b),outstanding=failed.filter(o=>!o.replacementJobId&&!o.failureDismissed),reworkFailed=outputs.filter(failedRevision),running=outputs.filter(o=>o.status==='pending'||o.reworkPending||o.repairing);return {...j,id:j?.id||b.id,number:j?.number||b.taskNumber,taskVersion:j?.taskVersion||b.taskVersion,completedAt:j?.completedAt||b.completedAt,batchId:b.id,config:b.config,sourceTitle:b.sourceTitle,created:j?.created||b.productionCreatedAt||b.created,requestedCount:j?.requestedCount||b.config.count,actualCount:outputs.length,success:outputs.filter(o=>['ready','issue'].includes(o.status)).length,failed:failed.length,unhandled:outstanding.length,reworkFailed:reworkFailed.length,cancelled:outputs.filter(o=>o.cancelled).length,running:running.length,generatingCount:outputs.filter(o=>o.status==='pending').length,revisionRunning:outputs.filter(o=>o.reworkPending||o.repairing).length,stage:running.length?'generating':outstanding.length||reworkFailed.length?'failed':'done',needsAttention:outstanding.length+reworkFailed.length>0};};
- const jobs=(state.productionJobs||[]).map(j=>{const b=state.batches.find(b=>b.id===j.batchId);return b?fromBatch(b,j):{...j,actualCount:0,success:0,failed:0,unhandled:0,reworkFailed:0,running:['analyzing','planning'].includes(j.stage)?1:0,needsAttention:['failed','waiting'].includes(j.stage)&&!j.dismissed&&!j.replacementJobId};});
+ const jobs=(state.productionJobs||[]).map(j=>{const b=state.batches.find(b=>b.id===j.batchId);return b?fromBatch(b,j):{...j,actualCount:0,success:0,failed:0,unhandled:0,reworkFailed:0,running:['analyzing','planning','validating'].includes(j.stage)?1:0,needsAttention:['failed','waiting'].includes(j.stage)&&!j.dismissed&&!j.replacementJobId};});
  return [...jobs,...state.batches.filter(b=>!jobs.some(j=>j.batchId===b.id)).map(b=>fromBatch(b))].sort((a,b)=>b.created.localeCompare(a.created)||Number(b.number)-Number(a.number));
 }
 const isActiveTask=j=>!j.dismissed&&!j.replacementJobId&&(j.running>0||j.needsAttention);

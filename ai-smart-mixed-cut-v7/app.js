@@ -1,31 +1,32 @@
-import {bgmVolumeError,TITLE_CONTROLS,TITLE_COLORS,titleControlError} from './packaging.js?v=20261027-update18a';
-import {createVideoPreview} from './video-preview.js?v=20261027-update18a';
-import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261027-update18a';
-import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261027-update18a';
-import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261027-update18a';
-import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261027-update18a';
-import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261027-update18a';
-import {createBgmUI} from './bgm-ui.js?v=20261027-update18a';
-import {assertBgmAvailable} from './bgm-model.js?v=20261027-update18a';
-import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261027-update18a';
-import {createCloudImport} from './cloud-import.js?v=20261027-update18a';
-import {createLocalUpload} from './local-upload.js?v=20261027-update18a';
-import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261027-update18a';
-import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261027-update18a';
-import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261027-update18a';
-import {contentSimilarity} from './content-ui.js?v=20261027-update18a';
-import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261027-update18a';
-import {qualitySummary} from './workflow-ui.js?v=20261027-update18a';
-import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261027-update18a';
-import {updatePlatformBalance} from './platform-shell.js?v=20261027-update18a';
-import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261027-update18a';
-import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261027-update18a';
-import {createSyncUI} from './sync-ui.js?v=20261027-update18a';
-import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261027-update18a';
-import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261027-update18a';
-import {createForm,renderCreationPreview,creationQuoteDetails} from './creation-ui.js?v=20261027-update18a';
-import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261027-update18a';
-import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261027-update18a';
+import {validateSavedAnalysis,beginTaskRetry,finishTaskRetries} from './task-retry.js?v=20261027-update19c';
+import {bgmVolumeError,TITLE_CONTROLS,TITLE_COLORS,titleControlError} from './packaging.js?v=20261027-update19c';
+import {createVideoPreview} from './video-preview.js?v=20261027-update19c';
+import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261027-update19c';
+import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261027-update19c';
+import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261027-update19c';
+import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261027-update19c';
+import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261027-update19c';
+import {createBgmUI} from './bgm-ui.js?v=20261027-update19c';
+import {assertBgmAvailable} from './bgm-model.js?v=20261027-update19c';
+import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261027-update19c';
+import {createCloudImport} from './cloud-import.js?v=20261027-update19c';
+import {createLocalUpload} from './local-upload.js?v=20261027-update19c';
+import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261027-update19c';
+import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261027-update19c';
+import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261027-update19c';
+import {contentSimilarity} from './content-ui.js?v=20261027-update19c';
+import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261027-update19c';
+import {qualitySummary} from './workflow-ui.js?v=20261027-update19c';
+import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261027-update19c';
+import {updatePlatformBalance} from './platform-shell.js?v=20261027-update19c';
+import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261027-update19c';
+import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261027-update19c';
+import {createSyncUI} from './sync-ui.js?v=20261027-update19c';
+import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261027-update19c';
+import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261027-update19c';
+import {createForm,renderCreationPreview} from './creation-ui.js?v=20261027-update19c';
+import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261027-update19c';
+import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261027-update19c';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
@@ -197,7 +198,7 @@ function applySourceAccess(scenario){
 }
 const runningJobs=new Map(),startingBatches=new Set();
 let progressPaging={page:1,pageSize:10};
-function refreshWork(){save();if(['tasks','assets','task-detail'].includes(view))render();if($('#dialog').open&&$('#dialog').classList.contains('production-drawer'))renderProgress();else if($('#dialog').open&&$('#dialog').dataset.failureJob)showTaskFailures($('#dialog').dataset.failureJob);}
+function refreshWork(){finishTaskRetries(state);save();if(['tasks','assets','task-detail'].includes(view))render();if($('#dialog').open&&$('#dialog').classList.contains('production-drawer'))renderProgress();else if($('#dialog').open&&$('#dialog').dataset.failureJob)showTaskFailures($('#dialog').dataset.failureJob);}
 function focusTask(id){openTask(id);}
 function renderProgress({scrollTop=false}={}){
  const p=progressPage(state,progressPaging);progressPaging={page:p.page,pageSize:p.pageSize};
@@ -258,6 +259,8 @@ async function runJob(j){
    if(sourcePermissionError(state,j.config))throw {kind:'source',message:'合集访问权限已变化'};
    const info=analysisInfo(state,j.config);
    if(!j.analysisSettled){if(state.balance<info.pending.length)throw {kind:'config',message:'当前积分不足，请补充后重新制作'};analyze(state,j.config);ensureContentPool(state,j.config);j.analysisCharge=info.pending.length;j.analysisSettled=true;state.balance-=info.pending.length;if(info.pending.length)state.ledger.unshift({id:j.id+'-analysis',jobId:j.id,batch:j.id,type:'新增剧集分析',points:-info.pending.length,at:new Date().toISOString()});}
+   j.analysisResult={raw:JSON.stringify(state.assets[assetKey(j.config)]),sourceKey:assetKey(j.config),start:j.config.start,end:j.config.end};
+   if(['analysis-parse','analysis-validation','analysis-invalid'].includes(j.scenario)){if(j.scenario==='analysis-invalid')j.analysisResult.raw='invalid-json';throw {kind:j.scenario==='analysis-parse'?'analysis_parse':'analysis_validation',message:'视频理解结果解析或校验失败'};}
    j.stage='planning';refreshWork();
   }
   await wait(850);if(!valid())return;
@@ -269,6 +272,30 @@ async function runJob(j){
   await generateJob(j);
  }catch(e){if(valid()){j.failedStage=j.stage;j.stage='failed';j.failureKind=e.kind||'timeout';j.error=e.message||GENERATION_ERROR;j.completedAt=new Date().toISOString();refreshWork();}}
  finally{if(runningJobs.get(j.id)===token)runningJobs.delete(j.id);}
+}
+function retryTask(id){
+ const j=state.productionJobs.find(j=>j.id===id),b=state.batches.find(b=>b.id===j?.batchId);
+ if(!editingSessionActive||!j)return;
+ try{
+  const error=sourcePermissionError(state,j.config);if(error)throw Error(error);
+  const scope=beginTaskRetry(state,j,b);refreshWork();
+  if(scope.kind==='analysis'){toast('正在重新校验已有分析结果');runSavedValidation(j);}
+  else{scope.outputIds.forEach((id,i)=>scheduleGenerated(b,b.outputs.find(o=>o.id===id),i,'normal'));toast('已提交 '+scope.outputIds.length+' 条失败素材重试');}
+ }catch(e){toast(e.message);}
+}
+async function runSavedValidation(j){
+ if(j.stage!=='validating'||runningJobs.has(j.id))return;
+ const token=Symbol(j.id);runningJobs.set(j.id,token);
+ try{
+  await new Promise(resolve=>setTimeout(resolve,1600));
+  if(runningJobs.get(j.id)!==token||j.stage!=='validating'||!state.productionJobs.includes(j))return;
+  const result=validateSavedAnalysis(j),cache=state.assets[assetKey(j.config)];
+  if(!cache||cache.revision!==result.revision)throw Error('原片分析版本已变化');
+  state.assets[assetKey(j.config)]=result; // Reuse persisted analysis only. Never call analyze here.
+  j.stage='planning';j.scenario='normal';delete j.failureKind;refreshWork();
+ }catch(e){j.stage='failed';j.error=e.message;j.failureKind='analysis_validation';j.completedAt=new Date().toISOString();refreshWork();toast('校验未通过，可重试；若仍失败，请联系技术排查');}
+ finally{if(runningJobs.get(j.id)===token)runningJobs.delete(j.id);}
+ if(j.stage==='planning')runJob(j);
 }
 async function generateJob(j){
  if(j.stage!=='waiting'||j.batchId||startingBatches.has(j.id))return;startingBatches.add(j.id);
@@ -371,7 +398,9 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'progress-page':changeProgressPage(el.dataset.page);break;
  case 'failure-examples':await addTaskExamples();break;
  case 'progress-example':await addTaskExamples([['progress-hold',10]]);break;
+ case 'retry-examples':await addTaskExamples([['partial-two',10],['all-fail',3],['analysis-validation',3],['analysis-invalid',3],['mixed-retry',10]]);break;
  case 'finish-progress-example':{for(const j of state.productionJobs.filter(j=>j.demoExampleKind==='progress-hold')){const b=state.batches.find(b=>b.id===j.batchId);if(!b)continue;j.scenario='normal';for(const [i,o] of b.outputs.entries())if(o.status==='pending'&&o.demoHeld){delete o.demoHeld;scheduleGenerated(b,o,i,'normal');}}closeModal();refreshWork();openProgress();break;}
+ case 'retry-task':retryTask(el.dataset.job);break;
  case 'handle-failures':showTaskFailures(el.dataset.job);break;
  case 'view-job-progress':openProgress({jobId:el.dataset.job});document.querySelector('[data-job-id="'+el.dataset.job+'"]')?.scrollIntoView({block:'center'});break;
  case 'regenerate-failures':{const b=batch();if(b)await regenerateFailures(b);break;}
@@ -401,7 +430,6 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'speed':state.config.speed=Number(el.dataset.value);save();render();break;
  case 'count':state.config.count=Number(el.dataset.value);save();render();break;
  case 'count-plus':case 'count-minus':state.config.count=Math.max(1,Math.min(20,(Number(state.config.count)||0)+(a==='count-plus'?1:-1)));save();render();break;
- case 'creation-quote':{const details=creationQuoteDetails(state,uiHelpers);if(!details){toast('原片信息或配置已变化，请重新查看预估');render();break;}modal('预估积分明细',details,button('关闭','close','secondary'));break;}
  case 'direct':prepare();break;
  case 'generate-available':{const j=state.productionJobs.find(j=>j.id===el.dataset.job);closeModal();if(j)await generateJob(j);break;}
  case 'new-drama':case 'import-collection':case 'source-picker':cloudImport.open();break;
@@ -461,7 +489,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'repair':{const b=batch(),o=output();if(sourcePermissionError(state,b.config)){toast(sourcePermissionError(state,b.config));return;}const i=Number(el.dataset.index),issue=o.issues[i];if(o.repairing||o.reworkPending||!issue)return;o.repairing=true;save();render();afterWork(()=>{if(!o.repairing||sourcePermissionError(state,b.config)){o.repairing=false;save();render();return;}o.issues=o.issues.filter(x=>x!==issue);o.repairing=false;o.status=o.issues.length?'issue':'ready';revise(o,'局部修复：'+issue.label);o.quality={status:o.issues.length?'attention':'passed',repaired:true,checkedAt:new Date().toISOString()};recordFeedback(state,b,o,{kind:'remedy',reason:'局部修复完成',at:issue.at,endAt:issue.endAt??null,scope:issue.scope||'segment',detail:issue.label});save();if(['review','assets','tasks'].includes(view))render();toast('局部修复完成，未新增扣费；请重新检查');},900);break;}
  case 'export-selected':exportPlans(selectedVisibleMaterials());break;
  case 'new-source-version':closeModal();state.config.source.fileVersion=(state.config.source.fileVersion||1)+1;save();render();toast('已切换新的示例原片版本，需要重新分析');break;
- case 'demo-tools':modal('演示设置',`<div class="list-row"><div><b>制作中样例</b><p>3条成功、7条制作中；保持进度供评审。</p></div><div class="actions">${button(state.productionJobs.some(j=>j.demoExampleKind==='progress-hold')?'查看样例':'添加样例','progress-example','secondary')}${state.batches.some(b=>b.outputs.some(o=>o.status==='pending'&&o.demoHeld))?button('完成样例','finish-progress-example','secondary'):''}</div></div><div class="list-row"><div><b>制作失败样例</b><p>部分失败、全部失败、分析失败；使用示例片源与积分。</p></div>${button(state.productionJobs.some(j=>['partial-three','all-fail','analysis-fail'].includes(j.demoExampleKind))?'查看样例':'添加样例','failure-examples','secondary')}</div><div class="list-row"><div><b>员工合集权限</b></div><select id="employeeAccessScenario" aria-label="员工合集权限">${SOURCE_ACCESS_SCENARIOS.map(item=>option(item.id,item.label,sourceAccess(state).scenario)).join('')}</select></div><div class="list-row"><div><b>生成场景</b><p>仅影响下一批</p></div><select id="generationScenario" aria-label="生成场景">${option('normal','全部成功',toolsScenario)}${option('partial','最后一条制作失败',toolsScenario)}${option('partial-three','最后三条分别失败：超时/片源/配置',toolsScenario)}${option('all-fail','全部制作失败',toolsScenario)}${option('analysis-fail','分析阶段失败（无成片）',toolsScenario)}${option('qc-repair','自动修复后通过',toolsScenario)}${option('qc-attention','一条需人工核对',toolsScenario)}${option('qc-fail','一条检查失败释放积分',toolsScenario)}</select></div><div hidden class="list-row"><div><b>单条返工场景</b><p>不影响其他成片</p></div><select id="reworkScenario" aria-label="单条返工场景">${option('normal','成功生成新版本',state.reworkScenario||'normal')}${option('failed','失败保留原片',state.reworkScenario||'normal')}</select></div><div class="list-row"><div><b>原片版本</b><p>演示重新分析新版本</p></div>${button('更换原片版本','new-source-version','secondary')}</div><div class="list-row"><div><b>手动片源示例</b><p>使用虚构故事板验证制作流程</p></div>${button('切换','manual-source','secondary')}</div><div class="list-row"><div><b>重置本版演示</b><p>只清除 V7 本机示例记录</p></div>${button('重置','reset-prompt','text-btn danger')}</div>`,button('保存设置','save-tools','primary'));break;
+ case 'demo-tools':modal('演示设置',`<div class="list-row"><div><b>可恢复失败样例</b><p>8/10成功、全部合成失败、校验失败，以及不可恢复项。</p></div>${button('添加重试样例','retry-examples','secondary')}</div><div class="list-row"><div><b>制作中样例</b><p>3条成功、7条制作中；保持进度供评审。</p></div><div class="actions">${button(state.productionJobs.some(j=>j.demoExampleKind==='progress-hold')?'查看样例':'添加样例','progress-example','secondary')}${state.batches.some(b=>b.outputs.some(o=>o.status==='pending'&&o.demoHeld))?button('完成样例','finish-progress-example','secondary'):''}</div></div><div class="list-row"><div><b>制作失败样例</b><p>部分失败、全部失败、分析失败；使用示例片源与积分。</p></div>${button(state.productionJobs.some(j=>['partial-three','all-fail','analysis-fail'].includes(j.demoExampleKind))?'查看样例':'添加样例','failure-examples','secondary')}</div><div class="list-row"><div><b>员工合集权限</b></div><select id="employeeAccessScenario" aria-label="员工合集权限">${SOURCE_ACCESS_SCENARIOS.map(item=>option(item.id,item.label,sourceAccess(state).scenario)).join('')}</select></div><div class="list-row"><div><b>生成场景</b><p>仅影响下一批</p></div><select id="generationScenario" aria-label="生成场景">${option('normal','全部成功',toolsScenario)}${option('partial','最后一条制作失败',toolsScenario)}${option('partial-three','最后三条分别失败：超时/片源/配置',toolsScenario)}${option('all-fail','全部制作失败',toolsScenario)}${option('analysis-fail','分析阶段失败（无成片）',toolsScenario)}${option('qc-repair','自动修复后通过',toolsScenario)}${option('qc-attention','一条需人工核对',toolsScenario)}${option('qc-fail','一条检查失败释放积分',toolsScenario)}</select></div><div hidden class="list-row"><div><b>单条返工场景</b><p>不影响其他成片</p></div><select id="reworkScenario" aria-label="单条返工场景">${option('normal','成功生成新版本',state.reworkScenario||'normal')}${option('failed','失败保留原片',state.reworkScenario||'normal')}</select></div><div class="list-row"><div><b>原片版本</b><p>演示重新分析新版本</p></div>${button('更换原片版本','new-source-version','secondary')}</div><div class="list-row"><div><b>手动片源示例</b><p>使用虚构故事板验证制作流程</p></div>${button('切换','manual-source','secondary')}</div><div class="list-row"><div><b>重置本版演示</b><p>只清除 V7 本机示例记录</p></div>${button('重置','reset-prompt','text-btn danger')}</div>`,button('保存设置','save-tools','primary'));break;
  case 'save-tools':{const scenario=$('#employeeAccessScenario').value;toolsScenario=$('#generationScenario').value;state.reworkScenario=$('#reworkScenario').value;applySourceAccess(scenario);save();closeModal();render();toast('演示设置已保存');break;}
  case 'reset-prompt':modal('重置 V7 演示','<p>清除本机 V7 示例任务、分析、标准与积分记录。其他版本不受影响。</p>',button('取消','close')+button('重置示例','reset','primary'));break;
  case 'reset':genTimers.forEach(clearTimeout);genTimers.clear();prepare.operation=null;busy=false;state=initialState();runningJobs.clear();startingBatches.clear();replacementContext=null;clearTaskSelection();libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};taskFilters=defaultTaskFilters();taskDraft={...taskFilters};syncUI.reset();currentBatch=null;currentOutput=null;reviewQueue=null;confirmFollowup=null;reworkDraft=null;narrationApplyContext=null;relatedOrigin=null;toolsScenario='normal';localVideo=null;save();closeModal();nav('create');break;
@@ -500,9 +528,11 @@ function scheduleGenerated(b,o,index,scenario){
  // Keep an explicit review fixture in progress across reloads; regular jobs still finish.
  if(scenario==='progress-hold'&&index>=3){o.demoHeld=true;delete o.simulatedDueAt;save();return;}
  const active=()=>{if(o.attempt!==attempt||o.status!=='pending'||!state.batches.includes(b))return false;if(sourcePermissionError(state,b.config)){o.attempt++;settleOutput(state,b,o,false);o.failure={kind:'source',label:'合集访问权限已变化'};refreshWork();return false;}return true;};
- const finish=(success,status='passed',kind=null)=>{if(!active())return;settleOutput(state,b,o,success);o.quality={status,checkedAt:new Date().toISOString()};if(!success)o.failure={kind:kind||'timeout',...(kind==='source'?{episode:b.config.start,label:'第 '+b.config.start+' 集无法读取'}:{})};else{delete o.failure;o.generatedAt=new Date().toISOString();}if(status==='attention'){o.status='issue';o.issues.push({type:'continuity',label:'剧情衔接需核对',at:Math.round(o.segments[1]?.start||0),detail:'请核对回叙衔接。',source:'auto'});}refreshWork();};
+ const finish=(success,status='passed',kind=null)=>{if(!active())return;settleOutput(state,b,o,success);o.quality={status,checkedAt:new Date().toISOString()};if(!success)o.failure={kind:kind||'timeout',...(['timeout','interrupted','temporary_io'].includes(kind)?{stage:'composition',recoverable:true,code:kind}:{}),...(kind==='source'?{episode:b.config.start,label:'第 '+b.config.start+' 集无法读取'}:{})};else{delete o.failure;o.generatedAt=new Date().toISOString();}if(status==='attention'){o.status='issue';o.issues.push({type:'continuity',label:'剧情衔接需核对',at:Math.round(o.segments[1]?.start||0),detail:'请核对回叙衔接。',source:'auto'});}refreshWork();};
  const delay=Math.max(250,(o.simulatedDueAt||Date.now()+2600+index*450)-Date.now());o.simulatedDueAt=Date.now()+delay;save();
  afterWork(()=>{if(!active())return;const special=index===b.outputs.length-1;
+  if(scenario==='partial-two'&&index>=b.outputs.length-2){finish(false,'failed',index===b.outputs.length-2?'interrupted':'temporary_io');return;}
+  if(scenario==='mixed-retry'&&index>=b.outputs.length-3){finish(false,'failed',['timeout','temporary_io','source'][index-(b.outputs.length-3)]);return;}
   if(scenario==='all-fail'){o.autoRetryCount=2;finish(false,'failed','timeout');return;}
   if(scenario==='partial-three'&&index>=Math.max(0,b.outputs.length-3)){const offset=index-Math.max(0,b.outputs.length-3),kind=['timeout','source','config'][offset];o.autoRetryCount=kind==='timeout'?2:0;finish(false,'failed',kind);return;}
   if(special&&scenario==='partial'){o.autoRetryCount=2;finish(false,'failed','timeout');return;}
@@ -561,7 +591,7 @@ document.addEventListener('input',e=>{if(e.target.id?.startsWith('cloud')){cloud
 // Restore durable simulated job records. Real services run independently of the page.
 for(const b of state.batches){for(const o of b.outputs){if(o.repairing)o.repairing=false;if(o.reworkPending)finishRework(state,b,o,false);} }
 save();render();
-for(const j of state.productionJobs)if(['analyzing','planning'].includes(j.stage))runJob(j);
+for(const j of state.productionJobs){if(j.stage==='validating')runSavedValidation(j);else if(['analyzing','planning'].includes(j.stage))runJob(j);}
 for(const b of state.batches)for(const [index,o] of b.outputs.entries())if(o.status==='pending')scheduleGenerated(b,o,index,o.generationScenario||'normal');
 // Optional agent access uses the same local demo actions as the visible UI.
 if(document.modelContext?.registerTool){

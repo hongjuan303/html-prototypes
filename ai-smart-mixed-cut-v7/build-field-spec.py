@@ -63,9 +63,10 @@ for context, note in notes.items():
                 if item.get('default') is not None and item.get('default') != '' and ('默认' + text(item['default'])) not in item.get('definition', '').replace('：', '').replace(':', '').replace(' ', ''):
                     main.append('默认：' + text(item['default']))
                 main += [text(item[key]) for key in ['behavior', 'copy'] if item.get(key)]
-                body.append(f"- **{item['name']}：** " + ' '.join(main))
+                body.append((f"- **{item['name']}：** " + ' '.join(main)).rstrip())
                 for state in item.get('states', []):
-                    body.append(f"  - **{state['name']}：** {text(state['definition'])}")
+                    label = f"**{state['name']}：** " if state.get('name') else ''
+                    body.append(f"  - {label}{text(state['definition'])}")
                 if item.get('values'):
                     body.append('  枚举：' + '；'.join(f"**{value['label']}**（{text(value.get('meaning', ''))}）" for value in item['values']) + '。')
                 for key, label in [('source', '数据源'), ('validation', '校验')]:

@@ -1,10 +1,10 @@
-import {DEFAULT_PACKAGING,TITLE_FONT,titleSettingsError} from './packaging.js?v=20261027-update18a';
-import {durationRange,durationError,normalizeDuration} from './duration-range.js?v=20261027-update18a';
-import {normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261027-update18a';
-import {assignBgmSnapshot} from './bgm-assignment.js?v=20261027-update18a';
-import {EPISODES,getEpisodes} from './story-data.js?v=20261027-update18a';
-import {resolveSource} from './sources.js?v=20261027-update18a';
-import {fullNarrationCandidates} from './full-narration.js?v=20261027-update18a';
+import {DEFAULT_PACKAGING,TITLE_FONT,titleSettingsError} from './packaging.js?v=20261027-update19c';
+import {durationRange,durationError,normalizeDuration} from './duration-range.js?v=20261027-update19c';
+import {normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261027-update19c';
+import {assignBgmSnapshot} from './bgm-assignment.js?v=20261027-update19c';
+import {EPISODES,getEpisodes} from './story-data.js?v=20261027-update19c';
+import {resolveSource} from './sources.js?v=20261027-update19c';
+import {fullNarrationCandidates} from './full-narration.js?v=20261027-update19c';
 export {getEpisodes};
 export const clone=v=>JSON.parse(JSON.stringify(v));
 export const CREATION_MODES=Object.freeze(['highlight']);
@@ -120,5 +120,20 @@ export function activeRule(state){return state.rules.find(r=>r.id===state.active
 export function outputCost(batch){const accepted=batch.outputs.filter(o=>o.confirmed&&o.confirmedVersion===o.contentVersion&&o.status==='ready').length;return {accepted,points:batch.cost.analysis+batch.cost.production,per:accepted?round((batch.cost.analysis+batch.cost.production)/accepted):null};}
 let batchSequence=0;
 export function createBatch(state,c,plans,analysisCharge=0){const error=validate(c);if(error)throw Error(error);if(!Array.isArray(plans)||!plans.length||plans.length>c.count)throw Error('请选择有效的制作方案');if(plans.some(p=>p.mode!==c.mode||(c.mode==='narrated'&&(p.narrationStructure!==c.narrationStructure||narrationSpeed(p)!==narrationSpeed(c)))||(isFullNarration(c)&&(!p.segments?.length||p.segments.some(s=>s.type!=='narration'||!s.footage||s.sourceAudio!=='muted')))))throw Error('制作方式已变化，请重新生成方案');const production=plans.length*productionRate(c),total=production;if(total>state.balance)throw Error('示例积分不足，请减少条数');const id='V7-'+Date.now().toString(36).toUpperCase()+'-'+(++batchSequence).toString(36).toUpperCase();const rule=clone(activeRule(state));const b={id,created:new Date().toISOString(),config:clone(c.mode==='narrated'?{...c,narrationSpeed:narrationSpeed(c)}:c),rule,sourceTitle:resolveSource(c).title,analysisSnapshot:clone(state.assets[assetKey(c)]||null),outputs:plans.map((p,i)=>({...clone(p),bgmSnapshot:assignBgmSnapshot(c,p),id:id+'-'+(i+1),planId:p.id,status:'pending',contentVersion:1,confirmedVersion:null,confirmed:false,issues:[],revisions:[],qualityBaseline:clone(p)})),status:'running',cost:{quoted:analysisCharge+production,analysis:analysisCharge,production:0,frozen:production,released:0,refunded:0,unit:productionRate(c)},simulated:true};state.balance-=total;state.ledger.unshift({id:id+'-freeze',batch:id,type:'冻结制作额度',points:-production,at:new Date().toISOString()});state.batches.unshift(b);return b;}
-export function settleOutput(state,b,o,success){if(o.status!=='pending')return;const rate=b.cost.unit;b.cost.frozen=Math.max(0,b.cost.frozen-rate);if(success){o.status='ready';b.cost.production+=rate;}else{o.status='failed';b.cost.released=(b.cost.released||0)+rate;state.balance+=rate;state.ledger.unshift({id:o.id+'-release',batch:b.id,type:'生成失败 · 释放额度',points:rate,at:new Date().toISOString()});}if(!b.outputs.some(x=>x.status==='pending')){b.status='done';b.completedAt=new Date().toISOString();state.ledger.unshift({id:b.id+'-settled',batch:b.id,type:'制作已结算（从冻结扣除）',points:0,settled:b.cost.production,at:new Date().toISOString()});}}
+export function settleOutput(state,b,o,success){
+ if(o.status!=='pending')return;
+ // A free retry must not consume another pending output's frozen balance or release it twice.
+ const rate=o.pendingCharge??b.cost.unit;
+ delete o.pendingCharge;
+ b.cost.frozen=Math.max(0,b.cost.frozen-rate);
+ if(success){o.status='ready';b.cost.production+=rate;}
+ else{
+  o.status='failed';
+  if(rate>0){b.cost.released=(b.cost.released||0)+rate;state.balance+=rate;state.ledger.unshift({id:o.id+'-release-'+(o.attempt||1),batch:b.id,type:'生成失败 · 释放额度',points:rate,at:new Date().toISOString()});}
+ }
+ if(!b.outputs.some(x=>x.status==='pending')){
+  b.status='done';b.completedAt=new Date().toISOString();
+  if(rate>0)state.ledger.unshift({id:b.id+'-settled',batch:b.id,type:'制作已结算（从冻结扣除）',points:0,settled:b.cost.production,at:new Date().toISOString()});
+ }
+}
 export function revise(o,description){o.contentVersion++;o.confirmed=false;o.confirmedVersion=null;o.revisions.unshift({version:o.contentVersion,description,at:new Date().toISOString()});}

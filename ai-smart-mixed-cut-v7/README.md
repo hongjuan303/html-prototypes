@@ -1,12 +1,12 @@
-# 智能混剪 V7 · update18a
+# 智能混剪 V7 · update19c
 
-2026-10-27，update18a移除账户积分流水弹窗及相关入口，制作页只保留预估积分消耗及数值，取消下方查看明细链接和结算提示；保留点击数值查看本次费用组成。右侧说明和PRD同步。
+2026-10-27，update19c按确认内容更新重试说明：处理完成后重新判断重试资格，失败素材重试不新增收费；原型同步取消失败素材重试的额度冻结和扣费，避免再次失败重复退还。已有成功视频、任务身份和历史费用保持。原型、右侧说明、字段稿与PRD同步发布。预估积分仅展示总值，已移除预估明细弹窗。
 
 ## 查看
 
-- 本地原型与说明：[V7 update18a](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update18a)
+- 本地原型与说明：[V7 update19c](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19c)
 
-- 在线原型与说明：[V7 update18a](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update18a)
+- 在线原型与说明：[V7 update19c](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19c)
 
 - 原型与右侧说明：`review.html`
 - 独立原型：`index.html`
@@ -14,7 +14,7 @@
 - 精简PRD：`prd.html` / `PRD.md`
 - 逐字段规则：`FIELD-SPEC.md`，来自与右侧相同的`review-notes.js`。
 
-本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update18a 。
+本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19c 。
 
 ## 本版
 
@@ -38,7 +38,7 @@
 - update14m：任务版本显示V1/V2；部分异常与全部异常提示区分。素材按“剧名_高光顺剪_提交日期_v任务版本_两位序号”命名，点击名称进入预览；原型旧自动名称迁移到此格式并保留previousMaterialName，自定义名称保持。
 - 最终时长自定义最短/最长，双滑块、输入、秒/分单位和快捷范围联动；以整秒保存，按变速后成片校验。
 - 包装只保留BGM和引流小标题；保留原片已有字幕，不新增字幕。
-- 成片管理使用任务卡片及任务详情；成功素材即时预览/下载，异常统一联系技术，无用户重试或单条/批量同步。提交成功提示关闭后清空制作表单。
+- 成片管理使用任务卡片及任务详情；成功素材即时预览/下载，可恢复失败可重试，其余异常联系技术，不提供单条/批量同步。提交成功提示关闭后清空制作表单。
 - 右侧对齐快手短剧上传：橙色页面说明/原型说明、字段同段分层条目、区域与主要操作编号。宽度520px/较窄440px，原型1280px独立可读，整体横向滚动。
 
 ## 原型边界
@@ -50,3 +50,5 @@
 ## 文档构建
 
 `python3 build-field-spec.py` 从右侧规则生成字段稿；`python3 build-prd.py` 从PRD.md生成可读HTML。业务规则以产品说明为准，模拟代码不替代正式服务端实现。
+
+- update19重试为本机状态与合成进度模拟，未接服务端模型、任务队列或真实计费。演示设置可添加8/10成功、全合成失败、可恢复/不可恢复校验及混合失败样例；旧任务缺失明确错误分类时不自动开放重试。正式重试资格、缓存校验和幂等须由服务端实现。
