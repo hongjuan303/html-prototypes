@@ -36,7 +36,7 @@ def processing(steps):
     return result
 
 
-body = ['# 智能混剪 V7 字段交互与测试说明', '2026-10-23', '按页面、原型序号及筛选项、列表项、操作项查阅。']
+body = ['# 智能混剪 V7 字段交互与测试说明', '2026-10-27', '按页面、原型序号及筛选项、列表项、操作项查阅。']
 for context, note in notes.items():
     body += ['## ' + note['title'], '### 页面说明', '**页面路径：** ' + note['path'], '**功能作用：** ' + note['purpose']]
     for path in dict.fromkeys(note.get('pathByOwner', {}).values()):

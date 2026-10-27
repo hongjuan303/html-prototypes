@@ -440,9 +440,9 @@ export const REVIEW_NOTES = {
       },
       {
         "number": 8,
-        "title": "积分消耗与明细",
+        "title": "预估积分消耗",
         "anchor": {
-          "selector": "#creationCostNotice [data-action=\"creation-quote\"], #creationCostNotice [data-action=\"platform-points\"]",
+          "selector": "#actionBar .price-line",
           "placement": "left"
         },
         "category": "操作项",
@@ -456,12 +456,12 @@ export const REVIEW_NOTES = {
           {
             "name": "积分消耗提示",
             "kind": "text",
-            "definition": "网盘尚未取得所选原片完整时长时，显示“当前未拿到原片总时长，所以积分预估不准，预计原片分析成本0.5元/分钟，具体积分消耗详情可前往【查看积分明细】查看。”所选各集时长完整后切换预估积分；任一所选集时长缺失时不猜测数值。本地信息不完整提示暂无法预估；配置未填完显示待完善，不显示0积分。"
+            "definition": "网盘尚未取得所选原片完整时长时，显示“当前未拿到原片总时长，所以积分预估不准，预计原片分析成本0.5元/分钟，具体积分消耗以平台实际扣费记录为准。”所选各集时长完整后切换预估积分；任一所选集时长缺失时不猜测数值。本地信息不完整提示暂无法预估；配置未填完显示待完善，不显示0积分。"
           },
           {
-            "name": "查看积分明细",
+            "name": "点击预估积分数值",
             "kind": "action",
-            "definition": "有预估时，点击积分数值或查看积分明细，打开本次预估明细；无预估时，提示中的入口打开平台账户积分明细。所有查看操作不生成任务、不扣费，关闭保留原配置。"
+            "definition": "有预估时仅展示“预估积分消耗 X 积分”，不另设查看明细链接或结算提示；点击数值可查看本次预估组成。无预估时沿用费用提示。查看不生成任务、不扣费，关闭保留配置。"
           }
         ]
       },
@@ -769,128 +769,6 @@ export const REVIEW_NOTES = {
         "category": "操作项"
       }
     ]
-  },
-  "platform-points": {
-    "title": "积分明细",
-    "sections": [
-      {
-        "number": 1,
-        "title": "平台积分概览",
-        "anchor": {
-          "selector": ".platform-balance-summary",
-          "index": 0,
-          "placement": "left"
-        },
-        "items": [
-          {
-            "name": "可用积分",
-            "kind": "text",
-            "definition": "当前可继续提交的积分余额，冻结时已经从可用额扣除。",
-            "default": "读取平台当前可用余额。无记录时按平台真实余额展示；获取异常时提示加载失败，不置为任意默认积分。",
-            "behavior": "同源共享记录更新及窗口聚焦刷新；明细打开时快照变化重绘。接主平台余额，不另建混剪钱包。"
-          },
-          {
-            "name": "冻结积分",
-            "kind": "text",
-            "definition": "当前批次尚未结算或释放的制作/创作重做额度合计。",
-            "default": "无任务0。",
-            "behavior": "开工时增加；成功从冻结结算，失败/取消释放并加回可用余额；不把冻结额当最终已扣消费。"
-          },
-          {
-            "name": "混剪已结算",
-            "kind": "text",
-            "definition": "混剪制作成功与有效新增分析的已结算消费汇总。",
-            "default": "0。",
-            "behavior": "展示已扣分析/制作费用及退款后的净消费；冻结、释放、退款分开记录，结果与平台账本一致。"
-          },
-          {
-            "name": "平台账户共用积分",
-            "kind": "text",
-            "definition": "说明积分沿用主平台账户。"
-          },
-          {
-            "name": "关闭 / 右上角关闭",
-            "kind": "action",
-            "behavior": "只读退出，不改余额、费用或任务。"
-          }
-        ],
-        "source": "主平台账户余额、当前生效费率及分析/制作的冻结、结算、释放和退款流水。",
-        "category": "列表项"
-      },
-      {
-        "number": 2,
-        "title": "积分流水",
-        "anchor": {
-          "selector": ".platform-ledger-table",
-          "index": 0,
-          "placement": "left"
-        },
-        "items": [
-          {
-            "name": "时间",
-            "kind": "text",
-            "definition": "每条流水的发生时间。",
-            "behavior": "按发生时间倒序展示平台流水；仅展示当前账户有权限查看的记录。"
-          },
-          {
-            "name": "功能 / 项目",
-            "kind": "text",
-            "definition": "固定功能「智能混剪」及流水类型。",
-            "values": [
-              {
-                "value": "analysis",
-                "label": "新增剧集分析",
-                "meaning": "有效新增分析完成后实际扣除"
-              },
-              {
-                "value": "freeze",
-                "label": "冻结制作额度",
-                "meaning": "首次制作开工预扣可用额、进入冻结"
-              },
-              {
-                "value": "settled",
-                "label": "制作已结算（从冻结扣除）",
-                "meaning": "成功制作从冻结确认消费，不再次扣可用额"
-              },
-              {
-                "value": "release",
-                "label": "生成失败 · 释放额度",
-                "meaning": "未成功生成释放冻结并恢复可用额"
-              },
-              {
-                "value": "retry",
-                "label": "失败项重试冻结",
-                "meaning": "失败项补生成开工再次冻结该条额"
-              }
-            ],
-            "behavior": "分析、制作、失败释放和退款分别记录；退款不混写为释放，取消记录真实原因。"
-          },
-          {
-            "name": "积分变化",
-            "kind": "text",
-            "definition": "流水对可用余额的本次数值变化。",
-            "behavior": "负数表示分析扣费或冻结减少可用额，正数加「+」表示释放恢复可用额；结算从冻结扣除显示0，而结算金额在说明列，不重复扣可用余额。"
-          },
-          {
-            "name": "说明",
-            "kind": "text",
-            "definition": "结算额或关联批次标识。",
-            "behavior": "展示对应任务、交易标识、扣费主体和费用说明；分析、制作可追溯且不可重复结算。"
-          },
-          {
-            "name": "暂无消费记录",
-            "kind": "status",
-            "definition": "无有效流水时整行空态。",
-            "behavior": "仅表示没有消费流水，不代表余额为0。"
-          }
-        ],
-        "source": "主平台账户余额、当前生效费率及分析/制作的冻结、结算、释放和退款流水。",
-        "category": "列表项"
-      }
-    ],
-    "path": "容量万相 → 工具箱 → 智能混剪 → 积分明细",
-    "purpose": "核对主平台账户余额及混剪分析、制作的积分流水。",
-    "background": "在当前流程中完成配置并明确操作结果。"
   },
   "platform-account": {
     "title": "账户信息",
@@ -2185,27 +2063,11 @@ export const REVIEW_NOTES = {
             "name": "结算提示",
             "kind": "text",
             "definition": "固定显示“预估按当前配置计算，以实际结算为准。”；预估不触发冻结或扣费。"
-          }
-        ]
-      },
-      {
-        "number": 3,
-        "title": "查看账户积分明细",
-        "category": "操作项",
-        "anchor": {
-          "selector": "#dialogActions [data-action=\"platform-points\"]",
-          "placement": "left"
-        },
-        "items": [
-          {
-            "name": "查看账户积分明细",
-            "kind": "action",
-            "definition": "打开平台原有账户明细，查看可用积分、冻结积分与实际流水。关闭返回制作页，保留配置。"
           },
           {
-            "name": "关闭",
+            "name": "关闭 / 右上角关闭",
             "kind": "action",
-            "definition": "关闭当前弹窗返回制作页，不修改配置或积分。"
+            "definition": "关闭预估明细返回制作页，保留当前配置，不修改积分。"
           }
         ]
       }

@@ -1,7 +1,7 @@
-import {dramaKey} from './dramas.js?v=20261023-update17b';
-import {clone,modeLabel} from './engine.js?v=20261023-update17b';
-import {resolveSource} from './sources.js?v=20261023-update17b';
-import {nextTaskNumber,productionTime} from './material-identity.js?v=20261023-update17b';
+import {dramaKey} from './dramas.js?v=20261027-update18a';
+import {clone,modeLabel} from './engine.js?v=20261027-update18a';
+import {resolveSource} from './sources.js?v=20261027-update18a';
+import {nextTaskNumber,productionTime} from './material-identity.js?v=20261027-update18a';
 export const JOB_STAGES={analyzing:'分析片源',planning:'编排内容',waiting:'待确认条数',generating:'制作中',failed:'已失败',cancelled:'已取消',done:'已完成'};
 export const FAILURE_TYPES={
  timeout:{label:'生成服务暂时异常',action:'重试',retryable:true,help:'服务暂时异常，可按原参数重试。'},

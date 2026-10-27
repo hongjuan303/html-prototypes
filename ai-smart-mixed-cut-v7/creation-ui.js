@@ -1,11 +1,11 @@
-import {titleStyleControls} from './title-style-ui.js?v=20261023-update17b';
-import {creationQuote,sourceMinutes} from './creation-cost.js?v=20261023-update17b';
-import {validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261023-update17b';
-import {resolveSource} from './sources.js?v=20261023-update17b';
-import {sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261023-update17b';
-import {bgmSelectionLabel} from './bgm-model.js?v=20261023-update17b';
-import {durationRange,durationRangeLabel,durationDisplay,durationError,DURATION_PRESETS,secondsLabel} from './duration-range.js?v=20261023-update17b';
-import {titlePreviewStyle,bgmVolumeError} from './packaging.js?v=20261023-update17b';
+import {titleStyleControls} from './title-style-ui.js?v=20261027-update18a';
+import {creationQuote,sourceMinutes} from './creation-cost.js?v=20261027-update18a';
+import {validate,outputSpeed,OUTPUT_SPEEDS} from './engine.js?v=20261027-update18a';
+import {resolveSource} from './sources.js?v=20261027-update18a';
+import {sourcePermissionError,isConfiguredSource} from './source-access.js?v=20261027-update18a';
+import {bgmSelectionLabel} from './bgm-model.js?v=20261027-update18a';
+import {durationRange,durationRangeLabel,durationDisplay,durationError,DURATION_PRESETS,secondsLabel} from './duration-range.js?v=20261027-update18a';
+import {titlePreviewStyle,bgmVolumeError} from './packaging.js?v=20261027-update18a';
 const requiredMark='<span class="required" aria-hidden="true">*</span>';
 export const durationLabel=value=>durationRangeLabel(typeof value==='object'?value:{duration:value});
 export function renderCreationPreview(c,{esc}){
@@ -23,14 +23,12 @@ export function createForm(state,{busy},h){
  const {heading,button,esc,tag,option,field,footer,sourceLabel}=h,c=state.config,permissionError=sourcePermissionError(state,c),configured=isConfiguredSource(c)&&!permissionError,s=configured?resolveSource(c):null;
  const error=permissionError||validate(c),blocked=busy||Boolean(error);
  const quote=configured?creationQuote(state,c):{status:'empty'};
- const pointsLink=button('查看积分明细','platform-points','text-btn inline-points-link');
- let price='<strong class="cost-notice-title">待导入合集</strong>',help=pointsLink;
+ let price='<strong class="cost-notice-title">待导入合集</strong>',help='';
  if(quote.status==='quoted'){
   price=`<span>预估积分消耗</span>${button(quote.total.toLocaleString()+' 积分','creation-quote','estimated-points','aria-label="查看本次预估积分明细"')}`;
-  help=`${button('查看积分明细','creation-quote','text-btn inline-points-link')}<span class="muted">以实际结算为准</span>`;
  }else if(configured){
   price='<strong class="cost-notice-title">积分消耗提示</strong>';
-  help=quote.status==='unknown'&&quote.cloud?`当前未拿到原片总时长，所以积分预估不准，预计原片分析成本0.5元/分钟，具体积分消耗详情可前往${pointsLink}查看。`:quote.status==='unknown'?`原片信息暂未完整，暂无法预估积分。${pointsLink}`:`完善制作配置后展示预估积分。${pointsLink}`;
+  help=quote.status==='unknown'&&quote.cloud?`当前未拿到原片总时长，所以积分预估不准，预计原片分析成本0.5元/分钟，具体积分消耗以平台实际扣费记录为准。`:quote.status==='unknown'?`原片信息暂未完整，暂无法预估积分。`:`完善制作配置后展示预估积分。`;
  }
  footer(price,`<span id="creationCostNotice">${help}</span>${configured&&error?`<span class="creation-error">${esc(error)}</span>`:''}`,button(busy?'正在处理…':'生成视频','direct','primary',blocked?'disabled':''));
 

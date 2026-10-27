@@ -1,10 +1,10 @@
-import {DEFAULT_PACKAGING,TITLE_FONT,titleSettingsError} from './packaging.js?v=20261023-update17b';
-import {durationRange,durationError,normalizeDuration} from './duration-range.js?v=20261023-update17b';
-import {normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261023-update17b';
-import {assignBgmSnapshot} from './bgm-assignment.js?v=20261023-update17b';
-import {EPISODES,getEpisodes} from './story-data.js?v=20261023-update17b';
-import {resolveSource} from './sources.js?v=20261023-update17b';
-import {fullNarrationCandidates} from './full-narration.js?v=20261023-update17b';
+import {DEFAULT_PACKAGING,TITLE_FONT,titleSettingsError} from './packaging.js?v=20261027-update18a';
+import {durationRange,durationError,normalizeDuration} from './duration-range.js?v=20261027-update18a';
+import {normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261027-update18a';
+import {assignBgmSnapshot} from './bgm-assignment.js?v=20261027-update18a';
+import {EPISODES,getEpisodes} from './story-data.js?v=20261027-update18a';
+import {resolveSource} from './sources.js?v=20261027-update18a';
+import {fullNarrationCandidates} from './full-narration.js?v=20261027-update18a';
 export {getEpisodes};
 export const clone=v=>JSON.parse(JSON.stringify(v));
 export const CREATION_MODES=Object.freeze(['highlight']);

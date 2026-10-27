@@ -1,12 +1,12 @@
-# 智能混剪 V7 · update17b
+# 智能混剪 V7 · update18a
 
-2026-10-23，update17b恢复网盘“分析链接→查看剧集→选集导入”，同步右侧说明及PRD。BGM/标题沿update15e，V6保留。
+2026-10-27，update18a移除账户积分流水弹窗及相关入口，制作页只保留预估积分消耗及数值，取消下方查看明细链接和结算提示；保留点击数值查看本次费用组成。右侧说明和PRD同步。
 
 ## 查看
 
-- 本地原型与说明：[V7 update17b](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261023-update17b)
+- 本地原型与说明：[V7 update18a](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update18a)
 
-- 在线原型与说明：[V7 update17b](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261023-update17b)
+- 在线原型与说明：[V7 update18a](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update18a)
 
 - 原型与右侧说明：`review.html`
 - 独立原型：`index.html`
@@ -14,7 +14,7 @@
 - 精简PRD：`prd.html` / `PRD.md`
 - 逐字段规则：`FIELD-SPEC.md`，来自与右侧相同的`review-notes.js`。
 
-本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261023-update17b 。
+本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update18a 。
 
 ## 本版
 

@@ -1,4 +1,4 @@
-import {issueTypes,issueRangeLabel,formatTimeCode,currentPreferences,ISSUE_TYPES} from './feedback-model.js?v=20261023-update17b';
+import {issueTypes,issueRangeLabel,formatTimeCode,currentPreferences,ISSUE_TYPES} from './feedback-model.js?v=20261027-update18a';
 
 const required='<span class="required" aria-hidden="true">*</span>';
 export function feedbackForm(c,o,at,{esc,option}){
