@@ -1,4 +1,4 @@
-import {REVIEW_NOTES} from './review-notes.js?v=20261027-update19c';
+import {REVIEW_NOTES} from './review-notes.js?v=20261027-update19d';
 if(new URLSearchParams(location.search).get('review')==='1'&&window.parent!==window){
   const dialog=document.querySelector('#dialog');
   document.querySelector('.brand').setAttribute('href','./toolbox.html?review=1');

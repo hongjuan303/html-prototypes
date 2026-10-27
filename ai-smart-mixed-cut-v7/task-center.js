@@ -1,8 +1,8 @@
-import {retryScope} from './task-retry.js?v=20261027-update19c';
-import {taskEntries} from './production-tasks.js?v=20261027-update19c';
-import {dramaKey} from './dramas.js?v=20261027-update19c';
-import {productionTime} from './material-identity.js?v=20261027-update19c';
-import {modeLabel,normalizeCreationConfig} from './engine.js?v=20261027-update19c';
+import {retryScope} from './task-retry.js?v=20261027-update19d';
+import {taskEntries} from './production-tasks.js?v=20261027-update19d';
+import {dramaKey} from './dramas.js?v=20261027-update19d';
+import {productionTime} from './material-identity.js?v=20261027-update19d';
+import {modeLabel,normalizeCreationConfig} from './engine.js?v=20261027-update19d';
 
 export const TASK_STATUS={running:'剪辑中',done:'已完成',partial:'部分失败',failed:'已失败'};
 export const GENERATION_ERROR='生成异常，请联系技术排查';

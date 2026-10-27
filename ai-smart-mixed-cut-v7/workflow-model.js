@@ -1,6 +1,6 @@
-import {assignBgmSnapshot} from './bgm-assignment.js?v=20261027-update19c';
-import {compareContent,curateCandidates} from './content-model.js?v=20261027-update19c';
-import {clone,planBatch,assetKey} from './engine.js?v=20261027-update19c';
+import {assignBgmSnapshot} from './bgm-assignment.js?v=20261027-update19d';
+import {compareContent,curateCandidates} from './content-model.js?v=20261027-update19d';
+import {clone,planBatch,assetKey} from './engine.js?v=20261027-update19d';
 
 const round=value=>Math.round(value*100)/100;
 const amount=value=>Number.isFinite(value)?Math.max(0,value):0;

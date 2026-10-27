@@ -1,12 +1,12 @@
-# 智能混剪 V7 · update19c
+# 智能混剪 V7 · update19d
 
-2026-10-27，update19c按确认内容更新重试说明：处理完成后重新判断重试资格，失败素材重试不新增收费；原型同步取消失败素材重试的额度冻结和扣费，避免再次失败重复退还。已有成功视频、任务身份和历史费用保持。原型、右侧说明、字段稿与PRD同步发布。预估积分仅展示总值，已移除预估明细弹窗。
+2026-10-27，update19d默认展示两条可重试任务：8/10成功和全部合成失败。进入成片管理直接使用，不需从演示设置添加。样例只补充一次，不扣积分、不覆盖已有任务或草稿；重试结果刷新后保留。产品重试规则不变；原型与说明同步发布。
 
 ## 查看
 
-- 本地原型与说明：[V7 update19c](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19c)
+- 本地原型与说明：[V7 update19d](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19d)
 
-- 在线原型与说明：[V7 update19c](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19c)
+- 在线原型与说明：[V7 update19d](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19d)
 
 - 原型与右侧说明：`review.html`
 - 独立原型：`index.html`
@@ -14,7 +14,7 @@
 - 精简PRD：`prd.html` / `PRD.md`
 - 逐字段规则：`FIELD-SPEC.md`，来自与右侧相同的`review-notes.js`。
 
-本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19c 。
+本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261027-update19d 。
 
 ## 本版
 
@@ -51,4 +51,4 @@
 
 `python3 build-field-spec.py` 从右侧规则生成字段稿；`python3 build-prd.py` 从PRD.md生成可读HTML。业务规则以产品说明为准，模拟代码不替代正式服务端实现。
 
-- update19重试为本机状态与合成进度模拟，未接服务端模型、任务队列或真实计费。演示设置可添加8/10成功、全合成失败、可恢复/不可恢复校验及混合失败样例；旧任务缺失明确错误分类时不自动开放重试。正式重试资格、缓存校验和幂等须由服务端实现。
+- update19重试为本机状态与合成进度模拟，未接服务端模型、任务队列或真实计费。首次打开自动补充8/10成功和全部合成失败两条可操作样例，不走生成或计费流程；旧任务缺失明确错误分类时不自动开放重试。正式重试资格、缓存校验和幂等须由服务端实现。

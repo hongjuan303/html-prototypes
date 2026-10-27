@@ -1,5 +1,5 @@
-import {bgmVolume} from './packaging.js?v=20261027-update19c';
-import {BGM_LIBRARY, normalizeBgmSelection, validateBgmSelection, bgmLocalMetadata, listBgmLocalAssets, getBgmLocalAsset, commitBgmLocalAssets, inspectBgmFile} from './bgm-model.js?v=20261027-update19c';
+import {bgmVolume} from './packaging.js?v=20261027-update19d';
+import {BGM_LIBRARY, normalizeBgmSelection, validateBgmSelection, bgmLocalMetadata, listBgmLocalAssets, getBgmLocalAsset, commitBgmLocalAssets, inspectBgmFile} from './bgm-model.js?v=20261027-update19d';
 
 const durationLabel = seconds => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
 const sizeLabel = size => size < 1048576 ? Math.max(1, Math.round(size / 1024)) + ' KB' : (size / 1048576).toFixed(1) + ' MB';
