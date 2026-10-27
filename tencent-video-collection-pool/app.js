@@ -34,8 +34,8 @@
         <label>推送状态 <select name="status">${options(['待完善','未推送','待提交分集','推送失败','结果待确认','已提交'],ui.filter.status,'全部')}</select></label>${mark('filters')}
         <div class="filter-actions"><button class="primary">查询</button><button type="button" data-action="reset-filter">重置</button></div>
       </form>
-      <div class="toolbar">${op('重新推送','push-selected','push',`${!p.enabled?'disabled':''}`,'primary')}${op('批量校验','check-selected','check')}<span class="meta">已选择 ${ui.selected.size} 项</span><div class="right">${op('推送记录','pool-logs','logs')}${op('修改池元素','members','',`data-id="${p.id}"`)}</div></div>
-      <div class="panel table-panel"><div class="table-caption"><strong>池内合集 ${mark('list')}</strong><span>素材与分集来源：现有合集 · 本页仅展示腾讯接口提交结果</span></div>
+      <div class="toolbar">${op('重新推送','push-selected','push',`${!p.enabled?'disabled':''}`,'primary')}<span class="meta">已选择 ${ui.selected.size} 项</span></div>
+      <div class="panel table-panel"><div class="table-caption"><strong>池内合集 ${mark('list')}</strong></div>
         <table><thead><tr><th width="35"><input type="checkbox" aria-label="全选当前合集" id="select-all" ${rows.length&&rows.every(d=>ui.selected.has(d.id))?'checked':''}></th><th>合集ID</th><th>合集名称</th><th>资料状态</th><th>推送状态</th><th>最近推送时间</th><th>操作</th></tr></thead>
           <tbody>${rows.map(d=>`<tr>
             <td><input type="checkbox" aria-label="选择${esc(d.title)}" data-select="${d.id}" ${ui.selected.has(d.id)?'checked':''}></td>
