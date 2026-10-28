@@ -49,3 +49,5 @@ button.proof-file-remove:hover{background:#fef0f0;color:#e85f55}
 .file-picker.proof-upload-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;flex:none;width:112px;height:124px;padding:10px;border:1px dashed #c5d1df;border-radius:3px;background:transparent;color:#7e8c9f}
 .file-picker.proof-upload-tile:hover{background:#f0f7ff;border-color:#409eff;color:#1685ed}
 .proof-upload-plus{font-size:27px;line-height:32px;font-weight:300}
+.failure-reason-cell{white-space:normal;min-width:220px;max-width:280px}
+.failure-reason{color:#d4544a;font-size:12px;line-height:1.7;overflow-wrap:anywhere}

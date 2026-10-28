@@ -26,22 +26,21 @@
   function renderCollections(){
     const rows=collectionRows(),p=pool();
     return `<div class="page-heading"><button class="text back" data-action="pools">‹ 返回合集池</button><h1>${esc(p.name)}</h1><span class="subtext">池ID：${p.id}</span>${tag(p.enabled?'启用':'停用')}</div>
-      ${!p.enabled?'<div class="banner warning">当前池已停用，可维护资料，启用后可重新推送。</div>':''}
+      ${!p.enabled?'<div class="banner warning">当前池已停用，可查看提交结果并维护资料。</div>':''}
       <form class="panel filter-panel" id="collection-filters">
         <label>合集ID <input name="id" placeholder="请输入合集ID" value="${esc(ui.filter.id)}"></label>
         <label>合集名称 <input name="name" placeholder="请输入合集名称" value="${esc(ui.filter.name)}"></label>
         <label>提交状态 <select name="status">${options(TV.submissionStates,ui.filter.status,'全部')}</select></label>${mark('filters')}
         <div class="filter-actions"><button class="primary">查询</button><button type="button" data-action="reset-filter">重置</button></div>
       </form>
-      <div class="toolbar">${op('重新推送','push-selected','push',`${!p.enabled?'disabled':''}`,'primary')}<span class="meta">已选择 ${ui.selected.size} 项</span></div>
-      <div class="panel table-panel"><div class="table-caption"><strong>池内合集 ${mark('list')}</strong></div>
-        <table><thead><tr><th width="35"><input type="checkbox" aria-label="全选当前合集" id="select-all" ${rows.length&&rows.every(d=>ui.selected.has(d.id))?'checked':''}></th><th>合集ID</th><th>合集名称</th><th>资料状态</th><th>提交状态</th><th>最近推送时间</th><th>操作</th></tr></thead>
+      <div class="panel table-panel"><div class="table-caption"><strong>池内合集 ${mark('list')}</strong><span>已选择 ${ui.selected.size} 项</span></div>
+        <table><thead><tr><th width="35"><input type="checkbox" aria-label="全选当前合集" id="select-all" ${rows.length&&rows.every(d=>ui.selected.has(d.id))?'checked':''}></th><th>合集ID</th><th>合集名称</th><th>资料状态</th><th>提交状态</th><th width="280">提交失败原因</th><th>最近推送时间</th><th>操作</th></tr></thead>
           <tbody>${rows.map(d=>`<tr>
             <td><input type="checkbox" aria-label="选择${esc(d.title)}" data-select="${d.id}" ${ui.selected.has(d.id)?'checked':''}></td>
             <td>${d.id}</td><td><span class="drama-name">${esc(d.title)}</span></td>
-            <td>${tag(TV.validate(d).length?'待补充':'已齐全')}</td><td>${tag(d.status)}</td><td>${esc(d.lastTime||'—')}</td>
-            <td><div class="table-actions">${op('编辑','edit','metadata',`data-id="${d.id}"`,'text')}${op('重新推送','push-one','push',`data-id="${d.id}"`,'text')}</div></td>
-          </tr>`).join('')||'<tr><td colspan="7" class="empty">暂无符合条件的合集</td></tr>'}</tbody>
+            <td>${tag(TV.validate(d).length?'待补充':'已齐全')}</td><td>${tag(d.status)}</td><td class="failure-reason-cell">${d.status==='提交失败'?`<div class="failure-reason">${esc(TV.submissionFailureReason(d))}</div>`:'<span class="muted">—</span>'}</td><td>${esc(d.lastTime||'—')}</td>
+            <td><div class="table-actions">${op('编辑','edit','metadata',`data-id="${d.id}"`,'text')}</div></td>
+          </tr>`).join('')||'<tr><td colspan="8" class="empty">暂无符合条件的合集</td></tr>'}</tbody>
         </table><div class="pagination"><span>共 ${rows.length} 条</span><span>10条/页</span><span>‹</span><b>1</b><span>›</span></div>
       </div>`;
   }

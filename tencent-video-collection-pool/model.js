@@ -10,6 +10,12 @@ window.TV = (() => {
     d.status=d.unknownStage?'提交中':submissionStates.includes(d.status)?d.status:legacy[d.status]||'未提交';
     return d;
   }
+  function submissionFailureReason(d){
+    if(d.status!=='提交失败')return '';
+    const failed=(d.logs||[]).find(log=>['明确失败','提交失败'].includes(log.state));
+    const message=String(failed?.message||'').trim();
+    return message?(failed.stage?failed.stage+'：':'')+message:'暂无失败原因';
+  }
   const basic=[
     {key:'kind',label:'内容品类',type:'select',options:[['duanfan','短番'],['ai','AI真人短剧']],desc:'必填，按品类调用对应专辑接口；短番的is_ai_real_person_short_drama传false，AI真人短剧传true。普通真人实拍短剧的适用范围待腾讯确认。'},
     {key:'user_title',label:'专辑名称',desc:'必填，默认带入合集名称，可维护腾讯专辑名称，不回写源合集。'},
@@ -160,5 +166,5 @@ window.TV = (() => {
     const db={version:1,dramas,pools:[{id:36,name:'腾讯视频漫剧合作池',type:'腾讯视频',enabled:true,ids:dramas.slice(0,6).map(d=>d.id)},{id:37,name:'腾讯视频待推送合集池',type:'腾讯视频',enabled:false,ids:[900321,900327]},{id:26,name:'OPPO精品短剧推送池',type:'OPPO',enabled:true,ids:[900323]},{id:28,name:'全民K歌精品短剧推送池',type:'全民K歌',enabled:true,ids:[900322]},{id:3,name:'公号推广合集池',type:'微信',enabled:true,ids:[900321,900323]}],nextPool:38};
     prepareConditionalExample(db);prepareContentSourceExamples(db);prepareCollectionCoverDefaults(db);prepareActorPhotoDefaults(db);return db;
   }
-  return {themes,keywords,types,basic,auth,ai,covers,submissionStates,normalizeSubmissionStatus,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
+  return {themes,keywords,types,basic,auth,ai,covers,submissionStates,normalizeSubmissionStatus,submissionFailureReason,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
 })();
