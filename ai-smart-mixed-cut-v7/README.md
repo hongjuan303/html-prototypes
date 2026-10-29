@@ -1,12 +1,12 @@
-# 智能混剪 V7 · update21c
+# 智能混剪 V7 · update21d
 
-2026-10-29，导入状态仅展示状态值，文字颜色与剧名一致，移除彩色圆点、数量进度及下方提示；失败支持直接重试、确认删除。导入合集新增剧目管理Tab，可单选已完成剧目。原型、右侧说明与PRD同步。
+2026-10-29，导入状态仅展示状态值，沿用成片管理青/绿/红状态标签，移除数量进度及下方提示；失败支持直接重试、确认删除。导入合集新增剧目管理Tab，可单选已完成剧目。原型、右侧说明与PRD同步。
 
 ## 查看
 
-- 本地原型与说明：[V7 update21c](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261029-update21c)
+- 本地原型与说明：[V7 update21d](http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261029-update21d)
 
-- 在线原型与说明：[V7 update21c](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261029-update21c)
+- 在线原型与说明：[V7 update21d](https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261029-update21d)
 
 - 原型与右侧说明：`review.html`
 - 独立原型：`index.html`
@@ -14,7 +14,7 @@
 - 精简PRD：`prd.html` / `PRD.md`
 - 逐字段规则：`FIELD-SPEC.md`，来自与右侧相同的`review-notes.js`。
 
-本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261029-update21c 。
+本地从工作区根目录启动静态服务后，地址为 http://127.0.0.1:8765/html-prototypes/ai-smart-mixed-cut-v7/review.html?v=20261029-update21d 。
 
 ## 本版
 

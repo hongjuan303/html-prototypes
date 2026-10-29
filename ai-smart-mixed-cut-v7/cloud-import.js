@@ -1,4 +1,4 @@
-import {renderImportStatus} from './import-state.js?v=20261029-update21c';
+import {renderImportStatus} from './import-state.js?v=20261029-update21d';
 // Interaction fixture only. No share is fetched here. Production replaces
 // analyzeShare with its authorized file-list API; this is not AI plot analysis.
 export function shareLink(value){

@@ -1,6 +1,6 @@
-import {clone,normalizeCreationConfig} from './engine.js?v=20261029-update21c';
-import {dramaKey,findDrama,registerDrama} from './dramas.js?v=20261029-update21c';
-import {importSummary} from './import-state.js?v=20261029-update21c';
+import {clone,normalizeCreationConfig} from './engine.js?v=20261029-update21d';
+import {dramaKey,findDrama,registerDrama} from './dramas.js?v=20261029-update21d';
+import {importSummary} from './import-state.js?v=20261029-update21d';
 
 export function applyDramaImport(state,input,start,end,{inLibrary=false,now=Date.now()}={}){
  const source=clone(input),total=source.kind==='manual'?source.files.length:end-start+1;

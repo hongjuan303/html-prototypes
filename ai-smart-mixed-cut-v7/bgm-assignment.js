@@ -1,6 +1,6 @@
-import {BGM_LIBRARY,BGM_LIBRARY_SOURCE,normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261029-update21c';
+import {BGM_LIBRARY,BGM_LIBRARY_SOURCE,normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261029-update21d';
 
-import {bgmVolume} from './packaging.js?v=20261029-update21c';
+import {bgmVolume} from './packaging.js?v=20261029-update21d';
 
 // Snapshot the explicitly selected music for each output.
 export function assignBgmSnapshot(config,output){

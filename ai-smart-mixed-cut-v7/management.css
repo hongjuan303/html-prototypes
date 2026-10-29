@@ -25,6 +25,6 @@
 /* Creation quote: amount and details belong to the same compact cost area. */
 .price-line .estimated-points{border:0;border-radius:4px;background:transparent;color:var(--green);font-size:24px;font-weight:600;padding:0 4px;line-height:1.4}
 /* Import lifecycle uses a compact status column and one aligned action group. */
-.drama-table th:nth-child(2){width:206px}.drama-table th:nth-child(3){width:56px}.drama-table th:nth-child(4),.drama-table th:nth-child(5){width:76px}.drama-table th:last-child{width:190px}.drama-table .drama-name strong{word-break:break-word}.import-state{font-size:13px;font-weight:400;color:var(--ink);white-space:nowrap}.import-delete-summary p{margin-top:12px;color:var(--muted)}
+.drama-table th:nth-child(2){width:206px}.drama-table th:nth-child(3){width:56px}.drama-table th:nth-child(4),.drama-table th:nth-child(5){width:76px}.drama-table th:last-child{width:190px}.drama-table .drama-name strong{word-break:break-word}.import-delete-summary p{margin-top:12px;color:var(--muted)}
 
 #dramaActionsHeading{display:inline-block;margin-left:26px}

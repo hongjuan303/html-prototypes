@@ -1,7 +1,7 @@
-import {findDrama,listDramas} from './dramas.js?v=20261029-update21c';
-import {clone,normalizeCreationConfig} from './engine.js?v=20261029-update21c';
-import {sourcePermissionError} from './source-access.js?v=20261029-update21c';
-import {importSelectionError} from './import-state.js?v=20261029-update21c';
+import {findDrama,listDramas} from './dramas.js?v=20261029-update21d';
+import {clone,normalizeCreationConfig} from './engine.js?v=20261029-update21d';
+import {sourcePermissionError} from './source-access.js?v=20261029-update21d';
+import {importSelectionError} from './import-state.js?v=20261029-update21d';
 
 function selectionError(state,drama){
  return sourcePermissionError(state,drama.config)||importSelectionError(drama.source)||(!drama.source.availableEpisodes.length?'剧集信息未就绪':'');

@@ -17,5 +17,5 @@ export function importSelectionError(source){
 }
 export function renderImportStatus(source){
  const p=importSummary(source);
- return `<span class="import-state">${p.label}</span>`;
+ return `<span class="import-state task-status ${{importing:'running',complete:'done',failed:'failed'}[p.status]}">${p.label}</span>`;
 }

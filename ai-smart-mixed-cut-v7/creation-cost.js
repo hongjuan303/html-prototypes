@@ -1,5 +1,5 @@
-import {estimate,getEpisodes} from './engine.js?v=20261029-update21c';
-import {resolveSource} from './sources.js?v=20261029-update21c';
+import {estimate,getEpisodes} from './engine.js?v=20261029-update21d';
+import {resolveSource} from './sources.js?v=20261029-update21d';
 
 // Source readiness is determined by the selected episodes, never the entry page.
 export function selectedSourceInfo(config){
