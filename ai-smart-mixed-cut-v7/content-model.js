@@ -1,4 +1,4 @@
-import {assetKey,getEpisodes,EVENTS,overlap,isFullNarration} from './engine.js?v=20261029-update21d';
+import {assetKey,getEpisodes,EVENTS,overlap,isFullNarration} from './engine.js?v=20261029-update21e';
 
 const normalize=text=>String(text||'').replace(/[\s，。！？：；、“”‘’,.!?;:"'\-]/g,'').toLowerCase();
 const eventFor=id=>EVENTS.find(e=>id>=e.start&&id<=e.end)?.id||'episode-'+id;

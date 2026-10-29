@@ -1,5 +1,5 @@
-import {outputTable} from './workflow-ui.js?v=20261029-update21d';
-import {failureOf} from './production-tasks.js?v=20261029-update21d';
+import {outputTable} from './workflow-ui.js?v=20261029-update21e';
+import {failureOf} from './production-tasks.js?v=20261029-update21e';
 const confirmed=o=>o.status==='ready'&&o.confirmed&&o.confirmedVersion===o.contentVersion&&!o.narrationDraft;
 export function materialMatches(o,c,f){
  if(!['ready','issue'].includes(o.status))return false;

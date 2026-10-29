@@ -1,5 +1,5 @@
-import {compareContent} from './content-model.js?v=20261029-update21d';
-import {assetKey} from './engine.js?v=20261029-update21d';
+import {compareContent} from './content-model.js?v=20261029-update21e';
+import {assetKey} from './engine.js?v=20261029-update21e';
 
 // Expose only actionable high similarity. Sharing one event alone is common
 // for drama creatives and does not meet the model's duplicate condition.

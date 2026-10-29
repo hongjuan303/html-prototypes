@@ -1,13 +1,13 @@
-import {findDrama,listDramas} from './dramas.js?v=20261029-update21d';
-import {clone,normalizeCreationConfig} from './engine.js?v=20261029-update21d';
-import {sourcePermissionError} from './source-access.js?v=20261029-update21d';
-import {importSelectionError} from './import-state.js?v=20261029-update21d';
+import {findDrama,listDramas} from './dramas.js?v=20261029-update21e';
+import {clone,normalizeCreationConfig} from './engine.js?v=20261029-update21e';
+import {sourcePermissionError} from './source-access.js?v=20261029-update21e';
+import {importSelectionError,importSummary} from './import-state.js?v=20261029-update21e';
 
 function selectionError(state,drama){
  return sourcePermissionError(state,drama.config)||importSelectionError(drama.source)||(!drama.source.availableEpisodes.length?'剧集信息未就绪':'');
 }
 export function importableDramas(state){
- return listDramas(state).map(drama=>({...drama,selectionError:selectionError(state,drama)}));
+ return listDramas(state).filter(drama=>importSummary(drama.source).status==='complete').map(drama=>({...drama,selectionError:selectionError(state,drama)}));
 }
 export function librarySelectionConfig(state,id){
  const drama=findDrama(state,id);
