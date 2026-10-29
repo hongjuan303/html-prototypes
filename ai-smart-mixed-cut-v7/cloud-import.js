@@ -1,3 +1,4 @@
+import {renderImportStatus} from './import-state.js?v=20261029-update21c';
 // Interaction fixture only. No share is fetched here. Production replaces
 // analyzeShare with its authorized file-list API; this is not AI plot analysis.
 export function shareLink(value){
@@ -28,7 +29,7 @@ export async function analyzeCloudShareDemo(){
  // Fixed 30-episode fixture, never claimed as real source metadata or durations.
  return Array.from({length:30},(_,i)=>({id:'fixture-episode-'+(i+1),episode:i+1,name:`第${String(i+1).padStart(2,'0')}集.mp4`}));
 }
-export function createCloudImport({modal,closeModal,button,esc,onImport,toast,localUpload,analyzeShare=analyzeCloudShareDemo}){
+export function createCloudImport({modal,closeModal,button,esc,onImport,toast,localUpload,getDramas=()=>[],onSelectDrama,analyzeShare=analyzeCloudShareDemo}){
  let draft=null,revision=0,localOpened=false;
  const required='<span class="required" aria-hidden="true">*</span>';
  function formValues(){
@@ -39,10 +40,15 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
   const start=document.querySelector('#cloudStart'),end=document.querySelector('#cloudEnd');
   if(start)draft.start=start.value===''?null:Number(start.value);
   if(end)draft.end=end.value===''?null:Number(end.value);
+  draft.libraryQuery=document.querySelector('#cloudLibraryQuery')?.value??draft.libraryQuery;
+  draft.libraryMarket=document.querySelector('#cloudLibraryMarket')?.value??draft.libraryMarket;
+ }
+ function modeTabs(){
+  return `<div class="import-mode-tabs" id="importModes" role="tablist" aria-label="导入方式">${[['cloud','网盘导入'],['local','本地上传'],...(draft.allowLibrary?[['library','剧目管理']]:[])].map(([value,label])=>button(label,'cloud-mode',draft.mode===value?'active':'',`data-mode="${value}" role="tab" aria-selected="${draft.mode===value}" ${localUpload.isBusy()||draft.loading?'disabled':''}`)).join('')}</div>`;
  }
  function commonHeader(){
   const disabled=localUpload.isBusy()?'disabled':'';
-  return `<div class="import-mode-tabs" id="importModes" role="tablist" aria-label="导入方式">${[['cloud','网盘导入'],['local','本地上传']].map(([value,label])=>button(label,'cloud-mode',draft.mode===value?'active':'',`data-mode="${value}" role="tab" aria-selected="${draft.mode===value}" ${disabled} ${draft.loading?'disabled':''}`)).join('')}</div>
+  return `${modeTabs()}
    <section id="cloudBasics"><div class="field"><label for="cloudTitle">${required}短剧名称</label><input id="cloudTitle" maxlength="80" placeholder="请输入短剧名称" value="${esc(draft.title)}" required ${disabled}></div>
    <div class="field"><label for="cloudMarket">${required}业务类型</label><select id="cloudMarket" required ${disabled}><option value="">请选择业务类型</option><option value="domestic" ${draft.market==='domestic'?'selected':''}>国内短剧</option><option value="overseas" ${draft.market==='overseas'?'selected':''}>海外短剧</option></select></div></section>`;
  }
@@ -52,7 +58,7 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
   return draft.error?null:{title,market:draft.market};
  }
  function localForm(){
-  const options={isVisible:()=>draft?.mode==='local',header:()=>`<div class="cloud-form local-import-basics">${commonHeader()}<p id="cloudError" class="cloud-error" role="alert" ${draft.error?'':'hidden'}>${esc(draft.error||'')}</p></div>`,metadata};
+  const options={title:'导入合集',isVisible:()=>draft?.mode==='local',header:()=>`<div class="cloud-form local-import-basics">${commonHeader()}<p id="cloudError" class="cloud-error" role="alert" ${draft.error?'':'hidden'}>${esc(draft.error||'')}</p></div>`,metadata};
   if(!localOpened){localOpened=true;localUpload.open(options);}else localUpload.refresh();
  }
  function episodesHTML(){
@@ -63,6 +69,7 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
  function render(){
   if(!draft)return;
   if(draft.mode==='local'){localForm();return;}
+  if(draft.mode==='library'){libraryForm();return;}
   modal('导入合集',`<div class="cloud-form">
    ${commonHeader()}
    <section id="cloudShare"><div class="field"><label for="cloudLink">${required}网盘链接</label><textarea id="cloudLink" rows="2" placeholder="粘贴完整网盘分享内容（含链接和提取码）" required>${esc(draft.link)}</textarea></div><div class="cloud-link-actions">${button(draft.loading?'分析中':'分析链接','cloud-analyze','secondary',draft.loading?'disabled':'')}</div><p id="cloudAnalyzeError" class="cloud-error" role="alert" ${draft.analysisError?'':'hidden'}>${esc(draft.analysisError||'')}</p></section>
@@ -70,6 +77,26 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
    <p id="cloudError" class="cloud-error" role="alert" ${draft.error?'':'hidden'}>${esc(draft.error||'')}</p>
   </div>`,button('取消','close')+button('导入合集','cloud-confirm','primary',!draft.files.length||draft.loading?'disabled':''));
   document.querySelector('#dialog').classList.add('cloud-import-dialog');document.querySelector('#dialog').dataset.importMode='cloud';refreshRange();
+ }
+ function libraryRows(){
+  const all=getDramas(),{query,market}=draft.libraryFilters;
+  return {all,rows:all.filter(d=>(market==='all'||d.source.market===market)&&(!query||d.title.toLowerCase().includes(query.toLowerCase())))};
+ }
+ function refreshLibrarySelection(){
+  const selected=libraryRows().rows.find(d=>d.id===draft.libraryId&&!d.selectionError);
+  document.querySelectorAll('[data-library-row]').forEach(row=>{const radio=row.querySelector('input');radio.checked=Boolean(selected&&radio.dataset.id===selected.id);row.classList.toggle('selected',radio.checked);});
+  document.querySelector('#cloudLibrarySelected').textContent=selected?'已选：'+selected.title:'未选择剧目';
+  document.querySelector('[data-action="cloud-library-confirm"]').disabled=!selected;
+ }
+ function libraryForm(){
+  const {all,rows}=libraryRows();
+  if(!rows.some(d=>d.id===draft.libraryId&&!d.selectionError))draft.libraryId='';
+  modal('导入合集',`<div class="cloud-form">${modeTabs()}
+   <div class="import-library-filters" id="cloudLibraryFilters"><input id="cloudLibraryQuery" aria-label="搜索已有剧目" placeholder="剧目名称" value="${esc(draft.libraryQuery)}"><select id="cloudLibraryMarket" aria-label="筛选业务类型">${[['all','全部业务类型'],['domestic','国内短剧'],['overseas','海外短剧']].map(([value,label])=>`<option value="${value}" ${draft.libraryMarket===value?'selected':''}>${label}</option>`).join('')}</select>${button('查询','cloud-library-query','primary')}${button('重置','cloud-library-reset')}</div>
+   <div class="import-library-list" id="cloudLibraryList"><table><thead><tr><th aria-label="选择"></th><th>剧目名称</th><th>业务类型</th><th>导入状态</th><th>集数</th></tr></thead><tbody>${rows.map((d,index)=>`<tr data-library-row class="${d.id===draft.libraryId?'selected':''} ${d.selectionError?'unavailable':''}"><td><input id="cloudLibraryChoice${index}" type="radio" name="libraryDrama" aria-label="选择${esc(d.title)}" data-action="cloud-library-select" data-id="${esc(d.id)}" ${d.selectionError?'disabled':''} ${d.id===draft.libraryId?'checked':''}></td><td><label class="import-library-name" for="cloudLibraryChoice${index}"><span class="import-library-cover">${d.source.cover?`<img src="${esc(d.source.cover)}" alt="">`:'▹'}</span><span><strong title="${esc(d.title)}">${esc(d.title)}</strong>${d.selectionError&&!d.selectionError.startsWith('导入')?`<small>${esc(d.selectionError)}</small>`:''}</span></label></td><td>${{domestic:'国内短剧',overseas:'海外短剧'}[d.source.market]||'—'}</td><td>${renderImportStatus(d.source,esc)}</td><td>${d.totalEpisodes??'—'}</td></tr>`).join('')||`<tr><td colspan="5" class="import-library-empty">${all.length?'没有符合条件的剧目':'暂无剧目，请通过网盘导入或本地上传添加'}</td></tr>`}</tbody></table></div>
+   <div class="import-library-summary"><span>共 ${rows.length} 部</span><span id="cloudLibrarySelected" role="status"></span></div><p id="cloudError" class="cloud-error" role="alert" ${draft.error?'':'hidden'}>${esc(draft.error||'')}</p>
+  </div>`,button('取消','close')+button('使用剧目','cloud-library-confirm','primary','disabled'));
+  document.querySelector('#dialog').classList.add('cloud-import-dialog');document.querySelector('#dialog').dataset.importMode='library';refreshLibrarySelection();
  }
  function refreshRange(){
   if(!draft?.files.length)return;
@@ -94,7 +121,18 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
  }
  async function handle(action,el){
   if(!draft)return;formValues();
-  if(action==='cloud-mode'){if(localUpload.isBusy()||draft.loading||!['cloud','local'].includes(el.dataset.mode))return;draft.mode=el.dataset.mode;draft.error='';render();return;}
+  if(action==='cloud-mode'){if(localUpload.isBusy()||draft.loading||!['cloud','local',...(draft.allowLibrary?['library']:[])].includes(el.dataset.mode))return;draft.mode=el.dataset.mode;draft.error='';render();return;}
+  if(action.startsWith('cloud-library-')){
+   if(draft.mode!=='library'||!draft.allowLibrary)return;
+   if(action==='cloud-library-query'){draft.libraryFilters={query:draft.libraryQuery.trim(),market:draft.libraryMarket};libraryForm();}
+   if(action==='cloud-library-reset'){draft.libraryQuery='';draft.libraryMarket='all';draft.libraryFilters={query:'',market:'all'};libraryForm();}
+   if(action==='cloud-library-select'){draft.libraryId=el.dataset.id;draft.error='';refreshLibrarySelection();document.querySelector('#cloudError').hidden=true;}
+   if(action==='cloud-library-confirm'){
+    try{if(!draft.libraryId)throw Error('请选择剧目');onSelectDrama(draft.libraryId);closeModal();toast('已使用所选剧目');}
+    catch(error){draft.error=error.message||'选择失败，请重试';libraryForm();}
+   }
+   return;
+  }
   if(action==='cloud-range'){draft.start=Number(el.dataset.start);draft.end=Number(el.dataset.end);draft.error='';render();return;}
   if(action==='cloud-analyze'){
    if(draft.loading)return;
@@ -124,8 +162,8 @@ export function createCloudImport({modal,closeModal,button,esc,onImport,toast,lo
    if(draft.error){render();return;}
    const selected=draft.files.filter(file=>file.episode>=draft.start&&file.episode<=draft.end);
    const source={kind:'cloud',assetId:'cloud-'+crypto.randomUUID(),...basics,shareUrl:draft.parsedUrl,shareText:draft.link.trim(),fileVersion:1,importStatus:'resolved',requestedRange:{start:draft.start,end:draft.end},totalEpisodes:draft.files.at(-1).episode,availableEpisodes:selected.map(file=>file.episode),files:selected,cover:'',simulated:false,mockImport:true};
-   try{onImport(source,draft.start,draft.end);closeModal();toast('已导入所选剧集');}catch{draft.error='导入提交失败，请重试';render();}
+   try{onImport(source,draft.start,draft.end);closeModal();toast('导入已提交，可前往剧目管理查看进度');}catch{draft.error='导入提交失败，请重试';render();}
   }
  }
- return {open(){localUpload.cancel();localOpened=false;revision++;draft={mode:'cloud',title:'',market:'',link:'',files:[],parsedText:'',start:null,end:null,error:'',analysisError:'',loading:false};render();},cancel(){revision++;draft=null;localOpened=false;localUpload.cancel();},input,handle};
+ return {open({allowLibrary=false}={}){localUpload.cancel();localOpened=false;revision++;draft={mode:'cloud',title:'',market:'',link:'',files:[],parsedText:'',start:null,end:null,error:'',analysisError:'',loading:false,allowLibrary,libraryId:'',libraryQuery:'',libraryMarket:'all',libraryFilters:{query:'',market:'all'}};render();},cancel(){revision++;draft=null;localOpened=false;localUpload.cancel();},refreshLibrary(){if(draft?.mode==='library')libraryForm();},input,handle};
 }

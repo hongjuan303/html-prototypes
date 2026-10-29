@@ -1,4 +1,4 @@
-import {isFullNarration} from './engine.js?v=20261027-update19d';
+import {isFullNarration} from './engine.js?v=20261029-update21c';
 
 // Labels are shared by the picker, saved feedback, and preview. Category controls
 // the next action; a creative suggestion must never become a free quality repair.

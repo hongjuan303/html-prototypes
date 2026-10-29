@@ -1,10 +1,11 @@
-import {DEFAULT_PACKAGING,TITLE_FONT,titleSettingsError} from './packaging.js?v=20261027-update19d';
-import {durationRange,durationError,normalizeDuration} from './duration-range.js?v=20261027-update19d';
-import {normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261027-update19d';
-import {assignBgmSnapshot} from './bgm-assignment.js?v=20261027-update19d';
-import {EPISODES,getEpisodes} from './story-data.js?v=20261027-update19d';
-import {resolveSource} from './sources.js?v=20261027-update19d';
-import {fullNarrationCandidates} from './full-narration.js?v=20261027-update19d';
+import {importSummary} from './import-state.js?v=20261029-update21c';
+import {DEFAULT_PACKAGING,TITLE_FONT,titleSettingsError} from './packaging.js?v=20261029-update21c';
+import {durationRange,durationError,normalizeDuration} from './duration-range.js?v=20261029-update21c';
+import {normalizeBgmSelection,validateBgmSelection} from './bgm-model.js?v=20261029-update21c';
+import {assignBgmSnapshot} from './bgm-assignment.js?v=20261029-update21c';
+import {EPISODES,getEpisodes} from './story-data.js?v=20261029-update21c';
+import {resolveSource} from './sources.js?v=20261029-update21c';
+import {fullNarrationCandidates} from './full-narration.js?v=20261029-update21c';
 export {getEpisodes};
 export const clone=v=>JSON.parse(JSON.stringify(v));
 export const CREATION_MODES=Object.freeze(['highlight']);
@@ -62,7 +63,7 @@ export function normalizeCreationConfig(config){
  c.titleFont=TITLE_FONT.id;c.titleFontVersion=TITLE_FONT.version;delete c.titlePosition;
  return normalizeDuration(c,input);
 }
-export function validate(c){const s=resolveSource(c);if(!s)return '片源已失效，请重新选择合集';const pending=s.kind==='cloud'&&s.importStatus==='pending';if(!s.totalEpisodes&&!pending)return '请先添加视频';if(!Number.isSafeInteger(c.start)||!Number.isSafeInteger(c.end)||c.start<(pending?s.requestedRange.start:1)||c.start>c.end||c.end>(pending?s.requestedRange.end:s.totalEpisodes))return '请填写有效的起止集数';const missing=pending?[]:Array.from({length:c.end-c.start+1},(_,i)=>c.start+i).filter(id=>!s.availableEpisodes.includes(id));if(missing.length)return '所选第 '+missing.join('、')+' 集暂无片源，请调整范围';if(!Number.isInteger(c.count)||c.count<1||c.count>20)return '每批支持 1–20 条';if(!CREATION_MODES.includes(c.mode))return '请选择制作方式';if(c.mode==='narrated'&&!['mixed','full'].includes(c.narrationStructure))return '请选择解说结构：解说＋原片或全解说';if(durationError(c))return durationError(c);if(!isFullNarration(c)&&!OUTPUT_SPEEDS.includes(c.speed))return '请选择有效的成片速度';if(c.mode==='narrated'&&!NARRATION_SPEEDS.includes(narrationSpeed(c)))return '请选择解说语速';if(!isFullNarration(c)&&c.duration.endsWith('s'))return '此时长适用于全解说，请重新选择成片时长';if(c.mode==='narrated'&&c.narrationStructure==='mixed'&&!MIXED_NARRATION_SECONDS.includes(c.narrationSeconds))return '请选择10–60秒的解说时长';if(c.mode==='narrated'&&c.narrationStructure==='mixed'&&c.narrationSeconds>=RANGES[c.duration][1])return '解说时长需小于最终成片时长';if(c.title&&!String(c.titleText||'').trim())return '请输入引流小标题';if(c.title&&Array.from(String(c.titleText).trim()).length>24)return '引流小标题最多 24 字';return titleSettingsError(c)||validateBgmSelection(c);}
+export function validate(c){if(importSummary(c.source).status==='failed')return '原片导入失败，请前往剧目管理重试';const s=resolveSource(c);if(!s)return '片源已失效，请重新选择合集';const pending=s.kind==='cloud'&&s.importStatus==='pending';if(!s.totalEpisodes&&!pending)return '请先添加视频';if(!Number.isSafeInteger(c.start)||!Number.isSafeInteger(c.end)||c.start<(pending?s.requestedRange.start:1)||c.start>c.end||c.end>(pending?s.requestedRange.end:s.totalEpisodes))return '请填写有效的起止集数';const missing=pending?[]:Array.from({length:c.end-c.start+1},(_,i)=>c.start+i).filter(id=>!s.availableEpisodes.includes(id));if(missing.length)return '所选第 '+missing.join('、')+' 集暂无片源，请调整范围';if(!Number.isInteger(c.count)||c.count<1||c.count>20)return '每批支持 1–20 条';if(!CREATION_MODES.includes(c.mode))return '请选择制作方式';if(c.mode==='narrated'&&!['mixed','full'].includes(c.narrationStructure))return '请选择解说结构：解说＋原片或全解说';if(durationError(c))return durationError(c);if(!isFullNarration(c)&&!OUTPUT_SPEEDS.includes(c.speed))return '请选择有效的成片速度';if(c.mode==='narrated'&&!NARRATION_SPEEDS.includes(narrationSpeed(c)))return '请选择解说语速';if(!isFullNarration(c)&&c.duration.endsWith('s'))return '此时长适用于全解说，请重新选择成片时长';if(c.mode==='narrated'&&c.narrationStructure==='mixed'&&!MIXED_NARRATION_SECONDS.includes(c.narrationSeconds))return '请选择10–60秒的解说时长';if(c.mode==='narrated'&&c.narrationStructure==='mixed'&&c.narrationSeconds>=RANGES[c.duration][1])return '解说时长需小于最终成片时长';if(c.title&&!String(c.titleText||'').trim())return '请输入引流小标题';if(c.title&&Array.from(String(c.titleText).trim()).length>24)return '引流小标题最多 24 字';return titleSettingsError(c)||validateBgmSelection(c);}
 export function analysisInfo(state,c){const cache=state.assets[assetKey(c)];const ids=Array.from({length:Math.max(0,c.end-c.start+1)},(_,i)=>c.start+i);const reused=ids.filter(id=>cache?.episodes.includes(id));return {ids,reused,pending:ids.filter(id=>!reused.includes(id)),cache};}
 export function analyze(state,c){const info=analysisInfo(state,c);const k=assetKey(c),old=state.assets[k];state.assets[k]={...old,episodes:[...new Set([...(old?.episodes||[]),...info.ids])].sort((a,b)=>a-b),revision:old?.revision||1,character:old?.character||'林知夏',updatedAt:new Date().toISOString()};return {...info,cache:state.assets[k]};}
 const round=x=>Math.round(x*100)/100;

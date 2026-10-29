@@ -1,33 +1,36 @@
-import {ensureDefaultRetryExamples} from './default-task-examples.js?v=20261027-update19d';
-import {validateSavedAnalysis,beginTaskRetry,finishTaskRetries} from './task-retry.js?v=20261027-update19d';
-import {bgmVolumeError,TITLE_CONTROLS,TITLE_COLORS,titleControlError} from './packaging.js?v=20261027-update19d';
-import {createVideoPreview} from './video-preview.js?v=20261027-update19d';
-import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261027-update19d';
-import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261027-update19d';
-import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261027-update19d';
-import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261027-update19d';
-import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261027-update19d';
-import {createBgmUI} from './bgm-ui.js?v=20261027-update19d';
-import {assertBgmAvailable} from './bgm-model.js?v=20261027-update19d';
-import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261027-update19d';
-import {createCloudImport} from './cloud-import.js?v=20261027-update19d';
-import {createLocalUpload} from './local-upload.js?v=20261027-update19d';
-import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261027-update19d';
-import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261027-update19d';
-import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261027-update19d';
-import {contentSimilarity} from './content-ui.js?v=20261027-update19d';
-import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261027-update19d';
-import {qualitySummary} from './workflow-ui.js?v=20261027-update19d';
-import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261027-update19d';
-import {updatePlatformBalance} from './platform-shell.js?v=20261027-update19d';
-import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261027-update19d';
-import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261027-update19d';
-import {createSyncUI} from './sync-ui.js?v=20261027-update19d';
-import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261027-update19d';
-import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261027-update19d';
-import {createForm,renderCreationPreview} from './creation-ui.js?v=20261027-update19d';
-import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261027-update19d';
-import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261027-update19d';
+import {importSummary,importSelectionError} from './import-state.js?v=20261029-update21c';
+import {applyDramaImport,retryDramaImport,removeFailedDrama,advanceDemoImports,ensureImportExamples} from './drama-import.js?v=20261029-update21c';
+import {ensureDefaultRetryExamples} from './default-task-examples.js?v=20261029-update21c';
+import {validateSavedAnalysis,beginTaskRetry,finishTaskRetries} from './task-retry.js?v=20261029-update21c';
+import {bgmVolumeError,TITLE_CONTROLS,TITLE_COLORS,titleControlError} from './packaging.js?v=20261029-update21c';
+import {createVideoPreview} from './video-preview.js?v=20261029-update21c';
+import {emptyCreationConfig,ensureTaskVersions,taskCards,taskListPage,renderTaskCards,renderTaskDetail,GENERATION_ERROR} from './task-center.js?v=20261029-update21c';
+import {durationRange,durationInput,durationDisplay,durationError} from './duration-range.js?v=20261029-update21c';
+import {regenerationAvailability,prepareFailedRegeneration} from './failure-regeneration.js?v=20261029-update21c';
+import {ensureMaterialIdentity,nameBatch,productionTime} from './material-identity.js?v=20261029-update21c';
+import {failedOutputs,failedRevision,JOB_STAGES,FAILURE_TYPES,failureOf,newJob,taskEntries,activeTasks,progressLine,progressDrawer,progressPage,progressPagination} from './production-tasks.js?v=20261029-update21c';
+import {createBgmUI} from './bgm-ui.js?v=20261029-update21c';
+import {assertBgmAvailable} from './bgm-model.js?v=20261029-update21c';
+import {SOURCE_ACCESS_SCENARIOS,sourceAccess,canAccessMarket,sourcePermissionError,isConfiguredSource,clearUnavailableSource} from './source-access.js?v=20261029-update21c';
+import {createCloudImport} from './cloud-import.js?v=20261029-update21c';
+import {importableDramas,librarySelectionConfig} from './library-selection.js?v=20261029-update21c';
+import {createLocalUpload} from './local-upload.js?v=20261029-update21c';
+import {feedbackForm,feedbackItems,readFeedbackTime} from './feedback-ui.js?v=20261029-update21c';
+import {feedbackRange,recordOutputIssue,ISSUE_TYPES,issueRangeLabel} from './feedback-model.js?v=20261029-update21c';
+import {ensureContentPool,curateCandidates,recordFeedback} from './content-model.js?v=20261029-update21c';
+import {contentSimilarity} from './content-ui.js?v=20261029-update21c';
+import {reviewable,beginRework,finishRework,beginNarrationUpdate,finishNarrationUpdate} from './workflow-model.js?v=20261029-update21c';
+import {qualitySummary} from './workflow-ui.js?v=20261029-update21c';
+import {MIXED_CUT_STORAGE_KEY} from './platform-context.js?v=20261029-update21c';
+import {updatePlatformBalance} from './platform-shell.js?v=20261029-update21c';
+import {isFullNarration,productionRate,modeLabel,normalizeCreationConfig,targetSeconds,MODES,RANGES,clone,assetKey,validate,analysisInfo,analyze,planBatch,estimate,initialState,activeRule,createBatch,settleOutput,revise,applyOutputSpeed,speedSummary} from './engine.js?v=20261029-update21c';
+import {listCollections,getCollection,collectionNumber} from './sources.js?v=20261029-update21c';
+import {createSyncUI} from './sync-ui.js?v=20261029-update21c';
+import {dramaKey,registerDrama,listDramas,findDrama,renameDrama} from './dramas.js?v=20261029-update21c';
+import {renderLibrary,filteredDramas,sourceName} from './library-ui.js?v=20261029-update21c';
+import {createForm,renderCreationPreview} from './creation-ui.js?v=20261029-update21c';
+import {renderMaterials,materialMatches} from './tasks-ui.js?v=20261029-update21c';
+import {fullNarrationPanel,mixedNarrationPanel,narrationActions} from './narration-ui.js?v=20261029-update21c';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
@@ -40,6 +43,7 @@ ensureMaterialIdentity(state);
 state.config=normalizeCreationConfig(state.config);
 if(state.sourceAccessScenario===undefined)state.sourceAccessScenario='domestic';clearUnavailableSource(state);
 ensureDefaultRetryExamples(state);
+ensureImportExamples(state);
 let view=['create','assets','tasks','task-detail'].includes(state.ui?.view)?state.ui.view:'create',currentBatch=null,currentOutput=null,busy=false,reviewTab='junction',picker=null,localVideo=null,playerTimer=null,playerAt=0,genTimers=new Set(),toolsScenario='normal',selectionBatchId=null;
 let selectedTaskId=state.ui?.selectedTaskId||null,taskPaging={page:1,pageSize:10,...state.ui?.taskPaging},submissionJobId=null;
 const taskSelections=new Map();
@@ -77,7 +81,7 @@ const save=()=>{if(!editingSessionActive)return;persistUI();clearUnavailableSour
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toast.t);toast.t=setTimeout(()=>$('#toast').classList.remove('visible'),3300);}
 function modal(title,body,actions=button('关闭','close')){$('#dialog').className='';delete $('#dialog').dataset.failureJob;$('#dialog [aria-label="关闭弹窗"]').disabled=false;delete $('#dialog').dataset.syncJob;$('#dialogTitle').textContent=title;$('#dialogTitle').title=title;$('#dialogBody').innerHTML=body;$('#dialogActions').innerHTML=actions;if(!$('#dialog').open)$('#dialog').showModal();}
 function completeSubmission(){if(!submissionJobId)return;submissionJobId=null;state.config=emptyCreationConfig();state.plan=null;replacementContext=null;localVideo=null;save();render();}
-function closeModal(){if(localUpload.isBusy()||bgmUI.isBusy())return;completeSubmission();localUpload.cancel();cloudImport.cancel();bgmUI.cancel();narrationApplyContext=null;feedbackContext=null;$('#dialog').close();}
+function closeModal(){if(localUpload.isBusy()||bgmUI.isBusy())return;completeSubmission();localUpload.cancel();cloudImport.cancel();bgmUI.cancel();narrationApplyContext=null;feedbackContext=null;$('#dialog').close();if(view==='assets')render();}
 function stopPlayer(){clearInterval(playerTimer);playerTimer=null;const control=$('[data-action="play"]');if(control)control.textContent='▶';}
 function nav(next){stopPlayer();window.speechSynthesis?.cancel();playerAt=0;if(next==='create'){state.config=normalizeCreationConfig(state.config);save();}if(next!=='review')relatedOrigin=null;view=next;clearTaskSelection();save();render();window.scrollTo({top:0});}
 function sourceLabel(c=state.config){const s=c.source;return ['green','cloud'].includes(s?.kind)?(s.market==='domestic'?'国内短剧':'海外短剧'):'本地上传';}
@@ -90,20 +94,30 @@ const uiHelpers={heading,button,esc,tag,option,sourceLabel,fmt,field,footer};
 const videoPreview=createVideoPreview({modal,esc,fmt,toast});
 function acceptImportedSource(source,start,end){
  if(!editingSessionActive)throw Error('当前页面已在其他窗口继续');
- const inLibrary=view==='assets';
- const imported=normalizeCreationConfig({...(inLibrary?{title:false,titleText:''}:state.config),source,start,end});
- const next={...state,dramas:clone(state.dramas||{})};
- if(!inLibrary){next.config=imported;next.plan=null;}
- registerDrama(next,imported);
- // Persist before applying so a storage failure keeps both the library and draft intact.
+ const inLibrary=view==='assets',next={...state,dramas:clone(state.dramas||{}),config:clone(state.config)};
+ applyDramaImport(next,source,start,end,{inLibrary});
  localStorage.setItem(KEY,JSON.stringify(next));state=next;
  if(inLibrary){libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};}
  else localVideo=null;
  nav(inLibrary?'assets':'create');
 }
+function retryImport(id){
+ if(!editingSessionActive){toast('当前页面已在其他窗口继续');return;}
+ try{
+  const next={...state,dramas:clone(state.dramas||{}),config:clone(state.config)};
+  retryDramaImport(next,id);
+  localStorage.setItem(KEY,JSON.stringify(next));state=next;
+  render();toast('视频重新导入中');
+ }catch(error){toast(error.message||'重试提交失败，请重试');}
+}
+function confirmDeleteImport(id){
+ const drama=findDrama(state,id);if(!drama||importSummary(drama.source).status!=='failed'){toast('仅导入失败的剧目可删除');return;}
+ modal('删除失败剧目',`<div class="import-delete-summary" id="importDeleteSummary"><strong>确定删除“${esc(drama.title)}”？</strong><p>删除该失败剧目记录及未被任务引用的已导入片源。</p><p>已关联的历史制作任务和成片保留。删除后如需继续制作，请重新导入。</p></div>`,button('取消','close')+button('确认删除','confirm-delete-import','danger',`data-id="${esc(id)}"`));
+}
 const localUpload=createLocalUpload({modal,closeModal,button,esc,toast,onImport:source=>{
  acceptImportedSource(source,1,source.totalEpisodes);
 },onAppend:(source,previous)=>{
+ source.importProgress={status:'complete',total:source.files.length,completed:source.files.length};
  if(!editingSessionActive||state.config.source.kind!=='manual'||state.config.source.assetId!==previous.assetId||(Number(state.config.source.fileVersion)||1)!==(Number(previous.fileVersion)||1))throw Error('当前片源已变化，请重新添加视频');
  const currentFiles=state.config.source.files||[];
  if(JSON.stringify(currentFiles)!==JSON.stringify(previous.files))throw Error('已有片源已变化，请重新添加视频');
@@ -123,7 +137,15 @@ const localUpload=createLocalUpload({modal,closeModal,button,esc,toast,onImport:
  localStorage.setItem(KEY,JSON.stringify(nextState));
  state=nextState;localVideo=null;updatePlatformBalance(state.balance);nav('create');
 }});
-const cloudImport=createCloudImport({modal,closeModal,button,esc,toast,localUpload,onImport:acceptImportedSource});
+const cloudImport=createCloudImport({modal,closeModal,button,esc,toast,localUpload,onImport:acceptImportedSource,
+ getDramas:()=>importableDramas(state),onSelectDrama:id=>{
+  if(!editingSessionActive)throw Error('当前页面已在其他窗口继续');
+  const config=librarySelectionConfig(state,id),next={...state,config,plan:null,dramas:clone(state.dramas||{})};
+  registerDrama(next,state.config,{touch:false});
+  registerDrama(next,config,{touch:false});
+  localStorage.setItem(KEY,JSON.stringify(next));state=next;
+  if(localVideo)URL.revokeObjectURL(localVideo);localVideo=null;nav('create');
+ }});
 $('#dialog').addEventListener('cancel',event=>{if(localUpload.isBusy()||bgmUI.isBusy())event.preventDefault();});
 $('#dialog').addEventListener('close',()=>{completeSubmission();localUpload.cancel();cloudImport.cancel();});
 function openRenameDrama(id){const d=findDrama(state,id);if(!d){toast('剧目已失效，请重新选择');return;}
@@ -162,7 +184,7 @@ function openDramaOutputs(id){
 }
 function makeDrama(id){
  const d=findDrama(state,id);if(!d){toast('剧目已失效，请重新选择');return;}
- const error=sourcePermissionError(state,d.config);if(error){toast(error);return;}
+ const error=sourcePermissionError(state,d.config)||importSelectionError(d.source);if(error){toast(error);return;}
  registerDrama(state,state.config,{touch:false});state.config=normalizeCreationConfig(d.config);if(d.displayName)state.config.source.displayName=d.displayName;
  if(localVideo)URL.revokeObjectURL(localVideo);localVideo=null;save();nav('create');
 }
@@ -255,6 +277,14 @@ async function runJob(j){
   try{await assertBgmAvailable(j.config);}catch(e){throw {kind:'config',message:e.message};}
   if(!valid())return;
   if(j.stage==='analyzing'){
+   if(importSummary(j.config.source).status==='importing'){
+    const due=j.config.source.mockImportDue;
+    if(due)await wait(Math.max(0,due-Date.now())+900);
+    if(!valid())return;
+    const current=findDrama(state,dramaKey(j.config));
+    if(!current||importSummary(current.source).status!=='complete')throw {kind:'source',message:'原片导入未完成，请检查剧目管理'};
+    j.config.source=clone(current.config.source);
+   }
    await wait(1300);if(!valid())return;
    if(['manual','cloud'].includes(j.config.source.kind)&&j.config.source.simulated===false)throw {kind:'source',message:'片源分析暂不可用，请稍后重试'};
    if(j.scenario==='analysis-fail')throw {kind:'timeout',message:'片源分析服务暂时异常'};
@@ -353,7 +383,7 @@ async function retryOutputs(b,items){
   closeModal();clearTaskSelection();refreshWork();openProgress();toast('正在重试 '+items.length+' 条素材');
  }catch(e){toast(e.message);}finally{items.forEach(o=>delete o.retryStarting);}
 }
-function exportDramaList(){const rows=filteredDramas(state,libraryFilters),cell=x=>'"'+String(x??'').replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"';const text='\ufeff'+[['剧目名称','来源','集数','制作任务','成片数量'],...rows.map(d=>[d.title,sourceName(d),d.totalEpisodes??'—',d.taskCount,d.generatedCount])].map(row=>row.map(cell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='剧目列表.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);toast('已导出 '+rows.length+' 部剧目');}
+function exportDramaList(){const rows=filteredDramas(state,libraryFilters),cell=x=>'"'+String(x??'').replace(/^[=+@-]/,"'$&").replaceAll('"','""')+'"';const text='\ufeff'+[['剧目名称','来源','集数','导入状态','成功导入数','制作任务','成片数量'],...rows.map(d=>[d.title,sourceName(d),d.totalEpisodes??'—',importSummary(d.source).label,importSummary(d.source).count,d.taskCount,d.generatedCount])].map(row=>row.map(cell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download='剧目列表.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500);toast('已导出 '+rows.length+' 部剧目');}
 
 function downloadMaterials(items){if(!items.length)return;if(items.some(o=>!o.mediaUrl)){toast('成片下载文件尚未就绪');return;}for(const o of items){const a=document.createElement('a');a.href=o.mediaUrl;a.download=o.title+'.mp4';a.click();}}
 function retime(o){let t=0;for(const s of o.segments){const d=s.end-s.start;s.start=Math.round(t*100)/100;t+=d;s.end=Math.round(t*100)/100;}o.duration=Math.round(t*100)/100;}
@@ -433,8 +463,13 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'count-plus':case 'count-minus':state.config.count=Math.max(1,Math.min(20,(Number(state.config.count)||0)+(a==='count-plus'?1:-1)));save();render();break;
  case 'direct':prepare();break;
  case 'generate-available':{const j=state.productionJobs.find(j=>j.id===el.dataset.job);closeModal();if(j)await generateJob(j);break;}
- case 'new-drama':case 'import-collection':case 'source-picker':cloudImport.open();break;
+ case 'new-drama':case 'import-collection':case 'source-picker':cloudImport.open({allowLibrary:view==='create'});break;
 
+ case 'retry-import-drama':retryImport(el.dataset.id);break;
+ case 'delete-import-drama':confirmDeleteImport(el.dataset.id);break;
+ case 'confirm-delete-import':{
+  try{const next={...state,config:clone(state.config),dramas:clone(state.dramas||{}),deletedDramaIds:[...(state.deletedDramaIds||[])]};removeFailedDrama(next,el.dataset.id);localStorage.setItem(KEY,JSON.stringify(next));state=next;closeModal();save();render();toast('已删除失败剧目');}catch(error){toast(error.message||'删除失败，请重试');}break;
+ }
  case 'open-drama':openDramaOutputs(el.dataset.id);break;
  case 'rename-drama':openRenameDrama(el.dataset.id);break;
  case 'save-drama-name':{const name=$('#dramaRename').value.trim();if(!name||Array.from(name).length>80){toast('请输入1–80字的剧目名称');return;}const renamed=renameDrama(state,el.dataset.id,name);if(!renamed){toast('剧目已失效，请重新选择');return;}if(dramaKey(state.config)===el.dataset.id)state.config.source.displayName=name;save();closeModal();render();toast('剧目名称已更新');break;}
@@ -493,7 +528,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('button,[d
  case 'demo-tools':modal('演示设置',`<div class="list-row"><div><b>制作中样例</b><p>3条成功、7条制作中；保持进度供评审。</p></div><div class="actions">${button(state.productionJobs.some(j=>j.demoExampleKind==='progress-hold')?'查看样例':'添加样例','progress-example','secondary')}${state.batches.some(b=>b.outputs.some(o=>o.status==='pending'&&o.demoHeld))?button('完成样例','finish-progress-example','secondary'):''}</div></div><div class="list-row"><div><b>制作失败样例</b><p>部分失败、全部失败、分析失败；使用示例片源与积分。</p></div>${button(state.productionJobs.some(j=>['partial-three','all-fail','analysis-fail'].includes(j.demoExampleKind))?'查看样例':'添加样例','failure-examples','secondary')}</div><div class="list-row"><div><b>员工合集权限</b></div><select id="employeeAccessScenario" aria-label="员工合集权限">${SOURCE_ACCESS_SCENARIOS.map(item=>option(item.id,item.label,sourceAccess(state).scenario)).join('')}</select></div><div class="list-row"><div><b>生成场景</b><p>仅影响下一批</p></div><select id="generationScenario" aria-label="生成场景">${option('normal','全部成功',toolsScenario)}${option('partial','最后一条制作失败',toolsScenario)}${option('partial-three','最后三条分别失败：超时/片源/配置',toolsScenario)}${option('all-fail','全部制作失败',toolsScenario)}${option('analysis-fail','分析阶段失败（无成片）',toolsScenario)}${option('qc-repair','自动修复后通过',toolsScenario)}${option('qc-attention','一条需人工核对',toolsScenario)}${option('qc-fail','一条检查失败释放积分',toolsScenario)}</select></div><div hidden class="list-row"><div><b>单条返工场景</b><p>不影响其他成片</p></div><select id="reworkScenario" aria-label="单条返工场景">${option('normal','成功生成新版本',state.reworkScenario||'normal')}${option('failed','失败保留原片',state.reworkScenario||'normal')}</select></div><div class="list-row"><div><b>原片版本</b><p>演示重新分析新版本</p></div>${button('更换原片版本','new-source-version','secondary')}</div><div class="list-row"><div><b>手动片源示例</b><p>使用虚构故事板验证制作流程</p></div>${button('切换','manual-source','secondary')}</div><div class="list-row"><div><b>重置本版演示</b><p>只清除 V7 本机示例记录</p></div>${button('重置','reset-prompt','text-btn danger')}</div>`,button('保存设置','save-tools','primary'));break;
  case 'save-tools':{const scenario=$('#employeeAccessScenario').value;toolsScenario=$('#generationScenario').value;state.reworkScenario=$('#reworkScenario').value;applySourceAccess(scenario);save();closeModal();render();toast('演示设置已保存');break;}
  case 'reset-prompt':modal('重置 V7 演示','<p>清除本机 V7 示例任务、分析、标准与积分记录。其他版本不受影响。</p>',button('取消','close')+button('重置示例','reset','primary'));break;
- case 'reset':genTimers.forEach(clearTimeout);genTimers.clear();prepare.operation=null;busy=false;state=initialState();ensureDefaultRetryExamples(state);runningJobs.clear();startingBatches.clear();replacementContext=null;clearTaskSelection();libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};taskFilters=defaultTaskFilters();taskDraft={...taskFilters};syncUI.reset();currentBatch=null;currentOutput=null;reviewQueue=null;confirmFollowup=null;reworkDraft=null;narrationApplyContext=null;relatedOrigin=null;toolsScenario='normal';localVideo=null;save();closeModal();nav('create');break;
+ case 'reset':genTimers.forEach(clearTimeout);genTimers.clear();prepare.operation=null;busy=false;state=initialState();ensureDefaultRetryExamples(state);ensureImportExamples(state);runningJobs.clear();startingBatches.clear();replacementContext=null;clearTaskSelection();libraryFilters=defaultLibraryFilters();libraryDraft={...libraryFilters};taskFilters=defaultTaskFilters();taskDraft={...taskFilters};syncUI.reset();currentBatch=null;currentOutput=null;reviewQueue=null;confirmFollowup=null;reworkDraft=null;narrationApplyContext=null;relatedOrigin=null;toolsScenario='normal';localVideo=null;save();closeModal();nav('create');break;
  }
 });
 function savedNarrationReady(o){return Array.isArray(o?.narrationDraft)&&Array.isArray(o.narrationSavedDraft)&&o.narrationSavedDraft.length>0&&JSON.stringify(o.narrationDraft.map(text=>String(text).trim()))===JSON.stringify(o.narrationSavedDraft)&&o.narrationSavedDraft.every(text=>String(text).trim());}
@@ -591,7 +626,13 @@ document.addEventListener('change',e=>{const el=e.target;if(el.id?.startsWith('c
 document.addEventListener('input',e=>{if(e.target.id?.startsWith('cloud')){cloudImport.input(e.target);return;}if(e.target.id==='dramaRename'){if(Array.from(e.target.value).length>80)e.target.value=Array.from(e.target.value).slice(0,80).join('');return;}if(e.target.id==='reworkReason'&&reworkDraft){reworkDraft.instruction=e.target.value;return;}if(e.target.id==='narrationEdit'||e.target.hasAttribute('data-full-narration')){const o=output();if(!o||o.reworkPending||o.repairing||syncUI.locked(batch(),o))return;const hadDraft=Boolean(o.narrationDraft),full=isFullNarration(batch().config),texts=full?$$('[data-full-narration]').map(el=>el.value):[e.target.value],original=full?o.segments.filter(s=>s.type==='narration').map(s=>s.text):[o.narrationText||''];if(texts.some((text,index)=>String(text).trim()!==String(original[index]||'').trim()))o.narrationDraft=texts;else {delete o.narrationDraft;delete o.narrationSavedDraft;delete o.narrationDraftSavedAt;}save();const notice=$('#narrationDraftNotice');if(notice)notice.outerHTML=narrationDraftNotice(o);const actions=$('#narrationScript .narration-actions');if(actions)actions.outerHTML=narrationActions(batch(),o,false,uiHelpers);if(hadDraft!==Boolean(o.narrationDraft)){refreshSyncState();$$('.review-queue [data-action="rework"],.player-feedback [data-action="report-issue"],#feedbackRecords [data-action="repair"],#feedbackRecords [data-action="rework"]').forEach(button=>button.disabled=Boolean(o.narrationDraft));}return;}if(e.target.id==='dramaSearch'){libraryDraft.query=e.target.value;save();return;}if(e.target.dataset.config&&(e.target.type==='number'||e.target.dataset.config==='titleText')){state.config[e.target.dataset.config]=e.target.type==='number'?Number(e.target.value):e.target.value;save();refreshCreationPreview();}if(e.target.id==='collectionSearch'){const pos=e.target.selectionStart;picker.query=e.target.value;renderPicker();$('#collectionSearch').focus();$('#collectionSearch').setSelectionRange(pos,pos);}if(e.target.id==='scrubber'){stopPlayer();locate(Number(e.target.value));}});
 // Restore durable simulated job records. Real services run independently of the page.
 for(const b of state.batches){for(const o of b.outputs){if(o.repairing)o.repairing=false;if(o.reworkPending)finishRework(state,b,o,false);} }
-save();render();
+advanceDemoImports(state);save();render();
+const importProgressTimer=setInterval(()=>{
+ if(!editingSessionActive||!advanceDemoImports(state))return;
+ save();if(!$('#dialog').open&&['assets','create'].includes(view))render();
+ cloudImport.refreshLibrary();
+},800);
+window.addEventListener('pagehide',()=>clearInterval(importProgressTimer),{once:true});
 for(const j of state.productionJobs){if(j.stage==='validating')runSavedValidation(j);else if(['analyzing','planning'].includes(j.stage))runJob(j);}
 for(const b of state.batches)for(const [index,o] of b.outputs.entries())if(o.status==='pending')scheduleGenerated(b,o,index,o.generationScenario||'normal');
 // Optional agent access uses the same local demo actions as the visible UI.

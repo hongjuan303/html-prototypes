@@ -1,4 +1,4 @@
-import {assetKey,clone} from './engine.js?v=20261027-update19d';
+import {assetKey,clone} from './engine.js?v=20261029-update21c';
 
 const ANALYSIS_CODES=new Set(['analysis_parse','analysis_validation']);
 const COMPOSITION_CODES=new Set(['interrupted','timeout','temporary_io']);

@@ -1,10 +1,10 @@
 /* Drama library projection. Only registerDrama writes to state.dramas;
  * listDramas/findDrama are pure reads and never touch the wallet or catalogs.
  */
-import {isConfiguredSource} from './source-access.js?v=20261027-update19d';
-import {assetKey, clone} from './engine.js?v=20261027-update19d';
-import {resolveSource} from './sources.js?v=20261027-update19d';
-import {getOutputSync, outputVersion} from './sync-model.js?v=20261027-update19d';
+import {isConfiguredSource} from './source-access.js?v=20261029-update21c';
+import {assetKey, clone} from './engine.js?v=20261029-update21c';
+import {resolveSource} from './sources.js?v=20261029-update21c';
+import {getOutputSync, outputVersion} from './sync-model.js?v=20261029-update21c';
 
 const array = value => Array.isArray(value) ? value : [];
 const stamp = value => typeof value === 'string' && Number.isFinite(Date.parse(value)) ? value : '';
@@ -14,6 +14,7 @@ const records = state => Array.isArray(state?.dramas) ? state.dramas : Object.va
 /** File versions and analysis languages belong to a drama, not its identity. */
 export function dramaKey(config = {}) {
   const source = config?.source || {kind: 'sample'};
+  if(source.dramaId)return source.dramaId;
   if (source.kind === 'green') return JSON.stringify(['green', source.market || 'unknown', source.collectionId || 'unknown']);
   if (source.kind === 'manual') return JSON.stringify(['manual', source.assetId || 'legacy-manual']);
   if (!source.kind || source.kind === 'sample') return JSON.stringify(['sample', source.assetId || 'default']);
@@ -46,6 +47,7 @@ function sourceFor(config) {
 export function registerDrama(state, config, {touch = true} = {}) {
   if (!state || !config || typeof config !== 'object' || !isConfiguredSource(config)) return null;
   const id = dramaKey(config);
+  if(state.deletedDramaIds?.includes(id))return null;
   const previous = records(state).find(item => item?.config && dramaKey(item.config) === id);
   const now = new Date().toISOString();
   const entry = {
@@ -120,7 +122,7 @@ export function listDramas(state = {}) {
     }
     for (const job of array(state.syncJobs)) if (job?.batchId === batch.id) entry.updatedAt = latest(entry.updatedAt, job.createdAt, job.updatedAt);
   }
-  const result = [...library.values()].map(entry => {
+  const result = [...library.values()].filter(entry=>!state.deletedDramaIds?.includes(entry.id)).map(entry => {
     const source = sourceFor(entry.config);
     const cache = state.assets?.[assetKey(entry.config)];
     const available = new Set(source.availableEpisodes);

@@ -1,4 +1,4 @@
-import {TITLE_COLORS,TITLE_CONTROLS,DEFAULT_PACKAGING,titleControlError} from './packaging.js?v=20261027-update19d';
+import {TITLE_COLORS,TITLE_CONTROLS,DEFAULT_PACKAGING,titleControlError} from './packaging.js?v=20261029-update21c';
 const required='<span class="required" aria-hidden="true">*</span>';
 export function titleStyleControls(c,{esc}){
  const colors=(key,label)=>`<fieldset class="title-color-field"><legend>${required}${label}</legend><div class="title-color-options">${TITLE_COLORS.map(color=>`<label class="title-swatch" title="${color.name}" style="--swatch:${color.value}"><input type="radio" name="${key}" data-title-color="${key}" value="${color.value}" aria-label="${label}：${color.name}" required ${(c[key]??DEFAULT_PACKAGING[key])===color.value?'checked':''}><span class="swatch-face" aria-hidden="true"><span>✓</span></span></label>`).join('')}</div></fieldset>`;

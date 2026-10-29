@@ -1,7 +1,7 @@
-import {initialState,normalizeCreationConfig,clone,assetKey,analyze,planBatch,activeRule,createBatch} from './engine.js?v=20261027-update19d';
-import {newJob} from './production-tasks.js?v=20261027-update19d';
-import {nameBatch} from './material-identity.js?v=20261027-update19d';
-import {canAccessMarket} from './source-access.js?v=20261027-update19d';
+import {initialState,normalizeCreationConfig,clone,assetKey,analyze,planBatch,activeRule,createBatch} from './engine.js?v=20261029-update21c';
+import {newJob} from './production-tasks.js?v=20261029-update21c';
+import {nameBatch} from './material-identity.js?v=20261029-update21c';
+import {canAccessMarket} from './source-access.js?v=20261029-update21c';
 
 // Prototype fixtures only: seed completed failure records, without running jobs or charging the wallet.
 export function ensureDefaultRetryExamples(state){
