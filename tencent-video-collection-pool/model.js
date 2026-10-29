@@ -3,6 +3,7 @@ window.TV = (() => {
   const themes=['玄幻','异能','武侠','仙侠','都市','历史','悬疑','奇幻','科幻','穿越','系统','搞笑','灵异','古风','青春','言情'].map((label,i)=>[String(123134900+i),label]);
   const keywords=['主旋律','脱贫攻坚','青春校园','职业剧','情感','都市','喜剧','古装','科幻','奇幻','玄幻','公安刑侦','乡村','犯罪','年代剧','探险','美食','武侠','体育竞技','战争军旅'].map((label,i)=>[String(123130782+i),label]);
   const types=['未知','抖音','快手','微信','QQ浏览器','华为视频百花号','OPPO','全民K歌','腾讯视频'];
+  const contentTypes=[['duanfan','短番'],['ai','AI真人短剧']];
   const assets='/html-prototypes/tencent-video-collection-pool/assets/';
   const submissionStates=['未提交','提交中','提交成功','提交失败'];
   function normalizeSubmissionStatus(d){
@@ -40,6 +41,41 @@ window.TV = (() => {
     {key:'micro_series_keyword',label:'关键词',type:'keywords',options:keywords,desc:'AI真人短剧必填，至少选择2项腾讯关键词；从20项枚举中选择。'},
     {key:'is_adapted_from_ip',label:'是否IP改编',type:'select',options:[['false','否'],['true','是']],desc:'由绿台合集内容来源映射，内容来源为IP改编时传true；本页不重复编辑。'}
   ];
+  function contentTypeFields(d){
+    return [{...basic.find(f=>f.key==='kind'),label:'内容类型',options:contentTypes},basic.find(f=>f.key==='is_ai_creation'),...(d.kind==='ai'?[ai.find(f=>f.key==='cover_video_ratio')]:[])];
+  }
+  function changeContentType(d,kind){
+    if(!contentTypes.some(([value])=>value===kind))return false;
+    if(d.kind==='duanfan'&&(typeof d.is_ai_creation==='boolean'||d.is_ai_creation===null))d.short_is_ai_creation=d.is_ai_creation;
+    d.kind=kind;d.is_ai_real_person_short_drama=kind==='ai';
+    if(kind==='ai')d.is_ai_creation=true;
+    else if(typeof d.short_is_ai_creation==='boolean'||d.short_is_ai_creation===null)d.is_ai_creation=d.short_is_ai_creation;
+    return true;
+  }
+  function editableMetadata(d){
+    const keys=['micro_comic_theme',...(d.kind==='ai'?['micro_series_keyword','plot_year_drama','micro_series_guzhuang']:[]),'aboard_area_limit','granted_rights','auth_duration'];
+    return [...contentTypeFields(d),...keys.map(key=>({...[...basic,...ai,...auth].find(f=>f.key===key),...(key==='micro_comic_theme'?{label:'短剧题材'}:{})}))];
+  }
+  function metadataIssues(d){
+    return editableMetadata(d).flatMap(f=>{
+      const value=d[f.key];let message='';
+      if(f.type==='select'&&!f.options.some(([id])=>id===String(value??'')))message=`请选择${f.label}`;
+      if(f.key==='is_ai_creation'&&d.kind==='ai'&&value!==true)message='AI真人短剧必须为AI创作';
+      if(f.type==='checks'||f.type==='keywords'){
+        const values=Array.isArray(value)?value:[],minimum=f.type==='keywords'?2:1;
+        if(values.some(v=>!f.options.some(([id])=>id===v)))message=`请重新选择有效的${f.label}`;
+        else if(new Set(values).size<minimum)message=f.type==='keywords'?'请至少选择2个关键词':'请至少选择一项授权权利';
+      }
+      if(f.type==='number'&&(String(value??'').trim()===''||!Number.isSafeInteger(Number(value))||Number(value)<=0))message='授权年限请填写正整数年';
+      return message?[{field:f.key,label:f.label,step:0,message}]:[];
+    });
+  }
+  function applyEditableMetadata(target,draft){
+    editableMetadata(draft).forEach(f=>{const value=draft[f.key];target[f.key]=Array.isArray(value)?[...value]:f.type==='number'&&String(value??'').trim()!==''&&Number.isFinite(Number(value))?Number(value):value;});
+    // 保存隐藏字段供切回原类型时恢复；校验与素材上传仍仅使用当前类型的有效项。
+    ['micro_series_keyword','plot_year_drama','micro_series_guzhuang','cover_video_ratio','short_is_ai_creation'].forEach(key=>{if(Object.prototype.hasOwnProperty.call(draft,key))target[key]=Array.isArray(draft[key])?[...draft[key]]:draft[key];});
+    target.is_ai_real_person_short_drama=draft.kind==='ai';
+  }
   const covers=[
     {key:'user_new_pic_hz',label:'横版封面',desc:'必填，上传横版图片，使用腾讯专辑封面上传接口返回的URL，对应user_new_pic_hz。'},
     {key:'user_new_pic_vt',label:'竖版封面',desc:'必填，默认取绿台合集列表的封面并展示预览，可手动更换；已有手动选择优先，保存不回写合集封面。合集无封面或主动移除后需手动上传，移除后不自动补回。推送时上传该图片取得腾讯封面URL，对应user_new_pic_vt。'},
@@ -71,7 +107,7 @@ window.TV = (() => {
   }
   function attachments(d){
     const a=[{key:'other_micro_cover_costing',label:'成本配置',desc:'所有专辑必传PDF；投资成本为0也不自动免除该文件。对应other_micro_cover_costing。'}];
-    if(d.is_ai_creation)a.push({key:'ai_creation_declaration',label:'AI创作声明',desc:'AI创作时必传PDF；AI真人短剧强制必传。对应ai_creation_declaration。'},{key:'rights_non_infringement_declaration',label:'权利声明',desc:'AI创作时必传PDF；AI真人短剧强制必传。对应rights_non_infringement_declaration。'});
+    if(d.kind==='ai'||d.is_ai_creation===true)a.push({key:'ai_creation_declaration',label:'AI创作声明',desc:'AI创作时必传PDF；AI真人短剧强制必传。对应ai_creation_declaration。'},{key:'rights_non_infringement_declaration',label:'权利声明',desc:'AI创作时必传PDF；AI真人短剧强制必传。对应rights_non_infringement_declaration。'});
     if(d.is_cp_key_record)a.push(conditionalAttachments[0]);
     if(d.content_source==='IP改编')a.push(conditionalAttachments[1]);
     a.push(...copyrightAttachments(d));
@@ -86,11 +122,10 @@ window.TV = (() => {
   function validate(d,step=null,push=false){
     const out=[];const add=(field,label,s,msg)=>out.push({field,label,step:s,message:msg||`请补充${label}`});
     if(step===null||step===0){
-      ['user_title','second_title','user_description','micro_comic_theme','aboard_area_limit'].forEach(k=>{if(!String(d[k]??'').trim())add(k,[...basic,...auth].find(f=>f.key===k)?.label,0);});
+      ['user_title','second_title','user_description'].forEach(k=>{if(!String(d[k]??'').trim())add(k,[...basic,...auth].find(f=>f.key===k)?.label,0);});
+      out.push(...metadataIssues(d));
       if(d.budget===''||!Number.isInteger(Number(d.budget))||Number(d.budget)<0)add('budget','投资成本（万元）',0,'投资成本请填写非负整数万元，不自动取整');
-      for(const k of ['micro_series_duration','auth_duration'])if(!Number.isInteger(Number(d[k]))||Number(d[k])<=0)add(k,[...basic,...auth].find(f=>f.key===k)?.label,0,'单集时长与授权年限请填写正整数');
-      if(!d.granted_rights.length)add('granted_rights','授权权利',0,'请至少选择一项授权权利');
-      if(d.kind==='ai'&&d.micro_series_keyword.length<2)add('micro_series_keyword','关键词',0,'AI真人短剧至少选择2个关键词');
+      if(!Number.isInteger(Number(d.micro_series_duration))||Number(d.micro_series_duration)<=0)add('micro_series_duration','单集时长（分钟）',0,'单集时长请填写正整数分钟');
     }
     if(step===null||step===1){
       covers.forEach(f=>{if(!(d.files[f.key]||[]).length)add(f.key,f.label,1);});
@@ -166,5 +201,5 @@ window.TV = (() => {
     const db={version:1,dramas,pools:[{id:36,name:'腾讯视频漫剧合作池',type:'腾讯视频',enabled:true,ids:dramas.slice(0,6).map(d=>d.id)},{id:37,name:'腾讯视频待推送合集池',type:'腾讯视频',enabled:false,ids:[900321,900327]},{id:26,name:'OPPO精品短剧推送池',type:'OPPO',enabled:true,ids:[900323]},{id:28,name:'全民K歌精品短剧推送池',type:'全民K歌',enabled:true,ids:[900322]},{id:3,name:'公号推广合集池',type:'微信',enabled:true,ids:[900321,900323]}],nextPool:38};
     prepareConditionalExample(db);prepareContentSourceExamples(db);prepareCollectionCoverDefaults(db);prepareActorPhotoDefaults(db);return db;
   }
-  return {themes,keywords,types,basic,auth,ai,covers,submissionStates,normalizeSubmissionStatus,submissionFailureReason,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
+  return {themes,keywords,types,contentTypes,basic,auth,ai,contentTypeFields,changeContentType,editableMetadata,metadataIssues,applyEditableMetadata,covers,submissionStates,normalizeSubmissionStatus,submissionFailureReason,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
 })();

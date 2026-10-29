@@ -51,3 +51,18 @@ button.proof-file-remove:hover{background:#fef0f0;color:#e85f55}
 .proof-upload-plus{font-size:27px;line-height:32px;font-weight:300}
 .failure-reason-cell{white-space:normal;min-width:220px;max-width:280px}
 .failure-reason{color:#d4544a;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.metadata-label{width:205px;flex:none;padding-top:5px;font-size:13px;line-height:24px}
+.metadata-row{padding:13px 0}
+.metadata-row select{width:420px;max-width:100%}
+.metadata-number{display:flex;align-items:center;gap:12px;font-size:13px;color:#606266}
+.metadata-number input{width:220px;max-width:100%}
+.metadata-checks{display:flex;align-items:center;flex-wrap:wrap;gap:12px 28px;min-height:35px}
+.metadata-checks label{display:flex;align-items:center;gap:7px;font-size:13px;line-height:24px;cursor:pointer}
+.keyword-select{max-width:420px}
+.keyword-select .proof-tags{max-height:92px;overflow-y:auto;pointer-events:auto}
+.keyword-select .proof-select-options{max-height:240px}
+.keyword-select .proof-option{padding:8px 12px}
+.metadata-row.has-error .keyword-select .proof-select-control{border-color:#f56c6c}
+.metadata-row .hint{margin-top:5px}
+.field-error{font-size:12px;color:#d4544a;line-height:20px;margin-top:5px}
+.metadata-row.has-error select,.metadata-row.has-error input[type=number]{border-color:#f56c6c}

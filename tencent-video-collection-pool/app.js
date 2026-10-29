@@ -3,7 +3,7 @@
   const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
   const clone=x=>JSON.parse(JSON.stringify(x)), KEY='tencent-collection-pool-v1';
   let db;try{db=JSON.parse(localStorage.getItem(KEY));}catch{}if(!db||db.version!==1)db=TV.seed();db.dramas.forEach(TV.normalizeSubmissionStatus);const exampleUpdated=TV.prepareConditionalExample(db),sourceUpdated=TV.prepareContentSourceExamples(db),coverUpdated=TV.prepareCollectionCoverDefaults(db),actorUpdated=TV.prepareActorPhotoDefaults(db);
-  const ui={page:'pools',pool:36,draft:null,dirty:false,modal:null,modalData:null,selected:new Set(),poolFilter:{id:'',name:'',type:'腾讯视频',status:''},filter:{id:'',name:'',status:''},running:false,stage:0,pushRows:[],memberQuery:'',members:new Set(),proofOpen:false};
+  const ui={page:'pools',pool:36,draft:null,dirty:false,modal:null,modalData:null,selected:new Set(),poolFilter:{id:'',name:'',type:'腾讯视频',status:''},filter:{id:'',name:'',status:''},running:false,stage:0,pushRows:[],memberQuery:'',members:new Set(),proofOpen:false,keywordOpen:false,metadataAttempted:false,metadataTouched:new Set()};
   let currentNotes, toastTimer, popPool=null, focusBefore=null, viewKey='';
   const drama=id=>db.dramas.find(d=>d.id===Number(id)),pool=()=>db.pools.find(p=>p.id===ui.pool);
   const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(db));return true;}catch{toast('浏览器空间不足，当前资料保留在本次页面；请减少附件后再保存',true);return false;}};
@@ -17,7 +17,7 @@
   const pick=(slot,kind='image',multiple=false,role=false)=>`<label class="file-picker">${kind==='pdf'?'选择PDF':'选择图片'}<input type="file" data-file="${slot}" ${role?'data-role-file="true"':''} accept="${kind==='pdf'?'application/pdf,.pdf':'image/jpeg,image/png,image/gif,image/webp,image/svg+xml'}" ${multiple?'multiple':''}></label>`;
   function pushIssues(d){const e=TV.validate(d,null,true);if(d.episodes.length!==Number(d.total_episode)||d.episodes.some(x=>!x.ready||!x.title.trim()))e.push({message:'现有合集的分集标题、视频或封面未就绪',step:3});if(!pool().enabled)e.push({message:'当前合集池已停用'});if(d.unknownStage)e.push({message:`${d.unknownStage}结果待确认，请先联系腾讯核实`});if(d.status==='提交中'&&!d.unknownStage)e.push({message:'该合集正在提交，请勿重复提交'});if(d.status==='提交成功')e.push({message:'该合集已提交成功，不可重复提交'});return e;}
   function bindLabels(root){root.querySelectorAll('.field,.role-fields').forEach((row,i)=>{const label=row.querySelector(':scope > label'),control=row.querySelector('input:not([type=checkbox]),select,textarea');if(label&&control){if(!control.id)control.id=root.id+'-field-'+i;label.htmlFor=control.id;control.setAttribute('aria-label',label.textContent.trim());if(label.classList.contains('required'))control.setAttribute('aria-required','true');}});}
-  function render(){if(ui.page!=='form')ui.proofOpen=false;const key=ui.page+'-'+ui.draft?.id,scroll=$('.form-body')?.scrollTop||0,keep=key===viewKey;setNotes();$('#popover').hidden=true;$('#main').innerHTML=ui.page==='pools'?renderPools():ui.page==='collections'?renderCollections():renderForm();bindLabels($('#main'));if(keep&&$('.form-body'))$('.form-body').scrollTop=scroll;viewKey=key;layoutProofOptions();if(ui.modal)renderModal();}
+  function render(){if(ui.page!=='form'){ui.proofOpen=false;ui.keywordOpen=false;}const key=ui.page+'-'+ui.draft?.id,scroll=$('.form-body')?.scrollTop||0,keep=key===viewKey;setNotes();$('#popover').hidden=true;$('#main').innerHTML=ui.page==='pools'?renderPools():ui.page==='collections'?renderCollections():renderForm();bindLabels($('#main'));if(keep&&$('.form-body'))$('.form-body').scrollTop=scroll;viewKey=key;if(ui.page==='form')renderMetadataFeedback();layoutProofOptions();layoutKeywords();if(ui.modal)renderModal();}
   function renderPools(){
     const f=ui.poolFilter, rows=db.pools.filter(p=>(!f.id||String(p.id)===f.id)&&(!f.name||p.name.includes(f.name))&&(!f.type||p.type===f.type)&&(!f.status||String(p.enabled)===f.status));
     return `<div class="page-heading"><h1>合集池管理</h1></div><form id="pool-filters" class="panel filter-panel"><label>池ID <input name="id" value="${esc(f.id)}" placeholder="请输入池ID"></label><label>池名称 <input name="name" value="${esc(f.name)}" placeholder="请输入池名称"></label><label>状态 <select name="status">${options([['true','启用'],['false','停用']],f.status,'全部')}</select></label><label>池类型 <select name="type">${options(TV.types,f.type,'全部')}</select>${mark('pool-type')}</label><div class="filter-actions"><button class="primary" type="submit">查询</button><button type="button" data-action="reset-pools">重置</button></div></form><div class="toolbar">${op('＋ 新建合集池','create','create','','primary')}<div class="right"><span class="meta">共 ${rows.length} 个合集池</span></div></div><div class="panel table-panel"><table><thead><tr><th width="110">池ID</th><th>池名称</th><th width="140">池元素数</th><th width="120">状态</th><th width="150">池类型</th><th width="440">操作</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${p.id}</td><td>${esc(p.name)}</td><td>${p.ids.length}</td><td>${tag(p.enabled?'启用':'停用')}</td><td>${esc(p.type)}</td><td><div class="table-actions"><button class="text" data-action="rename" data-id="${p.id}">修改名称</button><button class="text" data-action="members" data-id="${p.id}">修改池元素</button><button class="text" data-action="auto" data-id="${p.id}">自动添加元素</button><span class="op"><button class="text" data-action="more" data-id="${p.id}">更多⌄</button>${p.type==='腾讯视频'?mark('entry'):''}</span></div></td></tr>`).join('')||'<tr><td colspan="6" class="empty">暂无符合条件的合集池</td></tr>'}</tbody></table><div class="pagination"><span>共 ${rows.length} 条</span><span>10条/页</span><span>‹</span><b>1</b><span>›</span><span>前往 1 页</span></div></div>`;
@@ -46,6 +46,47 @@
   }
 
   const title=(label,key,tail='')=>`<div class="section-title"><h2>${label}${mark(key)}</h2>${tail}</div>`;
+  function keywordPicker(d){
+    const selected=Array.isArray(d.micro_series_keyword)?d.micro_series_keyword:[];
+    return `<div class="proof-select keyword-select" data-keyword-select><div class="proof-select-control">
+      <button type="button" class="proof-select-trigger" id="metadata-micro_series_keyword" data-metadata="micro_series_keyword" data-action="toggle-keywords" aria-label="选择关键词" aria-expanded="${ui.keywordOpen}" aria-haspopup="listbox" aria-controls="keyword-options" aria-describedby="metadata-micro_series_keyword-hint metadata-micro_series_keyword-error"></button>
+      <div class="proof-tags" data-action="toggle-keywords">${selected.length?selected.map(value=>{const label=TV.keywords.find(([id])=>id===value)?.[1]||value;return `<span class="proof-tag" data-keyword-tag="${esc(value)}"><span>${esc(label)}</span><button type="button" data-action="remove-keyword" data-value="${esc(value)}" aria-label="移除关键词${esc(label)}">×</button></span>`;}).join(''):'<span class="proof-placeholder">请选择关键词（至少2个）</span>'}</div><span class="proof-select-arrow" aria-hidden="true">⌄</span></div>
+      ${ui.keywordOpen?`<div class="proof-select-options" id="keyword-options" role="listbox" aria-label="关键词选项" aria-multiselectable="true">${TV.keywords.map(([id,label])=>`<button type="button" class="proof-option" role="option" aria-selected="${selected.includes(id)}" data-keyword-option="${id}" data-action="toggle-keyword" data-value="${id}"><span class="proof-option-check" aria-hidden="true">${selected.includes(id)?'✓':''}</span><span>${label}</span></button>`).join('')}</div>`:''}</div>`;
+  }
+  function closeKeywords(restoreFocus=false){
+    ui.keywordOpen=false;$('#keyword-options')?.remove();$('#metadata-micro_series_keyword')?.setAttribute('aria-expanded','false');$('[data-keyword-select]')?.classList.remove('opens-up');if(restoreFocus)$('#metadata-micro_series_keyword')?.focus({preventScroll:true});
+  }
+  function layoutKeywords(){
+    const root=$('[data-keyword-select]'),list=$('#keyword-options'),body=$('.form-body');if(!root||!list||!body)return;const box=root.getBoundingClientRect(),bounds=body.getBoundingClientRect(),above=box.top-bounds.top-8,below=bounds.bottom-box.bottom-8,up=below<240&&above>below;root.classList.toggle('opens-up',up);list.style.maxHeight=Math.max(60,Math.min(240,up?above:below))+'px';
+  }
+  function renderKeywordPicker(focusSelector='#metadata-micro_series_keyword'){
+    const noteScroll=$('#notes').scrollTop,optionScroll=$('#keyword-options')?.scrollTop||0;render();$('#notes').scrollTop=noteScroll;if($('#keyword-options'))$('#keyword-options').scrollTop=optionScroll;$(focusSelector)?.focus({preventScroll:true});
+  }
+  function changeKeyword(value,removeOnly=false){
+    if(!TV.keywords.some(([id])=>id===value))return;const selected=new Set(ui.draft.micro_series_keyword||[]);if(removeOnly||selected.has(value))selected.delete(value);else selected.add(value);ui.draft.micro_series_keyword=TV.keywords.map(([id])=>id).filter(id=>selected.has(id));ui.dirty=true;ui.metadataTouched.add('micro_series_keyword');renderKeywordPicker(removeOnly?'#metadata-micro_series_keyword':`[data-keyword-option="${value}"]`);
+  }
+  function metadataRow(f,d){
+    const id='metadata-'+f.key,multiple=['checks','keywords'].includes(f.type),values=Array.isArray(d[f.key])?d[f.key]:[];
+    const hints={kind:'短番为动漫类内容；AI真人短剧为AI生成的真人形象内容。',is_ai_creation:d.kind==='ai'?'AI真人短剧固定为是，需上传AI创作声明和权利声明。':'选择是时，需上传AI创作声明和权利声明；选择否时隐藏这两项。',cover_video_ratio:'AI真人短剧必填，选择横版或竖版。',micro_comic_theme:'单选腾讯题材，已映射值默认带入，可调整。',micro_series_keyword:`至少选择2个，已选择 ${values.length} 个。`,plot_year_drama:'AI真人短剧必填。',micro_series_guzhuang:'AI真人短剧必填。',aboard_area_limit:'根据实际取得的授权范围选择。',granted_rights:'至少选择一项，可同时选择两项。',auth_duration:'单位为年，请填写正整数。'};
+    const control=f.type==='keywords'?keywordPicker(d):multiple?`<div class="metadata-checks" id="${id}" role="group" aria-labelledby="${id}-label" aria-describedby="${id}-hint ${id}-error">${f.options.map(([v,label])=>`<label><input type="checkbox" name="${f.key}" data-metadata="${f.key}" value="${v}" ${values.includes(v)?'checked':''}><span>${label}</span></label>`).join('')}</div>`:f.type==='select'?`<select id="${id}" name="${f.key}" data-metadata="${f.key}" ${f.key==='is_ai_creation'&&d.kind==='ai'?'disabled':''} aria-required="true" aria-describedby="${id}-hint ${id}-error">${options(f.options,d[f.key],f.key==='kind'&&TV.contentTypes.some(([value])=>value===d.kind)?'':'请选择'+f.label)}</select>`:`<div class="metadata-number"><input id="${id}" name="${f.key}" data-metadata="${f.key}" type="number" min="1" step="1" value="${esc(d[f.key])}" placeholder="请输入授权年限" aria-required="true" aria-describedby="${id}-hint ${id}-error"><span>年</span></div>`;
+    return `<div class="document-row metadata-row" data-metadata-row="${f.key}">${multiple?`<span class="metadata-label required" id="${id}-label">${f.label}</span>`:`<label for="${id}" class="required">${f.label}</label>`}<div>${control}<div class="hint" id="${id}-hint">${hints[f.key]}</div><div class="field-error" id="${id}-error" data-error-for="${f.key}" role="status" hidden></div></div></div>`;
+  }
+  function renderMetadataFeedback(){
+    const issues=TV.metadataIssues(ui.draft);
+    TV.editableMetadata(ui.draft).forEach(f=>{const row=$(`[data-metadata-row="${f.key}"]`);if(!row)return;const issue=issues.find(i=>i.field===f.key),show=!!issue&&(ui.metadataAttempted||ui.metadataTouched.has(f.key)),error=row.querySelector('[data-error-for]');error.hidden=!show;error.textContent=show?issue.message:'';row.querySelectorAll('[data-metadata]').forEach(el=>el.setAttribute('aria-invalid',String(show)));row.classList.toggle('has-error',show);});
+    const hint=$('#metadata-micro_series_keyword-hint');if(hint)hint.textContent=`至少选择2个，已选择 ${(ui.draft.micro_series_keyword||[]).length} 个。`;
+  }
+  function updateMetadata(el){
+    const f=TV.editableMetadata(ui.draft).find(f=>f.key===el.dataset.metadata);if(!f)return;
+    if(f.key==='kind'){if(!TV.changeContentType(ui.draft,el.value))return;ui.proofOpen=false;ui.keywordOpen=false;ui.dirty=true;ui.metadataTouched.add(f.key);render();$('#metadata-kind')?.focus({preventScroll:true});return;}
+    if(f.key==='is_ai_creation'){if(ui.draft.kind==='ai')return;ui.draft.is_ai_creation=el.value==='true'?true:el.value==='false'?false:null;ui.draft.short_is_ai_creation=ui.draft.is_ai_creation;ui.proofOpen=false;ui.keywordOpen=false;ui.dirty=true;ui.metadataTouched.add(f.key);render();$('#metadata-is_ai_creation')?.focus({preventScroll:true});return;}
+    ui.draft[f.key]=el.type==='checkbox'?f.options.filter(([value])=>$(`[data-metadata="${f.key}"][value="${value}"]`)?.checked).map(([value])=>value):el.value;
+    ui.dirty=true;ui.metadataTouched.add(f.key);renderMetadataFeedback();
+  }
+  function confirmMetadata(){
+    ui.metadataAttempted=true;renderMetadataFeedback();const first=TV.metadataIssues(ui.draft)[0];
+    if(!first)return true;const row=$(`[data-metadata-row="${first.field}"]`);row?.scrollIntoView({block:'center',inline:'nearest'});row?.querySelector('[data-metadata]')?.focus({preventScroll:true});toast('请完善内容类型、题材与授权信息后确认',true);return false;
+  }
   function imageCard(f,d){const file=d.files[f.key]?.[0];return `<div class="upload-card file-config-row"><h3 class="required">${f.label}</h3><div class="image-well ${file?'':'empty-image'}">${file?`<img src="${esc(file.preview)}" alt="${esc(f.label)}预览">`:'＋'}</div><div class="upload-details"><div class="file-name">${file?esc(file.name):'尚未选择图片'}</div>${f.key==='user_new_pic_vt'?`<div class="hint">${file?.origin==='collection'?'已带入合集列表封面，可更换。':file?'已使用手动选择的竖版封面。':'未选择竖版封面，请上传图片。'}</div>`:''}<div class="upload-actions">${pick(f.key)}${file?`<button class="text small" data-action="preview-file" data-slot="${f.key}">预览</button><button class="text small danger" data-action="remove-file" data-slot="${f.key}">移除</button>`:''}</div></div></div>`;}
   function renderForm(){
     const d=ui.draft;
@@ -86,7 +127,10 @@
     const copyrightPanels=TV.copyrightGroups(d).map(group=>`<section class="copyright-material-group" data-proof-group="${group.key}" aria-label="${group.label}">${group.fields.length>1?`<h3>${group.label}</h3>`:''}${group.fields.map(copyrightDocument).join('')}</section>`).join('');
     return `<div class="form-page"><div class="page-heading"><button class="text back" data-action="leave">‹ 返回池内合集</button><h1>编辑腾讯资料</h1><span class="subtext">${esc(d.title)} · ${d.id}</span></div>
       <div class="panel form-panel"><div class="form-body">
-        <div class="banner">合集基础信息已映射，本页选择是否重点备案、版权证明材料类型，并补充图片和证明文件。</div>
+        <div class="banner">按内容类型维护腾讯资料，切换后展示对应必填项；已有资料默认带入，隐藏内容与文件保留。</div>
+        <section class="form-section">${title('内容类型','content-type','<span>按类型展示与校验必填项</span>')}${TV.contentTypeFields(d).map(f=>metadataRow(f,d)).join('')}</section>
+        <section class="form-section">${title('题材信息','classification','<span>使用腾讯题材与关键词</span>')}${TV.editableMetadata(d).filter(f=>!TV.auth.some(a=>a.key===f.key)&&!TV.contentTypeFields(d).some(a=>a.key===f.key)).map(f=>metadataRow(f,d)).join('')}</section>
+        <section class="form-section">${title('授权信息','authorization','<span>按实际取得的授权填写</span>')}${TV.editableMetadata(d).filter(f=>TV.auth.some(a=>a.key===f.key)).map(f=>metadataRow(f,d)).join('')}</section>
         <section class="form-section">${title('专辑封面','covers','<span>三种图片均必填</span>')}<div class="cover-grid">${TV.covers.map(f=>imageCard(f,d)).join('')}</div></section>
         <section class="form-section">${title('角色剧照','roles','<span>默认取对应演员照片，可更换</span>')}<div class="roles-grid">${roles||'<div class="banner warning">合集尚未映射角色，请先完善合集信息。</div>'}</div></section>
         <section class="form-section">${title('证明文件','attachments','<span>按备案条件与版权类型展开 · PDF</span>')}${documents}${recordPicker}${conditionalDocs}${copyrightPicker}${copyrightPanels}</section>
@@ -113,7 +157,7 @@
     ui.draft.proofTypes=TV.copyrightTypes.map(([value])=>value).filter(value=>selected.has(value));ui.dirty=true;
     renderProofSelect(removeOnly?'#proof-type-trigger':`[data-proof-option="${key}"]`);
   }
-  function openModal(type,data={}){closeProofSelect();focusBefore=document.activeElement;ui.modal=type;ui.modalData=data;$('#popover').hidden=true;setNotes();renderModal();$('.app-shell').inert=true;$('#modal').querySelector('input,select,button')?.focus({preventScroll:true});}
+  function openModal(type,data={}){closeProofSelect();closeKeywords();focusBefore=document.activeElement;ui.modal=type;ui.modalData=data;$('#popover').hidden=true;setNotes();renderModal();$('.app-shell').inert=true;$('#modal').querySelector('input,select,button')?.focus({preventScroll:true});}
   function closeModal(){if(ui.running)return;ui.modal=null;ui.modalData=null;$('#modal').hidden=true;$('.app-shell').inert=false;render();focusBefore?.focus?.({preventScroll:true});}
   const modalField=(label,control)=>`<div class="field"><label class="required">${label}</label><div>${control}</div></div>`;
   function renderModal(){let body='',foot='',heading='',large=false;const m=ui.modalData,p=db.pools.find(p=>p.id===m?.pool);const confirm=(label,action,key='confirm')=>op(label,action,key,'','primary');
@@ -129,7 +173,8 @@
   }
   function saveDraft(silent=false){
     const d=drama(ui.draft.id);
-    // 保存重点备案选择、版权材料多选与文件；其他映射字段、角色名称和数量沿用合集来源。
+    // 保存开放维护的腾讯字段与文件，保留源合集、CID和提交记录。
+    TV.applyEditableMetadata(d,ui.draft);
     d.is_cp_key_record=ui.draft.is_cp_key_record;
     d.proofTypes=TV.selectedProofTypes(ui.draft);
     d.files=clone(ui.draft.files);
@@ -172,11 +217,14 @@
       case 'save-auto':db.pools.find(p=>p.id===ui.modalData.pool).auto={enabled:$('#auto-enabled').value,kind:$('#auto-kind').value};persist();closeModal();toast('自动添加规则已保存');break;
       case 'reset-pools':ui.poolFilter={id:'',name:'',type:'',status:''};render();break;
       case 'reset-filter':ui.filter={id:'',name:'',status:''};ui.selected.clear();render();break;
-      case 'toggle-proof-select':if(ui.draft.has_own_copyright!=='1543607'){ui.proofOpen=!ui.proofOpen;renderProofSelect();}break;
+      case 'toggle-keywords':closeProofSelect();ui.keywordOpen=!ui.keywordOpen;renderKeywordPicker();break;
+      case 'toggle-keyword':changeKeyword(b.dataset.value);break;
+      case 'remove-keyword':changeKeyword(b.dataset.value,true);break;
+      case 'toggle-proof-select':closeKeywords();if(ui.draft.has_own_copyright!=='1543607'){ui.proofOpen=!ui.proofOpen;renderProofSelect();}break;
       case 'toggle-proof-type':changeProofType(b.dataset.value);break;
       case 'remove-proof-type':changeProofType(b.dataset.value,true);break;
-      case 'edit':ui.proofOpen=false;ui.draft=clone(drama(id));ui.dirty=false;ui.page='form';render();break;
-      case 'save-files':if(saveDraft(true)){ui.page='collections';render();toast('腾讯资料已保存');}break;
+      case 'edit':ui.metadataAttempted=false;ui.metadataTouched.clear();ui.proofOpen=false;ui.keywordOpen=false;ui.draft=clone(drama(id));TV.changeContentType(ui.draft,ui.draft.kind);ui.dirty=false;ui.page='form';render();break;
+      case 'save-files':if(!confirmMetadata())break;if(saveDraft(true)){ui.page='collections';render();toast('腾讯资料已保存');}break;
       case 'remove-role-image':ui.draft.roles[Number(b.dataset.index)].image=null;ui.dirty=true;render();break;
       case 'remove-file':{const arr=ui.draft.files[b.dataset.slot];arr.splice(Number(b.dataset.index||0),1);ui.dirty=true;render();break;}
       case 'preview-file':openModal('preview',{file:ui.draft.files[b.dataset.slot][Number(b.dataset.index||0)]});break;
@@ -195,9 +243,11 @@
       case 'return-stage':window.scrollTo({left:0,behavior:'smooth'});break;
     }
   }
-  document.addEventListener('click',e=>{if(ui.proofOpen&&!e.target.closest('[data-proof-select]'))closeProofSelect();const ann=e.target.closest('[data-note]');if(ann){e.preventDefault();e.stopPropagation();const el=$('#note-'+ann.dataset.note);el?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});el?.classList.add('highlight');setTimeout(()=>el?.classList.remove('highlight'),1500);return;}const action=e.target.closest('[data-action]');if(action)onAction(action);else if(!e.target.closest('#popover'))$('#popover').hidden=true;});
+  document.addEventListener('click',e=>{if(ui.keywordOpen&&!e.target.closest('[data-keyword-select]'))closeKeywords();if(ui.proofOpen&&!e.target.closest('[data-proof-select]'))closeProofSelect();const ann=e.target.closest('[data-note]');if(ann){e.preventDefault();e.stopPropagation();const el=$('#note-'+ann.dataset.note);el?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});el?.classList.add('highlight');setTimeout(()=>el?.classList.remove('highlight'),1500);return;}const action=e.target.closest('[data-action]');if(action)onAction(action);else if(!e.target.closest('#popover'))$('#popover').hidden=true;});
   document.addEventListener('submit',e=>{e.preventDefault();if(e.target.getAttribute('id')==='pool-filters')ui.poolFilter=Object.fromEntries(new FormData(e.target));if(e.target.getAttribute('id')==='collection-filters'){ui.filter=Object.fromEntries(new FormData(e.target));ui.selected.clear();}render();});
+  document.addEventListener('input',e=>{if(e.target.dataset.metadata&&e.target.type==='number')updateMetadata(e.target);});
   document.addEventListener('change',async e=>{const el=e.target;
+    if(el.dataset.metadata){updateMetadata(el);return;}
     if(el.id==='is-cp-key-record'){
       ui.draft.is_cp_key_record=el.value==='true';ui.dirty=true;render();$('#is-cp-key-record')?.focus({preventScroll:true});return;
     }
@@ -207,8 +257,11 @@
     if(el.dataset.file!==undefined){const selectedDraft=ui.draft;const slot=el.dataset.file,isRole=!!el.dataset.roleFile,kind=isRole||TV.covers.some(f=>f.key===slot)?'image':'pdf';const accepted=[];for(const f of el.files){try{if(kind==='pdf'){const head=new TextDecoder().decode(await f.slice(0,5).arrayBuffer());if(head!=='%PDF-')throw Error('请选择有效的PDF文件');}else if(!f.type.startsWith('image/'))throw Error('请选择有效图片');const preview=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(f);});if(kind==='image')await new Promise((resolve,reject)=>{const im=new Image();im.onload=resolve;im.onerror=()=>reject(Error('图片无法读取，请重新选择'));im.src=preview;});accepted.push({name:f.name,size:f.size,kind,preview,uploaded:false,ref:''});}catch(err){toast(err.message||'文件读取失败',true);}}
       if(selectedDraft!==ui.draft||ui.page!=='form')return;if(accepted.length){if(isRole)ui.draft.roles[Number(slot)].image=accepted[0];else if(TV.attachments(ui.draft).find(f=>f.key===slot)?.multiple)ui.draft.files[slot]=[...(ui.draft.files[slot]||[]),...accepted];else ui.draft.files[slot]=[accepted[0]];ui.dirty=true;render();toast('文件已选择，推送时上传至腾讯');}}
   });
-  document.addEventListener('focusin',e=>{if(ui.proofOpen&&!e.target.closest('[data-proof-select]'))closeProofSelect();});
+  document.addEventListener('focusin',e=>{if(ui.keywordOpen&&!e.target.closest('[data-keyword-select]'))closeKeywords();if(ui.proofOpen&&!e.target.closest('[data-proof-select]'))closeProofSelect();});
   document.addEventListener('keydown',e=>{
+    if(!ui.modal&&e.key==='Escape'&&ui.keywordOpen){e.preventDefault();closeKeywords(true);return;}
+    if(e.target.id==='metadata-micro_series_keyword'&&e.key==='ArrowDown'){e.preventDefault();closeProofSelect();ui.keywordOpen=true;renderKeywordPicker('[data-keyword-option]');return;}
+    if(e.target.matches('[data-keyword-option]')&&['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const items=[...document.querySelectorAll('[data-keyword-option]')],index=items.indexOf(e.target);items[e.key==='Home'?0:e.key==='End'?items.length-1:(index+(e.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();return;}
     if(e.target.classList.contains('proof-upload-tile')&&['Enter',' '].includes(e.key)){e.preventDefault();e.target.querySelector('input[type=file]')?.click();return;}
     if(!ui.modal&&e.key==='Escape'&&ui.proofOpen){e.preventDefault();closeProofSelect(true);return;}
     if(e.target.id==='proof-type-trigger'&&e.key==='ArrowDown'&&!e.target.disabled){e.preventDefault();ui.proofOpen=true;renderProofSelect('[data-proof-option]');return;}
