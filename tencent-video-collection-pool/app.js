@@ -67,7 +67,7 @@
   }
   function metadataRow(f,d){
     const id='metadata-'+f.key,multiple=['checks','keywords'].includes(f.type),values=Array.isArray(d[f.key])?d[f.key]:[];
-    const hints={kind:'短番为动漫类内容；AI真人短剧为AI生成的真人形象内容。',is_ai_creation:d.kind==='ai'?'AI真人短剧固定为是，需上传AI创作声明和权利声明。':'选择是时，需上传AI创作声明和权利声明；选择否时隐藏这两项。',cover_video_ratio:'AI真人短剧必填，选择横版或竖版。',micro_comic_theme:'单选腾讯题材，已映射值默认带入，可调整。',micro_series_keyword:`至少选择2个，已选择 ${values.length} 个。`,plot_year_drama:'AI真人短剧必填。',micro_series_guzhuang:'AI真人短剧必填。',aboard_area_limit:'根据实际取得的授权范围选择。',granted_rights:'至少选择一项，可同时选择两项。',auth_duration:'单位为年，请填写正整数。'};
+    const hints={kind:'短番为动漫类内容；AI真人短剧为AI生成的真人形象内容。',is_ai_creation:d.kind==='ai'?'AI真人短剧固定为是，需上传AI创作声明和权利声明。':'选择是时，需上传AI创作声明和权利声明；选择否时隐藏这两项。',cover_video_ratio:'AI真人短剧必填，选择横版或竖版。',micro_comic_theme:'单选腾讯题材，已映射值默认带入，可调整。',micro_series_keyword:`至少选择2个，已选择 ${values.length} 个。`,plot_year_drama:'AI真人短剧必填。',micro_series_guzhuang:'AI真人短剧必填。',aboard_area_limit:'根据实际取得的授权范围选择。',granted_rights:'至少选择一项，可同时选择两项。',auth_duration:'单位为年，请填写正整数。',has_own_copyright:'选择“是”时选择自有版权证明材料；选择“否”时需上传版权链文件。'};
     const control=f.type==='keywords'?keywordPicker(d):multiple?`<div class="metadata-checks" id="${id}" role="group" aria-labelledby="${id}-label" aria-describedby="${id}-hint ${id}-error">${f.options.map(([v,label])=>`<label><input type="checkbox" name="${f.key}" data-metadata="${f.key}" value="${v}" ${values.includes(v)?'checked':''}><span>${label}</span></label>`).join('')}</div>`:f.type==='select'?`<select id="${id}" name="${f.key}" data-metadata="${f.key}" ${f.key==='is_ai_creation'&&d.kind==='ai'?'disabled':''} aria-required="true" aria-describedby="${id}-hint ${id}-error">${options(f.options,d[f.key],f.key==='kind'&&TV.contentTypes.some(([value])=>value===d.kind)?'':'请选择'+f.label)}</select>`:`<div class="metadata-number"><input id="${id}" name="${f.key}" data-metadata="${f.key}" type="number" min="1" step="1" value="${esc(d[f.key])}" placeholder="请输入授权年限" aria-required="true" aria-describedby="${id}-hint ${id}-error"><span>年</span></div>`;
     return `<div class="document-row metadata-row" data-metadata-row="${f.key}">${multiple?`<span class="metadata-label required" id="${id}-label">${f.label}</span>`:`<label for="${id}" class="required">${f.label}</label>`}<div>${control}<div class="hint" id="${id}-hint">${hints[f.key]}</div><div class="field-error" id="${id}-error" data-error-for="${f.key}" role="status" hidden></div></div></div>`;
   }
@@ -81,11 +81,13 @@
     if(f.key==='kind'){if(!TV.changeContentType(ui.draft,el.value))return;ui.proofOpen=false;ui.keywordOpen=false;ui.dirty=true;ui.metadataTouched.add(f.key);render();$('#metadata-kind')?.focus({preventScroll:true});return;}
     if(f.key==='is_ai_creation'){if(ui.draft.kind==='ai')return;ui.draft.is_ai_creation=el.value==='true'?true:el.value==='false'?false:null;ui.draft.short_is_ai_creation=ui.draft.is_ai_creation;ui.proofOpen=false;ui.keywordOpen=false;ui.dirty=true;ui.metadataTouched.add(f.key);render();$('#metadata-is_ai_creation')?.focus({preventScroll:true});return;}
     ui.draft[f.key]=el.type==='checkbox'?f.options.filter(([value])=>$(`[data-metadata="${f.key}"][value="${value}"]`)?.checked).map(([value])=>value):el.value;
-    ui.dirty=true;ui.metadataTouched.add(f.key);renderMetadataFeedback();
+    ui.dirty=true;ui.metadataTouched.add(f.key);
+    if(f.key==='has_own_copyright'){ui.proofOpen=false;render();$('#metadata-has_own_copyright')?.focus({preventScroll:true});return;}
+    renderMetadataFeedback();
   }
   function confirmMetadata(){
     ui.metadataAttempted=true;renderMetadataFeedback();const first=TV.metadataIssues(ui.draft)[0];
-    if(!first)return true;const row=$(`[data-metadata-row="${first.field}"]`);row?.scrollIntoView({block:'center',inline:'nearest'});row?.querySelector('[data-metadata]')?.focus({preventScroll:true});toast('请完善内容类型、题材与授权信息后确认',true);return false;
+    if(!first)return true;const row=$(`[data-metadata-row="${first.field}"]`);row?.scrollIntoView({block:'center',inline:'nearest'});row?.querySelector('[data-metadata]')?.focus({preventScroll:true});toast('请完善必填信息后确认',true);return false;
   }
   function imageCard(f,d){const file=d.files[f.key]?.[0];return `<div class="upload-card file-config-row"><h3 class="required">${f.label}</h3><div class="image-well ${file?'':'empty-image'}">${file?`<img src="${esc(file.preview)}" alt="${esc(f.label)}预览">`:'＋'}</div><div class="upload-details"><div class="file-name">${file?esc(file.name):'尚未选择图片'}</div>${f.key==='user_new_pic_vt'?`<div class="hint">${file?.origin==='collection'?'已带入合集列表封面，可更换。':file?'已使用手动选择的竖版封面。':'未选择竖版封面，请上传图片。'}</div>`:''}<div class="upload-actions">${pick(f.key)}${file?`<button class="text small" data-action="preview-file" data-slot="${f.key}">预览</button><button class="text small danger" data-action="remove-file" data-slot="${f.key}">移除</button>`:''}</div></div></div>`;}
   function renderForm(){
@@ -106,7 +108,7 @@
     const documents=channelDocs.filter(f=>!TV.conditionalAttachments.some(c=>c.key===f.key)).map(documentRow).join('');
     const recordPicker=`<div class="document-row record-choice-row"><label for="is-cp-key-record" class="required">是否重点备案</label><div><select id="is-cp-key-record" name="is_cp_key_record" aria-required="true" aria-describedby="record-choice-hint">${options([['true','是'],['false','否']],d.is_cp_key_record)}</select><div class="hint" id="record-choice-hint">选择“是”时需上传上线备案文件</div></div></div>`;
     const conditionalDocs=channelDocs.filter(f=>TV.conditionalAttachments.some(c=>c.key===f.key)).map(documentRow).join('');
-    const selected=TV.selectedProofTypes(d),isOwn=d.has_own_copyright!=='1543607';
+    const selected=TV.selectedProofTypes(d),isOwn=d.has_own_copyright==='1543606';
     const typeLabels=Object.fromEntries([['chain','版权链文件'],...TV.copyrightTypes]);
     const copyrightPicker=`<div class="document-row copyright-types-row"><span class="copyright-type-label required" id="copyright-types-label">版权证明材料类型</span><div role="group" aria-labelledby="copyright-types-label">
       <div class="proof-select ${!isOwn?'fixed':''}" data-proof-select>
@@ -117,7 +119,7 @@
         </div>
         ${isOwn&&ui.proofOpen?`<div class="proof-select-options" id="proof-type-options" role="listbox" aria-label="版权证明材料类型选项" aria-multiselectable="true">${TV.copyrightTypes.map(([key,label])=>`<button type="button" class="proof-option" role="option" aria-selected="${selected.includes(key)}" data-proof-option="${key}" data-action="toggle-proof-type" data-value="${key}"><span class="proof-option-check" aria-hidden="true">${selected.includes(key)?'✓':''}</span><span>${label}</span></button>`).join('')}</div>`:''}
       </div>
-      <div class="hint" id="copyright-types-hint">${isOwn?'可多选，点击标签上的×取消；取消后保留文件，不参与本次推送。':'合集为无自有版权，固定使用版权链文件。'}</div>
+      <div class="hint" id="copyright-types-hint">${isOwn?'可多选，点击标签上的×取消；取消后保留文件，不参与本次推送。':'无自有版权时需上传版权链文件；材料类型固定，已上传文件可预览、移除或更换。'}</div>
       ${isOwn&&!selected.length?'<div class="proof-empty">请选择至少一种类型，选择后展开对应上传区域。</div>':''}
     </div></div>`;
     const copyrightDocument=f=>`<div class="document-row proof-document-row" data-document="${f.key}"><label class="required">${f.label}</label><div><div class="proof-file-grid">
@@ -129,11 +131,11 @@
       <div class="panel form-panel"><div class="form-body">
         <div class="banner">按内容类型维护腾讯资料，切换后展示对应必填项；已有资料默认带入，隐藏内容与文件保留。</div>
         <section class="form-section">${title('内容类型','content-type','<span>按类型展示与校验必填项</span>')}${TV.contentTypeFields(d).map(f=>metadataRow(f,d)).join('')}</section>
-        <section class="form-section">${title('题材信息','classification','<span>使用腾讯题材与关键词</span>')}${TV.editableMetadata(d).filter(f=>!TV.auth.some(a=>a.key===f.key)&&!TV.contentTypeFields(d).some(a=>a.key===f.key)).map(f=>metadataRow(f,d)).join('')}</section>
+        <section class="form-section">${title('题材信息','classification','<span>使用腾讯题材与关键词</span>')}${TV.editableMetadata(d).filter(f=>f.key!=='has_own_copyright'&&!TV.auth.some(a=>a.key===f.key)&&!TV.contentTypeFields(d).some(a=>a.key===f.key)).map(f=>metadataRow(f,d)).join('')}</section>
         <section class="form-section">${title('授权信息','authorization','<span>按实际取得的授权填写</span>')}${TV.editableMetadata(d).filter(f=>TV.auth.some(a=>a.key===f.key)).map(f=>metadataRow(f,d)).join('')}</section>
         <section class="form-section">${title('专辑封面','covers','<span>三种图片均必填</span>')}<div class="cover-grid">${TV.covers.map(f=>imageCard(f,d)).join('')}</div></section>
         <section class="form-section">${title('角色剧照','roles','<span>默认取对应演员照片，可更换</span>')}<div class="roles-grid">${roles||'<div class="banner warning">合集尚未映射角色，请先完善合集信息。</div>'}</div></section>
-        <section class="form-section">${title('证明文件','attachments','<span>按备案条件与版权类型展开 · PDF</span>')}${documents}${recordPicker}${conditionalDocs}${copyrightPicker}${copyrightPanels}</section>
+        <section class="form-section">${title('证明文件','attachments','<span>按备案条件与版权类型展开 · PDF</span>')}${documents}${recordPicker}${conditionalDocs}${metadataRow(TV.copyrightOwnership,d)}${['1543606','1543607'].includes(d.has_own_copyright)?copyrightPicker+copyrightPanels:''}</section>
       </div><div class="form-footer"><span class="muted">文件在推送时上传至腾讯</span><div class="right"><button data-action="leave">取消</button>${op('确认推送','save-files','save','','primary')}</div></div></div>
     </div>`;
   }
@@ -151,7 +153,7 @@
     const noteScroll=$('#notes').scrollTop;render();$('#notes').scrollTop=noteScroll;$(focusSelector)?.focus({preventScroll:true});
   }
   function changeProofType(key,removeOnly=false){
-    if(ui.draft.has_own_copyright==='1543607'||!TV.copyrightTypes.some(([value])=>value===key))return;
+    if(ui.draft.has_own_copyright!=='1543606'||!TV.copyrightTypes.some(([value])=>value===key))return;
     const selected=new Set(TV.selectedProofTypes(ui.draft));
     if(removeOnly||selected.has(key))selected.delete(key);else selected.add(key);
     ui.draft.proofTypes=TV.copyrightTypes.map(([value])=>value).filter(value=>selected.has(value));ui.dirty=true;
@@ -176,7 +178,7 @@
     // 保存开放维护的腾讯字段与文件，保留源合集、CID和提交记录。
     TV.applyEditableMetadata(d,ui.draft);
     d.is_cp_key_record=ui.draft.is_cp_key_record;
-    d.proofTypes=TV.selectedProofTypes(ui.draft);
+    d.proofTypes=TV.ownProofTypes(ui.draft);
     d.files=clone(ui.draft.files);
     d.roles=d.roles.map((r,i)=>({...r,image:ui.draft.roles[i]?clone(ui.draft.roles[i].image):r.image}));
     d.saved=true;
@@ -220,7 +222,7 @@
       case 'toggle-keywords':closeProofSelect();ui.keywordOpen=!ui.keywordOpen;renderKeywordPicker();break;
       case 'toggle-keyword':changeKeyword(b.dataset.value);break;
       case 'remove-keyword':changeKeyword(b.dataset.value,true);break;
-      case 'toggle-proof-select':closeKeywords();if(ui.draft.has_own_copyright!=='1543607'){ui.proofOpen=!ui.proofOpen;renderProofSelect();}break;
+      case 'toggle-proof-select':closeKeywords();if(ui.draft.has_own_copyright==='1543606'){ui.proofOpen=!ui.proofOpen;renderProofSelect();}break;
       case 'toggle-proof-type':changeProofType(b.dataset.value);break;
       case 'remove-proof-type':changeProofType(b.dataset.value,true);break;
       case 'edit':ui.metadataAttempted=false;ui.metadataTouched.clear();ui.proofOpen=false;ui.keywordOpen=false;ui.draft=clone(drama(id));TV.changeContentType(ui.draft,ui.draft.kind);ui.dirty=false;ui.page='form';render();break;

@@ -4,6 +4,7 @@ window.TV = (() => {
   const keywords=['主旋律','脱贫攻坚','青春校园','职业剧','情感','都市','喜剧','古装','科幻','奇幻','玄幻','公安刑侦','乡村','犯罪','年代剧','探险','美食','武侠','体育竞技','战争军旅'].map((label,i)=>[String(123130782+i),label]);
   const types=['未知','抖音','快手','微信','QQ浏览器','华为视频百花号','OPPO','全民K歌','腾讯视频'];
   const contentTypes=[['duanfan','短番'],['ai','AI真人短剧']];
+  const copyrightOwnership={key:'has_own_copyright',label:'是否自有版权',type:'select',options:[['1543606','是'],['1543607','否']],desc:'必填，单选是、否；带入已有值，可由业务调整，按腾讯字符串枚举保存。'};
   const assets='/html-prototypes/tencent-video-collection-pool/assets/';
   const submissionStates=['未提交','提交中','提交成功','提交失败'];
   function normalizeSubmissionStatus(d){
@@ -54,7 +55,7 @@ window.TV = (() => {
   }
   function editableMetadata(d){
     const keys=['micro_comic_theme',...(d.kind==='ai'?['micro_series_keyword','plot_year_drama','micro_series_guzhuang']:[]),'aboard_area_limit','granted_rights','auth_duration'];
-    return [...contentTypeFields(d),...keys.map(key=>({...[...basic,...ai,...auth].find(f=>f.key===key),...(key==='micro_comic_theme'?{label:'短剧题材'}:{})}))];
+    return [...contentTypeFields(d),...keys.map(key=>({...[...basic,...ai,...auth].find(f=>f.key===key),...(key==='micro_comic_theme'?{label:'短剧题材'}:{})})),copyrightOwnership];
   }
   function metadataIssues(d){
     return editableMetadata(d).flatMap(f=>{
@@ -86,11 +87,14 @@ window.TV = (() => {
     {key:'record_url',label:'上线备案文件',desc:'本页“是否重点备案”选择“是”时展示且必传PDF；选择“否”时隐藏，不参与校验和提交。切换为否保留已选文件，再选是时恢复；备案号仍从合集资料映射。对应record_url。'},
     {key:'micro_series_ipfile',label:'IP改编文件',desc:'绿台合集“内容来源”为“IP改编”时展示且必传PDF；其他来源时隐藏，不参与校验、上传和提交。仅按内容来源判断，不限制内容品类；内容来源从绿台合集映射，本页不提供切换。对应micro_series_ipfile。'}
   ];
-  function selectedProofTypes(d){
-    if(d.has_own_copyright==='1543607')return ['chain'];
+  function ownProofTypes(d){
     // 兼容既有单一路径草稿；空数组代表用户主动取消所有勾选。
     const selected=Array.isArray(d.proofTypes)?d.proofTypes:[d.proofMode];
     return copyrightTypes.map(([key])=>key).filter(key=>selected.includes(key));
+  }
+  function selectedProofTypes(d){
+    if(d.has_own_copyright==='1543607')return ['chain'];
+    return d.has_own_copyright==='1543606'?ownProofTypes(d):[];
   }
   function copyrightAttachments(d){
     const selected=selectedProofTypes(d),a=[];
@@ -134,7 +138,7 @@ window.TV = (() => {
     }
     if(step===null||step===2){
       if(d.is_cp_key_record&&!d.record_num_text.trim())add('record_num_text','上线备案号',2);
-      if(!selectedProofTypes(d).length)add('proofTypes','版权证明材料类型',2,'请至少选择一种版权证明材料类型');
+      if(d.has_own_copyright==='1543606'&&!selectedProofTypes(d).length)add('proofTypes','版权证明材料类型',2,'请至少选择一种版权证明材料类型');
       attachments(d).forEach(f=>{if(!(d.files[f.key]||[]).length)add(f.key,f.label,2);});
     }
     if(push&&!d.is_ai_creation)add('is_ai_creation','非AI创作声明',0,'非AI分集创作声明的枚举配置待腾讯确认，当前暂不可推送');
@@ -201,5 +205,5 @@ window.TV = (() => {
     const db={version:1,dramas,pools:[{id:36,name:'腾讯视频漫剧合作池',type:'腾讯视频',enabled:true,ids:dramas.slice(0,6).map(d=>d.id)},{id:37,name:'腾讯视频待推送合集池',type:'腾讯视频',enabled:false,ids:[900321,900327]},{id:26,name:'OPPO精品短剧推送池',type:'OPPO',enabled:true,ids:[900323]},{id:28,name:'全民K歌精品短剧推送池',type:'全民K歌',enabled:true,ids:[900322]},{id:3,name:'公号推广合集池',type:'微信',enabled:true,ids:[900321,900323]}],nextPool:38};
     prepareConditionalExample(db);prepareContentSourceExamples(db);prepareCollectionCoverDefaults(db);prepareActorPhotoDefaults(db);return db;
   }
-  return {themes,keywords,types,contentTypes,basic,auth,ai,contentTypeFields,changeContentType,editableMetadata,metadataIssues,applyEditableMetadata,covers,submissionStates,normalizeSubmissionStatus,submissionFailureReason,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
+  return {themes,keywords,types,contentTypes,basic,auth,ai,contentTypeFields,changeContentType,editableMetadata,metadataIssues,applyEditableMetadata,covers,submissionStates,normalizeSubmissionStatus,submissionFailureReason,conditionalAttachments,prepareConditionalExample,prepareContentSourceExamples,prepareCollectionCoverDefaults,prepareActorPhotoDefaults,copyrightOwnership,copyrightTypes,ownProofTypes,selectedProofTypes,copyrightAttachments,copyrightGroups,attachments,assetList,validate,file,seed};
 })();
