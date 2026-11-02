@@ -1,0 +1,12 @@
+.external-method-tabs{display:flex;gap:24px;border-bottom:1px solid var(--line,#303635);margin:4px 0 20px}
+.external-method-tabs .btn{border:0;border-radius:0;background:none;padding:12px 2px;color:#b4bebb;border-bottom:2px solid transparent}
+.external-method-tabs .btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+#external-cloud .field{margin-bottom:16px}#external-cloud .field:last-of-type{max-width:260px}
+.cloud-submit-help{font-size:14px;line-height:1.8;color:#d3ddd7;margin:12px 0 8px}
+#external-cloud>small{display:block;line-height:1.7}
+.cloud-import-panel{margin:16px 0;padding:18px;border:1px solid #364a41;background:#1c2923;border-radius:8px;font-size:13px}
+.cloud-import-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cloud-import-panel p{line-height:1.8;margin:10px 0}.cloud-import-panel dl{margin:10px 0 0}.cloud-import-panel dl>div{display:flex;gap:12px;margin:6px 0}.cloud-import-panel dt{flex:0 0 64px;color:#a5b6ac}.cloud-import-panel dd{margin:0;min-width:0;overflow-wrap:anywhere;line-height:1.7}
+.cloud-demo-controls{border-top:1px dashed #d5dfe8;padding-top:10px;margin-top:12px}.cloud-demo-controls small,.cloud-demo-note{display:block;line-height:1.7;color:#687587}.cloud-demo-controls>div{display:flex;gap:10px;margin-top:10px}
+.admin .cloud-import-panel{background:#f4f8fc;border-color:#dce6f0;color:#334155}.admin .cloud-import-panel dt{color:#64748b}
+.cloud-demo-note{margin-top:8px}

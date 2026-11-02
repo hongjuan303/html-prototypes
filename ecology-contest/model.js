@@ -1,4 +1,5 @@
-import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261026-v1';
+import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261028-v9';
+import {pending,REVIEWER,orderedFiles,validateEpisodes} from './workflow.js?v=20261028-v9';
 export {publicEvents, publicStatus, validateEvent};
 export const KEY = 'wanxiang-contest-demo-20261014-v1';
 export const TRACKS = ['剧本', 'AI漫剧样片', 'AI漫剧成片'];
@@ -8,7 +9,7 @@ export function uid(prefix='x') { return prefix + '-' + Date.now().toString(36) 
 export function time() { return new Date().toLocaleString('sv-SE').slice(0,16); }
 const track = (i, start='2026-10-01', end='2026-11-15') => ({ name: TRACKS[i], start, end, brief: i === 0 ? '围绕赛事主题创作原创剧本，题材与创作形式不限。' : i === 1 ? '以完整的叙事片段呈现故事风格与角色，可使用万相漫剧制作平台。' : '提交叙事完整的原创 AI 漫剧成片，展现故事与视听表达。' });
 export function seed() {
-  const common = { intro: '以城市与山水为创作起点，用好故事连接文化与想象。面向所有创作者征集原创剧本与 AI 漫剧作品，个人、团队、企业及其他主体均可参加。', rules: '容量进行初审及复审，均采用通过制。通过审核的作品进入主办方线下评议，最终名次经确认后统一公示。', rewardText: '一等奖：现金 30,000 元 + 20,000 积分\n二等奖：现金 10,000 元 + 10,000 积分\n优秀作品：创作礼盒 + 5,000 积分', review: '双审', resultsPublished: false, cancelReason: '' };
+  const common = { intro: '以城市与山水为创作起点，用好故事连接文化与想象。面向所有创作者征集原创剧本与 AI 漫剧作品，个人、团队、企业及其他主体均可参加。', rules: '容量进行一次审核，采用通过制。审核通过的作品进入主办方线下评议，最终名次经确认后统一发布。', rewardText: '一等奖：现金 30,000 元 + 20,000 积分\n二等奖：现金 10,000 元 + 10,000 积分\n优秀作品：创作礼盒 + 5,000 积分', review: '单次审核', resultsPublished: false, cancelReason: '' };
   const events = [
     {...common,id:'yandang',title:'山海有回响 · AI漫剧创作大赛',subtitle:'让山水成为故事，让创意被看见',region:'浙江 · 雁荡山',host:'山海文旅合作项目组（示例）',image:'mountains.png',mode:'独立赛道',status:'征集中',tracks:[track(0),track(1),track(2)],date:'2026.10.01 — 2026.11.15',rewardSummary:'最高 30,000 元现金奖励'},
     {...common,id:'city',title:'一城一故事 · 青年创作计划',subtitle:'从一页剧本，到一部属于城市的漫剧',region:'浙江 · 杭州',host:'城市影像合作项目组（示例）',image:'city.png',mode:'独立赛道',status:'征集中',tracks:[track(0,'2026-10-01','2026-10-20'),track(1,'2026-10-10','2026-11-10'),track(2,'2026-11-11','2026-12-10')],date:'2026.10.01 — 2026.12.10',rewardSummary:'现金 · 创作积分 · 创作礼盒'},
@@ -41,50 +42,65 @@ export function gate(s,eventId,trackName,parent='',editing='') {
   if(s.works.filter(w=>w.user==='me'&&w.event===eventId&&w.track===trackName&&w.id!==editing).length>=5) return '每场赛事每个赛道最多提交 5 件作品，当前名额已满';
   return '';
 }
+import {isCloudWork,cloudReady,cloudSubmission} from './cloud-import.js?v=20261028-v9';
 export function submitWork(s,payload,draft=false) {
   const error=gate(s,payload.event,payload.track,'',payload.id); if(error) throw Error(error);
   if(!payload.title.trim()) throw Error('请填写作品名称');
-  const isScript=payload.track==='剧本', files=payload.files||[];
+  const isScript=payload.track==='剧本', isFilm=payload.track==='AI漫剧成片', files=isFilm?orderedFiles(payload.files||[]):payload.files||[];
+  const cloud=isCloudWork(payload);
+  if(cloud&&(isScript||files.length||payload.project||payload.output||payload.outputs?.length))throw Error('网盘导入不能与本地文件或平台作品同时提交');
+  if(!cloud&&(payload.cloudLink||payload.cloudCode))throw Error('请选择网盘链接导入后再提交分享信息');
+  const cloudImport=cloud?cloudSubmission(payload,draft):null;
+  if(isFilm&&files.length)validateEpisodes(files);
   const project=payload.project&&s.projects.find(p=>p.id===payload.project&&projectOwner(p)==='me');
-  const output=project&&platformOutputs(project).find(o=>o.id===payload.output);
+  const outputIds=payload.outputs?.length?payload.outputs:payload.output?[payload.output]:[];
+  const outputs=project?outputIds.map(id=>platformOutputs(project).find(o=>o.id===id)):[];
+  const output=outputs[0];
+  if((payload.project||outputIds.length)&&!isPlatformProject(project))throw Error('请选择本人容量万相项目中的已完成视频作品');
+  if(outputIds.length!==new Set(outputIds).size||outputs.some(o=>!o)||(!isFilm&&outputIds.length>1))throw Error('请选择有效的作品集数');
   if(payload.sourceScript)throw Error('剧本赛道仅支持本地上传，请上传完整剧本文件');
-  if(isScript&&(payload.project||payload.output))throw Error('剧本赛道请上传剧本文件');
-  if(!isScript&&files.length&&(payload.project||payload.output))throw Error('请选择一种作品来源：万相平台作品或外部上传作品');
-  if((payload.project||payload.output)&&(!isPlatformProject(project)||!output))throw Error('请选择本人容量万相项目中的已完成视频作品');
-  const duplicate=payload.project&&s.works.find(w=>w.id!==payload.id&&w.user==='me'&&w.event===payload.event&&w.track===payload.track&&w.project===payload.project&&w.output===payload.output);
+  if(isScript&&(payload.project||outputIds.length))throw Error('剧本赛道请上传剧本文件');
+  if(!isScript&&files.length&&(payload.project||outputIds.length))throw Error('请选择一种作品来源：万相平台作品或外部上传作品');
+  if((payload.project||outputIds.length)&&(!isPlatformProject(project)||!output))throw Error('请选择本人容量万相项目中的已完成视频作品');
+  const duplicate=payload.project&&s.works.find(w=>w.id!==payload.id&&w.user==='me'&&w.event===payload.event&&w.track===payload.track&&w.project===payload.project&&(w.outputs||[w.output]).some(id=>outputIds.includes(id)));
   if(duplicate)throw Error(duplicate.status==='草稿'?'此作品已有参赛草稿，请在我的赛事中继续编辑':'此作品已参加该赛道，请在我的赛事查看，不支持重复投稿');
   if(!draft) {
     if(!payload.summary.trim()) throw Error('请填写作品简介');
     if(!payload.identity.name.trim()||!payload.identity.entity.trim()) throw Error('请填写参赛主体与联系人');
     if(!/^1[3-9]\d{9}$/.test(payload.identity.phone)) throw Error('请输入正确的 11 位手机号');
     if(isScript&&!files.length)throw Error('请上传包含故事大纲、人物小传及剧本正文的完整剧本文件');
-    if(!isScript&&!output&&!files.length)throw Error('请选择容量万相平台项目中的已完成视频，或上传外部平台制作的视频作品');
+    if(!isScript&&!cloud&&!output&&!files.length)throw Error('请选择容量万相平台项目中的已完成视频，或上传外部平台制作的视频作品');
     if(!payload.agreed) throw Error('请阅读并同意参赛声明');
   }
   const old=workBy(s,payload.id),at=time();
   const versions=[...(old?.versions||[])];
   // 旧草稿改用新投稿来源时保留原材料快照；不清空浏览器历史文件。
-  if(old&&(old.sourceScript||JSON.stringify(old.files||[])!==JSON.stringify(files)||(old.project||'')!==(payload.project||'')||(old.output||'')!==(payload.output||'')))
-    versions.push({at,files:structuredClone(old.files||[]),sourceScript:old.sourceScript||'',scriptSnapshot:old.scriptSnapshot||null,projectSnapshot:old.projectSnapshot||null});
-  const w={...old,...payload,files,parent:'',sourceScript:'',scriptSnapshot:null,id:old?.id||uid('work'),user:'me',status:draft?'草稿':'待初审',version:old?.version||1,created:old?.created||at,updated:at,advanced:false,public:false,history:[...(old?.history||[]),{at,text:draft?'保存草稿':`提交作品 V${old?.version||1}`}],versions};
+  if(old&&(JSON.stringify(old.cloudImport||null)!==JSON.stringify(cloudImport)||old.sourceScript||JSON.stringify(old.files||[])!==JSON.stringify(files)||(old.project||'')!==(payload.project||'')||JSON.stringify(old.outputs||[old.output].filter(Boolean))!==JSON.stringify(outputIds)))
+    versions.push({at,cloudImport:structuredClone(old.cloudImport||null),files:structuredClone(old.files||[]),sourceScript:old.sourceScript||'',scriptSnapshot:old.scriptSnapshot||null,projectSnapshot:old.projectSnapshot||null});
+  const w={...old,...payload,files,outputs:outputIds,output:outputIds[0]||'',parent:'',sourceScript:'',scriptSnapshot:null,id:old?.id||uid('work'),user:'me',status:draft?'草稿':'待审核',version:old?.version||1,created:old?.created||at,submittedAt:draft?(old?.submittedAt||''):(old?.submittedAt||at),updated:at,advanced:false,public:false,history:[...(old?.history||[]),{at,text:draft?'保存草稿':`提交作品 V${old?.version||1}`}],versions};
+  delete w.cloudLink;delete w.cloudCode;
+  w.cloudImport=cloudImport;w.externalMethod=cloud?'cloud':'local';
   w.materialSource=isScript?'script':project?'platform':files.length?'external':payload.materialSource==='external'?'external':'platform';
-  w.projectSnapshot=project?{title:project.title,outputTitle:output.title,file:null}:null;
+  const episodes=outputs.map((o,i)=>({id:o.id,name:o.title,episodeNumber:o.episodeNumber===undefined?i+1:Number(o.episodeNumber),mediaUrl:o.mediaUrl||'',demo:!!o.demo,duration:o.duration}));
+  if(isFilm&&episodes.length)validateEpisodes(episodes);
+  w.projectSnapshot=project?{title:project.title,outputTitle:output.title,file:null,episodes:orderedFiles(episodes)}:null;
   if(old) s.works[s.works.indexOf(old)]=w; else s.works.unshift(w); return w;
 }
 export function reviewWork(s,id,result,note) {
-  const w=workBy(s,id),e=eventBy(s,w?.event); if(!w||!['待初审','待复审'].includes(w.status)) throw Error('该作品已处理，请刷新列表');
+  const w=workBy(s,id),e=eventBy(s,w?.event); if(!w||!pending(w)) throw Error('该作品已处理，请刷新列表');
   if(e.status==='已取消'||e.resultsPublished) throw Error('赛事已取消或公示，不能继续审核');
+  if(!cloudReady(w))throw Error('网盘视频尚未导入完成，暂不能审核');
   const t=e.tracks.find(t=>t.name===w.track);
   if(TODAY<=t.end&&e.status==='征集中')throw Error('该赛道尚未结束征集，请在征集截止后审核');
   if(!['通过','拒绝'].includes(result))throw Error('请选择有效审核结果');
   note=String(note??'').trim();
   if(result==='拒绝'&&!note) throw Error('拒绝时请填写评语，说明未通过原因');
   if(note.length>500) throw Error('评语最多填写 500 字');
-  const stage=w.status==='待初审'?'初审':'复审';
   const at=time();
-  w.status=result==='拒绝'?'未通过':stage==='初审'&&e.review==='双审'?'待复审':'已通过';
-  w.reviews=[...(w.reviews||[]),{stage,result,note,at}];
-  w.reason=result==='拒绝'?note:'';w.updated=at;w.history.push({at,text:`${stage}${result==='拒绝'?'未通过':'通过'}${note?'：'+note:''}`});
+  w.status=result==='拒绝'?'未通过':'已通过';
+  w.reviewerId=REVIEWER.id;w.reviewerName=REVIEWER.name;w.reviewedAt=at;
+  w.reviews=[...(w.reviews||[]),{stage:'审核',result,note,at,reviewerId:REVIEWER.id,reviewerName:REVIEWER.name}];
+  w.reason=result==='拒绝'?note:'';w.updated=at;w.history.push({at,text:`审核${result==='拒绝'?'未通过':'通过'}${note?'：'+note:''}`,reviewerId:REVIEWER.id,reviewerName:REVIEWER.name});
 }
 export function reviewFeedback(w) {
   const notes=(w.reviews||[]).filter(r=>r.note?.trim());
@@ -107,7 +123,7 @@ export function cancelEvent(s,id,reason) {
 export function publishResults(s,id) {
   const e=eventBy(s,id),awards=s.awards.filter(a=>a.event===id);
   if(!e||e.status==='已取消'||e.status==='草稿'||e.resultsPublished) throw Error('当前赛事不能公示');
-  if(s.works.some(w=>w.event===id&&['待初审','待复审'].includes(w.status)))throw Error('仍有审核中的作品，请完成评选后再公示');
+  if(s.works.some(w=>w.event===id&&pending(w)))throw Error('仍有审核中的作品，请完成评选后再公示');
   if(!awards.length||awards.some(a=>!a.confirmed||!a.proof.trim())) throw Error('请先录入获奖名单并完成主办方线下确认');
   e.resultsPublished=true;e.status='结果公示';
   for(const w of s.works.filter(w=>w.event===id&&w.status==='已通过'))w.public=true;

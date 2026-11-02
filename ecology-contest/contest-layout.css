@@ -1,10 +1,5 @@
 /* 延续官网深色、青绿色强调与 8px 圆角；只覆盖赛事展示和创作衔接区域。 */
-.front .contest-hero{height:308px}
-.contest-hero .hero-copy{top:0;left:0;max-width:70%;padding:30px 42px}
-.contest-hero .hero-copy h1{font-size:36px;line-height:1.22;margin:14px 0}
-.contest-hero .hero-copy p{margin-bottom:22px}
-.hero-actions{display:flex;gap:12px;align-items:center}
-.hero-actions .btn:not(.primary){background:#0a141b80;border-color:#ffffff45}
+.front .events-section:first-child{margin-top:32px}
 .event-list-heading{display:flex;align-items:center;justify-content:space-between;margin:-8px 0 18px;color:#aebbc5;font-size:13px}
 .event-list-heading b{color:var(--text)}
 .event-view-switch{display:flex;gap:4px;border:1px solid var(--line);padding:3px;border-radius:6px}
@@ -52,6 +47,6 @@
 .script-content{white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;padding:20px;line-height:1.9;border:1px solid var(--line)}
 .admin .script-content{background:#f5f8fa;color:#314757}
 .front .events-wide .event-card:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-@media(min-width:1700px){.front .contest-hero{height:332px}.events-wide .event-card{grid-template-columns:42% minmax(0,1fr)}}
+@media(min-width:1700px){.events-wide .event-card{grid-template-columns:42% minmax(0,1fr)}}
 @media(max-width:1300px){.events-wide .card-body{padding:24px}.events-wide .card-body h3{font-size:21px}}
 @media(max-width:1050px){.events-wide{grid-template-columns:1fr}.events-wide .event-card{grid-template-columns:36% minmax(0,1fr)}}

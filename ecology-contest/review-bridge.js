@@ -1,4 +1,4 @@
-import {pageNotes} from './review-notes.js?v=20261026-v2';
+import {pageNotes} from './review-notes.js?v=20261028-v9';
 
 const app=document.querySelector('#app'), modal=document.querySelector('#modal-root');
 const layer=document.createElement('div');
@@ -22,7 +22,7 @@ function resolve(target){
 function context(){
  const [page='events',sub='']=location.hash.replace(/^#\//,'').split('?')[0].split('/');
  const dialog=modal.querySelector('#modal-title')?.textContent.trim()||'';
- return {page:page||'events',sub,dialog,admin:page==='admin',public:dialog==='公示作品',tab:document.querySelector('.section-tabs .active')?.textContent.trim()||'赛道与规则',script:document.querySelector('#submission')?.dataset.trackType==='script',unavailable:!document.querySelector('#submission'),cancelled:document.querySelector('main h1')?.textContent==='赛事已取消'};
+ return {page:page||'events',sub,dialog,admin:page==='admin',public:dialog==='公示作品',scriptPreview:!!document.querySelector('.script-layout'),tab:document.querySelector('.section-tabs .active')?.textContent.trim()||'赛道与规则',script:document.querySelector('#submission')?.dataset.trackType==='script',unavailable:!document.querySelector('#submission'),cancelled:document.querySelector('main h1')?.textContent==='赛事已取消'};
 }
 let markers=[],fingerprint='',refreshFrame=0,positionFrame=0;
 function refresh(){
@@ -56,7 +56,11 @@ function position(){
   const r=target.getBoundingClientRect();
   let top=r.top,left=r.left-30;
   const actions=target.closest('.table-actions');
-  if(actions){const row=actions.getBoundingClientRect();top=row.top-25;left=row.left;}
+  if(target.matches('th')){
+   const textRange=document.createRange();textRange.selectNodeContents(target);
+   const textBox=textRange.getBoundingClientRect();left=textBox.right+8;top=r.top+(r.height-24)/2;
+  }
+  else if(actions){const row=actions.getBoundingClientRect();top=row.top-25;left=row.left;}
   else if(target.matches('button,a')&&r.height<72){top=r.top-26;left=r.left;}
   if(target.matches('.contest-badge')){left=r.right+6;top=r.top-4;}
   const modalBody=target.closest('.modal-body');
