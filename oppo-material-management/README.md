@@ -4,7 +4,7 @@
 
 本地预览：<http://127.0.0.1:8813/html-prototypes/oppo-material-management/>
 
-公开预览：<https://hongjuan303.github.io/html-prototypes/oppo-material-management/?v=20261103-5>（2026-11-03 更新）
+公开预览：<https://hongjuan303.github.io/html-prototypes/oppo-material-management/?v=20261105-1>（2026-11-05 更新）
 
 ## 当前交互
 
@@ -27,6 +27,8 @@
 添加素材二级页按2026-10-26最新要求逐项说明4个筛选字段和11个列表字段，并配置区域序号；其他页面仍仅说明新增及修改功能。菜单和四个合集池行操作沿用留存OPPO原型，合集信息弹窗按用户截图保留原六列及五个筛选项，操作列保留添加素材并新增编辑主信息，按最新标准只在操作表头放统一序号。素材列表操作列同样仅在表头标号5，右侧统一说明上下架和删除。
 
 ## 验证
+
+2026-11-05「更多」菜单改为按视口定位，向左收纳并在底部空间不足时向上展开，滚动及窗口变化时关闭。1280px右侧、1440px底部和2300px宽屏的源码边界回归通过；实际浏览器点击复测尚未完成。证据位于`output/playwright/oppo-more-menu-20261105/`。
 
 2026-11-03确认推送反馈核验通过：必填阻止提交、校验通过关闭编辑弹窗并toast「推送完成」、右侧说明删除整段「说明／演示范围」。证据位于`output/playwright/oppo-main-info-push-toast-20261103/`。
 
