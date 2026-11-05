@@ -1,5 +1,5 @@
-import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261028-v9';
-import {pending,REVIEWER,orderedFiles,validateEpisodes} from './workflow.js?v=20261028-v9';
+import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261102-v1';
+import {pending,REVIEWER,orderedFiles,validateEpisodes} from './workflow.js?v=20261102-v1';
 export {publicEvents, publicStatus, validateEvent};
 export const KEY = 'wanxiang-contest-demo-20261014-v1';
 export const TRACKS = ['剧本', 'AI漫剧样片', 'AI漫剧成片'];
@@ -42,15 +42,13 @@ export function gate(s,eventId,trackName,parent='',editing='') {
   if(s.works.filter(w=>w.user==='me'&&w.event===eventId&&w.track===trackName&&w.id!==editing).length>=5) return '每场赛事每个赛道最多提交 5 件作品，当前名额已满';
   return '';
 }
-import {isCloudWork,cloudReady,cloudSubmission} from './cloud-import.js?v=20261028-v9';
+import {isCloudWork,cloudReady} from './cloud-import.js?v=20261102-v1';
 export function submitWork(s,payload,draft=false) {
   const error=gate(s,payload.event,payload.track,'',payload.id); if(error) throw Error(error);
   if(!payload.title.trim()) throw Error('请填写作品名称');
   const isScript=payload.track==='剧本', isFilm=payload.track==='AI漫剧成片', files=isFilm?orderedFiles(payload.files||[]):payload.files||[];
-  const cloud=isCloudWork(payload);
-  if(cloud&&(isScript||files.length||payload.project||payload.output||payload.outputs?.length))throw Error('网盘导入不能与本地文件或平台作品同时提交');
-  if(!cloud&&(payload.cloudLink||payload.cloudCode))throw Error('请选择网盘链接导入后再提交分享信息');
-  const cloudImport=cloud?cloudSubmission(payload,draft):null;
+  if(isCloudWork(payload)||payload.cloudLink||payload.cloudCode)throw Error('外部平台作品仅支持本地上传，请上传视频文件');
+  const cloud=false,cloudImport=null;
   if(isFilm&&files.length)validateEpisodes(files);
   const project=payload.project&&s.projects.find(p=>p.id===payload.project&&projectOwner(p)==='me');
   const outputIds=payload.outputs?.length?payload.outputs:payload.output?[payload.output]:[];
@@ -107,13 +105,31 @@ export function reviewFeedback(w) {
   if(notes.length)return notes.slice().reverse();
   return w.status==='未通过'&&w.reason?.trim()?[{stage:'',result:'拒绝',note:w.reason,at:w.updated}]:[];
 }
+export function participantUsers(s){
+  const users=new Map();
+  for(const w of s.works){
+    if(!w.user||w.status==='草稿'||users.has(w.user))continue;
+    const account=w.user===USER.id?USER:(w.account||w.identity||{});
+    users.set(w.user,{id:w.user,name:account.name||'未命名用户',phone:account.phone||'未留手机号'});
+  }
+  return [...users.values()];
+}
+export function creditUser(s,id){
+  if(id===USER.id)return USER;
+  return participantUsers(s).find(u=>u.id===id)||{id,name:id,phone:''};
+}
+export function userBalance(s,id){
+  return id===USER.id?Number(s.balance||0):s.ledger.filter(l=>l.user===id).reduce((sum,l)=>sum+Number(l.amount||0),0);
+}
 export function credit(s,{user='me',amount,kind,note,event='',award=''}) {
   amount=Number(amount); if(!Number.isInteger(amount)||amount===0||Math.abs(amount)>10000000) throw Error('积分请输入非零整数，绝对值不超过 1000 万');
-  if(!note.trim()) throw Error('请填写操作原因');
-  if(user==='me'&&s.balance+amount<0) throw Error('可用积分不足');
+  if(!String(note||'').trim()) throw Error('请填写操作原因');
+  if(user!==USER.id&&!participantUsers(s).some(u=>u.id===user))throw Error('请选择有效的参赛用户');
+  if(userBalance(s,user)+amount<0) throw Error('所选用户可用积分不足');
   if(award&&s.ledger.some(l=>l.award===award)) throw Error('该奖励积分已发放');
-  if(user==='me') s.balance+=amount;
-  s.ledger.unshift({id:uid('ledger'),at:time(),user,amount,kind,note,event,award});
+  const account=creditUser(s,user);
+  if(user===USER.id) s.balance+=amount;
+  s.ledger.unshift({id:uid('ledger'),at:time(),user,userName:account.name,userPhone:account.phone,amount,kind,note,event,award});
 }
 export function cancelEvent(s,id,reason) {
   const e=eventBy(s,id);if(!reason.trim()) throw Error('请填写取消原因');
@@ -124,7 +140,7 @@ export function publishResults(s,id) {
   const e=eventBy(s,id),awards=s.awards.filter(a=>a.event===id);
   if(!e||e.status==='已取消'||e.status==='草稿'||e.resultsPublished) throw Error('当前赛事不能公示');
   if(s.works.some(w=>w.event===id&&pending(w)))throw Error('仍有审核中的作品，请完成评选后再公示');
-  if(!awards.length||awards.some(a=>!a.confirmed||!a.proof.trim())) throw Error('请先录入获奖名单并完成主办方线下确认');
+  if(!awards.length) throw Error('请先录入获奖名单');
   e.resultsPublished=true;e.status='结果公示';
   for(const w of s.works.filter(w=>w.event===id&&w.status==='已通过'))w.public=true;
 }

@@ -1,7 +1,7 @@
-import {cloudReady,cloudLabel,isCloudWork} from './cloud-import.js?v=20261028-v9';
-import {workMaterials,reviewStamp,pending} from './workflow.js?v=20261028-v9';
-import {getFile,eventBy,TODAY} from './model.js?v=20261028-v9';
-import {trackTypeLabel} from './config.js?v=20261028-v9';
+import {cloudReady,cloudLabel,isCloudWork} from './cloud-import.js?v=20261102-v1';
+import {workMaterials,reviewStamp,pending} from './workflow.js?v=20261102-v1';
+import {getFile,eventBy,TODAY} from './model.js?v=20261103-v3';
+import {trackTypeLabel} from './config.js?v=20261102-v1';
 
 export const filterWorks=(s,f)=>s.works.filter(w=>w.status!=='草稿'&&(!f.q||(w.title+w.identity.name+w.identity.phone).includes(f.q))&&(!f.event||w.event===f.event)&&(!f.status||w.status===f.status)&&(!f.track||w.track===f.track));
 export const safeName=v=>String(v||'未命名').replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/^\.+/,'_').slice(0,90);

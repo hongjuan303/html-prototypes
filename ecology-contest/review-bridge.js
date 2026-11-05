@@ -1,4 +1,4 @@
-import {pageNotes} from './review-notes.js?v=20261028-v9';
+import {pageNotes} from './review-notes.js?v=20261103-v6';
 
 const app=document.querySelector('#app'), modal=document.querySelector('#modal-root');
 const layer=document.createElement('div');

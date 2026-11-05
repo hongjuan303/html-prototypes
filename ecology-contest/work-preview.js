@@ -1,7 +1,7 @@
-import {cloudReady,cloudPanel,simulateCloudImport} from './cloud-import.js?v=20261028-v9';
-import {pending,reviewStamp,workMaterials} from './workflow.js?v=20261028-v9';
-import {getFile,reviewWork,eventBy,workBy,TODAY} from './model.js?v=20261028-v9';
-import {trackTypeLabel} from './config.js?v=20261028-v9';
+import {cloudReady,cloudPanel,simulateCloudImport} from './cloud-import.js?v=20261102-v1';
+import {pending,reviewStamp,workMaterials} from './workflow.js?v=20261102-v1';
+import {getFile,reviewWork,eventBy,workBy,TODAY} from './model.js?v=20261103-v3';
+import {trackTypeLabel} from './config.js?v=20261102-v1';
 
 export function createWorkPreview(ctx){
   const {getState,esc,button,modal,closeModal,bindForm,persist,render,toast,setCleanup}=ctx;

@@ -18,3 +18,17 @@
 .episode-upload-field{display:flex!important;align-items:center;gap:6px;margin:0!important;font-size:12px;white-space:nowrap}.episode-upload-field input{width:64px!important;min-width:0;padding:6px!important}.project-episode-list{display:grid;gap:10px}.project-episode-list label{display:flex;align-items:center;gap:12px;border:1px solid #344352;padding:12px;border-radius:6px}.project-episode-list input{width:auto!important}.project-episode-list small{display:block;color:#8b9aa5}.project-episode-list label:has(input:checked){border-color:#4ee1c3;background:#1b3733}
 @media(max-width:1360px){.work-review-grid{grid-template-columns:minmax(0,1fr) 270px;gap:18px}.work-review-modal .modal-body{padding:18px}.media-layout{grid-template-columns:minmax(0,1fr) 126px;gap:10px}.review-column{padding:14px}.document-page{padding:20px}.document-view{padding:14px}.preview-info dl{grid-template-columns:1fr}}
 @media(max-width:1020px){.work-review-grid{grid-template-columns:1fr}.work-review-modal{width:calc(100vw - 32px)!important}.media-layout{grid-template-columns:minmax(0,1fr) 150px}}
+
+/* 获奖录入：选择奖励类型后才可配置，保持绿台紧凑表单。 */
+#award-form .award-reward-types{margin:18px 0 12px;padding:0;border:0;min-width:0}
+#award-form .award-reward-types legend{font-size:12px;color:#637387;padding:0;margin-bottom:10px}
+#award-form .award-reward-types>div{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+#award-form .award-reward-types label{display:flex;align-items:center;gap:7px;cursor:pointer;color:#34465b}
+.admin #award-form .award-reward-types input{min-height:0;width:15px;height:15px;margin:0;padding:0;accent-color:#1890ff}
+#award-form .award-reward-types p{font-size:12px;color:#69798a;margin:9px 0 0}
+#award-form .required-mark{color:#dc4545;font-style:normal}
+#award-form .award-reward-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+#award-form .award-reward-fields>.field:last-child{grid-column:1/-1}
+.admin #award-form .award-reward-fields input:disabled{background:#f4f6f8;color:#8a95a1;border-color:#e0e5eb;cursor:not-allowed}
+
+#award-form .award-reward-fields>.field[hidden]{display:none!important}

@@ -1,7 +1,8 @@
-// 赛道按类型匹配；多个所选类型为并集，与关键词和状态取交集。
+// 多选赛道为并集；赛事名称、主办单位、赛事状态之间为交集。
 export function filterAdminEvents(events,filters={}){
  const tracks=Array.isArray(filters.tracks)?filters.tracks:[];
- return events.filter(e=>(!filters.q||(e.title+e.host).includes(filters.q))&&(!filters.status||e.status===filters.status)&&(!tracks.length||e.tracks.some(t=>tracks.includes(t.name))));
+ const title=String(filters.title||'').trim().toLocaleLowerCase(),host=String(filters.host||'').trim().toLocaleLowerCase();
+ return events.filter(e=>(!title||e.title.toLocaleLowerCase().includes(title))&&(!host||e.host.toLocaleLowerCase().includes(host))&&(!filters.status||e.status===filters.status)&&(!tracks.length||e.tracks.some(t=>tracks.includes(t.name))));
 }
 export function eventTrackFilter(tracks,label,selected=[],esc){
  const chosen=Array.isArray(selected)?selected:[];
