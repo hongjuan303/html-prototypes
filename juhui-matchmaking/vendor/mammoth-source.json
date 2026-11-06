@@ -1,0 +1,7 @@
+{
+  "package": "mammoth",
+  "version": "1.13.0",
+  "source": "https://github.com/mwilliamson/mammoth.js",
+  "registryTarball": "https://registry.npmjs.org/mammoth/-/mammoth-1.13.0.tgz",
+  "usage": "extractRawText for local text-only preview; output escaped before rendering"
+}

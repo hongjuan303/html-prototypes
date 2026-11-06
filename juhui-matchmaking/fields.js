@@ -1,0 +1,56 @@
+export const screenplayFields=[
+ {key:'name',label:'剧本名称',required:true,max:50,desc:'剧本立项前名称，最长50字；修改后沿用同一项目关联。'},
+ {key:'deliveryDate',label:'剧本交付日期',type:'date',required:true,desc:'选择本次剧本交付日期。'},
+ {key:'category',label:'剧集类型',type:'select',options:['男频','女频','无性别'],desc:'选择剧本面向的内容分类。'},
+ {key:'episodes',label:'剧本集数',type:'number',required:true,desc:'填写全集集数，正整数。'},
+ {key:'intro',label:'剧本简介',type:'textarea',required:true,desc:'填写供剧本评估、选本使用的剧情简介。'},
+ {key:'writer',label:'编剧名称',required:true,desc:'填写本剧编剧名称。'},
+ {key:'business',label:'剧本对接商务',type:'select',required:true,options:['桂铭','婷婷','乔乔'],desc:'外部只展示商务花名；选择后关联内部责任人。'}
+];
+export const scriptMetadataFields=[
+ {key:'type',label:'剧集类型',type:'select',options:['男频','女频','无性别'],desc:'与剧本基础资料关联，按确认后的内容填写。'},
+ {key:'tags',label:'剧集标签',desc:'继承定稿评级时的题材标签，最多3个。'},
+ {key:'writerName',label:'编剧真实姓名',desc:'补充编剧真实姓名。'},
+ {key:'writerGender',label:'编剧性别',type:'select',options:['男','女'],desc:'选择编剧性别。'},
+ {key:'writerIntro',label:'编剧简介',type:'textarea',desc:'填写编剧个人介绍。'},
+ {key:'shortIntro',label:'剧集简介',max:10,required:true,desc:'必填，10字以内，一句话概括剧情。'},
+ {key:'outlineShort',label:'剧集梗概（100—200字）',type:'textarea',min:100,max:200,desc:'填写100至200字的梗概，含标点；历史字符限制是否沿用待确认。'},
+ {key:'outlineLong',label:'剧集梗概（550—1000字）',type:'textarea',min:550,max:1000,desc:'填写550至1000字的完整梗概。'},
+ {key:'recommendation',label:'剧集推荐文案',type:'textarea',desc:'填写供发行使用的推荐文案。'},
+ {key:'heroine',label:'动漫女主角名',desc:'填写女主角姓名。'},
+ {key:'heroineIntro',label:'动漫女主简介',type:'textarea',desc:'填写女主角人物介绍。'},
+ {key:'hero',label:'动漫男主角名',desc:'填写男主角姓名。'},
+ {key:'heroIntro',label:'动漫男主简介',type:'textarea',desc:'填写男主角人物介绍。'},
+ {key:'releaseType',label:'发行类型',type:'select',options:['国内剧集','海外本土剧集'],desc:'选择发行类型，供后续发行使用。'},
+ {key:'tomatoIp',label:'是否番茄IP改编',type:'select',options:['是','否'],desc:'选择IP改编属性。'},
+ {key:'ipSource',label:'IP改编来源',desc:'改编项目填写对应来源。'},
+ {key:'provider',label:'剧本提供方',desc:'默认当前剧本供应商，随项目关联。'}
+];
+export const producerMetadataFields=[
+ {key:'releaseType',label:'发行类型',type:'select',options:['国内剧集','海外本土剧集'],desc:'选择国内剧集或海外本土剧集。'},
+ {key:'company',label:'制作公司',desc:'默认当前承制供应商，可补充对外制作公司名称。'},
+ {key:'dramaType',label:'漫剧类型',type:'select',options:['小说漫解','仿真人动态漫','2D动态漫','仿真人漫解','3D动态漫'],desc:'选择制作表现形式。'},
+ {key:'episodes',label:'剧集集数',type:'number',desc:'填写最终成片集数，正整数。'},
+ {key:'projectType',label:'项目类型',type:'select',options:['常规剧','精品剧'],desc:'选择当前项目类型。'},
+ {key:'directorName',label:'导演真实姓名',desc:'填写导演姓名。'},
+ {key:'directorGender',label:'导演性别',type:'select',options:['男','女'],desc:'选择导演性别。'},
+ {key:'directorIntro',label:'导演简介',type:'textarea',max:100,desc:'填写100字以内导演介绍。'},
+ {key:'producerName',label:'制片人真实姓名',desc:'填写外部制作团队制片人姓名，区别于平台分配的制片审核人员。'},
+ {key:'producerGender',label:'制片人性别',type:'select',options:['男','女'],desc:'选择制片人性别。'},
+ {key:'producerIntro',label:'制片人简介',type:'textarea',desc:'填写外部制片人介绍。'},
+ {key:'averageDuration',label:'剧集平均单集时长',type:'number',desc:'填写分钟数，原始资料未明确精度，原型支持小数。'},
+ {key:'firstDuration',label:'初版成片总时长',desc:'填写供应商提供的初版总时长及单位。'},
+ {key:'totalDuration',label:'总时长',desc:'填写最终成片总时长及单位。'},
+ {key:'previewLink',label:'试看一卡链接',desc:'提供1至10集一卡的完整http或https链接。'},
+ {key:'copyrightLink',label:'版权中台版全集网盘链接',desc:'按收集表提供365天有效链接，包含提取信息。'},
+ {key:'otherLink',label:'其他渠道版全集网盘链接',desc:'与版权中台版分开维护，按收集表提供365天有效链接。'},
+ {key:'aigc',label:'关联AIGC工具',type:'select',options:['红果漫剧创作Agent','即梦','小云雀','Seko','Vidu','巨日禄','其他'],desc:'选择制作使用的工具；其他工具在补充字段填写。'},
+ {key:'aigcOther',label:'AIGC工具补充',desc:'关联AIGC工具选其他时填写。'},
+ {key:'paidEpisodes',label:'剧集付费集数',desc:'填写后续付费集数信息。'},
+ {key:'cost',label:'剧集制作成本（万）',type:'number',desc:'填写制作成本，单位万元。'}
+];
+export const producerFileFields=[
+ ['heroineImage','动漫女主角色图'],['heroImage','动漫男主角色图'],['poster','海报'],
+ ['engineering','工程文件和生成词截图'],['aiRights','AI权属协议截图'],
+ ['tracks','分轨工程文件（MP4／MP3／SRT）']
+];
