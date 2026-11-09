@@ -57,7 +57,7 @@ const d=cpNewDraft();cpState.draft=d;cpState.mode='upload';
 assert.equal(d.step,1);cpNextStep();assert.equal(d.step,1);assert($('#cpError').textContent.includes('先从 OSS'));
 assert.equal(cpAddDraftAssets(d,[asset.id,second.id]),2);assert.equal(cpAddDraftAssets(d,[asset.id]),0);
 let stageHTML=renderCPUpload();assert(!stageHTML.includes('data-cp-editor='));assert(stageHTML.includes('下一步'));assert(!stageHTML.includes('cp-edit-draft'));
-cpNextStep();assert.equal(d.step,2);stageHTML=renderCPUpload();assert(stageHTML.includes('cp-edit-draft'));assert(stageHTML.includes('未提审'));assert(cpDraftError(d).includes('关联账号'));
+cpNextStep();assert.equal(d.step,2);stageHTML=renderCPUpload();assert(stageHTML.includes('cp-edit-draft'));assert(stageHTML.includes('未提审'));assert(cpDraftError(d).includes('企业主体'));
 cpOpenDraftEditor(asset.id);assert(captured.includes('抖音视频标题'));assert(captured.includes('红果视频标题'));
 cpEditorChange({dataset:{cpEditor:'linkedAccount'},value:'cp01'});cpEditorChange({dataset:{cpEditor:'content'},value:'FILM-10086'});assert.equal(cpMaterialEditor.item.dyAccount,'dy01');
 Object.assign(cpMaterialEditor.item,{hgAccount:'hg01',dyTitle:'抖音标题',hgTitle:'红果标题',ai:false,anchor:false});
@@ -119,7 +119,7 @@ isolated.reviewDue=Date.now()-1;cpFinishReviews();assert.equal(isolated.hgAudit,
 // V2.3.1: management follows the reference platform; configuration keeps the existing eleven fields.
 const headers=html=>[...html.matchAll(/<th(?: [^>]*)?>([^<]+)<\\/th>/g)].map(m=>m[1]);
 cpState.draft={step:2,identity:'版权机构',assets:[OSS_FILES[4]],items:{[OSS_FILES[4].id]:boolItem}};
-assert.equal(headers(renderCPTable([filteredRecord])).join(','),'素材信息,关联内容,素材类型,抖音审核状态,抖音发布状态,抖音发布账号,红果审核状态,红果发布状态,红果发布账号,提审时间,操作');
+assert.equal(headers(renderCPTable([filteredRecord])).join(','),'素材信息,企业主体,关联内容,素材类型,抖音发布账号,红果发布账号,提交状态,失败原因,实际提交时间,预约提交时间,操作');
 assert.equal(headers(renderCPMaterialList()).join(','),CP_COLUMNS.map(c=>c[1]).concat('操作').join(','));
 const awaiting={...filteredRecord,dyAudit:'审核成功',dyStatus:'待投稿',hgAudit:'审核中',hgStatus:'审核中'};
 assert(cpEndAuditCell(awaiting,'dy').includes('审核成功'));assert.equal(cpPublishState(awaiting,'dy'),'待发布');assert.equal(cpPublishState(awaiting,'hg'),'待发布');assert.equal(cpPublishState(filteredRecord,'dy'),'未发布');
@@ -303,3 +303,44 @@ vm.runInContext(`
  console.log('PASS: copyright schedules wait before review, retain association/time, start review only at due time, publish after approval, and revalidate account ownership on execution.');
 }
 `,context);
+
+vm.runInContext(`
+{
+ const first={...cpRows[0],linkedAccount:'cp01'},second={...first,linkedAccount:'cp02'};
+ assert.equal(cpCompanies().join(','),'宝茂短剧,互娱文化,沈阳蓝迈,容量互娱');
+ assert.equal(cpCompany(first),'宝茂短剧');assert.equal(cpCompany(second),'互娱文化');
+ assert(cpMatches(first,{...emptyCPFilters(),company:'宝茂短剧'}));assert(!cpMatches(second,{...emptyCPFilters(),company:'宝茂短剧'}));
+ assert(cpMatches(first,emptyCPFilters()));assert(cpMatches(second,emptyCPFilters()));
+ assert(!cpMatches(first,{...emptyCPFilters(),company:'宝茂短剧',asset:'不存在的素材'}));
+ assert(!cpMatches(first,{...emptyCPFilters(),company:'宝茂'}));
+ assert.equal(cpCompany({linkedAccount:'missing',content:'FILM-10086'}),'');
+ assert.equal(cpCompany({content:'FILM-10086'}),'宝茂短剧');
+ assert(cpTableCell('company',first,false).includes('宝茂短剧'));assert(cpTableCell('company',{linkedAccount:'missing'},false).includes('—'));
+ const previousIdentity=cpState.identity;cpState.filters={...emptyCPFilters(),company:'互娱文化'};actions['cp-reset']();assert.equal(cpState.filters.company,'');assert.equal(cpState.identity,previousIdentity);
+ console.log('PASS: company enum source, associated-account ownership, exact company AND other filters, all/reset behavior and unknown-company fallback.');
+}
+`,context);
+
+vm.runInContext(`
+// Submission progresses independently of platform review; scheduled rows never borrow creation time.
+{
+ const oldCP=cpRows,oldKM=kmRows;cpRows=[];kmRows=[];
+ const future=new Date(Date.now()+86400000).toISOString().slice(0,16);
+ const cp={id:'SUBMISSION-LIFECYCLE',identity:'版权机构',owner:'当前运营',asset:{...OSS_FILES[0]},linkedAccount:'cp01',content:'FILM-10086',dyAccount:'dy01',hgAccount:'hg01',mode:'定时发布',time:future,created:'2020-01-01 00:00',dyStatus:'待分发',hgStatus:'待分发',counted:false};
+ cpRows.push(cp);cpBeginReview([cp]);assert.equal(cpSubmissionStatus(cp),'待提交');assert.equal(cpActualSubmittedAt(cp),'');assert.equal(scheduledSubmitTime(cp),future.replace('T',' '));
+ cp.scheduledSubmitAt=Date.now()-1;cpFinishReviews();assert.equal(cpSubmissionStatus(cp),'提交中');assert(cpActualSubmittedAt(cp));const started=cpActualSubmittedAt(cp);
+ cp.submissionDue=Date.now()-1;cpFinishReviews();assert.equal(cpSubmissionStatus(cp),'提交成功');assert.equal(cp.dyAudit,'审核中');
+ cp.dyAudit='审核失败';cp.dyStatus='审核不通过';cp.dyReason='标题违规';assert.equal(cpSubmissionStatus(cp),'提交成功');assert.equal(cpSubmissionReason(cp),'');assert.equal(cpActualSubmittedAt(cp),started);
+ assert.equal(cpSubmissionStatus({dyAudit:'审核失败',dyStatus:'审核不通过',hgStatus:'审核中'}),'提交成功');
+ const bad={...cp,id:'BAD-SUBMISSION',mode:'定时发布',time:future,linkedAccount:'cp02'};cpRows.push(bad);cpBeginReview([bad]);bad.scheduledSubmitAt=Date.now()-1;cpFinishReviews();assert.equal(cpSubmissionStatus(bad),'提交失败');assert(cpSubmissionReason(bad).includes('不属于'));assert.equal(cpActualSubmittedAt(bad),'');
+ assert.equal(cpSubmissionReason({submissionStatus:'提交失败'}),'平台暂未返回具体原因');assert.equal(cpActualSubmittedAt({id:'LEGACY',created:'2020-01-01',dyStatus:'已发布'}),'');
+ const target=kmAvailableDramas('km01')[0],unit={asset:{...OSS_FILES[0]},account:'km01',target,config:{title:'宣发标题',clipType:'高光',declaration:0,mode:'定时发布',time:future}};
+ const kr=kmSaveUnits([unit],'SUBMISSION-TEST')[0];assert.equal(kmSubmissionStatus(kr),'待提交');assert.equal(kmActualSubmittedAt(kr),'');assert(kr.created);kr.time='2020-01-01T00:00';kmFinishPublishing();assert.equal(kmSubmissionStatus(kr),'提交中');assert(kmActualSubmittedAt(kr));const kmStarted=kmActualSubmittedAt(kr);kr.due=Date.now()-1;kmFinishPublishing();assert.equal(kmSubmissionStatus(kr),'提交成功');assert.equal(kmActualSubmittedAt(kr),kmStarted);assert.equal(kmSubmissionReason(kr),'');
+ const failed=kmSaveUnits([unit],'BAD-KM')[0];failed.dramaId='not-owned';failed.time='2020-01-01T00:00';kmFinishPublishing();assert.equal(kmSubmissionStatus(failed),'提交失败');assert(kmSubmissionReason(failed).includes('原生短剧'));assert.equal(kmActualSubmittedAt(failed),'');
+ assert.equal(kmActualSubmittedAt({mode:'定时发布',status:'已发布',submittedAt:'2020-01-01',created:'2020-01-01'}),'');
+ assert.equal(scheduledSubmitTime({mode:'立即发布'}),'立即提交');assert.equal(kmSubmissionReason({submissionStatus:'提交失败'}),'平台暂未返回具体原因');
+ assert.equal(headers(kmListTable([kr])).join(','),'快手号,素材名,素材封面,短剧名称,短剧ID,剪辑标题,提交状态,失败原因,实际提交时间,预约提交时间');
+ cpRows=oldCP;kmRows=oldKM;
+}
+`,context);
+console.log('PASS: separate submission/audit outcomes, scheduled execution lifecycle, preflight failure reasons, actual request time, retained reservation time and legacy timestamp fallback.');

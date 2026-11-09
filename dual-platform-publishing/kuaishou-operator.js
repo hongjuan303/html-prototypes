@@ -25,6 +25,14 @@ try{kmRows=JSON.parse(localStorage.getItem(KM_STORE)||'null')?.rows||null}catch(
 if(!kmRows)kmRows=[0,1,2].map((n)=>{const asset={...OSS_FILES[n===2?5:n]},id=n===1?'km02':'km01',target=kmTarget(asset,id);return {id:'KM-DEMO-'+n,batch:'KM-DEMO',asset,account:id,dramaId:target?.id||'',dramaName:target?.name||'',title:['长街重逢，他却不记得她','花店开张，故事才刚刚开始','逆光而来的她从不退缩'][n],clipType:n===1?'花絮':'高光',declaration:n===2?1:0,status:n===2?'发布失败':'已发布',reason:n===2?'标题与视频内容不符，请核对素材信息':'',publishedAt:n===2?'':'2026-10-19 10:0'+n,created:'2026-10-19 10:0'+n,submittedAt:'2026-10-19 10:0'+n,cover:demoCover(target?.name||'视频第一帧')}});
 // Older rows were created when submitted; missing historical timestamps stay empty.
 const kmSubmittedAt=r=>r.submittedAt||r.created||'';
+const kmSubmissionStatus=r=>SUBMISSION_STATUSES.includes(r.submissionStatus)?r.submissionStatus:({'待发布':'待提交','发布中':'提交中','已发布':'提交成功','发布失败':'提交失败'}[r.status]||'待提交');
+const kmSubmissionReason=r=>kmSubmissionStatus(r)==='提交失败'?(r.submissionReason||r.reason||'平台暂未返回具体原因'):'';
+function kmActualSubmittedAt(r){
+ if(Object.prototype.hasOwnProperty.call(r,'submissionStartedAt'))return r.submissionStartedAt;
+ // Old scheduled tasks stored creation time, which is not an actual submission timestamp.
+ return kmSubmissionStatus(r)==='待提交'||r.mode==='定时发布'?'':kmSubmittedAt(r);
+}
+const KM_LIST_COLUMNS=[['account','快手号',155],['asset','素材名',230],['cover','素材封面',95],['dramaName','短剧名称',155],['dramaId','短剧ID',160],['title','剪辑标题',230],['submissionStatus','提交状态',115],['submissionReason','失败原因',220],['actualSubmittedAt','实际提交时间',170],['scheduledSubmitTime','预约提交时间',170]];
 const kmPersist=()=>localStorage.setItem(KM_STORE,JSON.stringify({rows:kmRows}));
 const emptyKMFilters=()=>({account:'',material:'',status:'',start:'',end:'',drama:'',dramaId:'',type:''});
 let kmFilters=emptyKMFilters();
@@ -92,7 +100,14 @@ function kmFilterForm(){
  const select=(key,label,options)=>`<label class="km-filter-field"><span>${label}</span><select name="${key}" aria-label="${label}"><option value="">全部</option>${options.map(v=>`<option ${f[key]===v?'selected':''}>${v}</option>`).join('')}</select></label>`;
  return `<form id="kmFilters" class="km-filter-grid">${input('account','快手号名称')}${input('material','素材名')}${select('status','发布状态',KM_STATUSES)}<div class="km-filter-field"><span>发布时间</span><div class="km-date-range"><input type="date" name="start" aria-label="发布时间开始" value="${esc(f.start)}"><span>至</span><input type="date" name="end" aria-label="发布时间结束" value="${esc(f.end)}"></div></div>${input('drama','短剧名称')}${input('dramaId','短剧ID','请输入完整短剧ID')}${select('type','剪辑类型',KM_TYPES)}<div class="km-filter-actions"><span id="kmFilterError" class="inline-error" role="alert"></span><button class="btn primary" type="submit">搜索</button><button class="btn" type="button" data-action="km-reset">重置</button></div></form>`;
 }
-function kmListTable(list){return `<div class="table-wrap"><table class="data-table km-list-table"><colgroup><col style="width:155px"><col style="width:230px"><col style="width:95px"><col style="width:155px"><col style="width:160px"><col style="width:230px"><col style="width:150px"><col style="width:180px"></colgroup><thead><tr>${['快手号','素材名','素材封面','短剧名称','短剧ID','剪辑标题','剪辑状态','提交发布时间'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${list.map(r=>`<tr><td>${esc(account(r.account)?.name||'—')}</td><td><div class="list-text" title="${esc(r.asset.name)}">${esc(r.asset.name)}</div></td><td><img class="material-cover-image" src="${esc(r.cover)}" alt="素材封面"></td><td>${esc(r.dramaName||'—')}</td><td class="km-id">${esc(r.dramaId||'—')}</td><td>${esc(r.title)}</td><td>${statusBadge(r.status)}${r.reason?`<details class="cp-failure"><summary>失败原因</summary><p>${esc(r.reason)}</p></details>`:''}</td><td><span class="cell-date">${esc(kmSubmittedAt(r)||'—')}</span></td></tr>`).join('')||'<tr><td colspan="8" class="empty">暂无符合条件的发布记录</td></tr>'}</tbody></table></div>`}
+function kmListCell(key,r){
+ if(key==='cover')return `<img class="material-cover-image" src="${esc(r.cover)}" alt="素材封面">`;
+ if(key==='submissionStatus')return submissionBadge(kmSubmissionStatus(r));
+ const value=key==='account'?account(r.account)?.name:key==='asset'?r.asset.name:key==='submissionReason'?kmSubmissionReason(r):key==='actualSubmittedAt'?kmActualSubmittedAt(r):key==='scheduledSubmitTime'?scheduledSubmitTime(r):r[key];
+ return `<div class="list-text${key==='dramaId'?' km-id':''}" title="${esc(value||'—')}">${esc(value||'—')}</div>`;
+}
+function kmListTable(list){return `<div class="table-wrap"><table class="data-table km-list-table" style="min-width:${KM_LIST_COLUMNS.reduce((sum,c)=>sum+c[2],0)}px"><colgroup>${KM_LIST_COLUMNS.map(c=>`<col style="width:${c[2]}px">`).join('')}</colgroup><thead><tr>${KM_LIST_COLUMNS.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${list.map(r=>`<tr>${KM_LIST_COLUMNS.map(c=>`<td>${kmListCell(c[0],r)}</td>`).join('')}</tr>`).join('')||`<tr><td colspan="${KM_LIST_COLUMNS.length}" class="empty">暂无符合条件的发布记录</td></tr>`}</tbody></table></div>`}
+
 function renderKMList(){const list=kmRows.filter(r=>kmMatches(r));return `<section class="filter-card"><div class="platform-tabs" role="tablist" aria-label="发布平台">${PUBLISH_PLATFORMS.map(p=>`<button role="tab" aria-selected="${p===KM_PLATFORM}" data-action="platform" data-value="${p}" class="platform-tab ${p===KM_PLATFORM?'active':''}">${platformLabel(p)}</button>`).join('')}</div>${kmFilterForm()}</section><section class="list-panel"><div class="list-toolbar"><button class="btn primary" data-action="km-new">＋ 新增发视频</button>${draft?.platforms.includes(KM_PLATFORM)?'<button class="btn" data-action="resume">继续草稿</button>':''}</div>${kmListTable(list)}<div class="pagination"><span>共 ${list.length} 条</span></div></section>`}
 const renderListBeforeKM=renderList;
 renderList=function(){return state.platform===KM_PLATFORM?renderKMList():renderListBeforeKM()};
@@ -132,11 +147,11 @@ renderConfirm=function(){
 function kmPending(w,bad){const result=mixedPendingDraft(w,bad);if(!result)return null;const d=kmDraft(result);d.assignments={};for(const u of bad.filter(u=>u.platform===KM_PLATFORM)){d.assignments[u.asset.id] ||= [];if(u.account)d.assignments[u.asset.id].push(u.account)}return result}
 function kmFinishPublishing(){let changed=false;for(const r of kmRows){
  if(r.status==='待发布'&&publishTimestamp(r.time)<=Date.now()){
-  if(!account(r.account)?.ok||!kmSelectedDrama(r.account,r)){r.status='发布失败';r.reason='快手号授权失效或原生短剧已下架，请核对后重新提交'}else{r.status='发布中';r.due=Date.now()+1600}changed=true;
+  if(!account(r.account)?.ok||!kmSelectedDrama(r.account,r)){r.status='发布失败';r.reason='快手号授权失效或原生短剧已下架，请核对后重新提交';r.submissionStatus='提交失败';r.submissionReason=r.reason;r.submissionStartedAt=''}else{r.status='发布中';r.submissionStatus='提交中';r.submissionReason='';r.submissionStartedAt=shanghaiTime();r.due=Date.now()+1600}changed=true;
  }
- if(r.status==='发布中'&&r.due<=Date.now()){r.status='已发布';r.publishedAt=shanghaiTime();delete r.due;changed=true}
+ if(r.status==='发布中'&&r.due<=Date.now()){r.status='已发布';r.submissionStatus='提交成功';r.submissionReason='';r.publishedAt=shanghaiTime();delete r.due;changed=true}
 }if(changed)kmPersist();return changed}
-function kmSaveUnits(units,batch){const now=shanghaiTime();const newRows=units.map((u,i)=>({id:'KM'+Date.now()+'-'+i,batch,asset:{...u.asset},account:u.account,dramaId:u.target.id,dramaName:u.target.name,title:u.config.title,clipType:u.config.clipType,declaration:u.config.declaration,mode:u.config.mode||'立即发布',time:u.config.mode==='定时发布'?u.config.time:'',status:u.config.mode==='定时发布'?'待发布':'发布中',reason:'',created:now,submittedAt:now,publishedAt:'',cover:demoCover(u.target.name),due:u.config.mode==='定时发布'?null:Date.now()+1600}));kmRows.unshift(...newRows);kmPersist();setTimeout(()=>{kmFinishPublishing();if(state.page!=='wizard'&&$('#overlay').hidden)render()},1700);return newRows}
+function kmSaveUnits(units,batch){const now=shanghaiTime();const newRows=units.map((u,i)=>({id:'KM'+Date.now()+'-'+i,batch,asset:{...u.asset},account:u.account,dramaId:u.target.id,dramaName:u.target.name,title:u.config.title,clipType:u.config.clipType,declaration:u.config.declaration,mode:u.config.mode||'立即发布',time:u.config.mode==='定时发布'?u.config.time:'',status:u.config.mode==='定时发布'?'待发布':'发布中',reason:'',submissionStatus:u.config.mode==='定时发布'?'待提交':'提交中',submissionReason:'',submissionStartedAt:u.config.mode==='定时发布'?'':now,created:now,submittedAt:now,publishedAt:'',cover:demoCover(u.target.name),due:u.config.mode==='定时发布'?null:Date.now()+1600}));kmRows.unshift(...newRows);kmPersist();setTimeout(()=>{kmFinishPublishing();if(state.page!=='wizard'&&$('#overlay').hidden)render()},1700);return newRows}
 const submitBeforeKM=submitTask;
 submitTask=function(){
  const w=state.wizard;if(!w?.platforms.includes(KM_PLATFORM))return submitBeforeKM();
