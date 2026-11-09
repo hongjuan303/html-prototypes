@@ -117,3 +117,12 @@
 .km-filter-grid{background:#fff;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 24px;padding:20px}
 .km-filter-field{display:flex;align-items:center;gap:12px;min-width:0;font-size:13px;color:#697480}.km-filter-field>span{width:72px;flex-shrink:0;text-align:right}.km-filter-field>input,.km-filter-field>select{width:100%;min-width:0}.km-date-range{display:flex;align-items:center;gap:6px;min-width:0;flex:1}.km-date-range input{min-width:0;width:calc(50% - 12px);font-size:12px;padding:0 6px}.km-date-range span{flex-shrink:0;font-size:12px}.km-filter-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;justify-content:flex-end}.km-filter-actions .inline-error{margin:0 auto 0 0}.km-list-table{min-width:1355px}.km-id{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.km-config-table{min-width:1343px}.km-config-table .action-col{position:sticky;right:0;background:#fff;z-index:2;box-shadow:-5px 0 8px -6px #a7b4c1}.km-config-table th.action-col{background:#f6f8fb;z-index:3}.km-config-table .ops,.cp-unified-table .ops{flex-wrap:nowrap;gap:12px}.km-config-table .km-asset-selection{vertical-align:top;padding-top:20px}.km-editor{width:580px}.km-edit-context{display:flex;flex-direction:column;gap:5px;padding:0 0 18px;margin-bottom:20px;border-bottom:1px solid #e9edf1;font-size:12px;color:#8993a0}.km-edit-context strong{font-size:13px;font-weight:500;color:#54606e;overflow-wrap:anywhere}.km-character-count{text-align:right;font-size:12px;color:#8a96a3;margin-top:5px}.km-character-count.exception{color:#d75d5d}.km-radio-line{display:flex;gap:28px}.km-declarations{display:flex;flex-direction:column;gap:14px}.km-editor input[type=radio]{width:14px;flex-shrink:0}.km-confirm-table{min-width:1050px}.km-confirm-table th:nth-child(2){width:260px}.km-confirm-table th:nth-child(3){width:280px}.platform-picks{flex-wrap:wrap}
 @media(max-width:1100px){.km-filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}}
+
+/* Account-scoped material editors retain the original control sizes. */
+.km-editor .modal-field{position:relative}
+.km-editor .cp-search-select{width:100%}
+.km-editor .cp-search-select input{width:100%;padding-right:56px}
+.platform-publish-time{margin-top:12px}
+.platform-publish-time input{width:240px;max-width:100%}
+.platform-publish-time[hidden]{display:none}
+.cp-search-select input:disabled{background:#f5f7fa;color:#a8abb2;cursor:not-allowed}

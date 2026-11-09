@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
-const base=path.join(__dirname,'..');const nodes=new Map();const node=s=>{if(!nodes.has(s))nodes.set(s,{textContent:'',value:'',checked:false,innerHTML:'',classList:{add(){},toggle(){}},focus(){},scrollIntoView(){}});return nodes.get(s)};
+const base=path.join(__dirname,'..');const nodes=new Map();const node=s=>{if(!nodes.has(s))nodes.set(s,{textContent:'',value:'',checked:false,innerHTML:'',classList:{add(){},toggle(){}},focus(){},scrollIntoView(){},setAttribute(){},removeAttribute(){}});return nodes.get(s)};
 const context=vm.createContext({assert,console,Intl,Date,localStorage:{getItem:()=>null,setItem(){}},setTimeout(){},clearTimeout(){},document:{querySelector:node,querySelectorAll:()=>[],addEventListener(){}},window:{},location:{origin:'http://localhost'},parent:{postMessage(){}}});
 vm.runInContext(fs.readFileSync(path.join(base,'app.js'),'utf8').split("document.addEventListener('click'")[0],context);
 vm.runInContext(`render=()=>{};toast=()=>{};closeModal=()=>{};let captured='';modal=(title,body)=>{captured=body};`,context);
@@ -57,13 +57,13 @@ const d=cpNewDraft();cpState.draft=d;cpState.mode='upload';
 assert.equal(d.step,1);cpNextStep();assert.equal(d.step,1);assert($('#cpError').textContent.includes('先从 OSS'));
 assert.equal(cpAddDraftAssets(d,[asset.id,second.id]),2);assert.equal(cpAddDraftAssets(d,[asset.id]),0);
 let stageHTML=renderCPUpload();assert(!stageHTML.includes('data-cp-editor='));assert(stageHTML.includes('下一步'));assert(!stageHTML.includes('cp-edit-draft'));
-cpNextStep();assert.equal(d.step,2);stageHTML=renderCPUpload();assert(stageHTML.includes('cp-edit-draft'));assert(stageHTML.includes('未提审'));assert(cpDraftError(d).includes('关联内容'));
+cpNextStep();assert.equal(d.step,2);stageHTML=renderCPUpload();assert(stageHTML.includes('cp-edit-draft'));assert(stageHTML.includes('未提审'));assert(cpDraftError(d).includes('关联账号'));
 cpOpenDraftEditor(asset.id);assert(captured.includes('抖音视频标题'));assert(captured.includes('红果视频标题'));
-cpEditorChange({dataset:{cpEditor:'content'},value:'FILM-10086'});assert.equal(cpMaterialEditor.item.dyAccount,'dy01');
+cpEditorChange({dataset:{cpEditor:'linkedAccount'},value:'cp01'});cpEditorChange({dataset:{cpEditor:'content'},value:'FILM-10086'});assert.equal(cpMaterialEditor.item.dyAccount,'dy01');
 Object.assign(cpMaterialEditor.item,{hgAccount:'hg01',dyTitle:'抖音标题',hgTitle:'红果标题',ai:false,anchor:false});
 closeModal();assert.equal(cpMaterialEditor,null);assert.equal(d.items[asset.id].content,'');
 cpOpenDraftEditor(asset.id);cpSaveDraftEditor();assert.equal(d.items[asset.id].configured,false);assert($('#modalError').textContent);
-Object.assign(cpMaterialEditor.item,{content:'FILM-10086',dyAccount:'dy02',hgAccount:'hg01',dyTitle:'抖音标题',hgTitle:'红果标题',ai:false,anchor:false});
+Object.assign(cpMaterialEditor.item,{linkedAccount:'cp01',content:'FILM-10086',dyAccount:'dy02',hgAccount:'hg01',dyTitle:'抖音标题',hgTitle:'红果标题',ai:false,anchor:false});
 assert(cpItemError(asset,cpMaterialEditor.item).includes('不可更换'));cpMaterialEditor.item.dyAccount='dy01';assert.equal(cpItemError(asset,cpMaterialEditor.item),'');
 cpMaterialEditor.item.hgTitle='#自造话题';assert(cpItemError(asset,cpMaterialEditor.item).includes('已有话题'));cpMaterialEditor.item.hgTitle='红果标题';
 assert(cpItemError(r.asset,cpMaterialEditor.item).includes('重复上传'));cpSaveDraftEditor();assert.equal(cpMaterialEditor,null);assert.equal(d.items[asset.id].configured,true);assert.equal(d.items[second.id].content,'');
@@ -72,7 +72,7 @@ cpAddDraftAssets(d,[asset.id,third.id]);assert.equal(d.assets.length,3);assert.e
 cpRemoveDraftAsset(d,third.id);assert.equal(d.items[third.id],undefined);assert.equal(JSON.stringify(d.items[asset.id]),savedItem);cpNextStep();
 const beforeSave=cpRows.length;cpSaveUpload();assert.equal(cpRows.length,beforeSave);assert.equal(cpState.draft,d);assert($('#cpError').textContent.includes(second.name));
 cpOpenDraftEditor(second.id);cpEditorChange({dataset:{cpEditor:'type'},value:'线索'});assert.equal(cpMaterialEditor.item.content,'');assert.equal(cpMaterialEditor.item.materialType,'预告片');
-Object.assign(cpMaterialEditor.item,{content:'CLUE-10087',dyAccount:'dy02',hgAccount:'hg02',dyTitle:'另一份抖音标题',hgTitle:'另一份红果标题',ai:true,anchor:true});cpSaveDraftEditor();
+Object.assign(cpMaterialEditor.item,{linkedAccount:'cp01',content:'CLUE-10087',dyAccount:'dy02',hgAccount:'hg02',dyTitle:'另一份抖音标题',hgTitle:'另一份红果标题',ai:true,anchor:true});cpSaveDraftEditor();
 assert.equal(cpDraftError(d),'');cpSaveUpload();assert.equal(cpRows.length,beforeSave+2);assert.equal(cpState.mode,'list');assert.equal(cpState.draft,null);
 const firstSaved=cpRows.find(x=>x.asset.id===asset.id),secondSaved=cpRows.find(x=>x.asset.id===second.id);assert.equal(firstSaved.content,'FILM-10086');assert.equal(firstSaved.dyAccount,'dy01');assert.equal(firstSaved.dyTitle,'抖音标题');assert.equal(secondSaved.content,'CLUE-10087');assert.equal(secondSaved.dyAccount,'dy02');assert.equal(secondSaved.hgAccount,'hg02');assert.equal(secondSaved.materialType,'预告片');assert.equal(secondSaved.dyTitle,'另一份抖音标题');assert(secondSaved.ai);assert(secondSaved.anchor);assert.equal(secondSaved.dyStatus,'审核中');cpRows=originalRows;
 const emptyAgain=cpNewDraft();cpAddDraftAssets(emptyAgain,[asset.id]);emptyAgain.step=2;cpRemoveDraftAsset(emptyAgain,asset.id);assert.equal(emptyAgain.step,1);assert.equal(emptyAgain.assets.length,0);
@@ -85,7 +85,7 @@ vm.runInContext(`
 actions['cp-upload']();assert.equal(state.page,'wizard');assert.equal(state.step,1);assert.equal(state.wizard.platforms.join(','),CP_PLATFORM);
 let mixed=state.wizard;mixed.assets=[asset,second];mixed.platforms=['抖音','视频号','快手',CP_PLATFORM];state.step=2;
 assert.equal(makeUnits().length,8);assert.equal((renderAssign().match(/data-wizard-platform=/g)||[]).length,5);assert.equal((renderAssign().match(/data-platform-section=/g)||[]).length,4);
-const cd=copyrightDraft(mixed);Object.assign(cd.items[asset.id],{content:'CLUE-10086',type:'\u7ebf\u7d22',materialType:'\u9884\u544a\u7247',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'版权标题',hgTitle:'红果标题',ai:false,anchor:false,configured:true});
+const cd=copyrightDraft(mixed);Object.assign(cd.items[asset.id],{linkedAccount:'cp01',content:'CLUE-10086',type:'\u7ebf\u7d22',materialType:'\u9884\u544a\u7247',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'版权标题',hgTitle:'红果标题',ai:false,anchor:false,configured:true});
 setAssignments(mixed,'抖音',asset.id,['dy01']);const mk=targetKey(asset.id,'dy01');mixed.targets[mk]='DY01-N-10086';mixed.materialAccountConfigs[mk]={title:'普通抖音标题',text:'普通抖音简介',coverUrl:demoCover('长街有月'),mode:'立即发布',interval:15};
 assert.equal(makeUnits().filter(u=>!u.error).length,2,JSON.stringify(makeUnits().map(u=>({p:u.platform,e:u.error}))));actions['cp-edit-draft']({dataset:{id:asset.id}});cpMaterialEditor.item.dyTitle='版权标题独立更新';cpSaveDraftEditor();assert.equal(assetConfig(mixed,'抖音',asset.id,'dy01').title,'普通抖音标题');
 mixed.platforms=['抖音'];assert.equal(makeUnits().some(u=>u.platform===CP_PLATFORM),false);mixed.platforms.push(CP_PLATFORM);assert.equal(copyrightDraft(mixed).items[asset.id].dyTitle,'版权标题独立更新');
@@ -102,7 +102,7 @@ mixed.onlyValid=true;submitTask();assert.equal(rows.length,rowsBefore+1);assert.
 // Saving and normalizing a draft preserves independent copyright fields.
 const roundtrip=normalizeDraft(draft);assert.equal(roundtrip.copyright.identity,'版权机构');assert(roundtrip.copyright.items[second.id]);
 // Copyright-only submission never creates an ordinary account publishing row.
-actions['cp-upload']();const cpOnly=state.wizard;cpOnly.assets=[third];Object.assign(copyrightDraft(cpOnly).items[third.id],{content:'CLUE-10088',type:'线索',materialType:'预告片',dyAccount:'dy02',hgAccount:'hg02',dyTitle:'版权单平台',hgTitle:'红果单平台',ai:false,anchor:false,configured:true});const beforeOnly=rows.length;submitTask();assert.equal(rows.length,beforeOnly);assert.equal(state.page,'list');assert.equal(state.platform,CP_PLATFORM);assert.equal(cpRows[0].dyTitle,'版权单平台');
+actions['cp-upload']();const cpOnly=state.wizard;cpOnly.assets=[third];Object.assign(copyrightDraft(cpOnly).items[third.id],{linkedAccount:'cp02',content:'CLUE-10088',type:'线索',materialType:'预告片',dyAccount:'dy02',hgAccount:'hg02',dyTitle:'版权单平台',hgTitle:'红果单平台',ai:false,anchor:false,configured:true});const beforeOnly=rows.length;submitTask();assert.equal(rows.length,beforeOnly);assert.equal(state.page,'list');assert.equal(state.platform,CP_PLATFORM);assert.equal(cpRows[0].dyTitle,'版权单平台');
 console.log('PASS: four-platform entry/selection/independent fields/toggle retention/platform-only material scopes/mixed validation and submission/pending draft exclusion/copyright-only save.');
 `,context);
 vm.runInContext(`
@@ -110,9 +110,9 @@ vm.runInContext(`
 const filteredRecord=cpRows.find(r=>r.id==='CP-V23-FAILED');
 assert(cpMatches(filteredRecord,{...emptyCPFilters(),asset:'片段12',drama:'逆光',contentId:'CLUE-10088',type:'线索',materialType:'剧情解析',dyAccount:'dy02',hgAccount:'hg02',audit:'审核失败'}));
 assert(cpMatches(filteredRecord,{...emptyCPFilters(),contentId:'10088'}));assert(!cpMatches(filteredRecord,{...emptyCPFilters(),contentId:'1008'}));assert(!cpMatches(filteredRecord,{...emptyCPFilters(),dyAccount:'dy01'}));
-let boolItem={...cpNewMaterialInfo(),content:'FILM-10086',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'标题',hgTitle:'标题'};
+let boolItem={...cpNewMaterialInfo(),linkedAccount:'cp01',content:'FILM-10086',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'标题',hgTitle:'标题'};
 assert(cpItemError(OSS_FILES[4],boolItem).includes('是否AI作品'));boolItem.ai=false;assert.equal(cpItemError(OSS_FILES[4],boolItem),'');
-boolItem={...boolItem,type:'线索',content:'CLUE-10086'};assert(cpItemError(OSS_FILES[4],boolItem).includes('是否挂载锚点'));boolItem.anchor=false;assert.equal(cpItemError(OSS_FILES[4],boolItem),'');
+boolItem={...boolItem,type:'线索',linkedAccount:'cp01',content:'CLUE-10086'};assert(cpItemError(OSS_FILES[4],boolItem).includes('是否挂载锚点'));boolItem.anchor=false;assert.equal(cpItemError(OSS_FILES[4],boolItem),'');
 const isolated={...filteredRecord,id:'RETRY-TEST',dyAudit:'审核成功',dyStatus:'已发布',hgAudit:'审核失败',hgStatus:'审核不通过',dyTitle:'成功端不能改',anchor:false,ai:false,edits:0};cpRows.push(isolated);
 assert.equal(cpResubmit(isolated,{dyTitle:'不应写入',hgTitle:'失败端新标题',anchor:true,ai:true}),'');assert.equal(isolated.dyTitle,'成功端不能改');assert.equal(isolated.dyAudit,'审核成功');assert.equal(isolated.hgAudit,'审核中');assert.equal(isolated.anchor,false);assert.equal(isolated.ai,false);assert(cpEditReason(isolated).includes('审核中'));
 isolated.reviewDue=Date.now()-1;cpFinishReviews();assert.equal(isolated.hgAudit,'审核成功');assert(cpEditReason(isolated).includes('审核成功'));cpRows=cpRows.filter(r=>r!==isolated);
@@ -177,13 +177,13 @@ vm.runInContext(`
 vm.runInContext(`
 // Operator validation counts code points and keeps creator-platform settings independent.
 assert.equal(PUBLISH_PLATFORMS.join(','),'抖音,视频号,快手,快手经管平台,抖音版权中台');
-assert.equal(kmConfigError({title:'字'.repeat(20),clipType:'高光',declaration:0}),'');
-assert(kmConfigError({title:'字'.repeat(21),clipType:'高光',declaration:0}).includes('20'));
-assert.equal(kmConfigError({title:'😀'.repeat(20),clipType:'花絮',declaration:1}),'');
-assert(kmConfigError({title:'标题',clipType:'高光',declaration:null}).includes('声明'));
-assert(kmConfigError({title:'标题',clipType:'素材',declaration:0}).includes('类型'));
+assert.equal(kmConfigError({dramaId:'78645000001',title:'字'.repeat(20),clipType:'高光',declaration:0}),'');
+assert(kmConfigError({dramaId:'78645000001',title:'字'.repeat(21),clipType:'高光',declaration:0}).includes('20'));
+assert.equal(kmConfigError({dramaId:'78645000001',title:'😀'.repeat(20),clipType:'花絮',declaration:1}),'');
+assert(kmConfigError({dramaId:'78645000001',title:'标题',clipType:'高光',declaration:null}).includes('声明'));
+assert(kmConfigError({dramaId:'78645000001',title:'标题',clipType:'素材',declaration:0}).includes('类型'));
 const kw=newWizard();kw.platforms=[KM_PLATFORM,'快手'];kw.assets=[asset,third];state.wizard=kw;
-kmSetAccounts(kw,asset.id,['km01','km02']);kmDraft(kw).configs[kmKey(asset.id,'km01')]={title:'标题一',clipType:'高光',declaration:0};kmDraft(kw).configs[kmKey(asset.id,'km02')]={title:'标题二',clipType:'花絮',declaration:1};
+kmSetAccounts(kw,asset.id,['km01','km02']);kmDraft(kw).configs[kmKey(asset.id,'km01')]={dramaId:kmTarget(asset,'km01').id,title:'标题一',clipType:'高光',declaration:0};kmDraft(kw).configs[kmKey(asset.id,'km02')]={dramaId:kmTarget(asset,'km02').id,title:'标题二',clipType:'花絮',declaration:1};
 assert.equal(kmUnits(kw).filter(u=>!u.error).length,2);assert.equal(makeUnits(kw).filter(u=>u.platform==='快手').length,2);
 assert.notEqual(kmTarget(asset,'km01').id,kmTarget(asset,'km02').id);assert.notEqual(kmTarget(asset,'km01').id,materialDrama(asset).id);
 kmSetAccounts(kw,third.id,['km02']);assert(kmUnits(kw).find(u=>u.asset.id===third.id).error.includes('短剧'));
@@ -201,15 +201,15 @@ const submittedTime=kmRows[0].submittedAt;assert(submittedTime);assert.equal(kmR
 kmRows[0].due=0;kmFinishPublishing();assert.equal(kmRows[0].status,'已发布');assert(kmRows[0].publishedAt);assert.equal(kmRows[0].submittedAt,submittedTime);
 assert(draft);assert.equal(kmUnits(draft).some(u=>u.asset.id===asset.id&&u.account==='km01'),false);assert(kmUnits(draft).some(u=>u.account==='km02'));
 const mixedKM=newWizard();mixedKM.assets=[second];mixedKM.platforms=[KM_PLATFORM,'抖音'];state.wizard=mixedKM;
-kmSetAccounts(mixedKM,second.id,['km01']);kmDraft(mixedKM).configs[kmKey(second.id,'km01')]={title:'经管标题',clipType:'花絮',declaration:1};
+kmSetAccounts(mixedKM,second.id,['km01']);kmDraft(mixedKM).configs[kmKey(second.id,'km01')]={dramaId:kmTarget(second,'km01').id,title:'经管标题',clipType:'花絮',declaration:1};
 setAssignments(mixedKM,'抖音',second.id,['dy01']);mixedKM.targets[targetKey(second.id,'dy01')]='DY01-N-10086';mixedKM.materialAccountConfigs[targetKey(second.id,'dy01')]={title:'抖音标题',text:'抖音简介',coverUrl:demoCover('长街有月'),mode:'立即发布',interval:15};
 assert.equal(makeUnits(mixedKM).filter(u=>!u.error).length,2);const normalBefore=rows.length,operatorBefore=kmRows.length;submitTask();assert.equal(rows.length,normalBefore+1);assert.equal(kmRows.length,operatorBefore+1);assert.equal(kmRows[0].batch,rows[0].batch);assert.equal(rows[0].title,'抖音标题');assert.equal(kmRows[0].title,'经管标题');assert.equal(draft,null);
 console.log('PASS: operator title boundaries, explicit declarations, account-scoped platform IDs, independent drafts, seven filters, partial submission and mixed-platform storage.');
 `,context);
 vm.runInContext(`
 const cpMix=newWizard();const cpMixAsset={...OSS_FILES[10]};cpMix.assets=[cpMixAsset];cpMix.platforms=[CP_PLATFORM,KM_PLATFORM];state.wizard=cpMix;state.batch='OLDER-BATCH';
-const cpMixInfo=copyrightDraft(cpMix).items[cpMixAsset.id];Object.assign(cpMixInfo,{type:'线索',content:'CLUE-10086',materialType:'花絮',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'版权素材标题',hgTitle:'红果素材标题',ai:false,anchor:false,configured:true});
-kmSetAccounts(cpMix,cpMixAsset.id,['km01']);kmDraft(cpMix).configs[kmKey(cpMixAsset.id,'km01')]={title:'经管素材标题',clipType:'高光',declaration:0};
+const cpMixInfo=copyrightDraft(cpMix).items[cpMixAsset.id];Object.assign(cpMixInfo,{type:'线索',linkedAccount:'cp01',content:'CLUE-10086',materialType:'花絮',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'版权素材标题',hgTitle:'红果素材标题',ai:false,anchor:false,configured:true});
+kmSetAccounts(cpMix,cpMixAsset.id,['km01']);kmDraft(cpMix).configs[kmKey(cpMixAsset.id,'km01')]={dramaId:kmAvailableDramas('km01')[0].id,title:'经管素材标题',clipType:'高光',declaration:0};
 assert.equal(makeUnits(cpMix).filter(u=>!u.error).length,2);submitTask();assert.equal(kmRows[0].batch,cpRows[0].batch);assert.notEqual(kmRows[0].batch,'OLDER-BATCH');assert.equal(state.batch,kmRows[0].batch);
 console.log('PASS: operator and copyright-only mixed submissions share the new batch, independent of prior navigation.');
 `,context);
@@ -235,7 +235,7 @@ vm.runInContext(`
  const restored=normalizeDraft(w);kmSetAccounts(restored,unselected.id,['km01']);assert.equal(kmConfig(restored,unselected.id,'km01').clipType,'花絮');
  kmClearAsset(restored,unselected.id);assert.equal(kmConfig(restored,unselected.id,null).clipType,'');
  const d=copyrightDraft(w);cpState.draft=d;
- Object.assign(d.items[source.id],{type:'线索',content:'CLUE-10086',materialType:'花絮',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'抖音同步标题',hgTitle:'红果同步标题',topics:['剧情解读'],ai:false,anchor:false,configured:true});
+ Object.assign(d.items[source.id],{type:'线索',linkedAccount:'cp01',content:'CLUE-10086',materialType:'花絮',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'抖音同步标题',hgTitle:'红果同步标题',topics:['剧情解读'],ai:false,anchor:false,configured:true});
  Object.assign(d.items[destination.id],{dyAccount:'dy02',hgAccount:'hg02',dyTitle:'原抖音标题'});
  const cpBefore=JSON.stringify(d.items[unselected.id]),kmBefore=JSON.stringify(w.kuaishouOperator),rowsBefore=JSON.stringify(cpRows);
  assert.equal(applyCPMaterialSync(w,source.id,new Set([source.id,destination.id,removed.id,'missing'])),2);
@@ -244,7 +244,7 @@ vm.runInContext(`
  d.items[destination.id].topics.push('一起追好剧');assert.equal(d.items[source.id].topics.length,1);
  const snapshot=JSON.stringify(w);assert.equal(applyCPMaterialSync(w,source.id,new Set()),0);assert.equal(JSON.stringify(w),snapshot);
  assert.equal(applyCPMaterialSync(w,unselected.id,new Set([destination.id])),0);
- Object.assign(d.items[source.id],{type:'正片',content:'FILM-10086',anchor:true});applyCPMaterialSync(w,source.id,new Set([destination.id]));assert.equal(d.items[destination.id].anchor,null);
+ Object.assign(d.items[source.id],{type:'正片',linkedAccount:'cp01',content:'FILM-10086',anchor:true});applyCPMaterialSync(w,source.id,new Set([destination.id]));assert.equal(d.items[destination.id].anchor,null);
  assert.equal(cpBooleanField('anchor','是否挂载锚点',d.items[destination.id]),'');assert.equal(cpTableCell('anchor',{...d.items[destination.id],asset:destination},true),'—');
  assert(cpBooleanField('ai','是否AI作品',d.items[destination.id]).includes('是否AI作品'));assert(!cpBooleanField('ai','是否AI作品',d.items[destination.id]).includes('作品声明'));
  cpOpenDraftEditor(source.id);assert(!captured.includes('data-cp-boolean="anchor"'));
@@ -253,5 +253,53 @@ vm.runInContext(`
  openKMMaterialSync(source.id,'km01');assert.equal((captured.match(/name="syncMaterial"/g)||[]).length,3);assert(captured.includes('value="'+source.id+'" checked'));
  openCPMaterialSync(source.id);assert.equal((captured.match(/name="syncMaterial"/g)||[]).length,3);assert(captured.includes('value="'+source.id+'" checked'));
  console.log('PASS: operator/copyright sync selection, defaults before account assignment, field and platform isolation, nested-copy safety, shared sync modal, and clue-only anchor visibility/validation.');
+}
+`,context);
+
+vm.runInContext(`
+{
+ const a={...OSS_FILES[0]}, w=newWizard();w.platforms=[KM_PLATFORM,CP_PLATFORM];w.assets=[a,{...OSS_FILES[1]}];state.wizard=w;
+ kmSetAccounts(w,a.id,['km01','km02']);
+ const c={title:'宣发素材',clipType:'高光',declaration:0,mode:'立即发布',time:''};
+ assert(kmConfigError(c,'km01').includes('原生短剧'));
+ const chosen=kmAvailableDramas('km01')[1];assert.notEqual(chosen.collectionId,kmSourceDrama(a).id);
+ kmDraft(w).configs[kmKey(a.id,'km01')]={...c,dramaId:chosen.id};
+ assert.equal(kmUnits(w).find(u=>u.account==='km01').target.id,chosen.id);
+ assert.equal(kmUnits(w).find(u=>u.account==='km01').error,'');
+ assert(kmConfigError({...c,dramaId:chosen.id},'km02').includes('不属于'));
+ assert(kmConfigError({...c,dramaId:'78645000999'},'km01').includes('已下架'));
+ assert(!kmAvailableDramas('km01').some(t=>t.status!=='已上架'));
+ assert(publishingTimeError({mode:'定时发布',time:''}).includes('请选择'));
+ assert(publishingTimeError({mode:'定时发布',time:'2000-01-01T10:00'}).includes('晚于'));
+ assert.equal(publishingTimeError({mode:'定时发布',time:future}),'');
+ const unit=kmUnits(w).find(u=>u.account==='km01');unit.config={...unit.config,mode:'定时发布',time:future};
+ const result=kmSaveUnits([unit],'SCHEDULE-CHECK')[0];assert.equal(result.status,'待发布');assert.equal(result.publishedAt,'');kmFinishPublishing();assert.equal(result.status,'待发布');
+ result.time='2000-01-01T10:00';kmFinishPublishing();assert.equal(result.status,'发布中');result.due=0;kmFinishPublishing();assert.equal(result.status,'已发布');
+ const d=copyrightDraft(w);cpState.draft=d;cpOpenDraftEditor(a.id);
+ assert.equal(cpMaterialEditor.item.linkedAccount,'');assert.equal(cpPickerCandidates().length,0);
+ cpEditorChange({dataset:{cpEditor:'linkedAccount'},value:'cp01'});assert(cpPickerCandidates().every(c=>c.linkedAccount==='cp01'));
+ cpMaterialEditor.query='长街';assert.equal(cpPickerCandidates().length,1);cpMaterialEditor.query='没有这部剧';assert.equal(cpPickerCandidates().length,0);
+ cpEditorChange({dataset:{cpEditor:'content'},value:'FILM-10086'});assert.equal(cpMaterialEditor.item.dyAccount,'dy01');
+ cpEditorChange({dataset:{cpEditor:'linkedAccount'},value:'cp02'});assert.equal(cpMaterialEditor.item.content,'');assert.equal(cpMaterialEditor.item.dyAccount,'');assert(cpPickerCandidates().every(c=>c.linkedAccount==='cp02'));
+ cpMaterialEditor.item.content='FILM-10086';assert(cpAssociationError(cpMaterialEditor.item).includes('不属于'));
+ cpEditorChange({dataset:{cpEditor:'linkedAccount'},value:'cp03'});assert.equal(cpPickerCandidates().length,0);closeModal();assert.equal(d.items[a.id].linkedAccount,'');
+ Object.assign(d.items[a.id],{linkedAccount:'cp01',content:'FILM-10086',configured:true,mode:'定时发布',time:future});
+ applyCPMaterialSync(w,a.id,new Set([w.assets[1].id]));assert.equal(d.items[w.assets[1].id].linkedAccount,'cp01');assert.equal(d.items[w.assets[1].id].time,future);
+ console.log('PASS: explicit operator drama, account ownership and shelf status, copyright account-dependent fuzzy candidates/reset/cancel/sync, and scheduling validation/lifecycle.');
+}
+`,context);
+
+vm.runInContext(`
+{
+ const previous=cpRows;cpRows=[];
+ const item={...cpNewMaterialInfo(),linkedAccount:'cp01',content:'FILM-10086',dyAccount:'dy01',hgAccount:'hg01',dyTitle:'预约提审测试',hgTitle:'预约提审测试',ai:false,configured:true,mode:'定时发布',time:future};
+ const saved=saveCopyrightUnits([{cpItem:item,asset:{...OSS_FILES[1]},identity:'版权机构'}],'CP-SCHEDULE');const r=saved[0];
+ assert.equal(r.linkedAccount,'cp01');assert.equal(r.dyStatus,'待提审');assert.equal(r.hgStatus,'待提审');assert.equal(cpSubmittedAt(r),'');assert(!r.reviewDue);
+ assert.equal(cpPublishState(r,'dy'),'待发布');assert(cpEndAuditCell(r,'dy').includes('待提审'));assert(cpAuditCell(r).includes('待提审'));
+ cpFinishReviews();assert.equal(r.dyStatus,'待提审');r.scheduledSubmitAt=Date.now()-1;cpFinishReviews();assert.equal(r.dyStatus,'审核中');assert(cpSubmittedAt(r));assert(r.reviewDue);const submitted=r.submittedAt;
+ r.reviewDue=Date.now()-1;cpFinishReviews();assert.equal(r.dyStatus,'已发布');assert.equal(cpAudit(r,'dy'),'审核成功');assert.equal(r.submittedAt,submitted);
+ const bad=saveCopyrightUnits([{cpItem:item,asset:{...OSS_FILES[2]},identity:'版权机构'}],'CP-SCHEDULE-INVALID')[0];bad.linkedAccount='cp02';bad.scheduledSubmitAt=Date.now()-1;cpFinishReviews();assert.equal(bad.dyStatus,'提审失败');assert.equal(cpSubmittedAt(bad),'');assert(bad.dyReason.includes('不属于'));assert(cpEndAuditCell(bad,'dy').includes('失败原因'));assert(cpAuditCell(bad).includes('失败原因'));
+ cpRows=previous;
+ console.log('PASS: copyright schedules wait before review, retain association/time, start review only at due time, publish after approval, and revalidate account ownership on execution.');
 }
 `,context);
