@@ -1,6 +1,8 @@
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import * as A from './access-v3.js?v=20261106-test-scenarios';
-import * as N from './navigation-v2.js?v=20261106-test-scenarios';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as N from './navigation-v2.js?v=20261109-overview-merge';
+import {renderMaterialMetadata,groupedMaterialFiles} from './material-display-v14.js?v=20261109-overview-merge';
+import {scriptDocumentPanels} from './script-history-v9.js?v=20261109-overview-merge';
 
 export function details(s,h){
  const {E,button,link,badge,audit,stage,panel,fileList,scriptTab,matchTab,productionTab,filmTab,releaseTab,channels,data,back,cardPanel=()=>'',reviewAttachments=()=>'',internalMaterials=()=>'',scriptVersionHistory=()=>''}=h;
@@ -22,7 +24,7 @@ export function details(s,h){
    const documents=(record.production||[]).slice(0,4).map((item,i)=>`<section class="script-version"><h4>${E(M.productionNames[i])} ${result(item)}</h4>${item.opinion?`<p>${E(item.opinion)}</p>`:''}${fileList(item.files||[])}</section>`).join('');
    const approvals=(record.termination?.confirmationDetails||[]).map(x=>`<p>${E(x.name)} · ${E(x.role==='business'?'承制商务':'合作确认')} · ${E(x.at||'时间未记录')}${x.opinion?' · '+E(x.opinion):''}</p>`).join('');
    const contract=record.productionContract?`<h4>制作合同</h4>${contractReadable?fileList([record.productionContract])+((record.contractHistory||[]).length?`<details class="supporting-file"><summary>历史合同（${record.contractHistory.length}）</summary>${fileList(record.contractHistory.map(x=>x.file||x))}</details>`:''):'<p class="muted">已留档</p>'}`:'';
-   const material=record.makerMaterial?`<h4>制作物料 ${result(record.makerMaterial)}</h4>${record.makerMaterial.opinion?`<p>${E(record.makerMaterial.opinion)}</p>`:''}${fileList(record.makerMaterial.files||[])}`:'';
+   const material=record.makerMaterial?`<h4>制作物料 ${result(record.makerMaterial)}</h4>${record.makerMaterial.opinion?`<p>${E(record.makerMaterial.opinion)}</p>`:''}${renderMaterialMetadata(record.makerMaterial.values||{},'makerMaterial',{E})}${groupedMaterialFiles(record.makerMaterial.files||[],{E,fileList})}`:'';
    const film=record.film?`<h4>安全审核 ${result(record.film)}</h4>${record.film.opinion?`<p>${E(record.film.opinion)}</p>`:''}${fileList(record.film.files||[])}`:'';
    const channelHistory=record.channelTasks?.length?`<h4>历史渠道记录</h4>${record.channelTasks.map(t=>`<p>${E(t.channel)} · ${E(({preparing:'准备材料',submitted:'渠道审核中',revision:'内容待修改',confirm:'待制片确认',resubmit:'待重新送审',online:'已上线'})[t.status]||t.status)}${t.actual?' · '+E(t.actual):''}</p>`).join('')}`:'';
    return `<details class="cooperation-record"><summary>${E(record.maker?M.nameOf(s,record.maker):'历史合作')}<span>${E(record.archivedAt||'时间未记录')}</span></summary><div class="archive-history-body">${fields([['合作项目',record.projectName||p.name],['项目制片',record.producer],['承制商务',record.productionBusiness],['处理结果',record.termination?.mode==='rematch'?'重新匹配承制方':record.termination?.mode==='end'?'结束项目':record.legacy?'历史合作':'已归档'],['终止说明',record.termination?.reason],['归档人',record.archivedBy]])}${approvals}${documents}${film}${material}${contract}${record.schedule?`<p>历史排期：${E(record.schedule)}</p>`:''}${channelHistory}</div></details>`;
@@ -46,12 +48,11 @@ export function details(s,h){
   return audit(M.evaluationStatus(p));
  }
  function evaluation(p){
-  let content=s.ui.tab==='review-history'?panel('评估记录',reviewSummary(p)+events(reviewEvents(p)))+scriptVersionHistory(p):scriptTab(p);
-  return `<div class="evaluation-brief"><span>当前审核资料 <b>${'全集 V'+(p.full?.version||1)}</b></span><span>剧本来源 <b>${E(source(p))}</b></span><span>剧本商务 <b>${E(p.business)}</b></span></div>${content}`;
+  return `<div class="evaluation-brief"><span>当前剧本 <b>${'全集 V'+(p.full?.version||1)}</b></span><span>剧本来源 <b>${E(source(p))}</b></span><span>剧本商务 <b>${E(p.business)}</b></span></div>${scriptDocumentPanels(s,p,h)}${basic(p)}`;
  }
  function projectProgress(p){const steps=[['production','制作审核'],['safety','安全审核'],['release','发行准备'],['scheduling','排播上线'],['online','已上线']];const current=p.stage==='release'&&p.film.status!=='approved'?'safety':p.stage;const at=steps.findIndex(([key])=>key===current);return `<div class="stepper execution-progress">${steps.map(([key,label],i)=>`<div class="${i<at?'done':i===at?'current':''}"><span>${i<at?'✓':i+1}</span>${label}</div>`).join('')}</div>`;}
  return function render(p){
-  const kind=N.detailKind(s),tabs=N.detailTabs(s,p);
+  const kind=N.detailKind(s),tabs=kind==='evaluation'?[]:N.detailTabs(s,p);
   if(tabs.length&&!tabs.some(([key])=>key===s.ui.tab))s.ui.tab=N.detailTab(s,p);
   if(tabs.length&&!tabs.some(([key])=>key===s.ui.tab))s.ui.tab=tabs[0][0];
   const tabBar=tabs.length?`<div class="tabs" role="tablist" aria-label="${kind==='evaluation'?'评估详情':'项目详情'}">${tabs.map(([key,label])=>`<button role="tab" aria-selected="${s.ui.tab===key}" data-tab="${key}" class="${s.ui.tab===key?'active':''}">${label}</button>`).join('')}</div>`:'';

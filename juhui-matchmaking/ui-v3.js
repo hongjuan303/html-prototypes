@@ -1,21 +1,12 @@
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import * as A from './access-v3.js?v=20261106-test-scenarios';
-import * as B from './business-v3.js?v=20261106-test-scenarios';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as B from './business-v3.js?v=20261109-overview-merge';
 export function ui(s,h){
  const {E,button,link,badge,note,panel,field,fileInput,fileList,issue,heading,empty}=h;
  const platform=s.ui.system==='platform',line=s.ui.business;
  const name=id=>s.users.find(x=>x.id===id)?.name||'待分配';
  const rolesText=(u,b)=>u.admin?'全部操作 · 全部数据 · 全部渠道':u[b].roles.map(r=>A.label(r,b)).join('、')||'未授权';
  const checks=(name,values,selected=[])=>`<div class="check-grid">${values.map(v=>{const [k,l]=Array.isArray(v)?v:[v,v];return `<label><input type="checkbox" name="${name}" value="${E(k)}" ${selected.includes(k)?'checked':''}>${E(l)}</label>`;}).join('')}</div>`;
- function permissions(){
-  const rows=s.users.filter(u=>(u.name+u.account).includes(s.ui.permissionKeyword||''));
-  return heading('用户权限分配','同一账号分别授权两条业务，菜单按业务功能呈现。')+
-  panel('账号筛选 '+note('账号筛选','筛选项',['姓名 / 账号：在共用人员列表中检索，展示两条业务授权概览。']),`<form id="permission-filters" class="supplier-filters">${field('姓名 / 账号','permissionKeyword',s.ui.permissionKeyword||'')}<button class="btn primary">搜索</button>${button('重置','permission-clear')}</form>`)+
-  panel('人员授权 '+note('授权列表','列表项',['账号：沿用平台已有账号，同一人只维护一条人员记录。','示例授权：用于评审角色与流程，不代表正式系统当前人员授权。','撮合业务 / 代发行业务：分别展示已授权岗位，未授权业务不显示入口。','管理员：本地原型开放两条业务全部平台操作、全部数据及全部渠道，用于完整流程验证；保留流程状态和必填条件。','数据范围：商务限对接项目、制片限负责项目、审核员限任务、渠道限关联渠道及分配。']),`<table class="permission-table"><thead><tr><th>姓名 / 账号</th><th>撮合业务</th><th>代发行业务</th><th>操作 ${note('权限操作','操作项',['配置权限：同一弹窗分别维护两条业务角色及渠道关联。','权限生效：保存后切换顶部演示账号，菜单、记录及按钮立即按新授权展示。','角色互斥：管理员与业务角色互斥；代发行三类评估组互斥。','保存边界：仅本地原型示例，不修改正式系统账号。'])}</th></tr></thead><tbody>${rows.map(u=>`<tr><td><strong>${E(u.name)}</strong><small>${E(u.account)}${u.admin?' · 管理员':''}</small></td><td>${E(rolesText(u,'matching'))}${u.matching.channels.length?'<small>渠道：'+u.matching.channels.join(' / ')+'</small>':''}</td><td>${E(rolesText(u,'distribution'))}${u.distribution.channels.length?'<small>渠道：'+u.distribution.channels.join(' / ')+'</small>':''}</td><td>${link('配置权限','permission-edit',u.id)}</td></tr>`).join('')}</tbody></table>${rows.length?'':empty('未找到账号')}`)+
-  (s.permissionHistory?.length?panel('最近授权变更',s.permissionHistory.slice(0,5).map(x=>`<p>${E(x.at)} · ${E(x.user)} · ${E(x.text)}</p>`).join('')):'');
- }
- function permissionPreview(v){return `<div class="permission-preview">${Object.keys(A.lines).map(b=>{const roles=v[b]?.roles||[],menu=v.admin?b==='matching'?['剧本评估','剧本库','撮合管理']:['内容评估','发行项目','短剧数据']:[...new Set(roles.flatMap(r=>A.definitions[b][r]?.[1]||[]))].map(x=>({intake:'剧本评估',library:'剧本库',projects:'撮合管理','dist-evaluation':'内容评估','dist-projects':'发行项目','dist-data':'短剧数据'})[x]);return `<div><b>${A.lines[b]}</b><p>可见菜单：${menu.join('、')||'无业务入口'}</p><small>${v.admin?'全部平台操作、全部数据及全部渠道；按业务流程推进':roles.map(r=>A.definitions[b][r]?.[2]).filter(Boolean).join('；')||'保存后不展示该业务数据'}</small></div>`;}).join('')}</div>`;}
- function permissionModal(id){const u=s.users.find(x=>x.id===id);return {title:'配置权限 · '+u.name,submit:'保存权限',body:`<div class="permission-person"><strong>${E(u.name)}</strong><span>${E(u.account)}</span></div><h3>共用管理权限 ${note('共用管理权限','配置项',['管理员：本地原型包含两条业务全部平台操作，可审核、评级、分配、匹配、核验、留档、排播及处理全部渠道。','互斥规则：管理员与两条业务岗位互斥；至少保留一个管理员。'])}</h3><label class="check-label"><input name="admin" type="checkbox" ${u.admin?'checked':''}>管理员（全部平台操作 / 共用配置）</label>${field('商务花名','alias',u.alias||'',{help:'选填；对供应商优先展示花名。'})}<h3>按业务分配岗位 ${note('业务角色','配置项',['业务边界：撮合、代发行分别授权；同一人在两条业务可以承担不同岗位。','菜单：按工作内容聚合，勾选岗位只决定功能及操作权限，不新增岗位同名菜单。','撮合职责：剧本商务、承制商务分别绑定供应商；项目制片绑定具体项目。','代发行职责：保留内容质量、三类评估组、正片、物料、商务、排播及渠道权限；审核组、红果、运营评估三者互斥。','渠道关联：两条业务各自选择关联渠道，选了渠道角色必须配置至少一个渠道。','数据范围：按对接商务、项目制片、审核任务及渠道分配自动限定，不能借另一业务角色扩大范围。'])}</h3><div class="permission-columns">${Object.keys(A.lines).map(b=>`<section class="permission-group"><h4>${A.lines[b]}</h4><div class="role-checks">${Object.entries(A.definitions[b]).map(([r,[l,,scope]])=>`<label><input type="checkbox" name="${b}Roles" value="${r}" aria-label="${A.lines[b]} · ${l}" ${u[b].roles.includes(r)?'checked':''}><span>${l}<small>${scope}</small></span></label>`).join('')}</div><h4>关联渠道</h4>${checks(b+'Channels',A.channels,u[b].channels)}</section>`).join('')}</div><h3>授权结果预览 ${note('保存与预览','操作项',['结果预览：根据当前勾选实时展示各业务菜单及数据范围。','保存：校验角色互斥与渠道关联，成功后写入当前账号；切换演示账号验证。','取消：不改变原权限。'])}</h3><div id="permission-preview">${permissionPreview(u)}</div>`};}
  function channelPanel(p){
  const tasks=B.channelVisible(s,p);
  return panel('排播与渠道发行 '+note('渠道独立任务','列表项与操作项',['排期：排播负责人设置计划和目标渠道；渠道材料无需全部齐备才排期。','运营分配：关联渠道负责人选择本业务、本渠道的运营人员。','上剧材料：对应运营准备并留档自己渠道所需的授权、盖章及包装资料，填写材料地址与清单。','送审：仅检查本渠道材料及排期，不等待其他渠道。','退回：渠道内容问题由承制方或项目制片修改，制片确认后运营重送；端口资料问题由运营补齐后重送。代发行内容问题仍由版权方补交。','上线：记录实际时间和链接，逐渠道展示；任一渠道上线时项目标为已上线，其他渠道继续跟进。','数据：在本项目数据页查看对应渠道数据拉取状态。']),`${p.schedule?`<p>计划上线：<strong>${E(p.schedule.replace('T',' '))}</strong></p>`:'<p class="muted">达到本业务的发行条件后，排播负责人可设置计划。</p>'}<div class="channel-grid">${tasks.map(t=>{
@@ -42,10 +33,9 @@ export function ui(s,h){
  if(s.ui.tab==='channels')out+=channelPanel(p);if(s.ui.tab==='data')out+=data(p);if(s.ui.tab==='history')out+=panel('流转记录',p.history.map(x=>`<p>${E(x.at)} · ${E(x.actor)} · ${E(x.text)}</p>`).join('')||'<p class="muted">示例项目暂无新增操作记录</p>');return out;
  }
  function modal(d){
-  if(d.type==='permission-edit')return permissionModal(d.id);
   const p=(line==='matching'?s.projects:s.distribution).find(p=>p.id===d.id),t=p?.channelTasks?.find(t=>t.channel===d.value);let title='',body='',submit='保存';
   if(d.type==='release-schedule'){title='设置排期与发行渠道';body=field('计划上线时间','date',p.schedule||'2026-11-10T10:00',{type:'datetime-local',required:true})+'<h4>发行渠道</h4>'+checks('channels',A.channels,p.channelTasks.map(t=>t.channel))+issue('排期不等待所有渠道材料。已创建的渠道任务保留，勾选新渠道可继续增加。');}
-  if(d.type==='channel-assign'){title='分配渠道运营';body=field('负责运营','operator',t.operator,{required:true,select:A.options(s,line,'channelOps').filter(([id])=>s.users.find(u=>u.id===id)[line].channels.includes(t.channel))});}
+  if(d.type==='channel-assign'){title='分配渠道运营';body=field('负责运营','operator',t.operator,{required:true,select:A.options(s,line,'channelOps').filter(([id])=>A.roleChannels(s,s.users.find(u=>u.id===id),line,'channelOps').includes(t.channel))});}
   if(d.type==='channel-material'){title='准备上剧材料';body=issue('渠道：'+t.channel+'。请由本端口运营准备授权、盖章及包装资料。')+field('上剧材料地址','material',t.material,{required:true,type:'url'})+field('材料清单 / 备注','materialNote',t.materialNote,{area:true});submit='保存资料留档';}
   if(d.type==='channel-return'){title='登记渠道退回';body=field('退回类型','returnType','content',{select:[['content','正片内容修改'],['material','端口资料补充']],placeholder:false})+field('渠道退回意见','opinion','',{required:true,area:true});submit='登记退回';}
   if(d.type==='channel-fix'){title='提交渠道内容修改';body=issue(t.opinion)+fileInput('files','修改文件',false,true);submit=line==='matching'?'提交制片确认':'提交运营重送';}
@@ -61,5 +51,5 @@ export function ui(s,h){
   return {title,submit,body:`<h3>${E(p?.name||title)} ${note(title,'配置项与操作项',[`业务归属：${A.lines[line]}，仅更新当前项目或渠道。`,...(['dist-review','dist-evaluate'].includes(d.type)?['处理结果：按当前账号及任务权限校验；退回须说明修改位置。']:d.type==='channel-material'?['上剧材料地址：必填有效网址，仅代表本端口已准备资料，不确认剧本或承制物料。']:d.type==='release-schedule'?['排期与渠道：必填；其他渠道的未就绪状态不阻断当前渠道送审。']:[]),'保存：校验通过后更新本地原型状态，并记录流转历史。','取消：关闭弹窗，不保存修改。'])}</h3>${body}`};
  }
  function flow(){return heading('代发行业务流程总览','版权方已有内容与资料，按发行职责推进。')+panel('主要节点 '+note('代发行主线','流程说明',['内容评估：质量初评通过，三组独立评估且均需通过。','资料提交：版权方提交正片与全量物料。','审核与留档：正片安审 → 物料确认 → 商务已签文件留档。','发行：排播设置档期及渠道 → 各端口运营准备上剧材料 → 渠道送审 / 修改 → 分渠道上线 → 数据拉取。','业务隔离：此链路不创建撮合剧本，不包含承制方匹配及四阶段制作。']),`<div class="flow-sequence">${['版权方提交内容','质量评估 / 三组评估','正片与全量物料','正片安审 / 物料确认','商务文件留档','排期 / 各渠道准备','分渠道送审与上线','数据回传'].map((x,i)=>`<div><span>${i+1}</span><b>${x}</b></div>`).join('')}</div>`);}
- return {permissions,permissionPreview,channelPanel,data,distPage,modal,flow};
+ return {channelPanel,data,distPage,modal,flow};
 }

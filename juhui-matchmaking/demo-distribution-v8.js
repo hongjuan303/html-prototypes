@@ -1,3 +1,4 @@
+import * as A from './access-v3.js?v=20261109-overview-merge';
 // Synthetic distribution records. Existing records, matching projects and permissions are never replaced.
 const scenarios=[
  ['quality-pending','质量待评','内容评估',['雾桥来信','月光候车室']],
@@ -35,7 +36,7 @@ export const distributionScenarioCatalog=scenarios.map(([id,label,group])=>({id,
 
 const audit=(status='none',opinion='')=>({status,opinion});
 const demoFile=(name)=>({name,size:1024,version:1,at:'2026-11-06 09:00',demo:true});
-const assigned=(s,role,channel)=>s.users.find(u=>!u.admin&&u.distribution?.roles?.includes(role)&&(!channel||u.distribution.channels?.includes(channel)))?.id||'';
+const assigned=(s,role,channel)=>s.users.find(u=>!u.admin&&u.distribution?.roles?.includes(role)&&(!channel||A.roleChannels(s,u,'distribution',role).includes(channel)))?.id||'';
 const demoUrl=(p,part)=>'https://example.com/juhui-demo/'+encodeURIComponent(p.id)+'/'+part;
 
 function qualityPassed(p){p.quality=audit('approved');p.groups={groupA:audit('pending'),groupB:audit('pending'),groupC:audit('pending')};}

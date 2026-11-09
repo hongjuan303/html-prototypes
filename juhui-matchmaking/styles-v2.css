@@ -142,3 +142,6 @@
 .attachment-video{display:block;max-width:100%;width:640px;max-height:48vh;margin:20px auto;background:#152036}
 
 .scenario-table .btn{margin-right:12px;padding:5px 8px;border:1px solid #dbe3f2;border-radius:4px;line-height:1.5}.scenario-table .btn:hover{background:#f0f5ff}
+
+/* Supplier revisions remain visible beside the exact delivery item. */
+.delivery-feedback{margin-top:8px;color:#925b24;font-size:12px;line-height:1.7}.delivery-feedback summary{cursor:pointer;overflow-wrap:anywhere}.delivery-feedback[open]{background:#fff9ed;border-radius:4px;padding:10px}.delivery-feedback p,.delivery-revision p{white-space:pre-wrap;overflow-wrap:anywhere}.delivery-revision{padding:16px;background:#fff9ed;border:1px solid #f3dab6;border-radius:5px;margin-bottom:14px}.delivery-revision h3{margin:0 0 10px}.delivery-revision small{display:block;margin-top:8px}.history-entry-actions{display:flex;gap:10px;margin-bottom:14px}.file-actions{display:flex;gap:8px;flex-wrap:wrap}

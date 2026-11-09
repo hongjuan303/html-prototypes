@@ -86,16 +86,16 @@ function channelTask(p,c,status='preparing',channel='红果',extra={}){
  return {...task,...extra};
 }
 function scheduled(p,c,status='preparing',extra={}){releaseReady(p,c);p.schedule=localInput(c.now+DAY);p.channelTasks=[channelTask(p,c,status,'红果',extra)];if(status==='online')p.stage='online';}
-function termination(p,c,roles=['business'],mode='rematch'){
- p.termination={mode,reason:mode==='rematch'?'双方档期不匹配，协商更换承制方。':'评估当前项目已无继续制作价值。',confirmations:[...roles],confirmationDetails:roles.map(role=>({role,userId:role==='business'?'prodBusiness':'manager',name:role==='business'?p.productionBusiness:'陈真',mode,opinion:mode==='rematch'?'同意更换承制方并保留既有合作记录。':'同意结束项目并保留已有资料。',at:c.at})),createdAt:c.at,createdBy:roles[0]==='manager'?'陈真':p.productionBusiness};
+function termination(p,c,actor='陈真'){
+ p.termination={mode:'rematch',reason:'当前承制方无法按约完成制作，终止本次合作并重新匹配。',status:'completed',createdAt:c.at,createdBy:actor,completedAt:c.at,completedBy:actor};
 }
 function archive(p,c){
- const t={...clone(p.termination),completedAt:c.at,completedBy:'陈真'};p.termination=t;
- p.previousCooperations.push({maker:p.selected,productionBusiness:p.productionBusiness,producer:p.producer,projectName:p.projectName||p.name,stage:p.stage,grade:p.grade,tags:clone(p.tags),offers:clone(p.offers),scriptCard:clone(p.card),scriptFull:clone(p.full),production:clone(p.production),film:clone(p.film),makerMaterial:clone(p.makerMaterial),productionContract:clone(p.contracts.production||null),contractHistory:clone(p.contractHistory.production||[]),termination:clone(t),schedule:p.schedule||null,channel:clone(p.channel),channelTasks:clone(p.channelTasks),archivedAt:c.at,archivedBy:'陈真'});
+ const t={...clone(p.termination),completedAt:c.at,completedBy:p.termination?.completedBy||'陈真'};p.termination=t;
+ p.previousCooperations.push({maker:p.selected,productionBusiness:p.productionBusiness,producer:p.producer,projectName:p.projectName||p.name,stage:p.stage,grade:p.grade,tags:clone(p.tags),offers:clone(p.offers),scriptCard:clone(p.card),scriptFull:clone(p.full),production:clone(p.production),film:clone(p.film),makerMaterial:clone(p.makerMaterial),productionContract:clone(p.contracts.production||null),contractHistory:clone(p.contractHistory.production||[]),termination:clone(t),schedule:p.schedule||null,channel:clone(p.channel),channelTasks:clone(p.channelTasks),archivedAt:c.at,archivedBy:t.completedBy});
  delete p.schedule;p.channelTasks=[];p.channel={status:'none',opinion:'',file:null};
 }
 function rematch(p,c){
- scheduled(p,c,'submitted');termination(p,c,['business','manager']);archive(p,c);
+ production(p,c,['approved','revision','none']);material(p,c,'makerMaterial','approved');contracts(p,c);termination(p,c);archive(p,c);
  p.stage='matching';p.selected=null;p.production=deliveryNames.map(blank);p.production[3].derivedFrom=2;p.film=blank();p.step=0;p.makerMaterial=emptyMaterial();delete p.contracts.production;p.productionBusiness='';p.termination=null;
  p.offers=p.offers.map(x=>({...x,status:'withdrawn',withdrawnAt:c.now}));
 }
@@ -114,7 +114,7 @@ add('safety-revision','安审驳回内容待审','剧本评估',(p,c)=>dual(p,c,
 add('safety-reopens-quality','安审驳回内容待重审','剧本评估',(p,c)=>dual(p,c,'approved','revision'));
 add('both-revision','双审均驳回','剧本评估',(p,c)=>dual(p,c,'revision','revision'));
 add('quality-rejected','内容不通过已终止','剧本评估',(p,c)=>dual(p,c,'rejected','pending'));
-add('safety-rejected','安审不通过已终止','剧本评估',(p,c)=>dual(p,c,'approved','rejected'));
+add('safety-rejected','安审驳回需修改重审','剧本评估',(p,c)=>dual(p,c,'approved','revision'));
 add('script-resubmitted','外部修改版重新待审','剧本评估',revisedScript);
 add('internal-resubmitted','内部修改版重新待审','剧本评估',(p,c)=>{internal(p,c);revisedScript(p,c);});
 add('rating-external','外部双审通过待评级','剧本库',(p,c)=>dual(p,c,'approved','approved'));
@@ -168,13 +168,13 @@ add('channel-resubmit','渠道修改已确认待重送','排播渠道',(p,c)=>sc
 add('channel-online','单渠道已上线待拉取','排播渠道',(p,c)=>scheduled(p,c,'online'));
 add('channel-partial-online','多渠道部分上线','排播渠道',(p,c)=>{scheduled(p,c,'online');p.channelTasks.push(channelTask(p,c,'submitted','抖音'));});
 add('channel-all-online','多渠道均上线已同步','排播渠道',(p,c)=>{scheduled(p,c,'online');p.channelTasks.push(channelTask(p,c,'online','抖音'));p.channelTasks.forEach(t=>t.syncedAt=c.at+'（演示）');});
-add('termination-not-started','合作异常待发起共同确认','合作异常',(p,c)=>production(p,c,['approved','revision','none']));
-add('termination-business','商务已确认待陈真确认','合作异常',(p,c)=>{production(p,c,['approved','revision','none']);termination(p,c,['business']);});
-add('termination-manager','陈真已确认待商务确认','合作异常',(p,c)=>{production(p,c,['approved','revision','none']);termination(p,c,['manager']);});
-add('termination-rematch-ready','双方同意重配待解锁','合作异常',(p,c)=>{production(p,c,['approved','revision','none']);termination(p,c,['business','manager']);});
-add('termination-end-ready','双方同意终止待结束','合作异常',(p,c)=>{production(p,c,['approved','revision','none']);termination(p,c,['business','manager'],'end');});
-add('termination-ended','合作已终止资料已归档','合作异常',(p,c)=>{production(p,c,['approved','revision','none']);material(p,c,'makerMaterial','approved');contracts(p,c);termination(p,c,['business','manager'],'end');archive(p,c);p.stage='ended';});
-add('rematch-history','已解锁待重配保留历史','合作异常',rematch);
+add('termination-not-started','制作中可终止承制合作','合作异常',(p,c)=>production(p,c,['approved','revision','none']));
+add('termination-business','制片终止后回库待匹配','合作异常',(p,c)=>{rematch(p,c);const a=p.previousCooperations.at(-1);a.termination.createdBy=p.producer;a.termination.completedBy=p.producer;a.archivedBy=p.producer;});
+add('termination-manager','陈真终止后回库待匹配','合作异常',rematch);
+add('termination-rematch-ready','终止合作已直接回库','合作异常',rematch);
+add('termination-end-ready','制作已通过不再提供终止','合作异常',(p,c)=>production(p,c,['approved','approved','approved']));
+add('termination-ended','旧合作终止资料已归档','合作异常',rematch);
+add('rematch-history','回库待重配保留合作历史','合作异常',rematch);
 add('rematch-selected','新承制方开工旧合作归档','合作异常',(p,c)=>{rematch(p,c);const next=c.s.suppliers.find(x=>x.roles?.includes('maker')&&x.id!==c.maker.id&&x.status==='active');p.selected=next.id;p.productionBusiness=next.productionBusiness;p.stage='production';p.offers.push(offer(p,c,next.id,'selected'));});
 
 export const matchingScenarioCatalog=definitions.map(({id,key,label,group})=>Object.freeze({id,key,label,group,copies:2}));

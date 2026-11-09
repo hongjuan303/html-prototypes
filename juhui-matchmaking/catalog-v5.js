@@ -1,7 +1,8 @@
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import * as A from './access-v3.js?v=20261106-test-scenarios';
-import * as N from './navigation-v2.js?v=20261106-test-scenarios';
-import {projectTasks} from './tasks-v7.js?v=20261106-test-scenarios';
+import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as N from './navigation-v2.js?v=20261109-overview-merge';
+import {projectTasks} from './tasks-v7.js?v=20261109-overview-merge';
 
 export function canBatchMatch(s,p){
  return s.ui.system==='platform'&&s.ui.business==='matching'&&!!p&&p.stage==='matching'&&!!p.grade&&!!p.producer&&!!p.card&&!!p.full&&!p.selected&&p.quality?.status==='approved'&&p.safety?.status==='approved'&&A.canFor(s,p,'producer');
@@ -9,9 +10,9 @@ export function canBatchMatch(s,p){
 
 export function catalog(s,h){
  const {E,heading,field,button,link,badge,stage,listNavigation,empty}=h;
- const library=s.ui.view==='library',rows=N.rows(s),batch=library&&s.ui.listTab==='matching';
+ const endedTable=overviewEndedTable(s,h),library=s.ui.view==='library',rows=N.rows(s),batch=library&&s.ui.listTab==='matching';
  const eligible=batch?rows.filter(p=>canBatchMatch(s,p)):[],selected=new Set((s.ui.batchIds||[]).filter(id=>eligible.some(p=>p.id===id)));
- s.ui.page=Math.min(s.ui.page,Math.max(1,Math.ceil(rows.length/8)));
+ if(endedTable===null)s.ui.page=Math.min(s.ui.page,Math.max(1,Math.ceil(rows.length/8)));
  const status=p=>badge(M.libraryStatuses[M.libraryStatus(p)],p.selected?'green':p.stage==='ended'?'red':'orange');
  const matchSummary=p=>p.selected?M.nameOf(s,p.selected):!p.grade?'评级后匹配':!p.producer?'评级时补充制片':p.offers.some(o=>o.status==='pending')?'已推送 '+p.offers.filter(o=>o.status==='pending').length+' 家 · 待选本':p.offers.length?'暂无有效推送 · 待重新匹配':'尚未推送';
  const libraryActions=p=>[
@@ -37,11 +38,7 @@ export function catalog(s,h){
  const projectActions=p=>{
   const tasks=rowTasks.get(p.id)||[],productionTasks=tasks.filter(t=>t.action==='production'),first=productionTasks[0]||tasks[0],extra=[];
   if(M.canRenameProject(s,p))extra.push(link('修改项目名称','rename-project',p.id));
-  if(!['online','ended'].includes(p.stage)){
-   const confirmations=p.termination?.confirmations||[];
-   if(A.canFor(s,p,'prodBusiness')&&!confirmations.includes('business')||A.canFor(s,p,'manager')&&!confirmations.includes('manager'))extra.push(link('终止合作确认','terminate',p.id));
-   if(A.canFor(s,p,'manager')&&confirmations.includes('business')&&confirmations.includes('manager'))extra.push(link('完成合作处理','unlock',p.id));
-  }
+  if(M.canTerminateProduction(s,p))extra.push(link('终止承制合作','terminate',p.id));
   if(A.canFor(s,p,'schedule')&&['scheduling','online'].includes(p.stage)&&p.schedule)extra.push(link('调整排期 / 增加渠道','release-schedule',p.id));
   const more=extra.length?`<details class="row-menu"><summary>更多</summary><div class="row-menu-items">${extra.join('')}</div></details>`:'';
   const primaryLabel=productionTasks.length?`制作审核（${productionTasks.length}）`:tasks.length===1?E(first.label):`处理待办（${tasks.length}）`;
@@ -49,8 +46,9 @@ export function catalog(s,h){
  };
  const title=library?'剧本库':'撮合管理';
  let html=heading(title,library?'评级时确定题材与项目制片，再匹配承制方。已匹配剧本保留档案并关联撮合项目。':'管理已确定承制方的项目，跟进制作交付、发行准备与排播上线。');
- html+=listNavigation();
+ html+=(library?overviewBridge(s,h):overviewHeader(s,h))+listNavigation();
  html+=`<section class="panel filter-panel"><form id="filters">${field(library?'剧本名称 / ID':'项目名称 / 原剧本名称 / ID','keyword',s.ui.keyword)}${field('剧本来源','source',s.ui.source,{select:[['','全部来源'],['external','外部剧本'],['internal','内部自有剧本']],placeholder:false})}<div class="filter-actions"><button class="btn primary">搜索</button>${button('重置','clear')}</div></form></section>`;
+ if(endedTable!==null)return html+endedTable;
  const headers=library?['剧本名称','来源 / 剧本方','评级 / 题材','入库进度','项目制片','承制方 / 匹配情况','剧本商务','操作']:['项目名称','承制方','项目制片','制作进度','物料进度','我的待办','操作'];
  const batchTools=batch?`<div class="actions batch-actions"><span class="muted">已选 ${selected.size} 项</span>${selected.size?button('取消选择','batch-clear','','text'):''}${button('匹配承制方','batch-match','','primary',selected.size?'':'disabled')}</div>`:'';
  const batchHeader=batch?`<th class="batch-select-col"><input type="checkbox" data-batch-all aria-label="选择当前筛选的全部可匹配剧本" ${eligible.length&&selected.size===eligible.length?'checked':''} ${selected.size&&selected.size<eligible.length?'data-batch-partial="true"':''} ${eligible.length?'':'disabled'}></th>`:'';

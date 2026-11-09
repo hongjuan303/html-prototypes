@@ -1,0 +1,39 @@
+.modal.material-review-modal{width:min(1460px,calc(100vw - 48px))}
+.material-review-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;min-height:0;flex:1}
+.material-review-layout>.material-editor-shell{min-width:0}
+.material-review-decision{min-width:0;overflow:auto;padding:22px 20px;border-left:1px solid #e4e9f1;background:#fff}
+.material-decision-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.material-decision-heading h3{font-size:15px;margin:0}
+.material-decision-heading .btn{padding:5px 9px;font-size:12px}
+.material-review-decision>.subtle{font-size:12px;margin:10px 0 20px}
+.material-review-decision .field{margin-bottom:18px}
+.material-review-decision textarea{min-height:110px}
+.material-review-decision .file-field{min-height:150px;padding:14px;margin-bottom:10px}
+.material-review-decision .file-field .upload-icon{font-size:22px;margin:4px 0}
+.material-review-decision .file-field strong{font-size:13px}
+.material-review-modal .material-readonly{background:#f8faff;border:0;min-height:36px;white-space:pre-wrap}
+.material-readonly a{color:#3268f7;text-decoration:underline;text-underline-offset:3px}
+.material-review-role{font-size:12px;color:#59677b;margin:0 0 16px}
+.material-review-modal .material-upload-groups{grid-template-columns:1fr}
+.material-review-modal .material-upload-group{padding:0 0 16px;border-bottom:1px solid #e8edf4}
+.material-review-modal .material-upload-group .file-actions{flex-basis:auto}
+.material-feedback{border:1px solid #dce6f4;background:#f6f9ff;border-radius:4px;padding:15px 16px;margin:16px 0}
+.material-feedback.is-revision{border-color:#f0dfbd;background:#fff8ed}
+.material-feedback h4{display:flex;gap:12px;align-items:center;margin:0 0 10px;font-size:13px}
+.material-feedback h4>span{font-size:12px;font-weight:400;color:#66748b}
+.material-feedback p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.8;margin:0 0 8px;color:#3e4c63}
+.material-feedback>small{display:block;font-size:12px;color:#758298;line-height:1.7}
+.material-review-attachments{margin-top:16px}
+.material-review-attachments>strong{font-size:12px;color:#59677b}
+.material-review-attachments .files{margin-top:8px}
+.material-review-attachments .file-row{background:#fff;flex-wrap:wrap;gap:8px}
+.material-review-attachments .file-row>div:not(.file-actions){min-width:100px;flex:1}
+.material-review-attachments .file-row strong{white-space:normal;overflow-wrap:anywhere}
+.material-review-attachments .file-actions{margin-left:auto;flex-shrink:0}
+.material-review-record{border-bottom:1px solid #e4e9f1;padding:0 0 20px;margin-bottom:22px}
+.material-review-record>header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.material-review-record>header h3{font-size:15px;margin:0}
+.material-history-entry:empty{display:none}
+.material-history-entry{margin:12px 0}
+@media(max-width:1300px){.material-review-layout{grid-template-columns:minmax(0,1fr) 280px}.material-review-modal .material-editor-shell{grid-template-columns:148px minmax(0,1fr)}.material-review-modal .material-scroll{padding:24px 20px}.material-review-modal .form-grid{column-gap:18px}}
+@media(max-width:900px){.material-review-layout{grid-template-columns:minmax(0,1fr) 250px}.material-review-modal .form-grid{grid-template-columns:1fr}}

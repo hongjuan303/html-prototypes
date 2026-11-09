@@ -1,13 +1,13 @@
-import * as A from './access-v3.js?v=20261106-test-scenarios';
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import * as B from './business-v3.js?v=20261106-test-scenarios';
+import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as B from './business-v3.js?v=20261109-overview-merge';
 
 // A task is an available action on this record, not every remaining project gate.
 export function projectTasks(s,p){
  if(s.ui.system!=='platform'||s.ui.business!=='matching'||!p||p.stage==='ended'||!A.visible(s,p,'matching'))return [];
  const tasks=[],can=(...roles)=>A.canFor(s,p,...roles);
  const add=(action,label,value,hint)=>tasks.push({key:value===undefined?action:action+':'+value,label,action,...(value===undefined?{}:{value}),...(hint?{hint}:{})});
- const assigned=(id,role,channel)=>s.users.some(u=>u.id===id&&!u.admin&&u.matching?.roles.includes(role)&&(!channel||u.matching.channels.includes(channel)));
+ const assigned=(id,role,channel)=>s.users.some(u=>u.id===id&&!u.admin&&u.matching?.roles.includes(role)&&(!channel||A.roleChannels(s,u,'matching',role).includes(channel)));
  if(p.stage==='review'&&p.full&&![p.quality,p.safety].some(x=>x?.status==='rejected')){
   if(p.quality?.status==='pending'&&can('content'))add('quality','内容审核',undefined,'剧本全集 V'+(p.full.version||1));
   if(p.safety?.status==='pending'&&can('safety'))add('safety','剧本安全审核',undefined,'剧本全集 V'+(p.full.version||1));

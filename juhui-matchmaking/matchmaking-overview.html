@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#3268f7">
+  <title>撮合业务 · 全流程泳道总图</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./overview-shell-v13.css?v=20261108-whole">
+</head>
+<body>
+  <header class="overview-header">
+    <div class="overview-heading"><a class="overview-brand" href="./index.html">容量剧汇</a><span class="header-divider" aria-hidden="true"></span><h1>撮合业务 · 全流程泳道总图</h1><span class="overview-version">2026-11-08</span></div>
+    <a class="text-link" href="./matchmaking-swimlane.html">查看分段详图 →</a>
+  </header>
+  <main class="overview-workspace">
+    <section class="overview-toolbar" aria-label="整图查看工具">
+      <div class="zoom-tools"><button id="zoom-out" class="tool-button square" type="button" aria-label="缩小" disabled>−</button><output id="zoom-value" aria-label="当前缩放比例">—</output><button id="zoom-in" class="tool-button square" type="button" aria-label="放大" disabled>＋</button><span class="tool-divider" aria-hidden="true"></span><button id="fit-width" class="tool-button" type="button" disabled>适合宽度</button><button id="zoom-original" class="tool-button" type="button" disabled>100%</button><button id="fit-all" class="tool-button" type="button" disabled>查看全图</button></div>
+      <div class="export-tools"><button id="download-svg" class="tool-button" type="button" disabled>下载整图 SVG</button><button id="download-png" class="tool-button primary" type="button" disabled>下载整图 PNG</button></div>
+    </section>
+    <div class="overview-reading"><p>从上到下阅读；每个节点标明具体操作角色。点击同号连接点可定位另一端，点击节点查看完整职责。</p><span id="viewer-status" role="status" aria-live="polite">正在加载整图…</span></div>
+    <div id="canvas-viewport" class="canvas-viewport" tabindex="0" aria-label="全流程泳道总图，可纵向和横向滚动">
+      <div id="canvas-surface"><div id="whole-diagram"><div class="canvas-loading">正在汇总全流程…</div></div></div>
+    </div>
+  </main>
+  <dialog id="overview-node-detail" aria-labelledby="overview-node-title">
+    <form method="dialog"><header><div><span id="overview-node-phase"></span><h2 id="overview-node-title"></h2></div><button class="dialog-close" aria-label="关闭节点详情">×</button></header><dl><dt>操作角色</dt><dd id="overview-node-role"></dd><dt>操作内容</dt><dd id="overview-node-operation"></dd><dt>完成结果</dt><dd id="overview-node-output"></dd></dl><footer><button class="tool-button primary">关闭</button></footer></form>
+  </dialog>
+  <script type="module" src="./overview-controls-v13.js?v=20261108-whole"></script>
+  <script type="module" src="./overview-graph-v13.js?v=20261108-whole"></script>
+</body>
+</html>

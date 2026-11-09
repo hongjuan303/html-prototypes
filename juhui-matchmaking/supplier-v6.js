@@ -1,5 +1,6 @@
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import * as N from './navigation-v2.js?v=20261106-test-scenarios';
+import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as N from './navigation-v2.js?v=20261109-overview-merge';
 
 export function supplierProgress(p){
  if(p.stage==='ended')return '已终止';
@@ -62,7 +63,7 @@ export function makerViews(s,h){
   if(channel)return {text:channel.channel+'：'+(channel.opinion||'内容需要修改'),label:'处理渠道修改',action:'channel-fix',value:channel.channel};
   if(p.stage==='release'&&p.film?.status==='revision')return {text:p.film.opinion||'按安全审核意见修改全集',label:'修改后提交',action:'filmResubmit'};
   const eligible=[0,1,2].filter(i=>M.canSubmitProduction(s,p,i)),rejected=eligible.filter(i=>['revision','resubmit'].includes(p.production[i].status));
-  if(eligible.length){const chosen=rejected.length?rejected:eligible,names=['人物及场景资产','一卡demo','全集初稿'];return {text:chosen.map(i=>names[i]).join('、')+(rejected.length?'需修改':'待提交'),label:rejected.length?'修改交付':'提交制作资料',action:'deliver',value:chosen.length===1?String(chosen[0]):''};}
+  if(eligible.length){const chosen=rejected.length?rejected:eligible,names=['人物及场景资产','一卡demo','全集初稿'];return {text:chosen.map(i=>names[i]).join('、')+(rejected.length?'需修改':'待提交'),label:rejected.length?'修改交付':'提交制作资料',action:'deliver',feedback:rejected.map(i=>({name:names[i],opinion:p.production[i].opinion||'暂无文字意见，请联系项目制片补充',at:p.production[i].reviewedAt||''})),value:chosen.length===1?String(chosen[0]):''};}
   if(p.film?.status==='waiting')return {text:'修改版已提交，等待制片复审',label:'查看审核反馈',action:'production-workspace'};
   if(p.film?.status==='pending')return {text:'全集终版等待安全审核',label:'查看审核进度',action:'maker-safety'};
   if(p.production?.slice(0,3).some(x=>x.status==='pending'))return {text:'制作资料已提交，等待审核',label:'查看审核反馈',action:'production-workspace'};
@@ -85,19 +86,21 @@ export function makerViews(s,h){
  function list(){
   if(!isAccount())return '';
   const selecting=s.ui.view==='intake',rows=N.rows(s).filter(p=>visible(p)&&(selecting||owned(p)));
-  s.ui.page=Math.min(Math.max(1,s.ui.page||1),Math.max(1,Math.ceil(rows.length/8)));
+  const endedTable=overviewEndedTable(s,h);
+  if(endedTable===null)s.ui.page=Math.min(Math.max(1,s.ui.page||1),Math.max(1,Math.ceil(rows.length/8)));
   const headingText=selecting?'剧本评估':'内容管理';
   const headers=selecting?['剧本名称','题材','选本状态','反馈期限','操作']:['项目名称','项目进度','当前待办','操作'];
   const columns=selecting?[29,14,17,17,23]:[27,16,33,24];
-  let html=heading(headingText,selecting?'预览分配给你的剧本一卡，选中后即可获取全集并进入制作。':'优先处理需要你提交或修改的事项，制作物料可随时补充。')+listNavigation();
+  let html=heading(headingText,selecting?'预览分配给你的剧本一卡，选中后即可获取全集并进入制作。':'优先处理需要你提交或修改的事项，制作物料可随时补充。')+overviewHeader(s,h)+overviewBridge(s,h)+listNavigation();
   html+=`<section class="panel filter-panel"><form id="filters">${field(selecting?'剧本名称 / ID':'项目名称 / 剧本名称 / ID','keyword',s.ui.keyword)}<div class="filter-actions"><button class="btn primary">搜索</button>${button('重置','clear')}</div></form></section>`;
+  if(endedTable!==null)return html+endedTable;
   html+=`<section class="panel"><div class="table-toolbar"><h3>${selecting?'剧本列表':'制作项目'} <span>${rows.length} 项</span></h3></div><div class="table-wrap"><table class="catalog-table"><colgroup>${columns.map(width=>`<col style="width:${width}%">`).join('')}</colgroup><thead><tr>${headers.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
   html+=rows.slice((s.ui.page-1)*8,s.ui.page*8).map(p=>{
    const locked=selecting&&!owned(p)&&!selectable(p);
    if(selecting)return `<tr class="${locked?'locked':''}"><td><button class="title-link" data-action="detail" data-id="${E(p.id)}">${E(p.name)}</button><small>${E(p.id)} · ${E(p.episodes)}集</small></td><td>${E((p.tags||[]).join(' / ')||'—')}</td><td>${statusBadge(p)}</td><td>${E(deadline(p))}</td><td><div class="catalog-actions">${p.card?link('预览一卡','maker-preview',p.id):''}${selectionActions(p,true)}</div></td></tr>`;
    const task=work(p),extra=task.value===undefined?'':`data-value="${E(task.value)}"`;
    const secondary=task.action==='makerMaterial'?(p.channelTasks?.length?link('查看发行进度','supplier-progress',p.id):link('查看项目','detail',p.id)):link(p.makerMaterial?.draft?'制作物料草稿':'补充制作物料','makerMaterial',p.id);
-   return `<tr><td><button class="title-link" data-action="detail" data-id="${E(p.id)}">${E(M.projectName(p))}</button><small>${E(p.id)} · ${E(p.episodes)}集</small></td><td>${workStatus(p)}</td><td class="project-pending">${E(task.text)}</td><td><div class="catalog-actions">${link(task.label,task.action,p.id,extra)}${secondary}</div></td></tr>`;
+   return `<tr><td><button class="title-link" data-action="detail" data-id="${E(p.id)}">${E(M.projectName(p))}</button><small>${E(p.id)} · ${E(p.episodes)}集</small></td><td>${workStatus(p)}</td><td class="project-pending">${E(task.text)}${(task.feedback||[]).map(f=>`<details class="delivery-feedback"><summary>${E(f.name)}审核意见：${E(f.opinion.slice(0,48))}${f.opinion.length>48?'…':''}</summary><p>${E(f.opinion)}</p>${f.at?`<small>${E(f.at)}</small>`:''}</details>`).join('')}</td><td><div class="catalog-actions">${link(task.label,task.action,p.id,extra)}${secondary}</div></td></tr>`;
   }).join('');
   return html+`</tbody></table>${rows.length?'':empty(selecting?'暂无分配给你的剧本':'暂无已选中的制作项目')}</div>${pagination(rows)}</section>`;
  }

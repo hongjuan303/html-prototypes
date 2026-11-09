@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#3268f7">
+  <title>剧汇撮合业务 · 角色泳道图</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./matchmaking-swimlane.css?v=20261108-routing">
+  <link rel="stylesheet" href="./swimlane-layout-v12.css?v=20261108-routing">
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-copy"><a class="brand" href="./index.html">容量剧汇</a><span class="header-divider"></span><h1>撮合业务 · 角色泳道图</h1><span id="updated"></span></div>
+    <div class="header-actions"><a href="./matchmaking-overview.html" class="btn primary">查看全流程总图</a><a href="#role-catalog" class="btn">节点与操作角色</a><button class="btn" id="print-flow" type="button">打印 / 保存 PDF</button></div>
+  </header>
+  <main>
+    <div class="intro"><p>主流程与修改路径分开展示，每段从左向右阅读；相同编号始终表示同一个节点。</p><div class="legend" aria-label="图例"><span><i class="task-key"></i>人工操作</span><span><i class="auto-key"></i>系统自动</span><span><i class="return-key"></i>修改 / 终止路径</span><span><i class="terminal-key"></i>终止</span><span>实心圆点表示明确的分支 / 汇合；点击节点查看完整职责。</span></div></div>
+    <nav id="phase-nav" class="phase-nav" aria-label="流程阶段"></nav>
+    <div id="diagrams" aria-live="polite"><p class="loading">正在加载泳道图…</p></div>
+    <section id="role-catalog" class="role-catalog"><header><h2>节点与操作角色</h2><p>与泳道图使用同一组节点，便于核对职责与交接。</p></header><div id="role-table"></div></section>
+    <section id="flow-footnotes" class="footnotes" aria-label="流程补充说明"></section>
+  </main>
+  <dialog id="node-detail" aria-labelledby="node-title"><form method="dialog"><header><div><span id="node-phase"></span><h2 id="node-title"></h2></div><button class="close" aria-label="关闭节点详情">×</button></header><dl><dt>操作角色</dt><dd id="node-role"></dd><dt>操作内容</dt><dd id="node-operation"></dd><dt>完成结果</dt><dd id="node-output"></dd></dl><footer><button class="btn primary">关闭</button></footer></form></dialog>
+  <script type="module" src="./swimlane-renderer-v12.js?v=20261108-routing"></script>
+</body>
+</html>

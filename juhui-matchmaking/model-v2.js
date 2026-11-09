@@ -1,6 +1,7 @@
-import {ensureDemoScenarios} from './demo-scenarios-v8.js?v=20261106-test-scenarios';
-import * as A from './access-v3.js?v=20261106-test-scenarios';
-import * as B from './business-v3.js?v=20261106-test-scenarios';
+import {ensureDemoScenarios} from './demo-scenarios-v8.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as B from './business-v3.js?v=20261109-overview-merge';
+import {materialValues,validateMaterialValues} from './material-data-v14.js?v=20261109-overview-merge';
 export const KEY='juhui-matchmaking-20261102-v2';
 export const stages={review:'剧本审核',rating:'待定稿评级',matching:'匹配承制方',production:'制作中',release:'物料与正片安审',scheduling:'待排期',online:'已上线',ended:'已终止'};
 export const audits={none:'待提交',pending:'待审核',approved:'已通过',revision:'退回修改',resubmit:'待修改重审',waiting:'待制作终审',rejected:'不通过'};
@@ -43,7 +44,7 @@ function materialSnapshot(material){
 export function applyMaterialVersions(s){
  for(const p of s.projects)for(const key of ['scriptMaterial','makerMaterial']){
   const material=p[key];if(!material)continue;
-  material.history??=[];material.files??=[];
+  material.history??=[];material.files??=[];material.reviewFiles??=[];
   material.version??=['none','draft'].includes(material.status)?0:1;
   if(material.status==='approved'&&!material.confirmedSnapshot)material.confirmedSnapshot=materialSnapshot(material);
  }
@@ -65,14 +66,19 @@ function mergeMaterialFiles(existing=[],incoming=[]){
 }
 function saveMaterial(s,p,key,v){
  const previous=p[key],source=materialForEdit(previous),version=(previous.version||(['none','draft'].includes(previous.status)?0:1))+1;
- const values={...source.values,...v.values},files=mergeMaterialFiles(source.files,v.files||[]);
+ const internal=key==='scriptMaterial'&&p.source==='internal';
+ const values=validateMaterialValues(key,internal?{}:materialValues(s,p,key,{...source.values,...v.values},{submit:true}),{draft:!!v.draft,internal});
+ const files=mergeMaterialFiles(source.files,v.files||[]);
+ assert(v.draft||!internal||files.length,'请上传物料附件后再正式提交');
  const at=new Date(now(s)).toLocaleString('zh-CN'),actor=s.ui.system==='platform'?A.current(s)?.name:nameOf(s,s.ui.supplier);
  const history=previous.history||[],confirmedSnapshot=previous.confirmedSnapshot||(previous.status==='approved'?materialSnapshot(previous):undefined);
  if(v.draft){
   const draft={values,files,version,savedAt:at,savedBy:actor};
   p[key]=['none','draft'].includes(previous.status)?{...previous,status:'draft',values,files,draft,history,...(confirmedSnapshot?{confirmedSnapshot}:{})}:{...previous,draft,history,...(confirmedSnapshot?{confirmedSnapshot}:{})};return;
  }
- p[key]={status:'pending',values,files,version,submittedAt:at,submittedBy:actor,history:['none','draft'].includes(previous.status)?history:[...history,materialSnapshot(previous)],...(confirmedSnapshot?{confirmedSnapshot}:{} )};
+ p[key]={status:'pending',values,files,reviewFiles:[],version,submittedAt:at,submittedBy:actor,history:['none','draft'].includes(previous.status)?history:[...history,materialSnapshot(previous)],...(confirmedSnapshot?{confirmedSnapshot}:{} )};
+ // Keep snapshots untouched. Only a newly submitted value is shared across current forms.
+ if(!internal&&Object.prototype.hasOwnProperty.call(values,'releaseType'))p.materialReleaseType=values.releaseType;
 }
 // Recover obsolete channel work from old rematches without inventing task or approval data.
 export function applyCooperationArchiveRules(s){
@@ -160,6 +166,7 @@ function deriveFinal(p){
 }
 export const canSubmitProduction=(s,p,index)=>Number.isInteger(index)&&index>=0&&index<3&&!!p&&isMaker(s,p)&&A.visible(s,p,'matching')&&
  ((p.stage==='production'&&['none','revision','resubmit'].includes(p.production[index].status))||(index===2&&p.stage==='release'&&p.film.status==='revision'));
+export const canTerminateProduction=(s,p)=>!!p&&s.ui.system==='platform'&&s.ui.business==='matching'&&p.stage==='production'&&!!p.selected&&!p.channelTasks?.some(t=>t.status==='online')&&A.canFor(s,p,'producer','manager');
 export const canReviewProduction=(s,p,index)=>Number.isInteger(index)&&index>=0&&index<3&&!!p&&s.ui.business==='matching'&&A.canFor(s,p,'producer')&&p.stage==='production'&&p.production[index].status==='pending';
 function submitProduction(s,p,deliveries){
  assert(Array.isArray(deliveries)&&deliveries.length,'请选择要提交的制作交付');
@@ -278,7 +285,7 @@ export function mutate(s,p,action,v={}){
  p.card={...v.file,version:(p.card?.version||0)+1};
  if(p.stage==='matching'&&p.grade==='B'&&p.producer){const ids=s.suppliers.filter(x=>x.businesses.includes('matching')&&x.status==='active'&&x.roles.includes('maker')&&x.tags.some(t=>p.tags.includes(t))).map(x=>x.id);if(ids.length)push(s,p,ids,true);}break;
  case 'quality':case 'safety':
- assert(allowed(action==='quality'?'content':'safety')&&p.stage==='review'&&p.full&&p[action].status==='pending'&&![p.quality,p.safety].some(x=>x.status==='rejected'),'当前无可处理的审核任务');assert(['approved','revision','rejected'].includes(v.result),'请选择有效审核结果');assert(v.result==='approved'||v.opinion?.trim(),'审核驳回或不通过时请填写审核意见');p[action]={...p[action],status:v.result,opinion:v.opinion||'',files:structuredClone(v.files||[]),version:p.full.version||1,reviewedBy:A.current(s)?.name,reviewedAt:new Date(now(s)).toLocaleString('zh-CN')};if(p.safety.status==='revision')reopenAfterSafety(p,'script');break;
+ assert(allowed(action==='quality'?'content':'safety')&&p.stage==='review'&&p.full&&p[action].status==='pending'&&![p.quality,p.safety].some(x=>x.status==='rejected'),'当前无可处理的审核任务');assert((action==='quality'?['approved','revision','rejected']:['approved','revision']).includes(v.result),action==='safety'?'安全审核仅可通过或驳回修改':'请选择有效审核结果');assert(v.result==='approved'||v.opinion?.trim(),'审核驳回或不通过时请填写审核意见');p[action]={...p[action],status:v.result,opinion:v.opinion||'',files:structuredClone(v.files||[]),scriptFile:structuredClone(p.full),version:p.full.version||1,reviewedBy:A.current(s)?.name,reviewedAt:new Date(now(s)).toLocaleString('zh-CN')};if(p.safety.status==='revision')reopenAfterSafety(p,'script');break;
  case 'rename-project':{
  assert(canRenameProject(s,p),'仅总编 / 项目负责人或本项目制片可修改项目名称');
  const name=(v.projectName||'').trim();assert(name&&name.length<=50,'请填写1至50字的项目名称');
@@ -331,23 +338,35 @@ export function mutate(s,p,action,v={}){
  // Material preparation is independent of project stage; ownership still applies.
  saveMaterial(s,p,action,v);break;}
  case 'confirmScript':case 'confirmMaker':{
- const script=action==='confirmScript',key=script?'scriptMaterial':'makerMaterial';assert(allowed(script?(p.source==='internal'?'editor':'business'):'producer')&&p[key].status==='pending','当前无可核验物料');assert(['approved','revision'].includes(v.result),'请选择通过或退回修改');assert(v.result==='approved'||v.opinion?.trim(),'退回时请填写修改意见');p[key].status=v.result;p[key].opinion=v.opinion||'';p[key].reviewedBy=A.current(s)?.name;p[key].reviewedAt=new Date(now(s)).toLocaleString('zh-CN');if(v.result==='approved')p[key].confirmedSnapshot=materialSnapshot(p[key]);break;}
+ const script=action==='confirmScript',key=script?'scriptMaterial':'makerMaterial',material=p[key];
+ assert(allowed(script?(p.source==='internal'?'editor':'business'):'producer')&&material.status==='pending','当前无可核验物料');
+ assert(['approved','revision'].includes(v.result),'请选择通过或退回修改');
+ assert(v.result==='approved'||v.opinion?.trim(),'退回时请填写修改意见');
+ const version=material.version||1;
+ assert(v.materialVersion==null||Number(v.materialVersion)===version,'物料提交版本已更新，请重新打开核验后再提交');
+ const incoming=v.reviewFiles??[];
+ assert(Array.isArray(incoming)&&incoming.every(f=>f&&typeof f==='object'&&typeof f.name==='string'&&f.name.trim()),'审核附件信息无效，请重新选择文件');
+ const reviewFiles=incoming.map(f=>({...structuredClone(f),reviewAttachment:true,materialReviewAttachment:true,materialType:key,reviewedVersion:version}));
+ material.status=v.result;material.opinion=v.opinion||'';
+ material.reviewFiles=reviewFiles;material.reviewedVersion=version;
+ material.reviewedBy=A.current(s)?.name;material.reviewedAt=new Date(now(s)).toLocaleString('zh-CN');
+ if(v.result==='approved')material.confirmedSnapshot=materialSnapshot(material);
+ break;}
  case 'contract':
  assert(['script','production'].includes(v.kind),'请选择有效合同类型');assert(allowed(v.kind==='script'?'business':'prodBusiness'),'当前角色不可上传此合同');assert(v.kind==='production'||p.source==='external','内部自有剧本无需剧本合同');assert(v.file,'请选择已签合同');if(p.contracts[v.kind]){p.contractHistory??={};(p.contractHistory[v.kind]??=[]).push({file:structuredClone(p.contracts[v.kind]),archivedAt:new Date(now(s)).toLocaleString('zh-CN'),archivedBy:A.current(s)?.name});}p.contracts[v.kind]=structuredClone(v.file);break;
  case 'terminate':{
- assert(allowed('prodBusiness','manager')&&p.selected&&!['online','ended'].includes(p.stage)&&!p.channelTasks?.some(t=>t.status==='online'),'当前不支持终止申请');assert(v.opinion?.trim(),'请填写原因');assert(['rematch','end'].includes(v.mode),'请选择有效处理方向');
- assert(!p.termination||p.termination.mode===v.mode,'已有确认方案为'+(p.termination?.mode==='rematch'?'更换承制方，重新匹配':'结束项目')+'，请确认同一处理方案');
- const role=allowed('prodBusiness')&&!p.termination?.confirmations.includes('business')?'business':allowed('manager')&&!p.termination?.confirmations.includes('manager')?'manager':null;
- assert(role,'你已确认过本次处理方案');
- if(!p.termination)p.termination={reason:v.opinion.trim(),mode:v.mode,confirmations:[],confirmationDetails:[],createdAt:new Date(now(s)).toLocaleString('zh-CN'),createdBy:A.current(s)?.name};
- p.termination.confirmations.push(role);(p.termination.confirmationDetails??=[]).push({role,userId:A.current(s)?.id,name:A.current(s)?.name,mode:v.mode,opinion:v.opinion.trim(),at:new Date(now(s)).toLocaleString('zh-CN')});break;}
- case 'unlock':{
- assert(allowed('manager')&&p.selected&&!['online','ended'].includes(p.stage)&&!p.channelTasks?.some(t=>t.status==='online')&&p.termination?.confirmations.includes('business')&&p.termination?.confirmations.includes('manager'),'需承制商务和陈真共同确认，已上线或已结束项目不可解除');
- assert(['rematch','end'].includes(p.termination.mode),'终止方案无效');p.termination.completedAt=new Date(now(s)).toLocaleString('zh-CN');p.termination.completedBy=A.current(s)?.name;
- archiveCooperation(s,p);delete p.schedule;p.channelTasks=[];p.channel={status:'none',opinion:'',file:null};
- if(p.termination.mode==='rematch'){
-  p.selected=null;p.offers.forEach(o=>{if(o.status!=='withdrawn'){o.status='withdrawn';o.withdrawnAt=now(s);}});p.stage='matching';p.production=productionNames.map(checked);p.step=0;p.film=checked();p.makerMaterial={status:'none',values:{},files:[],version:0,history:[]};delete p.contracts.production;if(p.contractHistory)delete p.contractHistory.production;p.productionBusiness='';p.termination=null;
- }else p.stage='ended';break;}
+ assert(canTerminateProduction(s,p),'仅项目制片或陈真可在制作审核阶段终止承制合作');
+ assert(v.opinion?.trim(),'请填写终止原因');assert(!v.mode||v.mode==='rematch','终止承制合作后须回库待匹配，不能终止剧本');
+ const at=new Date(now(s)).toLocaleString('zh-CN'),actor=A.current(s),previousProposal=p.termination?structuredClone(p.termination):null;
+ p.termination={mode:'rematch',reason:v.opinion.trim(),status:'completed',createdAt:at,createdBy:actor?.name,completedAt:at,completedBy:actor?.name,userId:actor?.id,...(previousProposal?{previousProposal}:{})};
+ archiveCooperation(s,p);
+ const maker=nameOf(s,p.selected);
+ p.selected=null;p.stage='matching';p.production=productionNames.map(checked);p.step=0;p.film=checked();
+ p.makerMaterial={status:'none',values:{},files:[],version:0,history:[]};delete p.contracts.production;if(p.contractHistory)delete p.contractHistory.production;
+ p.offers.forEach(o=>{if(['pending','selected','locked'].includes(o.status)){o.status='withdrawn';o.withdrawnAt=now(s);}});
+ delete p.schedule;p.channelTasks=[];p.channel={status:'none',opinion:'',file:null};p.productionBusiness='';p.termination=null;
+ log(s,p,'已终止与'+maker+'的承制合作，剧本回库待匹配 · '+v.opinion.trim());return;}
+ case 'unlock':throw Error('合作终止后立即回库，无需单独解锁；请从制作审核发起终止承制合作');
  default:throw Error('未定义的操作');
  }
  if(['intake','quality','safety','production','film','confirmScript','confirmMaker'].includes(action))assert(v.result==='approved'||v.opinion?.trim(),'退回时请填写修改意见');

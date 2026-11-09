@@ -1,4 +1,4 @@
-import * as A from './access-v3.js?v=20261106-test-scenarios';
+import * as A from './access-v3.js?v=20261109-overview-merge';
 export const distStages={evaluation:'内容评估',revision:'评估待修改',delivery:'待提交正片与物料',film:'正片安审',materials:'物料确认',business:'商务留档',scheduling:'待排期 / 渠道发行',online:'已上线'};
 const record=(status='none')=>({status,opinion:''});
 export function init(s){
@@ -16,8 +16,8 @@ export function init(s){
 }
 const ensure=(v,m)=>{if(!v)throw Error(m);};
 export const log=(s,p,text)=>{p.history.unshift({at:new Date().toLocaleString('zh-CN'),actor:s.ui.system==='platform'?A.current(s)?.name:s.suppliers.find(x=>x.id===s.ui.supplier)?.name,text});};
-export function channelVisible(s,p){return (p.channelTasks||[]).filter(t=>s.ui.system==='supplier'||A.isAdmin(s)||A.getRoles(s).some(r=>!['channelLead','channelOps'].includes(r)&&A.relevant(s,p,r))||A.current(s)[s.ui.business].channels.includes(t.channel)&&(A.has(s,'channelLead')||t.operator===s.ui.user));}
-export function channelCan(s,t,role){return A.isAdmin(s)||A.has(s,role)&&A.current(s)[s.ui.business].channels.includes(t.channel)&&(role==='channelLead'||t.operator===s.ui.user);}
+export function channelVisible(s,p){return (p.channelTasks||[]).filter(t=>s.ui.system==='supplier'||A.isAdmin(s)||A.getRoles(s).some(r=>!['channelLead','channelOps'].includes(r)&&A.relevant(s,p,r))||channelCan(s,t,'channelLead')||channelCan(s,t,'channelOps'));}
+export function channelCan(s,t,role){return !!t&&(A.isAdmin(s)||A.has(s,role)&&A.roleChannels(s,A.current(s),s.ui.business,role).includes(t.channel)&&(role==='channelLead'||t.operator===s.ui.user));}
 export const channelProjectActive=(s,p)=>!!p&&['scheduling','online'].includes(p.stage)&&(s.ui.business!=='matching'||!!p.selected);
 export function channelAction(s,p,action,v){
  ensure(A.visible(s,p),'当前账号无权查看此项目');
@@ -25,14 +25,14 @@ export function channelAction(s,p,action,v){
  if(action==='release-schedule'){
   ensure(A.canFor(s,p,'schedule')&&['scheduling','online'].includes(p.stage),'当前不可设置排期');ensure(v.date&&v.channels?.length,'请设置排期并选择至少一个渠道');
   p.schedule=v.date;
-  for(const channel of v.channels){ensure(A.channels.includes(channel),'无效渠道');if(!p.channelTasks.some(t=>t.channel===channel)){const ops=s.users.find(u=>u[s.ui.business].roles.includes('channelOps')&&u[s.ui.business].channels.includes(channel));p.channelTasks.push({channel,operator:ops?.id||'',status:'preparing',material:'',materialNote:'',opinion:'',...(s.ui.business==='matching'?{maker:p.selected,cooperationRound:(p.previousCooperations?.length||0)+(p.previousProduction?.length||0)}:{})});}}
+  for(const channel of v.channels){ensure(A.channels.includes(channel),'无效渠道');if(!p.channelTasks.some(t=>t.channel===channel)){const ops=s.users.find(u=>u[s.ui.business].roles.includes('channelOps')&&A.roleChannels(s,u,s.ui.business,'channelOps').includes(channel));p.channelTasks.push({channel,operator:ops?.id||'',status:'preparing',material:'',materialNote:'',opinion:'',...(s.ui.business==='matching'?{maker:p.selected,cooperationRound:(p.previousCooperations?.length||0)+(p.previousProduction?.length||0)}:{})});}}
   log(s,p,'设置排期并创建渠道任务；各渠道独立准备上剧材料');return;
  }
  const t=p.channelTasks.find(t=>t.channel===v.channel);ensure(t,'未找到渠道任务');
  ensure(s.ui.business!=='matching'||(!t.maker||t.maker===p.selected)&&(t.cooperationRound===undefined||t.cooperationRound===(p.previousCooperations?.length||0)+(p.previousProduction?.length||0)),'该渠道任务属于已结束的合作，不可继续操作');
  const {history=[],...prior}=structuredClone(t);
  const operator=channelCan(s,t,'channelOps'),lead=channelCan(s,t,'channelLead'),producer=A.canFor(s,p,'producer'),maker=s.ui.business==='matching'&&s.ui.system==='supplier'&&s.ui.identity==='maker'&&p.selected===s.ui.supplier;
- if(action==='channel-assign'){ensure(lead,'仅关联渠道负责人可分配运营');ensure(s.users.some(u=>u.id===v.operator&&u[s.ui.business].roles.includes('channelOps')&&u[s.ui.business].channels.includes(t.channel)),'请选择具有本业务及本渠道权限的运营');t.operator=v.operator;}
+ if(action==='channel-assign'){ensure(lead,'仅关联渠道负责人可分配运营');ensure(s.users.some(u=>u.id===v.operator&&u[s.ui.business].roles.includes('channelOps')&&A.roleChannels(s,u,s.ui.business,'channelOps').includes(t.channel)),'请选择具有本业务及本渠道权限的运营');t.operator=v.operator;}
  else if(action==='channel-material'){ensure(operator,'仅本渠道对应运营可准备材料');ensure(['preparing','resubmit','revision'].includes(t.status),'当前渠道状态不可修改上剧资料');ensure(v.material?.trim(),'请填写上剧材料地址');ensure(/^https?:\/\//i.test(v.material),'材料地址需以 http:// 或 https:// 开头');t.material=v.material.trim();t.materialNote=v.materialNote||'';t.needsMaterials=false;}
  else if(action==='channel-submit'){ensure(operator&&['preparing','resubmit'].includes(t.status),'当前不可送审');ensure(t.material&&p.schedule&&!t.needsMaterials,'请先完成本渠道上剧材料及排期');t.status='submitted';}
  else if(action==='channel-return'){ensure(operator&&t.status==='submitted','当前不可登记退回');ensure(v.opinion?.trim(),'请填写渠道退回意见');t.status='revision';t.opinion=v.opinion;t.returnType=v.returnType||'content';if(t.returnType==='material'){t.status='resubmit';t.needsMaterials=true;}}

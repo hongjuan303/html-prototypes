@@ -1,0 +1,63 @@
+.modal.material-modal{width:min(1140px,calc(100vw - 48px));max-width:none;display:flex;flex-direction:column;height:min(900px,calc(100vh - 94px));max-height:calc(100vh - 94px)}
+.material-modal>form{display:flex;flex-direction:column;min-height:0;flex:1}
+.modal.material-modal:not(.reader-modal) .modal-body{max-height:none;min-height:0;overflow:hidden;padding:0;display:flex;flex-direction:column;flex:1}
+.material-modal header,.material-modal footer{flex-shrink:0}
+.material-modal footer{background:#fff;padding:16px 28px}
+.material-context{display:flex;gap:8px 14px;align-items:baseline;flex-wrap:wrap}
+.material-context strong{font-size:17px;color:#24334a;overflow-wrap:anywhere;max-width:100%}
+.material-context>span{font-size:12px;color:#758298}
+.material-context small{flex-basis:100%;font-size:12px;color:#59677b}
+.material-intro{color:#65738a;font-size:12px;line-height:1.8;margin:12px 0 18px}
+.material-return-opinion{background:#fff8ed;border:1px solid #f0dfbd;border-radius:4px;padding:14px 16px;margin:18px 0;color:#75542c;font-size:13px}
+.material-return-opinion p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;margin:8px 0}
+.material-return-opinion small{font-size:11px;color:#897456}
+.material-editor-shell{display:grid;grid-template-columns:168px minmax(0,1fr);min-height:0;flex:1}
+.material-scroll{min-width:0;min-height:0;overflow:auto;padding:24px 28px;scrollbar-gutter:stable;outline:none}
+.material-scroll>.material-section:last-child{min-height:calc(100% - 24px)}
+.material-section-nav{display:flex;flex-direction:column;align-items:stretch;gap:5px;min-height:0;overflow:auto;margin:0;padding:22px 12px;background:#f8faff;border-right:1px solid #e4e9f1}
+.material-section-nav>strong{font-size:12px;font-weight:500;color:#7b879c;padding:3px 12px 12px}
+.material-section-nav button{display:flex;align-items:center;justify-content:flex-start;flex:0 0 auto;width:100%;min-height:40px;margin:0;font:inherit;font-size:13px;line-height:1.6;text-align:left;white-space:normal;border:0;border-left:3px solid transparent;background:transparent;color:#4c5e78;padding:10px 10px;border-radius:4px;cursor:pointer}
+.material-section-nav button:hover{background:#eef3fb;color:#265ed7}
+.material-section-nav button.is-current{color:#245bd3;background:#e9f0ff;border-left-color:#3268f7;font-weight:600}
+.material-section-nav button:focus-visible{outline:2px solid #9ab8f1;outline-offset:-2px}
+.material-modal .modal-body>.notice{margin:14px 24px 0;flex-shrink:0}
+.material-modal .modal-body>.form-error:empty{display:none}
+.material-modal .modal-body>.form-error:not(:empty){margin:0;padding:12px 24px;flex-shrink:0;border-radius:0}
+.material-submit-scope{margin-right:auto;max-width:45%;color:#728099;font-size:12px;line-height:1.6;text-align:left}
+.material-modal .material-section{padding:23px 0 8px;border-bottom:1px solid #e8edf4;scroll-margin-top:24px;outline:none}
+.material-modal .material-section:last-child{border:0;padding-bottom:0}
+.material-modal .material-section>h3{display:block;font-size:14px;color:#27374f;margin:0 0 19px}
+.material-modal .form-grid{column-gap:24px;row-gap:0}
+.material-field>label{font-weight:500;font-size:13px;color:#43516a}
+.material-field[hidden]{display:none}
+.material-field textarea{min-height:84px}
+.material-field small{font-size:12px;line-height:1.65;color:#718097}
+.material-field .material-count{font-variant-numeric:tabular-nums;text-align:right;margin-top:-4px;color:#7c899d}
+.material-readonly{border:1px solid #e4e9f1;background:#f7f9fc;border-radius:4px;min-height:36px;padding:8px 11px;line-height:1.55;color:#4c5c72;overflow-wrap:anywhere}
+.material-checks{display:flex;flex-wrap:wrap;gap:10px 20px;padding:4px 0}
+.material-checks label{display:flex;align-items:center;gap:7px;color:#34455e;min-height:26px;font-size:13px;cursor:pointer}
+.material-checks input{width:15px;height:15px;min-width:15px;padding:0;margin:0;accent-color:#3268f7}
+.material-track-guide{background:#f7f9fc;padding:13px 18px 13px 32px;margin:0 0 20px;color:#53647d;font-size:12px;line-height:1.95;border-radius:4px}
+.material-upload-groups{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.material-upload-group{min-width:0}
+.material-upload-group h4{font-size:13px;margin:6px 0 12px;color:#44536b}
+.material-upload-group>.files{margin-bottom:12px}
+.material-upload-group .file-row{flex-wrap:wrap;gap:8px;padding:10px 12px}
+.material-upload-group .file-row>div:not(.file-actions){min-width:0;flex:1}
+.material-upload-group .file-row strong{overflow-wrap:anywhere;white-space:normal;font-size:12px}
+.material-upload-group .file-actions{flex-basis:100%;justify-content:flex-end}
+.material-upload-group .file-field{min-height:128px;padding:15px;margin-bottom:8px}
+.material-upload-group .file-field .upload-icon{font-size:21px;margin:3px 0}
+.material-upload-group .file-field strong{font-size:12px}
+.material-upload-group>small{font-size:11px;color:#768399;line-height:1.75;display:block}
+.material-modal .subtle{line-height:1.8}
+.material-modal .file-selection{overflow-wrap:anywhere;white-space:normal}
+.material-modal .form-error:not(:empty){padding:14px;background:#fff3f1;border:1px solid #f0cbc5;border-radius:4px;margin-top:16px}
+@media(max-width:760px){.modal.material-modal{width:calc(100vw - 28px)}.material-editor-shell{grid-template-columns:132px minmax(0,1fr)}.material-scroll{padding:20px}.material-modal .form-grid,.material-upload-groups{grid-template-columns:1fr}.material-section-nav{padding:16px 8px}.material-submit-scope{max-width:34%}}
+
+.attachment-audio{display:block;width:100%;margin:24px 0}
+.attachment-text-preview{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f9fc;padding:22px;line-height:1.8;max-height:55vh;overflow:auto;font-size:13px;color:#34455e}
+
+.material-modal #material-section-basic .material-field:has(.material-readonly){gap:6px;margin-bottom:16px}
+.material-modal #material-section-basic .material-field:has(.material-readonly) small{display:none}
+.material-modal #material-section-basic .material-readonly{border:0;min-height:0;background:#f7f9fc;padding:7px 10px}

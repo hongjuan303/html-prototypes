@@ -1,14 +1,16 @@
-import * as A from './access-v3.js?v=20261106-test-scenarios';
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import {projectTasks,taskDetailTab} from './tasks-v7.js?v=20261106-test-scenarios';
+import {overviewScope,overviewProjectRows,overviewCrossRows} from './overview-v16.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import {projectTasks,taskDetailTab} from './tasks-v7.js?v=20261109-overview-merge';
 
-export const info={'dist-evaluation':['内容评估','file'],'dist-projects':['发行项目','folder'],'dist-data':['短剧数据','grid'],intake:['剧本评估','file'],library:['剧本库','folder'],projects:['撮合管理','grid'],content:['内容管理','folder'],data:['短剧数据','grid'],permissions:['用户权限分配','users'],suppliers:['供应商管理','users'],personal:['个人中心','users'],flow:['流程总览','flow']};
+export const info={dashboard:['撮合看板','grid'],'dist-evaluation':['内容评估','file'],'dist-projects':['发行项目','folder'],'dist-data':['短剧数据','grid'],intake:['剧本评估','file'],library:['剧本库','folder'],projects:['撮合管理','grid'],content:['内容管理','folder'],data:['短剧数据','grid'],permissions:['用户权限分配','users'],suppliers:['供应商管理','users'],personal:['个人中心','users'],flow:['流程总览','flow']};
 export const existing=['personal'];
 export const settings=['permissions','suppliers'];
 export const menus=A.menus;
 export const title=id=>info[id]?.[0]||id;
 export function tabs(s){
  const u=s.ui;
+ if(overviewScope(s))return [];
  if(u.view==='library')return [['all','全部剧本'],...Object.entries(M.libraryStatuses)];
  if(u.view==='intake'){
   if(u.system==='supplier'&&u.identity==='maker')return [['all','全部剧本'],['pending','待反馈'],['selected','已选中'],['unavailable','不可再选']];
@@ -20,6 +22,8 @@ export function tabs(s){
 }
 export function normalize(s){
  const u=s.ui,platform=u.system==='platform';
+ if(u.view==='dashboard'&&u.business==='matching'){u.view=platform?(menus(s).includes('projects')?'projects':menus(s)[0]):'content';u.id=null;u.overviewMetric=!platform&&u.identity==='maker'&&u.dashboardMetric==='awaiting'?'developing':['developing','unscheduled','scheduled','online','ongoing','ended',...(!platform&&u.identity==='script'?['unassigned','awaiting']:[])].includes(u.dashboardMetric)?u.dashboardMetric:'all';u.keyword=u.dashboardKeyword||'';u.source=platform?u.dashboardSource||'':'';u.page=1;}
+ if(overviewScope(s)){u.overviewMetric??=({production:'developing',online:'online',ended:'ended'})[u.listTab]||'all';if(!['all','ongoing','ended','unassigned','awaiting','developing','unscheduled','scheduled','online'].includes(u.overviewMetric))u.overviewMetric='all';if(platform&&['unassigned','awaiting'].includes(u.overviewMetric)||!platform&&u.identity==='maker'&&['unassigned','awaiting'].includes(u.overviewMetric))u.overviewMetric='all';u.listTab='all';u.stage='';}
  const available=A.available(s);if(!available.includes(u.business))u.business=available[0]||'matching';
  u.role=A.isAdmin(s)?'admin':A.getRoles(s)[0]||'unassigned';
  const legacy={review:['intake',platform&&['safety','safetyLead'].includes(u.role)?'safety':'full'],matching:[platform?'library':'intake',platform?'matching':'all'],production:[platform?'projects':'content','production'],release:[platform?'projects':'content','release']};
@@ -31,7 +35,7 @@ export function normalize(s){
  if(u.view==='intake'&&(platform||u.identity==='script')&&['ended','rejected'].includes(u.stage)){u.listTab='ended';u.stage='';}
  if(!platform&&u.view==='intake'&&u.identity==='script'&&u.stage==='approved'){u.listTab='approved';u.stage='';}
  const choices=tabs(s);
- if(!choices.some(([k])=>k===u.listTab))u.listTab=choices[0]?.[0]||'';
+ if(!overviewScope(s)&&!choices.some(([k])=>k===u.listTab))u.listTab=choices[0]?.[0]||'';
  if(u.view==='intake'&&(platform||u.identity==='script')){if(u.stage==='ended')u.stage='rejected';if(!['',...Object.keys(M.scriptAudits)].includes(u.stage))u.stage='';}
  // Old project phase filters become tabs; no business records or saved drafts change.
  if(!u.menuVersion&&['projects','content'].includes(u.view)&&u.stage){u.listTab=['release','scheduling'].includes(u.stage)?'release':choices.some(([k])=>k===u.stage)?u.stage:'all';u.stage='';}
@@ -54,6 +58,7 @@ export function baseRows(s){
 }
 export function inTab(s,p,key){
  const u=s.ui;
+ if(overviewScope(s))return true;
  if(u.view==='library')return key==='all'||!key||M.libraryStatus(p)===key;
  if(u.view==='intake'){
   if(u.system==='platform')return key==='ended'?isEvaluationTerminated(p):key==='pending'?!isEvaluationTerminated(p):true;
@@ -76,7 +81,8 @@ export function inTab(s,p,key){
 export function rows(s){
  const evaluation=s.ui.view==='intake'&&(s.ui.system==='platform'||s.ui.identity==='script');
  const taskOnly=s.ui.system==='platform'&&['intake','projects'].includes(s.ui.view)&&s.ui.taskOnly;
- return baseRows(s).filter(p=>inTab(s,p,s.ui.listTab)&&(!taskOnly||projectTasks(s,p).length)&&(!s.ui.keyword||(p.name+p.id+(s.ui.view==='projects'||s.ui.view==='content'?M.projectName(p):'')).toLowerCase().includes(s.ui.keyword.trim().toLowerCase()))&&(!s.ui.stage||(evaluation?M.evaluationStatuses(p).includes(s.ui.stage):p.stage===s.ui.stage))&&(!s.ui.source||p.source===s.ui.source));
+ const candidates=overviewScope(s)?overviewProjectRows(s,baseRows(s)):overviewCrossRows(s,baseRows(s));
+ return candidates.filter(p=>inTab(s,p,s.ui.listTab)&&(!taskOnly||projectTasks(s,p).length)&&(!s.ui.keyword||(p.name+p.id+(s.ui.view==='projects'||s.ui.view==='content'?M.projectName(p):'')).toLowerCase().includes(s.ui.keyword.trim().toLowerCase()))&&(!s.ui.stage||(evaluation?M.evaluationStatuses(p).includes(s.ui.stage):p.stage===s.ui.stage))&&(!s.ui.source||p.source===s.ui.source));
 }
 export function detailTab(s,p){
  const u=s.ui;
@@ -99,7 +105,7 @@ export function detailKind(s){
  return ({intake:'evaluation',library:'library',projects:'project'})[s.ui.view]||'project';
 }
 export function detailTabs(s,p){
- if(detailKind(s)==='evaluation')return [['script','评估处理'],['review-history','评估记录']];
+ if(detailKind(s)==='evaluation')return [];
  if(detailKind(s)==='library')return [];
  if(detailKind(s)==='project')return [['production','制作审核'],['safety','安全审核'],['release','物料与合同'],...(['scheduling','online'].includes(p.stage)?[['channels','排播与渠道'],['data','渠道数据']]:[]),['script','剧本资料'],['history','流转记录']];
  return [['match','承制方匹配'],...(p.selected?[['production','制作交付']]:[]),['release','发行准备'],...(['scheduling','online'].includes(p.stage)?[['channels','排播与渠道'],['data','渠道数据']]:[]),['script','剧本资料'],['history','流转记录']];

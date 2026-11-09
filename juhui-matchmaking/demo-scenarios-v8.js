@@ -1,6 +1,6 @@
-import {appendMatchingScenarios} from './demo-matching-v8.js?v=20261106-test-scenarios';
-import {appendDistributionScenarios} from './demo-distribution-v8.js?v=20261106-test-scenarios';
-export const DEMO_BATCH='20261106-test-scenarios-v1';
+import {appendMatchingScenarios} from './demo-matching-v8.js?v=20261109-overview-merge';
+import {appendDistributionScenarios} from './demo-distribution-v8.js?v=20261109-overview-merge';
+export const DEMO_BATCH='20261107-unified-review-v1';
 export function ensureDemoScenarios(s){
  if(s.demoDatasetVersion===DEMO_BATCH)return s;
  const before=new Set([...s.projects,...s.distribution].map(p=>p.id));

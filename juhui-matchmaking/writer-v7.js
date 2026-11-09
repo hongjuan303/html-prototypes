@@ -1,6 +1,7 @@
-import * as M from './model-v2.js?v=20261106-test-scenarios';
-import * as N from './navigation-v2.js?v=20261106-test-scenarios';
-import {supplierRelease,supplierProgress} from './supplier-v6.js?v=20261106-test-scenarios';
+import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as N from './navigation-v2.js?v=20261109-overview-merge';
+import {supplierRelease,supplierProgress} from './supplier-v6.js?v=20261109-overview-merge';
 
 export function writerViews(s,h){
  const {E,heading,field,button,link,badge,panel,fileList,issue,empty,listNavigation,scriptTab,writerMaterials,releaseProgress}=h;
@@ -21,15 +22,17 @@ export function writerViews(s,h){
  function list(){
   if(s.ui.system!=='supplier'||s.ui.identity!=='script'||s.ui.business!=='matching')return '';
   const evaluation=s.ui.view==='intake',rows=N.rows(s).filter(visible);
-  s.ui.page=Math.min(Math.max(1,s.ui.page||1),Math.max(1,Math.ceil(rows.length/8)));
+  const endedTable=overviewEndedTable(s,h);
+  if(endedTable===null)s.ui.page=Math.min(Math.max(1,s.ui.page||1),Math.max(1,Math.ceil(rows.length/8)));
   const headers=evaluation?['剧本名称','内容审核','安全审核','提交版本','操作']:['剧本名称','剧本物料状态','发行进度','当前可办'];
   const columns=evaluation?[28,17,17,16,22]:[29,18,25,28];
-  let html=heading(evaluation?'剧本评估':'内容管理',evaluation?'提交剧本，查看审核意见和结果；需要修改时可直接重新提交。':'随时维护本人的剧本物料，跟进合作与发行进度。')+listNavigation();
+  let html=heading(evaluation?'剧本评估':'内容管理',evaluation?'提交剧本，查看审核意见和结果；需要修改时可直接重新提交。':'随时维护本人的剧本物料，跟进合作与发行进度。')+overviewHeader(s,h)+overviewBridge(s,h)+listNavigation();
   html+=`<section class="panel filter-panel"><form id="filters">${field('剧本名称 / ID','keyword',s.ui.keyword)}${evaluation?field('审核结果','stage',s.ui.stage,{select:[['','全部结果'],...Object.entries(M.scriptAudits)],placeholder:false}):''}<div class="filter-actions"><button class="btn primary">搜索</button>${button('重置','clear')}</div></form></section>`;
+  if(endedTable!==null)return html+endedTable;
   html+=`<section class="panel"><div class="table-toolbar"><h3>${evaluation?'提交记录':'我的剧本'} <span>${rows.length} 项</span></h3>${evaluation?button('＋ 提交剧本','new','','primary'):''}</div><div class="table-wrap"><table class="catalog-table"><colgroup>${columns.map(width=>`<col style="width:${width}%">`).join('')}</colgroup><thead><tr>${headers.map(label=>`<th>${label}</th>`).join('')}</tr></thead><tbody>`;
   html+=rows.slice((s.ui.page-1)*8,s.ui.page*8).map(p=>{
    const name=`<td><button class="title-link" data-action="detail" data-id="${E(p.id)}">${E(p.name)}</button><small>${E(p.id)} · ${E(p.episodes)}集</small></td>`;
-   if(evaluation){const actions=hasRevision(p)?link('修改后提交','full',p.id)+link('查看审核意见','reply-workspace',p.id):link(p.stage==='ended'?'查看终止原因':'查看审核结果','reply-workspace',p.id)+link(materialAction(p),'scriptMaterial',p.id);return `<tr>${name}<td>${audit(p.quality,p)}</td><td>${audit(p.safety,p)}</td><td>全集 V${E(p.full?.version||1)}${p.full?.at?`<small>${E(p.full.at)}</small>`:''}</td><td><div class="catalog-actions">${actions}</div></td></tr>`;}
+   if(evaluation){const actions=hasRevision(p)?link('修改后提交','full',p.id)+link('查看审核意见','reply-workspace',p.id):link(p.stage==='ended'?'查看终止原因':'查看审核结果','reply-workspace',p.id)+link(materialAction(p),'scriptMaterial',p.id);return `<tr>${name}<td>${audit(p.quality,p)}</td><td>${audit(p.safety,p)}</td><td>全集 V${E(p.full?.version||1)}${p.full?.at?`<small>${E(p.full.at)}</small>`:''}</td><td><div class="catalog-actions">${actions}${link('查看详情','detail',p.id)}</div></td></tr>`;}
    return `<tr>${name}<td>${materialStatus(p.scriptMaterial)}</td><td>${E(supplierProgress(p))}</td><td><div class="catalog-actions">${link(materialAction(p),'scriptMaterial',p.id)}${p.channelTasks?.length?link('查看发行进度','supplier-progress',p.id):link('查看审核结果','reply-workspace',p.id)}</div></td></tr>`;
   }).join('');
   return html+`</tbody></table>${rows.length?'':empty(evaluation?'暂无符合条件的提交记录':'暂无本人提交的剧本')}</div>${pagination(rows)}</section>`;
