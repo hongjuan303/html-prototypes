@@ -1,5 +1,5 @@
-import * as A from './access-v3.js?v=20261109-overview-merge';
-import * as M from './model-v2.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-channels';
+import * as M from './model-v2.js?v=20261109-channels';
 
 const maker=s=>s.ui.system==='supplier'&&s.ui.identity==='maker';
 const platform=s=>s.ui.system==='platform';

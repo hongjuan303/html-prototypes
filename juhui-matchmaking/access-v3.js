@@ -1,5 +1,6 @@
+import {channels} from './channel-options-v17.js?v=20261109-channels';
+export {channels};
 export const lines={matching:'撮合业务',distribution:'代发行业务'};
-export const channels=['红果','抖音','番茄'];
 // Menus describe work; roles determine actions and related records.
 export const definitions={
  matching:{businessLead:['撮合商务负责人',['intake','library','projects'],'撮合商务项目统筹查看'],business:['剧本商务',['intake','library','projects'],'本人对接的剧本'],prodBusiness:['承制商务',['projects'],'本人对接的承制项目'],content:['剧本评估',['intake'],'内容组待办'],safetyLead:['剧本安审负责人',['intake'],'剧本安审分配'],safety:['剧本安审',['intake'],'本人安审任务'],editor:['总编 / 项目负责人',['intake','library','projects'],'评级并分配制片、内部本及撮合项目名称维护'],dispatcher:['剧本评级',['library'],'评级、题材与项目制片的统一维护'],producer:['项目制片',['library','projects'],'本人负责剧本的承制匹配及项目执行、名称维护'],manager:['承制合作终止',['projects'],'制作阶段的承制合作终止'],filmLead:['正片安审负责人',['projects'],'正片安审分配'],film:['正片安审人员',['projects'],'本人正片任务'],schedule:['排播上线负责人',['projects'],'满足排播条件的项目'],channelLead:['渠道负责人',['projects'],'关联渠道任务'],channelOps:['渠道运营',['projects'],'本人负责的渠道任务']},
@@ -9,7 +10,7 @@ const grant=(roles=[],chs=[])=>({roles,channels:chs});
 const user=(id,name,m=[],d=[],chs=[])=>({id,name,account:id,admin:false,matching:grant(m,chs),distribution:grant(d,chs)});
 export function usersSeed(){return [
  {...user('admin','管理员'),admin:true},user('matchingLead','徐德智',['businessLead']),user('business','张桂铭',['business'],['business']),user('business2','黄娇娇',['business']),user('prodBusiness','林婷婷',['prodBusiness']),user('prodBusiness2','吴俊谊',['prodBusiness']),
- user('content','刘雪莲',['content','dispatcher']),user('content2','何晓玲',['content']),user('content3','汪禹',['content']),user('safety','胡昊言',['safetyLead','filmLead'],['filmLead']),user('safety2','李犇犇',['safety']),user('editor','总编示例',['editor']),user('manager','陈真',['manager','dispatcher','producer']),user('producer','尹伟',['producer']),user('producer2','李涵',['producer']),user('producer3','陈辛欣',['producer']),user('film','宋家吉',['film'],['film']),user('film2','凌苏徽',['film'],['film']),user('schedule','排播示例',['schedule'],['schedule']),user('channelLead','渠道负责人示例',['channelLead'],['channelLead'],channels),user('channelOps','红果运营示例',['channelOps'],['channelOps'],['红果']),user('channelOps2','抖音运营示例',['channelOps'],['channelOps'],['抖音']),
+ user('content','刘雪莲',['content','dispatcher']),user('content2','何晓玲',['content']),user('content3','汪禹',['content']),user('safety','胡昊言',['safetyLead','filmLead'],['filmLead']),user('safety2','李犇犇',['safety']),user('editor','总编示例',['editor']),user('manager','陈真',['manager','dispatcher','producer']),user('producer','尹伟',['producer']),user('producer2','李涵',['producer']),user('producer3','陈辛欣',['producer']),user('film','宋家吉',['film'],['film']),user('film2','凌苏徽',['film'],['film']),user('schedule','排播示例',['schedule'],['schedule']),user('channelLead','渠道负责人示例',['channelLead'],['channelLead'],channels),user('channelOps','字节系运营示例',['channelOps'],['channelOps'],['字节系（红果和抖音）']),user('channelOps2','快手运营示例',['channelOps'],['channelOps'],['快手']),
  user('distQuality','质量评估示例',[],['quality']),user('distA','审核组示例',[],['groupA']),user('distB','红果评估示例',[],['groupB']),user('distC','运营评估示例',[],['groupC']),user('distMaterialLead','物料负责人示例',[],['materialLead']),user('distMaterial','物料审核示例',[],['material']),user('distBusinessLead','商务负责人示例',[],['businessLead']),user('unassigned','待授权示例')
  ];}
 export function init(s){
@@ -120,7 +121,8 @@ function normalizedRecord(s,value,role,existing){
  ensure(business==='shared'||Object.hasOwn(lines,business),'请选择有效业务类型');
  ensure(business==='shared'?role==='admin':Object.hasOwn(definitions[business],role),'请选择当前业务下的有效角色');
  const selectedChannels=channelRoles.includes(role)?value.channels||[]:[];
- ensure(Array.isArray(selectedChannels)&&selectedChannels.every(c=>channels.includes(c)),'存在无效渠道');
+ const retainedChannels=existing?.userId===userId&&existing?.business===business&&existing?.role===role?existing.channels||[]:[];
+ ensure(Array.isArray(selectedChannels)&&selectedChannels.every(c=>channels.includes(c)||retainedChannels.includes(c)),'存在无效渠道');
  ensure(!channelRoles.includes(role)||selectedChannels.length,'渠道角色必须关联至少一个渠道');
  const alias=aliasRoles.includes(role)?String(value.alias||'').trim():'';
  ensure(Array.from(alias).length<=20,'化名最多20个字符');

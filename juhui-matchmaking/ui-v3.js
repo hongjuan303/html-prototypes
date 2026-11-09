@@ -1,12 +1,12 @@
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import * as A from './access-v3.js?v=20261109-overview-merge';
-import * as B from './business-v3.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-channels';
+import * as A from './access-v3.js?v=20261109-channels';
+import * as B from './business-v3.js?v=20261109-channels';
 export function ui(s,h){
  const {E,button,link,badge,note,panel,field,fileInput,fileList,issue,heading,empty}=h;
  const platform=s.ui.system==='platform',line=s.ui.business;
  const name=id=>s.users.find(x=>x.id===id)?.name||'待分配';
  const rolesText=(u,b)=>u.admin?'全部操作 · 全部数据 · 全部渠道':u[b].roles.map(r=>A.label(r,b)).join('、')||'未授权';
- const checks=(name,values,selected=[])=>`<div class="check-grid">${values.map(v=>{const [k,l]=Array.isArray(v)?v:[v,v];return `<label><input type="checkbox" name="${name}" value="${E(k)}" ${selected.includes(k)?'checked':''}>${E(l)}</label>`;}).join('')}</div>`;
+ const checks=(name,values,selected=[])=>`<div class="check-grid ${name==='channels'?'channel-options':''}">${values.map(v=>{const [k,l]=Array.isArray(v)?v:[v,v];return `<label><input type="checkbox" name="${name}" value="${E(k)}" ${selected.includes(k)?'checked':''}>${E(l)}</label>`;}).join('')}</div>`;
  function channelPanel(p){
  const tasks=B.channelVisible(s,p);
  return panel('排播与渠道发行 '+note('渠道独立任务','列表项与操作项',['排期：排播负责人设置计划和目标渠道；渠道材料无需全部齐备才排期。','运营分配：关联渠道负责人选择本业务、本渠道的运营人员。','上剧材料：对应运营准备并留档自己渠道所需的授权、盖章及包装资料，填写材料地址与清单。','送审：仅检查本渠道材料及排期，不等待其他渠道。','退回：渠道内容问题由承制方或项目制片修改，制片确认后运营重送；端口资料问题由运营补齐后重送。代发行内容问题仍由版权方补交。','上线：记录实际时间和链接，逐渠道展示；任一渠道上线时项目标为已上线，其他渠道继续跟进。','数据：在本项目数据页查看对应渠道数据拉取状态。']),`${p.schedule?`<p>计划上线：<strong>${E(p.schedule.replace('T',' '))}</strong></p>`:'<p class="muted">达到本业务的发行条件后，排播负责人可设置计划。</p>'}<div class="channel-grid">${tasks.map(t=>{
@@ -34,7 +34,7 @@ export function ui(s,h){
  }
  function modal(d){
   const p=(line==='matching'?s.projects:s.distribution).find(p=>p.id===d.id),t=p?.channelTasks?.find(t=>t.channel===d.value);let title='',body='',submit='保存';
-  if(d.type==='release-schedule'){title='设置排期与发行渠道';body=field('计划上线时间','date',p.schedule||'2026-11-10T10:00',{type:'datetime-local',required:true})+'<h4>发行渠道</h4>'+checks('channels',A.channels,p.channelTasks.map(t=>t.channel))+issue('排期不等待所有渠道材料。已创建的渠道任务保留，勾选新渠道可继续增加。');}
+  if(d.type==='release-schedule'){title='设置排期与发行渠道';body=field('计划上线时间','date',p.schedule||'2026-11-10T10:00',{type:'datetime-local',required:true})+'<h4>发行渠道</h4>'+checks('channels',A.channels,p.channelTasks.map(t=>t.channel))+(p.channelTasks.some(t=>!A.channels.includes(t.channel))?`<div class="channel-legacy"><p>已保留的历史渠道：${E(p.channelTasks.filter(t=>!A.channels.includes(t.channel)).map(t=>t.channel).join('、'))}。可继续处理原任务，本次无需重新选择。</p></div>`:'')+issue('排期不等待所有渠道材料。已创建的渠道任务保留，勾选新渠道可继续增加。');}
   if(d.type==='channel-assign'){title='分配渠道运营';body=field('负责运营','operator',t.operator,{required:true,select:A.options(s,line,'channelOps').filter(([id])=>A.roleChannels(s,s.users.find(u=>u.id===id),line,'channelOps').includes(t.channel))});}
   if(d.type==='channel-material'){title='准备上剧材料';body=issue('渠道：'+t.channel+'。请由本端口运营准备授权、盖章及包装资料。')+field('上剧材料地址','material',t.material,{required:true,type:'url'})+field('材料清单 / 备注','materialNote',t.materialNote,{area:true});submit='保存资料留档';}
   if(d.type==='channel-return'){title='登记渠道退回';body=field('退回类型','returnType','content',{select:[['content','正片内容修改'],['material','端口资料补充']],placeholder:false})+field('渠道退回意见','opinion','',{required:true,area:true});submit='登记退回';}

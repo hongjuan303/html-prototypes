@@ -1,4 +1,4 @@
-import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-channels';
 
 const identityNames={script:'剧本方',maker:'承制方'};
 const listFields=['view','listTab','keyword','stage','source','page','dashboardMetric','dashboardSource','dashboardKeyword','dashboardPage','overviewMetric'];

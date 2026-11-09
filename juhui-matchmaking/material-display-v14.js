@@ -1,5 +1,5 @@
-import * as F from './fields.js?v=20261109-overview-merge';
-import {normalizeMaterialValues,isMaterialFieldVisible,formatMaterialValue} from './material-data-v14.js?v=20261109-overview-merge';
+import * as F from './fields.js?v=20261109-channels';
+import {normalizeMaterialValues,isMaterialFieldVisible,formatMaterialValue} from './material-data-v14.js?v=20261109-channels';
 
 const groupLabels={basic:'剧集资料',writer:'编剧资料',story:'剧情介绍',characters:'人物介绍',ip:'发行与IP信息',production:'制作信息',team:'主创资料',delivery:'成片与分轨资料',tools:'AIGC工具',commercial:'商务资料'};
 const fallbackGroups={alternates:'basic',type:'basic',tags:'basic',provider:'basic',providerOther:'basic',writerName:'writer',writerGender:'writer',writerIntro:'writer',shortIntro:'story',outlineShort:'story',outlineLong:'story',recommendation:'story',heroine:'characters',heroineIntro:'characters',hero:'characters',heroIntro:'characters',releaseType:'ip',tomatoIp:'ip',ipSource:'ip',company:'production',dramaType:'production',episodes:'production',projectType:'production',directorName:'team',directorGender:'team',directorIntro:'team',producerName:'team',producerGender:'team',producerIntro:'team',averageDuration:'delivery',durationUnit:'delivery',firstDuration:'delivery',totalDuration:'delivery',previewLink:'delivery',copyrightLink:'delivery',otherLink:'delivery',tracksInfo:'delivery',aigc:'tools',aigcOther:'tools',paidEpisodes:'commercial',cost:'commercial'};

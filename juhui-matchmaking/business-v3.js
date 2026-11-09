@@ -1,4 +1,4 @@
-import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-channels';
 export const distStages={evaluation:'内容评估',revision:'评估待修改',delivery:'待提交正片与物料',film:'正片安审',materials:'物料确认',business:'商务留档',scheduling:'待排期 / 渠道发行',online:'已上线'};
 const record=(status='none')=>({status,opinion:''});
 export function init(s){
@@ -10,7 +10,7 @@ export function init(s){
  for(const p of [...s.projects,...s.distribution]){
   p.channelTasks??=[];
   const matching=s.projects.includes(p);
-  if(p.schedule&&!p.channelTasks.length&&['scheduling','online'].includes(p.stage)&&(!matching||p.selected)&&!p.previousCooperations?.length&&!p.legacyReleaseArchives?.length){p.channelTasks.push({channel:'红果',operator:'channelOps',status:({approved:'online',pending:'submitted',revision:'revision',confirm:'confirm',resubmit:'resubmit'})[p.channel?.status]||'preparing',material:'',materialNote:'',opinion:p.channel?.opinion||'',legacy:true});}
+  if(p.schedule&&!p.channelTasks.length&&['scheduling','online'].includes(p.stage)&&(!matching||p.selected)&&!p.previousCooperations?.length&&!p.legacyReleaseArchives?.length){const channel=A.permissionRecords(s).some(g=>g.business===(matching?'matching':'distribution')&&(g.channels||[]).includes('红果'))?'红果':'字节系（红果和抖音）';const operator=s.users.find(u=>A.roleChannels(s,u,matching?'matching':'distribution','channelOps').includes(channel))?.id||'';p.channelTasks.push({channel,operator,status:({approved:'online',pending:'submitted',revision:'revision',confirm:'confirm',resubmit:'resubmit'})[p.channel?.status]||'preparing',material:'',materialNote:'',opinion:p.channel?.opinion||'',legacy:true});}
  }
  return s;
 }
@@ -23,7 +23,8 @@ export function channelAction(s,p,action,v){
  ensure(A.visible(s,p),'当前账号无权查看此项目');
  ensure(channelProjectActive(s,p),'当前项目尚未进入发行或合作已结束，不可操作旧渠道任务');
  if(action==='release-schedule'){
-  ensure(A.canFor(s,p,'schedule')&&['scheduling','online'].includes(p.stage),'当前不可设置排期');ensure(v.date&&v.channels?.length,'请设置排期并选择至少一个渠道');
+  ensure(A.canFor(s,p,'schedule')&&['scheduling','online'].includes(p.stage),'当前不可设置排期');ensure(v.date&&Array.isArray(v.channels)&&(v.channels.length||p.channelTasks.length),'请设置排期并选择至少一个渠道');
+  ensure(v.channels.every(channel=>A.channels.includes(channel)),'无效渠道');
   p.schedule=v.date;
   for(const channel of v.channels){ensure(A.channels.includes(channel),'无效渠道');if(!p.channelTasks.some(t=>t.channel===channel)){const ops=s.users.find(u=>u[s.ui.business].roles.includes('channelOps')&&A.roleChannels(s,u,s.ui.business,'channelOps').includes(channel));p.channelTasks.push({channel,operator:ops?.id||'',status:'preparing',material:'',materialNote:'',opinion:'',...(s.ui.business==='matching'?{maker:p.selected,cooperationRound:(p.previousCooperations?.length||0)+(p.previousProduction?.length||0)}:{})});}}
   log(s,p,'设置排期并创建渠道任务；各渠道独立准备上剧材料');return;

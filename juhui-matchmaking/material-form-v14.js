@@ -1,7 +1,7 @@
-import {materialFeedback,materialHistoryButton} from './material-feedback-v15.js?v=20261109-overview-merge';
-import {linkedText} from './material-display-v14.js?v=20261109-overview-merge';
-import * as F from './fields.js?v=20261109-overview-merge';
-import {materialValues,isMaterialFieldVisible,normalizeMaterialValues,materialReleaseReadOnly} from './material-data-v14.js?v=20261109-overview-merge';
+import {materialFeedback,materialHistoryButton} from './material-feedback-v15.js?v=20261109-channels';
+import {linkedText} from './material-display-v14.js?v=20261109-channels';
+import * as F from './fields.js?v=20261109-channels';
+import {materialValues,isMaterialFieldVisible,normalizeMaterialValues,materialReleaseReadOnly} from './material-data-v14.js?v=20261109-channels';
 
 const scriptSections=[
  ['basic','剧集信息',['alternates','type','tags','provider','providerOther']],

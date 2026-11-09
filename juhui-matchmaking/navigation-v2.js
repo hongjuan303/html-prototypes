@@ -1,7 +1,7 @@
-import {overviewScope,overviewProjectRows,overviewCrossRows} from './overview-v16.js?v=20261109-overview-merge';
-import * as A from './access-v3.js?v=20261109-overview-merge';
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import {projectTasks,taskDetailTab} from './tasks-v7.js?v=20261109-overview-merge';
+import {overviewScope,overviewProjectRows,overviewCrossRows} from './overview-v16.js?v=20261109-channels';
+import * as A from './access-v3.js?v=20261109-channels';
+import * as M from './model-v2.js?v=20261109-channels';
+import {projectTasks,taskDetailTab} from './tasks-v7.js?v=20261109-channels';
 
 export const info={dashboard:['撮合看板','grid'],'dist-evaluation':['内容评估','file'],'dist-projects':['发行项目','folder'],'dist-data':['短剧数据','grid'],intake:['剧本评估','file'],library:['剧本库','folder'],projects:['撮合管理','grid'],content:['内容管理','folder'],data:['短剧数据','grid'],permissions:['用户权限分配','users'],suppliers:['供应商管理','users'],personal:['个人中心','users'],flow:['流程总览','flow']};
 export const existing=['personal'];

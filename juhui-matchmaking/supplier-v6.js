@@ -1,6 +1,6 @@
-import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-overview-merge';
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import * as N from './navigation-v2.js?v=20261109-overview-merge';
+import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-channels';
+import * as M from './model-v2.js?v=20261109-channels';
+import * as N from './navigation-v2.js?v=20261109-channels';
 
 export function supplierProgress(p){
  if(p.stage==='ended')return '已终止';

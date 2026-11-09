@@ -1,8 +1,8 @@
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import * as A from './access-v3.js?v=20261109-overview-merge';
-import * as N from './navigation-v2.js?v=20261109-overview-merge';
-import {renderMaterialMetadata,groupedMaterialFiles} from './material-display-v14.js?v=20261109-overview-merge';
-import {scriptDocumentPanels} from './script-history-v9.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-channels';
+import * as A from './access-v3.js?v=20261109-channels';
+import * as N from './navigation-v2.js?v=20261109-channels';
+import {renderMaterialMetadata,groupedMaterialFiles} from './material-display-v14.js?v=20261109-channels';
+import {scriptDocumentPanels} from './script-history-v9.js?v=20261109-channels';
 
 export function details(s,h){
  const {E,button,link,badge,audit,stage,panel,fileList,scriptTab,matchTab,productionTab,filmTab,releaseTab,channels,data,back,cardPanel=()=>'',reviewAttachments=()=>'',internalMaterials=()=>'',scriptVersionHistory=()=>''}=h;

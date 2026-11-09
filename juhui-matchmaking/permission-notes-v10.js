@@ -1,3 +1,4 @@
+import {channels} from './channel-options-v17.js?v=20261109-channels';
 // Requirements for the shared authorization page and its record-level dialogs.
 export const marker=n=>`<button type="button" class="permission-marker" data-permission-note="${Number(n)}" aria-label="查看说明${Number(n)}">${Number(n)}</button>`;
 
@@ -22,7 +23,7 @@ function pageNotes(){
   item('用户','展示该条授权对应的用户姓名及账号；同一用户可以出现多行。'),
   item('业务类型','标明撮合业务、代发行业务或共用管理。'),
   item('关联角色','展示本条记录的一个角色；同名岗位在不同业务中独立授权。'),
-  item('关联渠道','只展示本条角色授权的渠道；不同业务、不同角色之间不合并渠道权限。非渠道角色显示“—”。'),
+  item('关联渠道','只展示本条角色授权的渠道；超过3项时默认显示前两项及渠道总数，点击展开查看全部。不同业务、不同角色之间不合并渠道权限。非渠道角色显示“—”。'),
   item('化名','展示本条商务授权填写的化名；未填写或非商务角色显示“—”。'),
   item('创建时间','显示该条授权的创建时间；历史记录无时间时显示“—”，编辑不改变创建时间。'),
   item('分页','按授权记录分页，每页可选10、20、50、100条；筛选后回到第一页，新增、编辑或删除后刷新当前筛选结果。')
@@ -54,6 +55,7 @@ function formNotes(d){
  if(channel||alias){
   const entries=[];
   if(channel)entries.push(item('关联渠道','选择渠道负责人或渠道运营时展示且必填，可多选。新增同时选择两个渠道角色时，本次渠道分别写入各自授权；保存后可逐条编辑，互不扩大权限。'));
+  if(channel)entries.push(item('渠道选项',channels.join('、')+'。两条业务共用同一渠道字典；按以上顺序展示，多选保存。'),item('选项范围','国内全渠道、海外全渠道、海外非独全渠道等均为独立枚举项；选择后不会自动勾选其他渠道，也不代表其他渠道的操作权限。'),item('历史渠道','旧授权中的历史渠道可在原用户、原业务、原角色下继续保留或取消；新建授权只可选当前28项，不自动合并旧渠道或扩大授权。'));
   if(alias)entries.push(item('化名','选择商务、剧本商务或承制商务时展示；选填，最多20字。跟随本条商务授权保存，不改写其他业务的化名。'));
   html+=section(3,'配置项 · 关联信息',entries);
  }
@@ -84,5 +86,5 @@ function deleteNotes(){
 
 export function permissionNotes(s,d=null){
  const type=d?.type,content=type==='permission-delete'?deleteNotes():['permission-new','permission-edit'].includes(type)?formNotes(d):pageNotes();
- return `<aside class="permission-notes" aria-label="需求说明"><div class="permission-notes-meta">用户权限分配 <span>2026.11.08 更新</span></div>${content}</aside>`;
+ return `<aside class="permission-notes" aria-label="需求说明"><div class="permission-notes-meta">用户权限分配 <span>2026.11.09 更新</span></div>${content}</aside>`;
 }

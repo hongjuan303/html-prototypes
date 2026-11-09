@@ -1,8 +1,8 @@
-import {demoFileUrl,readDemoWord} from './demo-assets-v8.js?v=20261109-overview-merge';
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import {renderMaterialMetadata,groupedMaterialFiles,materialFileLabel} from './material-display-v14.js?v=20261109-overview-merge';
-import {projectTasks} from './tasks-v7.js?v=20261109-overview-merge';
-import {readReviewWord,readingDocument,demoReading} from './word-preview.js?v=20261109-overview-merge';
+import {demoFileUrl,readDemoWord} from './demo-assets-v8.js?v=20261109-channels';
+import * as M from './model-v2.js?v=20261109-channels';
+import {renderMaterialMetadata,groupedMaterialFiles,materialFileLabel} from './material-display-v14.js?v=20261109-channels';
+import {projectTasks} from './tasks-v7.js?v=20261109-channels';
+import {readReviewWord,readingDocument,demoReading} from './word-preview.js?v=20261109-channels';
 
 export const reviewNames={quality:'剧本内容审核',safety:'剧本安全审核',production:'制作审核',film:'正片安全审核',confirmScript:'剧本物料核验',confirmMaker:'制作物料核验'};
 export function taskNavigation(s,p,d,h){

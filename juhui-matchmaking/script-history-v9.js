@@ -1,5 +1,5 @@
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import {scriptMetadataFields} from './fields.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-channels';
+import {scriptMetadataFields} from './fields.js?v=20261109-channels';
 
 const reviewNames={quality:'内容审核',safety:'安全审核'};
 const resultNames={approved:'审核通过',revision:'审核驳回',rejected:'不通过'};

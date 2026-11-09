@@ -1,4 +1,4 @@
-import {scriptMetadataFields,producerMetadataFields} from './fields.js?v=20261109-overview-merge';
+import {scriptMetadataFields,producerMetadataFields} from './fields.js?v=20261109-channels';
 
 const has=(obj,key)=>Object.prototype.hasOwnProperty.call(obj||{},key);
 const text=value=>value==null?'':String(value).trim();

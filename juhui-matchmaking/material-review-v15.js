@@ -1,6 +1,6 @@
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import {materialForm} from './material-form-v14.js?v=20261109-overview-merge';
-import {materialLabel,materialFeedback,materialReviewRecords,materialHistoryButton} from './material-feedback-v15.js?v=20261109-overview-merge';
+import * as M from './model-v2.js?v=20261109-channels';
+import {materialForm} from './material-form-v14.js?v=20261109-channels';
+import {materialLabel,materialFeedback,materialReviewRecords,materialHistoryButton} from './material-feedback-v15.js?v=20261109-channels';
 
 export const isMaterialReview=type=>['confirmScript','confirmMaker'].includes(type);
 export function materialReviewSurface(s,p,d,h){

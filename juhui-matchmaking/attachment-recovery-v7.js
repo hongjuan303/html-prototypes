@@ -1,4 +1,4 @@
-import {persistReviewFiles} from './review-files.js?v=20261109-overview-merge';
+import {persistReviewFiles} from './review-files.js?v=20261109-channels';
 
 export function canRecoverAttachment(meta){
  return !!meta&&typeof meta.previewId==='string'&&!!meta.previewId&&typeof meta.name==='string'&&!!meta.name&&Number.isFinite(meta.size)&&meta.size>=0;

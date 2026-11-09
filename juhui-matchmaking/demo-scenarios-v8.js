@@ -1,5 +1,5 @@
-import {appendMatchingScenarios} from './demo-matching-v8.js?v=20261109-overview-merge';
-import {appendDistributionScenarios} from './demo-distribution-v8.js?v=20261109-overview-merge';
+import {appendMatchingScenarios} from './demo-matching-v8.js?v=20261109-channels';
+import {appendDistributionScenarios} from './demo-distribution-v8.js?v=20261109-channels';
 export const DEMO_BATCH='20261107-unified-review-v1';
 export function ensureDemoScenarios(s){
  if(s.demoDatasetVersion===DEMO_BATCH)return s;

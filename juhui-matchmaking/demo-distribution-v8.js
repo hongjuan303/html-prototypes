@@ -1,4 +1,4 @@
-import * as A from './access-v3.js?v=20261109-overview-merge';
+import * as A from './access-v3.js?v=20261109-channels';
 // Synthetic distribution records. Existing records, matching projects and permissions are never replaced.
 const scenarios=[
  ['quality-pending','质量待评','内容评估',['雾桥来信','月光候车室']],
@@ -48,7 +48,7 @@ function delivered(p){
 function filmPassed(p){delivered(p);p.film.status='approved';p.material.status='pending';p.stage='materials';}
 function materialPassed(p){filmPassed(p);p.material.status='approved';p.stage='business';}
 function archived(p){materialPassed(p);p.contract=demoFile(p.name+'_已签发行合同.pdf');p.contractFiles=[p.contract,demoFile(p.name+'_发行授权书.pdf')];p.stage='scheduling';}
-function scheduled(s,p){archived(p);p.schedule='2026-11-05T10:00';p.channelTasks=[channelTask(s,'红果')];}
+function scheduled(s,p){archived(p);p.schedule='2026-11-05T10:00';p.channelTasks=[channelTask(s,'字节系（红果和抖音）')];}
 function channelTask(s,channel){return {channel,operator:assigned(s,'channelOps',channel),status:'preparing',material:'',materialNote:'',opinion:'',history:[]};}
 function readyTask(p,t){t.material=demoUrl(p,encodeURIComponent(t.channel)+'-materials');t.materialNote='演示渠道材料：授权、海报、简介与上剧信息';}
 function onlineTask(p,t,synced){readyTask(p,t);t.status='online';t.actual='2026-11-05T10:00';t.url=demoUrl(p,encodeURIComponent(t.channel)+'-online');if(synced)t.syncedAt='2026-11-06 10:30（演示同步）';p.stage='online';}
@@ -79,7 +79,7 @@ function applyScenario(s,p,id){
  if(id==='channel-content-resubmit'){t.status='resubmit';t.returnType='content';t.opinion='演示渠道意见：第8集对白需调整。';t.files=[demoFile(p.name+'_第8集修改版.mp4')];return;}
  const partial=id.startsWith('partial-online-'),synced=id.endsWith('-synced');
  onlineTask(p,t,synced);
- if(partial){const next=channelTask(s,'抖音');readyTask(p,next);next.status='submitted';p.channelTasks.push(next);}
+ if(partial){const next=channelTask(s,'快手');readyTask(p,next);next.status='submitted';p.channelTasks.push(next);}
 }
 
 export function appendDistributionScenarios(s){

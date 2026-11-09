@@ -1,8 +1,8 @@
-import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-overview-merge';
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import * as A from './access-v3.js?v=20261109-overview-merge';
-import * as N from './navigation-v2.js?v=20261109-overview-merge';
-import {projectTasks} from './tasks-v7.js?v=20261109-overview-merge';
+import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-channels';
+import * as M from './model-v2.js?v=20261109-channels';
+import * as A from './access-v3.js?v=20261109-channels';
+import * as N from './navigation-v2.js?v=20261109-channels';
+import {projectTasks} from './tasks-v7.js?v=20261109-channels';
 
 export function canBatchMatch(s,p){
  return s.ui.system==='platform'&&s.ui.business==='matching'&&!!p&&p.stage==='matching'&&!!p.grade&&!!p.producer&&!!p.card&&!!p.full&&!p.selected&&p.quality?.status==='approved'&&p.safety?.status==='approved'&&A.canFor(s,p,'producer');

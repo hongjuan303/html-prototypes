@@ -1,7 +1,7 @@
-import {ensureDemoScenarios} from './demo-scenarios-v8.js?v=20261109-overview-merge';
-import * as A from './access-v3.js?v=20261109-overview-merge';
-import * as B from './business-v3.js?v=20261109-overview-merge';
-import {materialValues,validateMaterialValues} from './material-data-v14.js?v=20261109-overview-merge';
+import {ensureDemoScenarios} from './demo-scenarios-v8.js?v=20261109-channels';
+import * as A from './access-v3.js?v=20261109-channels';
+import * as B from './business-v3.js?v=20261109-channels';
+import {materialValues,validateMaterialValues} from './material-data-v14.js?v=20261109-channels';
 export const KEY='juhui-matchmaking-20261102-v2';
 export const stages={review:'剧本审核',rating:'待定稿评级',matching:'匹配承制方',production:'制作中',release:'物料与正片安审',scheduling:'待排期',online:'已上线',ended:'已终止'};
 export const audits={none:'待提交',pending:'待审核',approved:'已通过',revision:'退回修改',resubmit:'待修改重审',waiting:'待制作终审',rejected:'不通过'};

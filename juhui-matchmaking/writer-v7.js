@@ -1,7 +1,7 @@
-import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-overview-merge';
-import * as M from './model-v2.js?v=20261109-overview-merge';
-import * as N from './navigation-v2.js?v=20261109-overview-merge';
-import {supplierRelease,supplierProgress} from './supplier-v6.js?v=20261109-overview-merge';
+import {overviewHeader,overviewBridge,overviewEndedTable} from './overview-v16.js?v=20261109-channels';
+import * as M from './model-v2.js?v=20261109-channels';
+import * as N from './navigation-v2.js?v=20261109-channels';
+import {supplierRelease,supplierProgress} from './supplier-v6.js?v=20261109-channels';
 
 export function writerViews(s,h){
  const {E,heading,field,button,link,badge,panel,fileList,issue,empty,listNavigation,scriptTab,writerMaterials,releaseProgress}=h;

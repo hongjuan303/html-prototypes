@@ -1,4 +1,4 @@
-import {demoFileUrl} from './demo-assets-v8.js?v=20261109-overview-merge';
+import {demoFileUrl} from './demo-assets-v8.js?v=20261109-channels';
 
 export const isSpreadsheet=f=>/\.(xlsx|xls|csv|tsv|ods)$/i.test(f?.name||'');
 export async function loadSpreadsheet(file,uploads){

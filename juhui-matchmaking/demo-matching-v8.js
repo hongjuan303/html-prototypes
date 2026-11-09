@@ -1,3 +1,4 @@
+import * as A from './access-v3.js?v=20261109-channels';
 // Isolated, original demo records. No runtime workflow or permission rules are changed.
 const PREFIX='demo-matching-v8:';
 const DAY=86400000;
@@ -78,14 +79,15 @@ function material(p,c,kind,status='approved',withDraft=false){
 }
 function contracts(p,c,{script=p.source==='external',production:maker=true}={}){p.contracts={};if(script&&p.source==='external')p.contracts.script=c.file('剧本合同','pdf');if(maker)p.contracts.production=c.file('制作合同','pdf');}
 function releaseReady(p,c,internalSource=false){if(internalSource)internal(p,c);film(p,c,'approved');material(p,c,'scriptMaterial');material(p,c,'makerMaterial');contracts(p,c);p.stage='scheduling';}
-function channelTask(p,c,status='preparing',channel='红果',extra={}){
- const task={channel,operator:channel==='抖音'?'channelOps2':'channelOps',status,material:status==='preparing'?'':`https://example.com/demo/${p.id}/${encodeURIComponent(channel)}/materials`,materialNote:'演示材料地址，不连接真实发行系统。',opinion:'',maker:p.selected,cooperationRound:p.previousCooperations.length,history:[]};
+function channelTask(p,c,status='preparing',channel='字节系（红果和抖音）',extra={}){
+ const operator=c.s.users.find(u=>A.roleChannels(c.s,u,'matching','channelOps').includes(channel))?.id||'';
+ const task={channel,operator,status,material:status==='preparing'?'':`https://example.com/demo/${p.id}/${encodeURIComponent(channel)}/materials`,materialNote:'演示材料地址，不连接真实发行系统。',opinion:'',maker:p.selected,cooperationRound:p.previousCooperations.length,history:[]};
  if(['revision','confirm','resubmit'].includes(status))Object.assign(task,{opinion:'请调整第8集字幕并补充对应画面说明。',returnType:'content'});
  if(['confirm','resubmit'].includes(status))task.files=[c.file(channel+'内容修改','mp4',2,{productionAttachment:true})];
  if(status==='online')Object.assign(task,{actual:localInput(c.now-DAY/2),url:`https://example.com/demo/${p.id}/${encodeURIComponent(channel)}/online`});
  return {...task,...extra};
 }
-function scheduled(p,c,status='preparing',extra={}){releaseReady(p,c);p.schedule=localInput(c.now+DAY);p.channelTasks=[channelTask(p,c,status,'红果',extra)];if(status==='online')p.stage='online';}
+function scheduled(p,c,status='preparing',extra={}){releaseReady(p,c);p.schedule=localInput(c.now+DAY);p.channelTasks=[channelTask(p,c,status,'字节系（红果和抖音）',extra)];if(status==='online')p.stage='online';}
 function termination(p,c,actor='陈真'){
  p.termination={mode:'rematch',reason:'当前承制方无法按约完成制作，终止本次合作并重新匹配。',status:'completed',createdAt:c.at,createdBy:actor,completedAt:c.at,completedBy:actor};
 }
@@ -156,7 +158,7 @@ add('contracts-complete','合同已留档等待正片安审','合同留档',(p,c
 add('internal-contract-missing','内部仅制作合同待留档','合同留档',(p,c)=>{releaseReady(p,c,true);delete p.contracts.production;p.stage='release';});
 add('internal-contract-complete','内部制作合同齐全待排期','合同留档',(p,c)=>releaseReady(p,c,true));
 add('schedule-pending','排播条件齐全待排期','排播渠道',releaseReady);
-add('schedule-created','已排期各渠道准备材料','排播渠道',(p,c)=>{scheduled(p,c);p.channelTasks.push(channelTask(p,c,'preparing','抖音'));});
+add('schedule-created','已排期各渠道准备材料','排播渠道',(p,c)=>{scheduled(p,c);p.channelTasks.push(channelTask(p,c,'preparing','快手'));});
 add('channel-unassigned','渠道任务待分配运营','排播渠道',(p,c)=>scheduled(p,c,'preparing',{operator:''}));
 add('channel-preparing','渠道上剧材料待准备','排播渠道',(p,c)=>scheduled(p,c));
 add('channel-ready','渠道材料齐全待送审','排播渠道',(p,c)=>scheduled(p,c,'preparing',{material:`https://example.com/demo/${p.id}/materials`}));
@@ -166,8 +168,8 @@ add('channel-material-revision','渠道资料退回待补充','排播渠道',(p,
 add('channel-confirm','渠道修改待制片确认','排播渠道',(p,c)=>scheduled(p,c,'confirm'));
 add('channel-resubmit','渠道修改已确认待重送','排播渠道',(p,c)=>scheduled(p,c,'resubmit'));
 add('channel-online','单渠道已上线待拉取','排播渠道',(p,c)=>scheduled(p,c,'online'));
-add('channel-partial-online','多渠道部分上线','排播渠道',(p,c)=>{scheduled(p,c,'online');p.channelTasks.push(channelTask(p,c,'submitted','抖音'));});
-add('channel-all-online','多渠道均上线已同步','排播渠道',(p,c)=>{scheduled(p,c,'online');p.channelTasks.push(channelTask(p,c,'online','抖音'));p.channelTasks.forEach(t=>t.syncedAt=c.at+'（演示）');});
+add('channel-partial-online','多渠道部分上线','排播渠道',(p,c)=>{scheduled(p,c,'online');p.channelTasks.push(channelTask(p,c,'submitted','快手'));});
+add('channel-all-online','多渠道均上线已同步','排播渠道',(p,c)=>{scheduled(p,c,'online');p.channelTasks.push(channelTask(p,c,'online','快手'));p.channelTasks.forEach(t=>t.syncedAt=c.at+'（演示）');});
 add('termination-not-started','制作中可终止承制合作','合作异常',(p,c)=>production(p,c,['approved','revision','none']));
 add('termination-business','制片终止后回库待匹配','合作异常',(p,c)=>{rematch(p,c);const a=p.previousCooperations.at(-1);a.termination.createdBy=p.producer;a.termination.completedBy=p.producer;a.archivedBy=p.producer;});
 add('termination-manager','陈真终止后回库待匹配','合作异常',rematch);
