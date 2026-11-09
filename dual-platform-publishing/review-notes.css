@@ -1,0 +1,38 @@
+/* Product notes are separate from the interactive admin UI. */
+.review-layout{grid-template-columns:1464px 520px;overflow-x:auto;overflow-y:hidden;scrollbar-color:#aeb9c6 #e8edf3}
+.review-layout::-webkit-scrollbar{height:12px}
+.review-layout::-webkit-scrollbar-track{background:#e8edf3}
+.review-layout::-webkit-scrollbar-thumb{background:#aeb9c6;border:3px solid #e8edf3;border-radius:6px}
+.review-stage{width:1464px}
+.review-stage .review-prototype{width:1440px;min-width:1440px;height:100%;min-height:0;transform:none}
+@media(max-width:1100px){.review-layout{grid-template-columns:1464px 440px}}
+.review-notes{min-height:0;overscroll-behavior:contain;color:#303942;line-height:1.8;scrollbar-gutter:stable}
+.review-notes .spec-label{font-size:11px;color:#87919c;letter-spacing:1px;margin:0 0 8px}
+.review-notes h1{font-size:18px;line-height:1.5;font-weight:600;color:#f28c18;margin:0 0 12px}
+.review-notes .spec-page-title{font-weight:400;color:#535f6b}
+.review-notes .spec-intro{color:#535f6b}
+.review-notes .spec-details{margin-top:24px;border-top:1px solid #e9edf1;padding-top:20px}
+.review-notes .spec-section{border-top:1px solid #e9edf1;padding-top:16px;margin-top:18px}
+.review-notes .spec-section:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.review-notes .spec-subsection{margin-top:16px}
+.review-notes .spec-subsection:first-of-type{margin-top:0}
+.review-notes h3{font-size:13px;font-weight:600;line-height:1.6;color:#f28c18;margin:0 0 8px}
+.review-notes h2{color:#f28c18;font-size:14px;font-weight:600;line-height:1.6;margin:0 0 10px}
+.review-notes p,.review-notes li{font-size:13px;color:#535f6b;overflow-wrap:anywhere}
+.review-notes p{margin:8px 0}
+.review-notes ul,.review-notes ol{padding-left:19px;margin:8px 0}
+.review-notes li{padding-left:1px;margin-bottom:8px}
+.review-notes strong{font-weight:600;color:#394550}
+.review-notes .spec-fields{list-style:disc;padding-left:18px;margin:0}
+.review-notes .spec-field{margin:0 0 10px;line-height:1.8;padding-left:1px}
+.review-notes .spec-field>strong,.review-notes .spec-field>span{display:inline}
+.review-notes .spec-rules{list-style:circle}
+.review-notes .spec-context{margin-bottom:20px}
+.review-notes .spec-pending{border-left:2px solid #d9534f;padding-left:12px}
+.review-notes .spec-pending h3{color:#c74842}
+.review-notes .spec-footer{font-size:11px;color:#8a95a0;border-top:1px solid #e9edf1;padding-top:14px;margin-top:24px}
+.review-notes:focus-visible{outline:2px solid #1890ff;outline-offset:-3px}
+
+.review-notes .spec-index{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;flex-shrink:0;margin-right:8px;border-radius:50%;background:#f28c18;color:#fff;font-size:12px;font-weight:600;line-height:1;vertical-align:middle}
+.review-notes .spec-focused{outline:2px solid #f4a447;outline-offset:7px;border-radius:2px;background:#fff8ed}
+.review-notes .spec-focused:focus{outline:2px solid #f4a447}
