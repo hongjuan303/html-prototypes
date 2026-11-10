@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>微信小说媒资 · 单本授权</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/html-prototypes/wechat-novel-authorization/styles.css?v=20261110-legacy-style">
+  <script defer src="/html-prototypes/wechat-novel-authorization/notes.js?v=20261110-direct"></script>
+  <script defer src="/html-prototypes/wechat-novel-authorization/app.js?v=20261110-direct"></script>
+</head>
+<body>
+  <header class="review-bar">
+    <strong>微信小说媒资授权</strong><span class="review-tag">交互原型</span>
+    <label class="demo">演示结果
+      <select id="mode"><option value="success">正常</option><option value="partial">部分失败</option><option value="failure">接口失败</option><option value="timeout">请求超时</option><option value="query-error">列表读取失败</option><option value="coverage-error">账号授权状态未知</option></select>
+    </label>
+  </header>
+  <div class="canvas">
+    <div class="stage">
+      <div class="shell" id="shell">
+        <nav class="sidebar" aria-label="后台菜单">
+          <div class="home">首页<span>⌄</span></div><div>数据统计<span>⌄</span></div><div>帆软BI入口</div><div>内容管理<span>⌄</span></div>
+          <div>小说管理<span>⌃</span></div>
+          <div class="nav-sub">小说管理</div><div class="nav-sub">小说标签管理</div><div class="nav-sub">数据权限配置</div>
+          <div class="nav-sub active" aria-current="page">小说送审库</div><div class="nav-sub">小说配置栏目</div><div class="nav-sub">CPA合作管理</div>
+          <div>公众号管理<span>⌄</span></div><div>企微运营管理<span>⌄</span></div><div>抖音号管理<span>⌄</span></div><div>视频号管理<span>⌄</span></div>
+        </nav>
+        <main class="workspace">
+          <header class="topbar"><span class="hamburger" aria-hidden="true"></span> 小说管理 <i>/</i> <span class="muted">小说送审库</span><span class="operator"><b>运</b> 运营人员</span></header>
+          <div class="route"><span>小说送审库</span></div>
+          <div class="work">
+            <div class="surface">
+              <div class="platform"><span>抖音送审库</span><span class="current">微信送审库</span></div>
+              <form id="baseFilters" class="filters base-filters" aria-label="送审库筛选"></form>
+            </div>
+            <section class="surface submission-list">
+              <div class="toolbar base-toolbar">
+                <span id="selectionSummary" class="muted" role="status"></span>
+                <button type="button" id="clearSelection" class="link" data-action="clear" hidden>清空已选</button>
+                <button type="button" disabled title="存量操作">提交审核</button>
+                <button type="button" id="openGrant" class="primary" disabled>小说媒资授权</button>
+                <button type="button" id="openManage">授权管理</button>
+                <button type="button" class="marker" data-note="1" aria-label="查看说明 1">1</button>
+              </div>
+              <div class="table-wrap"><table class="base-table"><thead id="baseHead"></thead><tbody id="baseRows"></tbody></table></div>
+              <div class="table-footer"><span id="baseCount"></span></div>
+            </section>
+          </div>
+        </main>
+      </div>
+      <div class="overlay" id="overlay" hidden>
+        <section class="dialog" id="dialog" role="dialog" aria-labelledby="dialogTitle">
+          <header class="dialog-header"><h1 id="dialogTitle"></h1><button class="close" data-action="close" aria-label="关闭弹窗">×</button></header>
+          <div class="dialog-body" id="dialogBody"></div>
+          <footer class="dialog-footer" id="dialogFooter"></footer>
+        </section>
+      </div>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </div>
+    <aside class="notes" id="notes" aria-label="右侧原型说明"></aside>
+  </div>
+</body>
+</html>
