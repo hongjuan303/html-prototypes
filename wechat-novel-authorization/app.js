@@ -36,7 +36,7 @@ const active = (record) => record.expires > Date.now();
 const day = 86400000;
 const storageKey = "wechat-novel-authorization-v1";
 const maxDate = 2147483646 * 1000;
-const pageSize = 5;
+const pageSize = 100;
 let records = [
   relation(books[0], demoTarget, Date.now() + 180 * day),
   relation(books[1], "wx8899aabbccddeeff", Date.now() + 90 * day),
@@ -67,7 +67,6 @@ const page = { manage: 1 };
 let view = "base";
 const listSelection = new Set();
 let selected = [];
-let grantReturn = "base";
 let visibleBooks = [];
 let draft = {};
 let revoke = null;
@@ -82,7 +81,6 @@ const field = (key, label, value = "", options = null, placeholder = "请输入"
     ? `<select name="${key}">${options.map(([id, name]) => option(id, name, value)).join("")}</select>`
     : `<input name="${key}" value="${escape(value)}" placeholder="${placeholder}" autocomplete="off">`}</label>`;
 const values = (items) => [["", "全部"], ...items.map((item) => [item, item])];
-const sourceOptions = [["", "全部"], ...sources.map(({ id, name }) => [id, name])];
 const marker = (number) => `<button type="button" class="marker" data-note="${number}" aria-label="查看说明 ${number}">${number}</button>`;
 const btn = (label, action, css = "") => `<button type="button" class="${css}" data-action="${action}">${label}</button>`;
 const heading = (label, number) => `<h2 class="region-head">${marker(number)} ${label}</h2>`;
@@ -93,13 +91,12 @@ const empty = (title, hint = "") => `<div class="empty"><strong>${title}</strong
 function fields(scope) {
   const f = filter[scope];
   const isManage = scope === "manage";
-  const items = scope === "base" ? "" : field("source", "授权方小程序", f.source, sourceOptions);
   const title = field("name", "小说名称", f.name);
   const id = field("id", "小说 ID", f.id);
   const bookId = field("bookId", "微信作品 ID", f.bookId);
   const actions = `<div class="filter-actions"><button class="primary" type="submit">查询</button>${btn("重置", "reset")}</div>`;
   if (isManage) {
-    return items + field("target", "被授权小程序 AppID", f.target) + title + bookId
+    return field("target", "被授权小程序 AppID", f.target) + title + bookId
       + field("status", "授权状态", f.status, values(["有效", "已到期"])) + actions;
   }
   return id + title + bookId
@@ -202,7 +199,7 @@ function pageRows(list, scope) {
 function pager(list, scope) {
   const current = page[scope];
   const pages = Math.max(1, Math.ceil(list.length / pageSize));
-  return `<div class="table-footer"><div class="toolbar"><span>共 ${list.length} 条</span>
+  return `<div class="table-footer"><div class="toolbar"><span>共 ${list.length} 条</span><span>${pageSize} 条/页</span>
     <button type="button" data-action="previous-page"${current <= 1 ? " disabled" : ""}>上一页</button>
     <span>${current} / ${pages}</span>
     <button type="button" data-action="next-page"${current >= pages ? " disabled" : ""}>下一页</button>
@@ -210,22 +207,23 @@ function pager(list, scope) {
 }
 
 function showNotice() {
-  if (!notice.length && !pending.length) return "";
+  const relevant = pending.filter(({ action, record }) =>
+    action === "grant" && selected.includes(record.key) && record.target === draft.target?.trim());
+  if (!notice.length && !relevant.length) return "";
   const successes = notice.filter(({ type }) => type === "success").length;
   const failures = notice.filter(({ type }) => type === "failed");
   const skipped = notice.filter(({ type }) => type === "skipped");
-  const retry = failures.some(({ retryable }) => retryable);
-  const totals = [`成功 ${successes}`, `失败 ${failures.length}`, `待核实 ${pending.length}`];
+  const totals = [`成功 ${successes}`, `失败 ${failures.length}`, `待核实 ${relevant.length}`];
   if (skipped.length) totals.push(`已跳过 ${skipped.length}`);
-  const details = [...failures, ...skipped, ...pending.map(({ record, action }) => ({
-    record, message: action === "grant" ? "授权结果待核实" : "取消结果待核实",
+  const details = [...failures, ...skipped, ...relevant.map(({ record }) => ({
+    record, message: "授权结果待核实",
   }))];
   return `<div class="callout ${details.length ? "warn" : ""}" role="status"><strong>${totals.join(" · ")}</strong>
     ${details.length ? `<ul class="result-items">${details.map(({ record, message }) => {
       const b = bookByKey(record.key);
       return `<li>${b.name} · ${b.bookId} · ${b.source.name}：${escape(message)}</li>`;
     }).join("")}</ul>` : ""}
-    <div class="result-actions">${retry ? btn("重试失败项", "retry", "link") : ""}${pending.length ? btn("核实结果", "verify", "link") : ""}</div>
+    ${relevant.length ? btn("核实结果", "verify", "link") : ""}
   </div>`;
 }
 
@@ -240,12 +238,11 @@ function renderManage() {
     ? `<div class="callout error" role="alert">授权列表读取失败，请重试。${btn("重试读取", "refresh", "link")}</div>`
     : `<div class="table-wrap data">
       <table class="manage-table"><thead><tr><th>小说 ID</th><th class="title-col">小说名称</th><th>微信作品 ID</th><th>授权方小程序</th>
-        <th>被授权小程序 AppID</th><th class="date-col">到期时间</th><th>授权状态</th><th>操作 ${marker(4)}</th></tr></thead>
+        <th>被授权小程序 AppID</th><th class="date-col">到期时间</th><th>授权状态</th><th>操作 ${marker(3)}</th></tr></thead>
         <tbody>${visible.map((r) => {
           const book = bookByKey(r.key);
           const id = relationKey(r);
-          const waiting = pending.some((item) => relationKey(item.record) === id);
-          const action = waiting ? "待核实" : active(r) ? `<button type="button" class="link" data-revoke="${escape(id)}">取消授权</button>` : "—";
+          const action = active(r) ? `<button type="button" class="link" data-revoke="${escape(id)}">取消授权</button>` : "—";
           return `<tr><td>${book.id}</td><td>${book.name}</td><td>${book.bookId}</td><td>${sourceCell(book.source)}</td>
             <td><span class="appid">${escape(r.target)}</span></td><td>${chinaTime(r.expires)}</td><td>${status(active(r) ? "有效" : "已到期", active(r) ? "good" : "inactive")}</td><td>${action}</td></tr>`;
         }).join("")}</tbody></table>
@@ -253,45 +250,48 @@ function renderManage() {
       </div>${pager(list, "manage")}`;
   dialog("授权管理 · 单本授权",
     `<section class="region">${heading("筛选项", 1)}<form class="filters" id="manageFilters">${fields("manage")}</form></section>
-     <div class="toolbar manage-toolbar"><div>${marker(3)} 授权列表</div><div>${marker(2)} 结果与重试</div></div>
-     ${showNotice()}${results}`, btn("关闭", "close"));
+     <div class="toolbar manage-toolbar"><div>${marker(2)} 授权列表</div></div>
+     ${results}`, btn("关闭", "close"));
 }
 
 function renderSettings() {
   dialog("小说媒资授权",
     `<form id="grantForm" novalidate>
-      ${heading("配置项", 1)}
       <div class="settings-grid">
-        <label class="field"><span><span class="required">*</span> 被授权小程序 AppID</span>
+        <label class="field"><span>${marker(1)} <span class="required">*</span> 被授权小程序 AppID</span>
           <input name="target" value="${escape(draft.target)}" placeholder="请输入合作方提供的微信小程序 AppID" autocomplete="off" spellcheck="false" required>
         </label>
-        <label class="field"><span><span class="required">*</span> 到期时间（北京时间）</span>
+        <label class="field"><span><span class="required">*</span> 到期时间</span>
           <input type="datetime-local" name="date" value="${escape(draft.date)}" step="1" max="2038-01-19T11:14:06" required>
         </label>
-        <div><p class="region-head">已选小说（${selected.length} 本）</p><ul class="selected-preview">
+        <section>${heading(`已选小说（${selected.length} 本）`, 2)}
+          <div class="selected-book-head" aria-hidden="true"><span>小说名称</span><span>微信作品 ID</span></div>
+          <div class="selected-books">
           ${selected.map((key) => {
             const book = bookByKey(key);
-            return `<li>${book.name} · ${book.bookId} · ${book.source.name}</li>`;
+            return `<div class="selected-book">
+              <input aria-label="小说名称" readonly value="${escape(book.name)}">
+              <input aria-label="微信作品 ID" readonly value="${escape(book.bookId)}">
+            </div>`;
           }).join("")}
-        </ul></div>
+        </div></section>
       </div>
+      ${showNotice()}
       <p class="form-error" id="grantError" role="alert" hidden></p>
-    </form>`, `<span class="footer-copy">${marker(2)} 授权操作</span>${btn("取消", "close")}
+    </form>`, `${btn("取消", "close")}
       <button type="submit" class="primary" form="grantForm">确认授权</button>`);
 }
 
 function renderRevoke() {
   const book = bookByKey(revoke.key);
-  const covered = book.source.id === sources[0].id && revoke.target === demoTarget;
-  const message = modes() === "coverage-error" ? "账号授权状态暂未核实。"
-    : covered ? "取消单本授权后，对方仍可通过账号授权使用该作品。" : "";
-  dialog("取消单本授权", `${heading("关系确认", 1)}
-    <p>确认解除以下单本授权关系？</p>
+  const waiting = pending.some(({ action, record }) => action === "revoke" && relationKey(record) === relationKey(revoke));
+  dialog("取消授权", `<p>${marker(1)} 确认解除以下单本授权关系？</p>
     <dl class="revoke-details"><dt>小说名称</dt><dd>${book.name}</dd><dt>微信作品 ID</dt><dd>${book.bookId}</dd>
-      <dt>授权方小程序</dt><dd>${sourceCell(book.source)}</dd><dt>被授权小程序 AppID</dt><dd>${escape(revoke.target)}</dd></dl>
-    ${message ? `<p class="callout warn">${message}</p>` : ""}
+      <dt>被授权小程序 AppID</dt><dd>${escape(revoke.target)}</dd></dl>
+    ${waiting ? '<p class="callout warn">取消结果待核实，请核实后再操作。</p>' : ""}
     <p id="revokeError" class="form-error" role="alert" hidden></p>`,
-    `<span class="footer-copy">${marker(2)} 取消授权操作</span>${btn("返回", "back-manage")}${btn("确认取消授权", "submit-revoke", "danger")}`);
+    `<span class="footer-copy">${marker(2)}</span>${btn("返回", "back-manage")}${waiting
+      ? btn("核实结果", "verify", "primary") : btn("确认取消授权", "submit-revoke", "primary")}`);
 }
 
 function toast(message) {
@@ -325,7 +325,7 @@ function submitGrant() {
     return errorText("grantError", "请输入有效的小程序 AppID，例如 wx1122334455667788。");
   }
   if (!Number.isFinite(expires) || expires <= Date.now() || expires > maxDate) {
-    return errorText("grantError", "到期时间须晚于当前时间，最晚为北京时间 2038-01-19 11:14:06。");
+    return errorText("grantError", "到期时间须晚于当前时间，最晚为 2038-01-19 11:14:06。");
   }
 
   const mode = modes();
@@ -338,7 +338,6 @@ function submitGrant() {
     const previous = records.find((item) => relationKey(item) === id && active(item));
     if (pending.some((item) => relationKey(item.record) === id)) {
       notice.push({ record, type: "skipped", message: "已有待核实操作，请先核实结果。" });
-      listSelection.delete(key);
     } else if (previous) {
       notice.push({ record, type: "skipped", message: "已有有效授权，到期时间 " + chinaTime(previous.expires) + "。" });
       listSelection.delete(key);
@@ -348,9 +347,8 @@ function submitGrant() {
       submitted += 1;
       if (mode === "timeout") {
         pending.push({ record, action: "grant" });
-        listSelection.delete(key);
       } else if (mode === "failure" || (mode === "partial" && submitted % 2 === 0)) {
-        notice.push({ record, type: "failed", message: "微信接口返回失败。", retryable: true });
+        notice.push({ record, type: "failed", message: "微信接口返回失败。" });
       } else {
         applyGrant(record);
         notice.push({ record, type: "success" });
@@ -364,8 +362,10 @@ function submitGrant() {
     filter.manage = { status: "有效" };
     page.manage = 1;
   }
-  show("manage");
-  if (notice.length && notice.every(({ type }) => type === "success") && !pending.length) toast("单本授权成功");
+  const needsFeedback = notice.some(({ type }) => type !== "success") || pending.some(({ action, record }) =>
+    action === "grant" && selected.includes(record.key) && record.target === target);
+  show(needsFeedback ? "settings" : "manage");
+  if (!needsFeedback) toast("授权成功");
 }
 
 function removeRelation(record) {
@@ -378,51 +378,53 @@ function submitRevoke() {
   }
   if (modes() === "timeout") {
     pending.push({ record: revoke, action: "revoke" });
-    notice = [];
+    save();
+    return show("revoke");
   } else {
     removeRelation(revoke);
     notice = [{ type: "success", record: revoke }];
   }
   save();
   show("manage");
-  if (modes() !== "timeout") toast("已取消单本授权");
+  toast("已取消授权");
 }
 
 function verify() {
   if (["timeout", "failure", "query-error"].includes(modes())) {
     return toast("暂未核实结果，请稍后重试。");
   }
-  notice = pending.map(({ record, action }) => {
+  const checking = pending.filter(({ action, record }) => view === "revoke"
+    ? action === "revoke" && relationKey(record) === relationKey(revoke)
+    : action === "grant" && selected.includes(record.key) && record.target === draft.target?.trim());
+  const checked = new Set(checking);
+  notice = checking.map(({ record, action }) => {
     if (action === "grant") applyGrant(record);
     else removeRelation(record);
+    listSelection.delete(record.key);
     return { type: "success", record };
   });
-  pending = [];
+  pending = pending.filter((item) => !checked.has(item));
   save();
+  syncSelection();
   show("manage");
   toast("微信授权结果已核实");
 }
 
-function newGrant(retry = false) {
-  const items = retry ? notice.filter(({ retryable }) => retryable) : [];
-  selected = retry ? items.map(({ record }) => record.key) : [...listSelection];
+function newGrant() {
+  selected = [...listSelection];
   if (!selected.length) return;
-  grantReturn = retry ? "manage" : "base";
-  draft = items.length ? {
-    target: items[0].record.target,
-    date: chinaTime(items[0].record.expires).replace(" ", "T"),
-  } : {};
+  draft = {};
+  notice = [];
   show("settings");
 }
 
 function close() {
   const from = view;
-  show(from === "settings" ? grantReturn : from === "manage" ? "base" : "manage");
-  if (from === "settings" && grantReturn === "base") $("#openGrant").focus({ preventScroll: true });
+  show(from === "settings" || from === "manage" ? "base" : "manage");
+  if (from === "settings") $("#openGrant").focus({ preventScroll: true });
 }
 
 const actions = {
-  retry: () => newGrant(true),
   verify,
   refresh: () => show("manage"),
   close,

@@ -28,7 +28,6 @@ input[type=checkbox] { width: 16px; height: 16px; margin: 0; vertical-align: mid
 input[type=checkbox]:disabled { cursor: not-allowed; }
 .primary:not(:disabled) { border-color: var(--blue); color: white; background: var(--blue); }
 .primary:hover:not(:disabled) { color: white; background: var(--blue-dark); }
-.danger, .danger:hover:not(:disabled) { color: white; background: #b91c1c; border-color: #b91c1c; }
 .link { border: 0; background: transparent; min-height: 28px; padding: 0; color: var(--blue-dark); }
 .link:hover:not(:disabled) { text-decoration: underline; }
 .muted, .hint { color: var(--muted); }
@@ -117,13 +116,15 @@ tbody tr:hover { background: #f9fbff; }
 .callout p { margin: 2px 0; }
 .callout.warn { background: #fffaeb; border-color: #f1d79d; color: #704500; }
 .callout.error { background: #fff2f0; border-color: #ffd6d3; color: #a61d24; }
-.result-actions { display: flex; gap: 12px; }
 .result-items { max-height: 132px; overflow: auto; padding-left: 18px; margin: 4px 0; }
 .result-items li + li { margin-top: 3px; }
 .settings-grid { display: grid; gap: 12px; }
 .settings-grid input { min-height: 32px; }
 .required { color: #b42318; }
-.selected-preview { padding-left: 19px; margin: 0; max-height: 124px; overflow: auto; }
+.selected-books { display: grid; gap: 12px; max-height: 230px; overflow: auto; }
+.selected-book, .selected-book-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.selected-book-head { margin-bottom: 5px; font-size: 13px; }
+.selected-book input[readonly] { background: #f5f7fa; color: var(--text); }
 .revoke-details { display: grid; grid-template-columns: 134px 1fr; gap: 8px 12px; margin: 12px 0; }
 .revoke-details dt { color: var(--muted); }
 .revoke-details dd { margin: 0; }
