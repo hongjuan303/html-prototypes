@@ -38,7 +38,7 @@ function esc(value) {
 const icon = name => '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
 const mark = number => '<button type="button" class="mark" data-note="' + number + '" aria-label="查看说明 ' + number + '">' + number + '</button>';
 const changedFields = new Set(['意向发行渠道', '意向渠道', '国内渠道排除项', '红果评估', '综合结果', '漫剧专项AI创作佐证材料',
-  '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '内容评估状态', '微信视频号送审情况', '送审状态', '送审时间']);
+  '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '内容评估状态', '送审情况', '送审状态', '送审时间']);
 const fieldName = name => '<span' + (changedFields.has(name) ? ' class="changed-field"' : '') + '>' + esc(name) + '</span>';
 const opt = (value, current) => '<option value="' + esc(value) + '"' + (value === current ? ' selected' : '') + '>' + esc(value) + '</option>';
 const options = (values, current) => values.map(value => opt(value, current)).join('');
@@ -402,7 +402,7 @@ function channelCards(r) {
   const status = r.stage === STAGES[3] ? '已上线' : '未上线';
   const cards = channelsFor(r).map(channel => {
     const seeWechat = channel === '微信视频号' && canSeeWechat(r);
-    const wechat = seeWechat ? detailField('微信视频号送审情况', '<div class="status-inline">' + tag(r.wechat?.status || '—') +
+    const wechat = seeWechat ? detailField('送审情况', '<div class="status-inline">' + tag(r.wechat?.status || '—') +
       (r.wechat?.time ? '<span>' + esc(r.wechat.time) + '</span>' : '') +
       (canEditWechat(r) ? act('填写', 'wechat', r.id) : '') + '</div>') : '';
     return '<article class="channel-card"><header><h2>' + esc(channelName(channel)) + (seeWechat ? ' ' + mark(2) : '') + '</h2>' + tag(status) + '</header>' +
@@ -482,7 +482,7 @@ function dialogBody(modal) {
       return ['分配运营', formField('发行渠道', input('channelLabel', modal.channel, '', 'text', 'readonly')) +
         formField('渠道运营', select('operator', [modal.channel + '运营', '备用运营'], d.operator), true), '确认'];
     case 'wechat':
-      return ['填写微信视频号送审情况', '<div class="form-group"><strong>送审信息</strong> ' + mark(1) +
+      return ['填写送审情况', '<div class="form-group"><strong>送审信息</strong> ' + mark(1) +
         formField('送审状态', select('status', WECHAT, d.status), true) +
         (d.status === '已送审' ? formField('送审时间', input('time', d.time, '', 'datetime-local', 'required step="60"'), true) : '') + '</div>', '保存', 2];
     case 'history':
@@ -1041,7 +1041,7 @@ function submitDialog(form) {
       if (!WECHAT.includes(status) || (status === '已送审' && !time)) return error('请选择送审状态并补齐时间。');
       if (r.wechat) r.wechatHistory.unshift({ ...r.wechat, changedAt: now() });
       r.wechat = { status, time };
-      recordLog(r, '微信视频号送审情况更新为' + status + (time ? ' · ' + time : ''));
+      recordLog(r, '送审情况更新为' + status + (time ? ' · ' + time : ''));
       success = '送审情况已保存';
       break;
     }
