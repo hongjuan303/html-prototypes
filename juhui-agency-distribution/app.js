@@ -37,7 +37,7 @@ function esc(value) {
 }
 const icon = name => '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
 const mark = number => '<button type="button" class="mark" data-note="' + number + '" aria-label="查看说明 ' + number + '">' + number + '</button>';
-const changedFields = new Set(['意向发行渠道', '国内渠道排除项', '红果评估', '综合结果', '漫剧专项AI创作佐证材料',
+const changedFields = new Set(['意向发行渠道', '意向渠道', '国内渠道排除项', '红果评估', '综合结果', '漫剧专项AI创作佐证材料',
   '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '内容评估状态', '微信视频号送审情况', '送审状态', '送审时间']);
 const fieldName = name => '<span' + (changedFields.has(name) ? ' class="changed-field"' : '') + '>' + esc(name) + '</span>';
 const opt = (value, current) => '<option value="' + esc(value) + '"' + (value === current ? ' selected' : '') + '>' + esc(value) + '</option>';
@@ -273,6 +273,12 @@ const supplierFilter = ['supplier', '供应商', ['星帆文化（演示）']];
 const collectionFilter = ['name', '合集名称'];
 const reviewerFilters = [['materialReviewer', '物料审核人员', ['示例审核员']], ['filmReviewer', '正片审核人员', ['示例审核员']]];
 
+function intentChannels(record) {
+  const intent = record.intent?.length ? record.intent.join('、') : '—';
+  const excluded = record.intent?.length && Array.isArray(record.exclude) ? record.exclude.map(channel => channel.replace(/^不含/, '')).join('、') || '无' : '—';
+  return '<div class="intent-channels"><div><span>意向：</span>' + esc(intent) + '</div><div><span>剔除：</span>' + esc(excluded) + '</div></div>';
+}
+
 function evaluation() {
   const quality = ui.view === 'quality';
   const control = (record, index) => act(index < 0 ? '同意' : '审核', 'result', record.id + ':' + index);
@@ -283,22 +289,22 @@ function evaluation() {
     if (quality) {
       const actions = r.quality === '待评估'
         ? buttons(control(r, -1), act('驳回', 'result', r.id + ':-2')) : '—';
-      return line(esc(r.id), esc(r.supplier), esc(r.name), esc(r.episodes), link(r), tag(r.quality), esc(r.reviews.find(a => a.group === -1)?.opinion || '—'), actions);
+      return line(esc(r.id), esc(r.supplier), esc(r.name), esc(r.episodes), intentChannels(r), link(r), tag(r.quality), esc(r.reviews.find(a => a.group === -1)?.opinion || '—'), actions);
     }
     const state = groupStatus(r, ui.group);
-    return line('<input type="checkbox" data-row-select="' + r.id + '" aria-label="选择' + esc(r.name) + '"' + (ui.checked.has(r.id) ? ' checked' : '') + '>', esc(r.id), esc(r.supplier), esc(r.name), esc(r.episodes) + ' 集', link(r),
+    return line('<input type="checkbox" data-row-select="' + r.id + '" aria-label="选择' + esc(r.name) + '"' + (ui.checked.has(r.id) ? ' checked' : '') + '>', esc(r.id), esc(r.supplier), esc(r.name), esc(r.episodes) + ' 集', intentChannels(r), link(r),
       ...GROUPS.map((_, i) => '<span class="group-result">' + tag(groupStatus(r, i)) + (groupStatus(r, i) === '通过' ? '<span class="reviewer-name">' + esc(r.reviews.find(review => review.group === i)?.actor || '示例评估员') + '</span>' : '') + '</span>'),
       result(r) === '待审核' ? '—' : tag(result(r)), esc(r.reviews.find(a => a.opinion)?.opinion || '—'),
       esc(r.submitted), buttons(state === '待评估' ? control(r, ui.group) : '', act('审核记录', 'review', r.id)));
   });
   const head = quality
-    ? ['ID', '供应商', '合集名称', '集数', '一卡链接', '状态', '审核意见', '操作']
-    : ['<input type="checkbox" data-select-all aria-label="选择所有行">', 'ID', '供应商', '剧集名称', '集数', '查看链接', GROUPS[0], '红果评估', GROUPS[2], '综合结果', '审核意见', '最近提交时间', '操作'];
+    ? ['ID', '供应商', '合集名称', '集数', '意向渠道', '一卡链接', '状态', '审核意见', '操作']
+    : ['<input type="checkbox" data-select-all aria-label="选择所有行">', 'ID', '供应商', '剧集名称', '集数', '意向渠道', '查看链接', GROUPS[0], '红果评估', GROUPS[2], '综合结果', '审核意见', '最近提交时间', '操作'];
   const downloadTools = quality ? '' : '<span class="selected-count">已选' + ui.checked.size + '条</span><button type="button" class="btn primary small" data-act="download-evaluation"' + (!ui.checked.size ? ' disabled' : '') + '>批量下载</button>';
   return heading('内容评估') + tabs([['quality', '内容质量评估'], ['eval', '内容评估']], ui.view, 'nav') +
     filters([['supplier', '供应商名称', ['星帆文化（演示）']], collectionFilter, ['status', quality ? '状态' : '综合结果', ['待审核', '通过', '驳回']],
       ...(!quality ? [['start', '最近提交日期', 'date'], ['end', '结束日期', 'date']] : [])]) +
-    listing(quality ? '质量评估列表' : '评估列表', head, rows, downloadTools, { className: 'evaluation-table', note: quality ? null : 1 });
+    listing(quality ? '质量评估列表' : '评估列表', head, rows, downloadTools, { className: 'evaluation-table' + (quality ? ' quality-evaluation-table' : ''), note: 1 });
 }
 
 function materialAudit() {
@@ -394,27 +400,29 @@ function collectionMaterialAreas(r, marker = 2, allowAudit = true) {
 function channelCards(r) {
   const channelName = channel => channel === '字节系' ? '字节系（红果和抖音）' : channel;
   const status = r.stage === STAGES[3] ? '已上线' : '未上线';
-  const cards = channelsFor(r).map(channel => '<article class="channel-card"><header><h2>' + esc(channelName(channel)) + '</h2>' + tag(status) + '</header>' +
+  const cards = channelsFor(r).map(channel => {
+    const seeWechat = channel === '微信视频号' && canSeeWechat(r);
+    const wechat = seeWechat ? detailField('微信视频号送审情况', '<div class="status-inline">' + tag(r.wechat?.status || '—') +
+      (r.wechat?.time ? '<span>' + esc(r.wechat.time) + '</span>' : '') +
+      (canEditWechat(r) ? act('填写', 'wechat', r.id) : '') + '</div>') : '';
+    return '<article class="channel-card"><header><h2>' + esc(channelName(channel)) + (seeWechat ? ' ' + mark(2) : '') + '</h2>' + tag(status) + '</header>' +
     '<div class="channel-card-body"><dl class="bordered-descriptions channel-descriptions">' +
     detailField('作品名称', esc(r.name)) + detailField('发布状态', tag(status)) +
     detailField('上线时间', timestamp(r.launch)) + detailField('转免时间', timestamp(r.freeTime)) +
-    detailField('渠道内容ID', esc(r.channelContentIds?.[channel] || '—')) + detailField('渠道运营', esc(r.assignment[channel] || '—')) + '</dl>' +
-    '<footer><button type="button" class="btn" data-act="inspect-channel" data-id="' + esc(channel) + '">' + icon('eye') + '查看</button></footer></div></article>');
+    detailField('渠道内容ID', esc(r.channelContentIds?.[channel] || '—')) + detailField('渠道运营', esc(r.assignment[channel] || '—')) + wechat + '</dl>' +
+    '<footer><button type="button" class="btn" data-act="inspect-channel" data-id="' + esc(channel) + '">' + icon('eye') + '查看</button></footer></div></article>';
+  });
   return '<div class="channel-card-grid">' + (cards.join('') || '<div class="panel empty-channels">暂无渠道信息</div>') + '</div>';
 }
 
 function detail() {
   const r = val(ui.selected);
   if (!r) return '';
-  const see = canSeeWechat(r);
-  const wechat = see ? detailField('微信视频号送审情况', '<div class="status-inline">' + tag(r.wechat?.status || '—') +
-    (r.wechat?.time ? '<span>' + esc(r.wechat.time) + '</span>' : '') +
-    (canEditWechat(r) ? act('填写', 'wechat', r.id) : '') + '</div>') : '';
   const details = '<section class="panel collection-summary"><header><h2>' + esc(r.name) + '</h2>' +
     '<button type="button" class="btn primary" data-act="inspect-collection">' + icon('eye') + '查看详情</button></header>' +
-    '<dl class="bordered-descriptions summary-descriptions' + (see ? ' summary-with-wechat' : '') + '">' + detailField('短剧ID', esc(r.id)) + detailField('集数', esc(r.episodes) + ' 集') + detailField('提交时间', esc(r.submitted)) +
+    '<dl class="bordered-descriptions summary-descriptions">' + detailField('短剧ID', esc(r.id)) + detailField('集数', esc(r.episodes) + ' 集') + detailField('提交时间', esc(r.submitted)) +
     detailField('物料审核状态', tag(r.materialStatus)) + '<div class="description-span-two"><dt>正片审核状态</dt><dd>' + tag(r.filmStatus) + '</dd></div>' +
-    detailField('上线时间', timestamp(r.launch)) + detailField('转免时间', timestamp(r.freeTime) + ' ' + mark(1)) + wechat + '</dl></section>';
+    detailField('上线时间', timestamp(r.launch)) + detailField('转免时间', timestamp(r.freeTime) + ' ' + mark(1)) + '</dl></section>';
   const areas = { 剧集管理: channelCards(r), ...collectionMaterialAreas(r) };
   return '<div class="page-heading collection-heading"><h1>合集详情</h1>' + act('← 返回列表', 'detail-back', '', 'btn') + '</div>' + details +
     tabs(Object.keys(areas).map(key => [key, key]), ui.detailTab, 'detail-tab') +
@@ -526,7 +534,7 @@ function noteInfo() {
   }
   if (key === 'detail') {
     const r = val(ui.selected);
-    const see = canSeeWechat(r);
+    const see = ui.detailTab === '剧集管理' && channelsFor(r).includes('微信视频号') && canSeeWechat(r);
     const context = see ? NOTES.detail : NOTES.detailHidden;
     if (ui.detailTab === '合规文件' && (needsAI(r) || needsWechat(r))) {
       const section = NOTES.compliance.sections[0];

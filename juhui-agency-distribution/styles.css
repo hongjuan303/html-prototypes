@@ -139,10 +139,16 @@ th:last-child, td:last-child { position: sticky; right: 0; z-index: 1; backgroun
 tbody tr:nth-child(even) td:last-child { background: #fafafa; }
 table .actions { flex-wrap: nowrap; gap: 9px; }
 table .actions .link { font-size: 12px; }
-.list-panel .evaluation-table table { min-width: 1610px; }
+.list-panel .evaluation-table table { min-width: 1830px; }
 .evaluation-table th:first-child, .evaluation-table td:first-child { width: 46px; text-align: center; }
 .evaluation-table th:nth-child(4), .evaluation-table td:nth-child(4) { min-width: 160px; }
 .evaluation-table th:last-child, .evaluation-table td:last-child { min-width: 152px; }
+.list-panel .quality-evaluation-table table { min-width: 1320px; }
+.quality-evaluation-table th:first-child, .quality-evaluation-table td:first-child { min-width: 64px; white-space: nowrap; }
+.quality-evaluation-table th:nth-child(3), .quality-evaluation-table td:nth-child(3) { min-width: 160px; }
+.quality-evaluation-table th:nth-child(4), .quality-evaluation-table td:nth-child(4) { min-width: 72px; }
+.intent-channels { min-width: 220px; max-width: 280px; display: grid; gap: 5px; line-height: 1.6; white-space: normal; }
+.intent-channels > div > span { color: var(--muted); }
 .group-result { white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
 .reviewer-name { font-size: 12px; color: #606266; }
 td { overflow-wrap: anywhere; }
@@ -259,7 +265,7 @@ td.empty { height: 190px; text-align: center; color: var(--muted); }
 .bordered-descriptions dd { min-width: 0; margin: 0; padding: 9px 12px; color: #303133; font-size: 13px; line-height: 21px; overflow-wrap: anywhere; }
 .summary-descriptions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .summary-descriptions > div { grid-template-columns: 160px minmax(0, 1fr); }
-.description-span-two, .summary-descriptions:not(.summary-with-wechat) > div:last-child { grid-column: span 2; }
+.description-span-two, .summary-descriptions > div:last-child { grid-column: span 2; }
 .summary-descriptions .mark { margin-left: 5px; }
 .collection-view .screen > .tabs { gap: 36px; margin-bottom: 16px; }
 .channel-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
