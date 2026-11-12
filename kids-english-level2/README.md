@@ -18,7 +18,7 @@
 
 ## 内容说明
 
-英文由 macOS Samantha、中文由 Tingting 合成。页面直接播放预生成音频；加载失败时尝试设备 Speech Synthesis。实际音量取决于设备媒体音量，微信内有播放限制时建议使用系统浏览器。没有广告、账号或儿童身份信息收集。
+英文采用英式发音，由 macOS Daniel（en-GB）合成；中文由 Tingting 合成。英文音频使用独立的 `assets/audio/en-gb/` 地址，避免继续命中旧版美式语音缓存。页面直接播放预生成音频；英文加载失败时仅尝试设备上的 en-GB 语音。实际音量取决于设备媒体音量，微信内有播放限制时建议使用系统浏览器。没有广告、账号或儿童身份信息收集。
 
 家长带练方法参考 British Council 家庭英语启蒙建议：
 https://learnenglishkids.britishcouncil.org/parents/helping-your-child/how-start-teaching-kids-english-home

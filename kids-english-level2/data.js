@@ -110,7 +110,7 @@ window.ENGLISH_DATA = {
           "zh": "跳舞",
           "id": "1-0",
           "image": "assets/cards/1-0.webp",
-          "enAudio": "assets/audio/d8a0bd465fbb62.m4a",
+          "enAudio": "assets/audio/en-gb/d8a0bd465fbb62.m4a",
           "zhAudio": "assets/audio/c0815e82934da9.m4a"
         },
         {
@@ -118,7 +118,7 @@ window.ENGLISH_DATA = {
           "zh": "拍手",
           "id": "1-1",
           "image": "assets/cards/1-1.webp",
-          "enAudio": "assets/audio/cc431e4c7e767d.m4a",
+          "enAudio": "assets/audio/en-gb/cc431e4c7e767d.m4a",
           "zhAudio": "assets/audio/629fdf4f534f36.m4a"
         },
         {
@@ -126,7 +126,7 @@ window.ENGLISH_DATA = {
           "zh": "指一指",
           "id": "1-2",
           "image": "assets/cards/1-2.webp",
-          "enAudio": "assets/audio/c4055705ee66df.m4a",
+          "enAudio": "assets/audio/en-gb/c4055705ee66df.m4a",
           "zhAudio": "assets/audio/fde539e72982cd.m4a"
         },
         {
@@ -134,7 +134,7 @@ window.ENGLISH_DATA = {
           "zh": "坐下",
           "id": "1-3",
           "image": "assets/cards/1-3.webp",
-          "enAudio": "assets/audio/cd857b4906cf2f.m4a",
+          "enAudio": "assets/audio/en-gb/cd857b4906cf2f.m4a",
           "zhAudio": "assets/audio/58d28f2755d089.m4a"
         },
         {
@@ -142,7 +142,7 @@ window.ENGLISH_DATA = {
           "zh": "站起来",
           "id": "1-4",
           "image": "assets/cards/1-4.webp",
-          "enAudio": "assets/audio/5c851ee1c61bd8.m4a",
+          "enAudio": "assets/audio/en-gb/5c851ee1c61bd8.m4a",
           "zhAudio": "assets/audio/3438ba8fa5f051.m4a"
         },
         {
@@ -150,7 +150,7 @@ window.ENGLISH_DATA = {
           "zh": "挥手",
           "id": "1-5",
           "image": "assets/cards/1-5.webp",
-          "enAudio": "assets/audio/208019600127fb.m4a",
+          "enAudio": "assets/audio/en-gb/208019600127fb.m4a",
           "zhAudio": "assets/audio/c9f90139fbae2b.m4a"
         }
       ],
@@ -158,37 +158,37 @@ window.ENGLISH_DATA = {
         {
           "en": "Can you dance?",
           "zh": "你会跳舞吗？",
-          "enAudio": "assets/audio/a80638e7270e21.m4a",
+          "enAudio": "assets/audio/en-gb/a80638e7270e21.m4a",
           "zhAudio": "assets/audio/7f345fa386dfcf.m4a"
         },
         {
           "en": "I can dance.",
           "zh": "我会跳舞。",
-          "enAudio": "assets/audio/3e2c39b40b090a.m4a",
+          "enAudio": "assets/audio/en-gb/3e2c39b40b090a.m4a",
           "zhAudio": "assets/audio/e3bafe4aa0553c.m4a"
         },
         {
           "en": "Can you clap?",
           "zh": "你会拍手吗？",
-          "enAudio": "assets/audio/647fd85427fa69.m4a",
+          "enAudio": "assets/audio/en-gb/647fd85427fa69.m4a",
           "zhAudio": "assets/audio/e6e4b9b8616985.m4a"
         },
         {
           "en": "I can clap.",
           "zh": "我会拍手。",
-          "enAudio": "assets/audio/090beea35f69bf.m4a",
+          "enAudio": "assets/audio/en-gb/090beea35f69bf.m4a",
           "zhAudio": "assets/audio/2a8f300eabd11f.m4a"
         },
         {
           "en": "Sit down, please.",
           "zh": "请坐下。",
-          "enAudio": "assets/audio/3538a48758c6c2.m4a",
+          "enAudio": "assets/audio/en-gb/3538a48758c6c2.m4a",
           "zhAudio": "assets/audio/cb24ed6eb3c275.m4a"
         },
         {
           "en": "Stand up, please.",
           "zh": "请站起来。",
-          "enAudio": "assets/audio/efb97cbd82b90a.m4a",
+          "enAudio": "assets/audio/en-gb/efb97cbd82b90a.m4a",
           "zhAudio": "assets/audio/f4d1d6dc4e086c.m4a"
         }
       ],
@@ -205,7 +205,7 @@ window.ENGLISH_DATA = {
           "zh": "跑",
           "id": "2-0",
           "image": "assets/cards/2-0.webp",
-          "enAudio": "assets/audio/aaf6b7a42abccf.m4a",
+          "enAudio": "assets/audio/en-gb/aaf6b7a42abccf.m4a",
           "zhAudio": "assets/audio/c00ffe4470d9e9.m4a"
         },
         {
@@ -213,7 +213,7 @@ window.ENGLISH_DATA = {
           "zh": "跳",
           "id": "2-1",
           "image": "assets/cards/2-1.webp",
-          "enAudio": "assets/audio/07c279da77a583.m4a",
+          "enAudio": "assets/audio/en-gb/07c279da77a583.m4a",
           "zhAudio": "assets/audio/d6f94d9db07d32.m4a"
         },
         {
@@ -221,7 +221,7 @@ window.ENGLISH_DATA = {
           "zh": "攀爬",
           "id": "2-2",
           "image": "assets/cards/2-2.webp",
-          "enAudio": "assets/audio/65ff7b5f7aa332.m4a",
+          "enAudio": "assets/audio/en-gb/65ff7b5f7aa332.m4a",
           "zhAudio": "assets/audio/a48ded38b27cec.m4a"
         },
         {
@@ -229,7 +229,7 @@ window.ENGLISH_DATA = {
           "zh": "伸展",
           "id": "2-3",
           "image": "assets/cards/2-3.webp",
-          "enAudio": "assets/audio/3fd1ecc04af3e3.m4a",
+          "enAudio": "assets/audio/en-gb/3fd1ecc04af3e3.m4a",
           "zhAudio": "assets/audio/ed4591252c2697.m4a"
         }
       ],
@@ -237,37 +237,37 @@ window.ENGLISH_DATA = {
         {
           "en": "What can you do?",
           "zh": "你会做什么？",
-          "enAudio": "assets/audio/a7d5af01aa3592.m4a",
+          "enAudio": "assets/audio/en-gb/a7d5af01aa3592.m4a",
           "zhAudio": "assets/audio/331908c3156089.m4a"
         },
         {
           "en": "I can run.",
           "zh": "我会跑。",
-          "enAudio": "assets/audio/bc43296466cae2.m4a",
+          "enAudio": "assets/audio/en-gb/bc43296466cae2.m4a",
           "zhAudio": "assets/audio/5751e82496c674.m4a"
         },
         {
           "en": "Can you jump?",
           "zh": "你会跳吗？",
-          "enAudio": "assets/audio/7da8786460cce2.m4a",
+          "enAudio": "assets/audio/en-gb/7da8786460cce2.m4a",
           "zhAudio": "assets/audio/a2c3c0e426b3a7.m4a"
         },
         {
           "en": "Yes, I can.",
           "zh": "是的，我会。",
-          "enAudio": "assets/audio/f3a14875e287ea.m4a",
+          "enAudio": "assets/audio/en-gb/f3a14875e287ea.m4a",
           "zhAudio": "assets/audio/8a4bae3de18902.m4a"
         },
         {
           "en": "No, I can’t.",
           "zh": "不，我不会。",
-          "enAudio": "assets/audio/44926dabb2a2e5.m4a",
+          "enAudio": "assets/audio/en-gb/44926dabb2a2e5.m4a",
           "zhAudio": "assets/audio/b30084956f7047.m4a"
         },
         {
           "en": "I can stretch.",
           "zh": "我会伸展。",
-          "enAudio": "assets/audio/7d0eaa5c3f68b7.m4a",
+          "enAudio": "assets/audio/en-gb/7d0eaa5c3f68b7.m4a",
           "zhAudio": "assets/audio/b821fc91595504.m4a"
         }
       ],
@@ -284,7 +284,7 @@ window.ENGLISH_DATA = {
           "zh": "比夫",
           "id": "3-0",
           "image": "assets/cards/3-0.webp",
-          "enAudio": "assets/audio/7740a10233801d.m4a",
+          "enAudio": "assets/audio/en-gb/7740a10233801d.m4a",
           "zhAudio": "assets/audio/54def38190ff7b.m4a"
         },
         {
@@ -292,7 +292,7 @@ window.ENGLISH_DATA = {
           "zh": "奇普",
           "id": "3-1",
           "image": "assets/cards/3-1.webp",
-          "enAudio": "assets/audio/dc0164e6b5c932.m4a",
+          "enAudio": "assets/audio/en-gb/dc0164e6b5c932.m4a",
           "zhAudio": "assets/audio/94738ed20af262.m4a"
         },
         {
@@ -300,7 +300,7 @@ window.ENGLISH_DATA = {
           "zh": "妈妈",
           "id": "3-2",
           "image": "assets/cards/3-2.webp",
-          "enAudio": "assets/audio/0191916b4c14fb.m4a",
+          "enAudio": "assets/audio/en-gb/0191916b4c14fb.m4a",
           "zhAudio": "assets/audio/a78562ec248bbc.m4a"
         },
         {
@@ -308,7 +308,7 @@ window.ENGLISH_DATA = {
           "zh": "爸爸",
           "id": "3-3",
           "image": "assets/cards/3-3.webp",
-          "enAudio": "assets/audio/603043b2b0906a.m4a",
+          "enAudio": "assets/audio/en-gb/603043b2b0906a.m4a",
           "zhAudio": "assets/audio/6bc50f04a3228f.m4a"
         },
         {
@@ -316,7 +316,7 @@ window.ENGLISH_DATA = {
           "zh": "基珀",
           "id": "3-4",
           "image": "assets/cards/3-4.webp",
-          "enAudio": "assets/audio/6e02868c76186d.m4a",
+          "enAudio": "assets/audio/en-gb/6e02868c76186d.m4a",
           "zhAudio": "assets/audio/c90a2284d07d3d.m4a"
         },
         {
@@ -324,7 +324,7 @@ window.ENGLISH_DATA = {
           "zh": "弗洛皮",
           "id": "3-5",
           "image": "assets/cards/3-5.webp",
-          "enAudio": "assets/audio/c76117472c3299.m4a",
+          "enAudio": "assets/audio/en-gb/c76117472c3299.m4a",
           "zhAudio": "assets/audio/d22006c43cfcbd.m4a"
         }
       ],
@@ -332,37 +332,37 @@ window.ENGLISH_DATA = {
         {
           "en": "Who is this?",
           "zh": "这是谁？",
-          "enAudio": "assets/audio/ecc8c36e0c2b27.m4a",
+          "enAudio": "assets/audio/en-gb/ecc8c36e0c2b27.m4a",
           "zhAudio": "assets/audio/660b51e7b97f99.m4a"
         },
         {
           "en": "This is Biff.",
           "zh": "这是比夫。",
-          "enAudio": "assets/audio/1317a1a0450a04.m4a",
+          "enAudio": "assets/audio/en-gb/1317a1a0450a04.m4a",
           "zhAudio": "assets/audio/f8c9a091e55164.m4a"
         },
         {
           "en": "This is Mum.",
           "zh": "这是妈妈。",
-          "enAudio": "assets/audio/072affb2467d3a.m4a",
+          "enAudio": "assets/audio/en-gb/072affb2467d3a.m4a",
           "zhAudio": "assets/audio/ff31d6d7c17533.m4a"
         },
         {
           "en": "Who are they?",
           "zh": "他们是谁？",
-          "enAudio": "assets/audio/22ee345648e642.m4a",
+          "enAudio": "assets/audio/en-gb/22ee345648e642.m4a",
           "zhAudio": "assets/audio/e09889c734dc38.m4a"
         },
         {
           "en": "They are Mum and Dad.",
           "zh": "他们是妈妈和爸爸。",
-          "enAudio": "assets/audio/103e2ca98bc178.m4a",
+          "enAudio": "assets/audio/en-gb/103e2ca98bc178.m4a",
           "zhAudio": "assets/audio/2b58ad3989d017.m4a"
         },
         {
           "en": "This is Floppy.",
           "zh": "这是弗洛皮。",
-          "enAudio": "assets/audio/14a1ea5aed6643.m4a",
+          "enAudio": "assets/audio/en-gb/14a1ea5aed6643.m4a",
           "zhAudio": "assets/audio/1f7af46eaf1d80.m4a"
         }
       ],
@@ -379,7 +379,7 @@ window.ENGLISH_DATA = {
           "zh": "眼睛",
           "id": "4-0",
           "image": "assets/cards/4-0.webp",
-          "enAudio": "assets/audio/744317e4d98d17.m4a",
+          "enAudio": "assets/audio/en-gb/744317e4d98d17.m4a",
           "zhAudio": "assets/audio/e0a8aeae8926bd.m4a"
         },
         {
@@ -387,7 +387,7 @@ window.ENGLISH_DATA = {
           "zh": "嘴巴",
           "id": "4-1",
           "image": "assets/cards/4-1.webp",
-          "enAudio": "assets/audio/be9633009130a0.m4a",
+          "enAudio": "assets/audio/en-gb/be9633009130a0.m4a",
           "zhAudio": "assets/audio/91a9a9339f1dcd.m4a"
         },
         {
@@ -395,7 +395,7 @@ window.ENGLISH_DATA = {
           "zh": "开心的",
           "id": "4-2",
           "image": "assets/cards/4-2.webp",
-          "enAudio": "assets/audio/e1f24dea42dc50.m4a",
+          "enAudio": "assets/audio/en-gb/e1f24dea42dc50.m4a",
           "zhAudio": "assets/audio/6d94130dbbfd7b.m4a"
         },
         {
@@ -403,7 +403,7 @@ window.ENGLISH_DATA = {
           "zh": "耳朵",
           "id": "4-3",
           "image": "assets/cards/4-3.webp",
-          "enAudio": "assets/audio/de96ac9baede3d.m4a",
+          "enAudio": "assets/audio/en-gb/de96ac9baede3d.m4a",
           "zhAudio": "assets/audio/4abf77a41fbc7e.m4a"
         },
         {
@@ -411,7 +411,7 @@ window.ENGLISH_DATA = {
           "zh": "鼻子",
           "id": "4-4",
           "image": "assets/cards/4-4.webp",
-          "enAudio": "assets/audio/0d6f3a6044b8fd.m4a",
+          "enAudio": "assets/audio/en-gb/0d6f3a6044b8fd.m4a",
           "zhAudio": "assets/audio/9a1eb36ba355c5.m4a"
         },
         {
@@ -419,7 +419,7 @@ window.ENGLISH_DATA = {
           "zh": "难过的",
           "id": "4-5",
           "image": "assets/cards/4-5.webp",
-          "enAudio": "assets/audio/a1422d0e1fd08c.m4a",
+          "enAudio": "assets/audio/en-gb/a1422d0e1fd08c.m4a",
           "zhAudio": "assets/audio/fa1be096d0657a.m4a"
         }
       ],
@@ -427,37 +427,37 @@ window.ENGLISH_DATA = {
         {
           "en": "I have two eyes.",
           "zh": "我有两只眼睛。",
-          "enAudio": "assets/audio/d817f9b1124ab3.m4a",
+          "enAudio": "assets/audio/en-gb/d817f9b1124ab3.m4a",
           "zhAudio": "assets/audio/4f0cac3076ec33.m4a"
         },
         {
           "en": "She has two eyes.",
           "zh": "她有两只眼睛。",
-          "enAudio": "assets/audio/dbc734228ad96a.m4a",
+          "enAudio": "assets/audio/en-gb/dbc734228ad96a.m4a",
           "zhAudio": "assets/audio/40ab2772175916.m4a"
         },
         {
           "en": "She is happy.",
           "zh": "她很开心。",
-          "enAudio": "assets/audio/1b972013bd46d7.m4a",
+          "enAudio": "assets/audio/en-gb/1b972013bd46d7.m4a",
           "zhAudio": "assets/audio/921168f1b53e5c.m4a"
         },
         {
           "en": "He is sad.",
           "zh": "他很难过。",
-          "enAudio": "assets/audio/766ba116757e45.m4a",
+          "enAudio": "assets/audio/en-gb/766ba116757e45.m4a",
           "zhAudio": "assets/audio/30664d9bdf207d.m4a"
         },
         {
           "en": "I want to be a monster.",
           "zh": "我想变成一个小怪兽。",
-          "enAudio": "assets/audio/97f65fb0be1583.m4a",
+          "enAudio": "assets/audio/en-gb/97f65fb0be1583.m4a",
           "zhAudio": "assets/audio/bb8f786a4b3e4e.m4a"
         },
         {
           "en": "Be friendly.",
           "zh": "友善待人。",
-          "enAudio": "assets/audio/496ccae51fc9f8.m4a",
+          "enAudio": "assets/audio/en-gb/496ccae51fc9f8.m4a",
           "zhAudio": "assets/audio/6fa149ba02e80d.m4a"
         }
       ],
@@ -474,7 +474,7 @@ window.ENGLISH_DATA = {
           "zh": "脸",
           "id": "5-0",
           "image": "assets/cards/5-0.webp",
-          "enAudio": "assets/audio/db866e1b412cc7.m4a",
+          "enAudio": "assets/audio/en-gb/db866e1b412cc7.m4a",
           "zhAudio": "assets/audio/2b41a8f5008447.m4a"
         },
         {
@@ -482,7 +482,7 @@ window.ENGLISH_DATA = {
           "zh": "双手",
           "id": "5-1",
           "image": "assets/cards/5-1.webp",
-          "enAudio": "assets/audio/d2f41ac06bfaa4.m4a",
+          "enAudio": "assets/audio/en-gb/d2f41ac06bfaa4.m4a",
           "zhAudio": "assets/audio/1a0ee79b6acdc3.m4a"
         },
         {
@@ -490,7 +490,7 @@ window.ENGLISH_DATA = {
           "zh": "脏的",
           "id": "5-2",
           "image": "assets/cards/5-2.webp",
-          "enAudio": "assets/audio/7f5cd68da0bb34.m4a",
+          "enAudio": "assets/audio/en-gb/7f5cd68da0bb34.m4a",
           "zhAudio": "assets/audio/9402fc5caba2e1.m4a"
         },
         {
@@ -498,7 +498,7 @@ window.ENGLISH_DATA = {
           "zh": "清洗",
           "id": "5-3",
           "image": "assets/cards/5-3.webp",
-          "enAudio": "assets/audio/2fdf6f6ff0c445.m4a",
+          "enAudio": "assets/audio/en-gb/2fdf6f6ff0c445.m4a",
           "zhAudio": "assets/audio/9ba9fc58dd4a88.m4a"
         },
         {
@@ -506,7 +506,7 @@ window.ENGLISH_DATA = {
           "zh": "干净的",
           "id": "5-4",
           "image": "assets/cards/5-4.webp",
-          "enAudio": "assets/audio/a75a1c1e873822.m4a",
+          "enAudio": "assets/audio/en-gb/a75a1c1e873822.m4a",
           "zhAudio": "assets/audio/52c4337f5658f2.m4a"
         }
       ],
@@ -514,37 +514,37 @@ window.ENGLISH_DATA = {
         {
           "en": "My hands are dirty.",
           "zh": "我的手脏了。",
-          "enAudio": "assets/audio/ece859e8a855b5.m4a",
+          "enAudio": "assets/audio/en-gb/ece859e8a855b5.m4a",
           "zhAudio": "assets/audio/b4a574403d9f49.m4a"
         },
         {
           "en": "My hands are clean.",
           "zh": "我的手很干净。",
-          "enAudio": "assets/audio/853f954c25edf5.m4a",
+          "enAudio": "assets/audio/en-gb/853f954c25edf5.m4a",
           "zhAudio": "assets/audio/6766bd39b05fd7.m4a"
         },
         {
           "en": "My face is dirty.",
           "zh": "我的脸脏了。",
-          "enAudio": "assets/audio/764465f1437b8b.m4a",
+          "enAudio": "assets/audio/en-gb/764465f1437b8b.m4a",
           "zhAudio": "assets/audio/2e79784e897932.m4a"
         },
         {
           "en": "My face is clean.",
           "zh": "我的脸很干净。",
-          "enAudio": "assets/audio/78ccee406ef6b9.m4a",
+          "enAudio": "assets/audio/en-gb/78ccee406ef6b9.m4a",
           "zhAudio": "assets/audio/ee28a432c67fd9.m4a"
         },
         {
           "en": "Let’s wash our hands.",
           "zh": "我们来洗手吧。",
-          "enAudio": "assets/audio/ab74b761560f15.m4a",
+          "enAudio": "assets/audio/en-gb/ab74b761560f15.m4a",
           "zhAudio": "assets/audio/70117a3a3356f9.m4a"
         },
         {
           "en": "Let’s wash our faces.",
           "zh": "我们来洗脸吧。",
-          "enAudio": "assets/audio/e82d2ea14dfcd4.m4a",
+          "enAudio": "assets/audio/en-gb/e82d2ea14dfcd4.m4a",
           "zhAudio": "assets/audio/e2088a56c9e4d7.m4a"
         }
       ],
@@ -561,7 +561,7 @@ window.ENGLISH_DATA = {
           "zh": "大的",
           "id": "6-0",
           "image": "assets/cards/6-0.webp",
-          "enAudio": "assets/audio/a5b9cd156ef9ba.m4a",
+          "enAudio": "assets/audio/en-gb/a5b9cd156ef9ba.m4a",
           "zhAudio": "assets/audio/5c1e33117df613.m4a"
         },
         {
@@ -569,7 +569,7 @@ window.ENGLISH_DATA = {
           "zh": "小的",
           "id": "6-1",
           "image": "assets/cards/6-1.webp",
-          "enAudio": "assets/audio/d7061aa35db69a.m4a",
+          "enAudio": "assets/audio/en-gb/d7061aa35db69a.m4a",
           "zhAudio": "assets/audio/07ca864f09966c.m4a"
         },
         {
@@ -577,7 +577,7 @@ window.ENGLISH_DATA = {
           "zh": "长的",
           "id": "6-2",
           "image": "assets/cards/6-2.webp",
-          "enAudio": "assets/audio/4e0188a54c30c5.m4a",
+          "enAudio": "assets/audio/en-gb/4e0188a54c30c5.m4a",
           "zhAudio": "assets/audio/bbdb08e32c11aa.m4a"
         },
         {
@@ -585,7 +585,7 @@ window.ENGLISH_DATA = {
           "zh": "短的",
           "id": "6-3",
           "image": "assets/cards/6-3.webp",
-          "enAudio": "assets/audio/58527954358901.m4a",
+          "enAudio": "assets/audio/en-gb/58527954358901.m4a",
           "zhAudio": "assets/audio/2f95adf4283d48.m4a"
         }
       ],
@@ -593,31 +593,31 @@ window.ENGLISH_DATA = {
         {
           "en": "Is it big or small?",
           "zh": "它是大的还是小的？",
-          "enAudio": "assets/audio/7db952bdc08028.m4a",
+          "enAudio": "assets/audio/en-gb/7db952bdc08028.m4a",
           "zhAudio": "assets/audio/5adfbfe83a88cc.m4a"
         },
         {
           "en": "The blue book is smaller than the red book.",
           "zh": "蓝色的书比红色的书小。",
-          "enAudio": "assets/audio/66bf2c476d17f4.m4a",
+          "enAudio": "assets/audio/en-gb/66bf2c476d17f4.m4a",
           "zhAudio": "assets/audio/22f819f4734681.m4a"
         },
         {
           "en": "The red book is bigger than the blue book.",
           "zh": "红色的书比蓝色的书大。",
-          "enAudio": "assets/audio/59e49b4879d80f.m4a",
+          "enAudio": "assets/audio/en-gb/59e49b4879d80f.m4a",
           "zhAudio": "assets/audio/b7b43ef63764d2.m4a"
         },
         {
           "en": "The green pencil is longer than the yellow pencil.",
           "zh": "绿色铅笔比黄色铅笔长。",
-          "enAudio": "assets/audio/b4f63a979475ac.m4a",
+          "enAudio": "assets/audio/en-gb/b4f63a979475ac.m4a",
           "zhAudio": "assets/audio/b9622a7a8a9ee3.m4a"
         },
         {
           "en": "The yellow pencil is shorter than the green pencil.",
           "zh": "黄色铅笔比绿色铅笔短。",
-          "enAudio": "assets/audio/4a407672983dc0.m4a",
+          "enAudio": "assets/audio/en-gb/4a407672983dc0.m4a",
           "zhAudio": "assets/audio/cc1a6104557bf1.m4a"
         }
       ],
@@ -634,7 +634,7 @@ window.ENGLISH_DATA = {
           "zh": "红色",
           "id": "7-0",
           "image": "assets/cards/7-0.webp",
-          "enAudio": "assets/audio/875af93ea8c5de.m4a",
+          "enAudio": "assets/audio/en-gb/875af93ea8c5de.m4a",
           "zhAudio": "assets/audio/07ab5cd3269f72.m4a"
         },
         {
@@ -642,7 +642,7 @@ window.ENGLISH_DATA = {
           "zh": "黄色",
           "id": "7-1",
           "image": "assets/cards/7-1.webp",
-          "enAudio": "assets/audio/d5b3cb9e0a8d55.m4a",
+          "enAudio": "assets/audio/en-gb/d5b3cb9e0a8d55.m4a",
           "zhAudio": "assets/audio/8cd2a5b911f20c.m4a"
         },
         {
@@ -650,7 +650,7 @@ window.ENGLISH_DATA = {
           "zh": "橙色",
           "id": "7-2",
           "image": "assets/cards/7-2.webp",
-          "enAudio": "assets/audio/2272463c06ade4.m4a",
+          "enAudio": "assets/audio/en-gb/2272463c06ade4.m4a",
           "zhAudio": "assets/audio/a2bece6034ccd9.m4a"
         }
       ],
@@ -658,7 +658,7 @@ window.ENGLISH_DATA = {
         {
           "en": "Red and yellow make orange.",
           "zh": "红色和黄色混合成橙色。",
-          "enAudio": "assets/audio/e14bca2f589c23.m4a",
+          "enAudio": "assets/audio/en-gb/e14bca2f589c23.m4a",
           "zhAudio": "assets/audio/fcdaab180b0920.m4a"
         }
       ],
@@ -675,7 +675,7 @@ window.ENGLISH_DATA = {
           "zh": "瓢虫",
           "id": "8-0",
           "image": "assets/cards/8-0.webp",
-          "enAudio": "assets/audio/76a6efd6d601b7.m4a",
+          "enAudio": "assets/audio/en-gb/76a6efd6d601b7.m4a",
           "zhAudio": "assets/audio/c75f4f1df84a47.m4a"
         },
         {
@@ -683,7 +683,7 @@ window.ENGLISH_DATA = {
           "zh": "毛毛虫",
           "id": "8-1",
           "image": "assets/cards/8-1.webp",
-          "enAudio": "assets/audio/cc7c0d19b076a3.m4a",
+          "enAudio": "assets/audio/en-gb/cc7c0d19b076a3.m4a",
           "zhAudio": "assets/audio/d19ad2f6e42aef.m4a"
         },
         {
@@ -691,7 +691,7 @@ window.ENGLISH_DATA = {
           "zh": "画家",
           "id": "8-2",
           "image": "assets/cards/8-2.webp",
-          "enAudio": "assets/audio/72e44878057499.m4a",
+          "enAudio": "assets/audio/en-gb/72e44878057499.m4a",
           "zhAudio": "assets/audio/3d113cd8001f34.m4a"
         },
         {
@@ -699,7 +699,7 @@ window.ENGLISH_DATA = {
           "zh": "棕色",
           "id": "8-3",
           "image": "assets/cards/8-3.webp",
-          "enAudio": "assets/audio/69f806af391f88.m4a",
+          "enAudio": "assets/audio/en-gb/69f806af391f88.m4a",
           "zhAudio": "assets/audio/c01f38ae650eb6.m4a"
         },
         {
@@ -707,7 +707,7 @@ window.ENGLISH_DATA = {
           "zh": "粉色",
           "id": "8-4",
           "image": "assets/cards/8-4.webp",
-          "enAudio": "assets/audio/0534ca3830e2e9.m4a",
+          "enAudio": "assets/audio/en-gb/0534ca3830e2e9.m4a",
           "zhAudio": "assets/audio/aaebd92632d870.m4a"
         },
         {
@@ -715,7 +715,7 @@ window.ENGLISH_DATA = {
           "zh": "橙色",
           "id": "8-5",
           "image": "assets/cards/8-5.webp",
-          "enAudio": "assets/audio/2272463c06ade4.m4a",
+          "enAudio": "assets/audio/en-gb/2272463c06ade4.m4a",
           "zhAudio": "assets/audio/a2bece6034ccd9.m4a"
         },
         {
@@ -723,7 +723,7 @@ window.ENGLISH_DATA = {
           "zh": "灰色",
           "id": "8-6",
           "image": "assets/cards/8-6.webp",
-          "enAudio": "assets/audio/cbc349519d4de3.m4a",
+          "enAudio": "assets/audio/en-gb/cbc349519d4de3.m4a",
           "zhAudio": "assets/audio/3342735c89ebbc.m4a"
         },
         {
@@ -731,7 +731,7 @@ window.ENGLISH_DATA = {
           "zh": "白色",
           "id": "8-7",
           "image": "assets/cards/8-7.webp",
-          "enAudio": "assets/audio/134a2ccbcd7ec9.m4a",
+          "enAudio": "assets/audio/en-gb/134a2ccbcd7ec9.m4a",
           "zhAudio": "assets/audio/06ca78776d800a.m4a"
         },
         {
@@ -739,7 +739,7 @@ window.ENGLISH_DATA = {
           "zh": "黑色",
           "id": "8-8",
           "image": "assets/cards/8-8.webp",
-          "enAudio": "assets/audio/f6802309c955d0.m4a",
+          "enAudio": "assets/audio/en-gb/f6802309c955d0.m4a",
           "zhAudio": "assets/audio/e03df4c6bea682.m4a"
         }
       ],
@@ -747,43 +747,43 @@ window.ENGLISH_DATA = {
         {
           "en": "What’s it?",
           "zh": "它是什么？",
-          "enAudio": "assets/audio/26164355c3a3c1.m4a",
+          "enAudio": "assets/audio/en-gb/26164355c3a3c1.m4a",
           "zhAudio": "assets/audio/151796eae07adb.m4a"
         },
         {
           "en": "It’s a ladybug.",
           "zh": "它是一只瓢虫。",
-          "enAudio": "assets/audio/f2fcd77345028b.m4a",
+          "enAudio": "assets/audio/en-gb/f2fcd77345028b.m4a",
           "zhAudio": "assets/audio/a3b883d46c537b.m4a"
         },
         {
           "en": "Who is he?",
           "zh": "他是谁？",
-          "enAudio": "assets/audio/fa382e6ca3fdc4.m4a",
+          "enAudio": "assets/audio/en-gb/fa382e6ca3fdc4.m4a",
           "zhAudio": "assets/audio/8e428eda715838.m4a"
         },
         {
           "en": "He is an artist.",
           "zh": "他是一位画家。",
-          "enAudio": "assets/audio/e6df8c52d4aed1.m4a",
+          "enAudio": "assets/audio/en-gb/e6df8c52d4aed1.m4a",
           "zhAudio": "assets/audio/34de8203dfe266.m4a"
         },
         {
           "en": "What color is it?",
           "zh": "它是什么颜色？",
-          "enAudio": "assets/audio/358eff666c42d1.m4a",
+          "enAudio": "assets/audio/en-gb/358eff666c42d1.m4a",
           "zhAudio": "assets/audio/65bc3d6b504da1.m4a"
         },
         {
           "en": "It’s pink.",
           "zh": "它是粉色的。",
-          "enAudio": "assets/audio/1047397f11ce60.m4a",
+          "enAudio": "assets/audio/en-gb/1047397f11ce60.m4a",
           "zhAudio": "assets/audio/94a99f31b8c734.m4a"
         },
         {
           "en": "I have blue eyes.",
           "zh": "我有蓝色的眼睛。",
-          "enAudio": "assets/audio/dbc68a30bb22c9.m4a",
+          "enAudio": "assets/audio/en-gb/dbc68a30bb22c9.m4a",
           "zhAudio": "assets/audio/40d0c0302be274.m4a"
         }
       ],
@@ -800,7 +800,7 @@ window.ENGLISH_DATA = {
           "zh": "爷爷或外公",
           "id": "9-0",
           "image": "assets/cards/9-0.webp",
-          "enAudio": "assets/audio/f378f0c2de3965.m4a",
+          "enAudio": "assets/audio/en-gb/f378f0c2de3965.m4a",
           "zhAudio": "assets/audio/027bb5efaab831.m4a"
         },
         {
@@ -808,7 +808,7 @@ window.ENGLISH_DATA = {
           "zh": "爸爸",
           "id": "9-1",
           "image": "assets/cards/9-1.webp",
-          "enAudio": "assets/audio/2fd66c30ea72d2.m4a",
+          "enAudio": "assets/audio/en-gb/2fd66c30ea72d2.m4a",
           "zhAudio": "assets/audio/6bc50f04a3228f.m4a"
         },
         {
@@ -816,7 +816,7 @@ window.ENGLISH_DATA = {
           "zh": "兄弟",
           "id": "9-2",
           "image": "assets/cards/9-2.webp",
-          "enAudio": "assets/audio/e43c153432569e.m4a",
+          "enAudio": "assets/audio/en-gb/e43c153432569e.m4a",
           "zhAudio": "assets/audio/b9b7783f8f1c8a.m4a"
         },
         {
@@ -824,7 +824,7 @@ window.ENGLISH_DATA = {
           "zh": "推",
           "id": "9-3",
           "image": "assets/cards/9-3.webp",
-          "enAudio": "assets/audio/92cf9d5f2a744e.m4a",
+          "enAudio": "assets/audio/en-gb/92cf9d5f2a744e.m4a",
           "zhAudio": "assets/audio/8c04e8ab4f9af5.m4a"
         },
         {
@@ -832,7 +832,7 @@ window.ENGLISH_DATA = {
           "zh": "奶奶或外婆",
           "id": "9-4",
           "image": "assets/cards/9-4.webp",
-          "enAudio": "assets/audio/d2a5c5a2b4cc48.m4a",
+          "enAudio": "assets/audio/en-gb/d2a5c5a2b4cc48.m4a",
           "zhAudio": "assets/audio/1e38f8536aa89d.m4a"
         },
         {
@@ -840,7 +840,7 @@ window.ENGLISH_DATA = {
           "zh": "妈妈",
           "id": "9-5",
           "image": "assets/cards/9-5.webp",
-          "enAudio": "assets/audio/2999303c8e7f1b.m4a",
+          "enAudio": "assets/audio/en-gb/2999303c8e7f1b.m4a",
           "zhAudio": "assets/audio/a78562ec248bbc.m4a"
         },
         {
@@ -848,7 +848,7 @@ window.ENGLISH_DATA = {
           "zh": "姐妹",
           "id": "9-6",
           "image": "assets/cards/9-6.webp",
-          "enAudio": "assets/audio/6703e1c4aff6fa.m4a",
+          "enAudio": "assets/audio/en-gb/6703e1c4aff6fa.m4a",
           "zhAudio": "assets/audio/a3b7aab7220839.m4a"
         },
         {
@@ -856,7 +856,7 @@ window.ENGLISH_DATA = {
           "zh": "拉",
           "id": "9-7",
           "image": "assets/cards/9-7.webp",
-          "enAudio": "assets/audio/055b34b270dd08.m4a",
+          "enAudio": "assets/audio/en-gb/055b34b270dd08.m4a",
           "zhAudio": "assets/audio/e2953d6f3055fa.m4a"
         }
       ],
@@ -864,37 +864,37 @@ window.ENGLISH_DATA = {
         {
           "en": "Who do you see?",
           "zh": "你看见谁了？",
-          "enAudio": "assets/audio/97a0e7ac865d9c.m4a",
+          "enAudio": "assets/audio/en-gb/97a0e7ac865d9c.m4a",
           "zhAudio": "assets/audio/b778350b4ec680.m4a"
         },
         {
           "en": "I see my grandfather.",
           "zh": "我看见了我的爷爷或外公。",
-          "enAudio": "assets/audio/a1f8cee46ae960.m4a",
+          "enAudio": "assets/audio/en-gb/a1f8cee46ae960.m4a",
           "zhAudio": "assets/audio/712783addacc56.m4a"
         },
         {
           "en": "Who is this?",
           "zh": "这是谁？",
-          "enAudio": "assets/audio/ecc8c36e0c2b27.m4a",
+          "enAudio": "assets/audio/en-gb/ecc8c36e0c2b27.m4a",
           "zhAudio": "assets/audio/660b51e7b97f99.m4a"
         },
         {
           "en": "Here’s my mother.",
           "zh": "这是我的妈妈。",
-          "enAudio": "assets/audio/b1975f8a74e086.m4a",
+          "enAudio": "assets/audio/en-gb/b1975f8a74e086.m4a",
           "zhAudio": "assets/audio/545563cca4fd9d.m4a"
         },
         {
           "en": "Push the door.",
           "zh": "推门。",
-          "enAudio": "assets/audio/1e3c011765a89a.m4a",
+          "enAudio": "assets/audio/en-gb/1e3c011765a89a.m4a",
           "zhAudio": "assets/audio/9861b2ba4d113e.m4a"
         },
         {
           "en": "Pull the door.",
           "zh": "拉门。",
-          "enAudio": "assets/audio/fe42531e99896c.m4a",
+          "enAudio": "assets/audio/en-gb/fe42531e99896c.m4a",
           "zhAudio": "assets/audio/67be4f058cdd32.m4a"
         }
       ],
@@ -911,7 +911,7 @@ window.ENGLISH_DATA = {
           "zh": "哥哥",
           "id": "10-0",
           "image": "assets/cards/10-0.webp",
-          "enAudio": "assets/audio/75887f10edd27d.m4a",
+          "enAudio": "assets/audio/en-gb/75887f10edd27d.m4a",
           "zhAudio": "assets/audio/ea276523824e67.m4a"
         },
         {
@@ -919,7 +919,7 @@ window.ENGLISH_DATA = {
           "zh": "弟弟",
           "id": "10-1",
           "image": "assets/cards/10-1.webp",
-          "enAudio": "assets/audio/1ecec1b53c0a19.m4a",
+          "enAudio": "assets/audio/en-gb/1ecec1b53c0a19.m4a",
           "zhAudio": "assets/audio/811895f4a6960d.m4a"
         },
         {
@@ -927,7 +927,7 @@ window.ENGLISH_DATA = {
           "zh": "强壮的",
           "id": "10-2",
           "image": "assets/cards/10-2.webp",
-          "enAudio": "assets/audio/2ee1f228740f8f.m4a",
+          "enAudio": "assets/audio/en-gb/2ee1f228740f8f.m4a",
           "zhAudio": "assets/audio/b26a151bc47dae.m4a"
         },
         {
@@ -935,7 +935,7 @@ window.ENGLISH_DATA = {
           "zh": "漂亮的",
           "id": "10-3",
           "image": "assets/cards/10-3.webp",
-          "enAudio": "assets/audio/6c70473a07aeab.m4a",
+          "enAudio": "assets/audio/en-gb/6c70473a07aeab.m4a",
           "zhAudio": "assets/audio/10bfd5780ed181.m4a"
         },
         {
@@ -943,7 +943,7 @@ window.ENGLISH_DATA = {
           "zh": "姐姐",
           "id": "10-4",
           "image": "assets/cards/10-4.webp",
-          "enAudio": "assets/audio/ea1d0472eac760.m4a",
+          "enAudio": "assets/audio/en-gb/ea1d0472eac760.m4a",
           "zhAudio": "assets/audio/db38fc36cbc6cb.m4a"
         },
         {
@@ -951,7 +951,7 @@ window.ENGLISH_DATA = {
           "zh": "妹妹",
           "id": "10-5",
           "image": "assets/cards/10-5.webp",
-          "enAudio": "assets/audio/629cc7b7e7d248.m4a",
+          "enAudio": "assets/audio/en-gb/629cc7b7e7d248.m4a",
           "zhAudio": "assets/audio/86423c1c6b2815.m4a"
         },
         {
@@ -959,7 +959,7 @@ window.ENGLISH_DATA = {
           "zh": "高的",
           "id": "10-6",
           "image": "assets/cards/10-6.webp",
-          "enAudio": "assets/audio/cd728b2af8481f.m4a",
+          "enAudio": "assets/audio/en-gb/cd728b2af8481f.m4a",
           "zhAudio": "assets/audio/257ad43626940c.m4a"
         },
         {
@@ -967,7 +967,7 @@ window.ENGLISH_DATA = {
           "zh": "矮的",
           "id": "10-7",
           "image": "assets/cards/10-7.webp",
-          "enAudio": "assets/audio/58527954358901.m4a",
+          "enAudio": "assets/audio/en-gb/58527954358901.m4a",
           "zhAudio": "assets/audio/743d1c2fcfab79.m4a"
         },
         {
@@ -975,7 +975,7 @@ window.ENGLISH_DATA = {
           "zh": "胖的",
           "id": "10-8",
           "image": "assets/cards/10-8.webp",
-          "enAudio": "assets/audio/83cac1a4f1e2dd.m4a",
+          "enAudio": "assets/audio/en-gb/83cac1a4f1e2dd.m4a",
           "zhAudio": "assets/audio/afbd4a633241c3.m4a"
         },
         {
@@ -983,7 +983,7 @@ window.ENGLISH_DATA = {
           "zh": "瘦的",
           "id": "10-9",
           "image": "assets/cards/10-9.webp",
-          "enAudio": "assets/audio/e761a4fbc26c3d.m4a",
+          "enAudio": "assets/audio/en-gb/e761a4fbc26c3d.m4a",
           "zhAudio": "assets/audio/15bb06aaa4233c.m4a"
         }
       ],
@@ -991,25 +991,25 @@ window.ENGLISH_DATA = {
         {
           "en": "Here’s my big brother.",
           "zh": "这是我的哥哥。",
-          "enAudio": "assets/audio/aba48db5fd9de9.m4a",
+          "enAudio": "assets/audio/en-gb/aba48db5fd9de9.m4a",
           "zhAudio": "assets/audio/d804838344df2b.m4a"
         },
         {
           "en": "Here’s my little sister.",
           "zh": "这是我的妹妹。",
-          "enAudio": "assets/audio/6dce6c757d8cd9.m4a",
+          "enAudio": "assets/audio/en-gb/6dce6c757d8cd9.m4a",
           "zhAudio": "assets/audio/c8cc6ea19fa351.m4a"
         },
         {
           "en": "The giraffe is tall.",
           "zh": "长颈鹿很高。",
-          "enAudio": "assets/audio/a4e921c3760460.m4a",
+          "enAudio": "assets/audio/en-gb/a4e921c3760460.m4a",
           "zhAudio": "assets/audio/c965919546ca1c.m4a"
         },
         {
           "en": "The cat is fat.",
           "zh": "这只猫胖胖的。",
-          "enAudio": "assets/audio/f934d84444a371.m4a",
+          "enAudio": "assets/audio/en-gb/f934d84444a371.m4a",
           "zhAudio": "assets/audio/adc40b31f8840c.m4a"
         }
       ],
@@ -1026,7 +1026,7 @@ window.ENGLISH_DATA = {
           "zh": "企鹅",
           "id": "11-0",
           "image": "assets/cards/11-0.webp",
-          "enAudio": "assets/audio/7ea393469e0a22.m4a",
+          "enAudio": "assets/audio/en-gb/7ea393469e0a22.m4a",
           "zhAudio": "assets/audio/32ccbbe7336b83.m4a"
         },
         {
@@ -1034,7 +1034,7 @@ window.ENGLISH_DATA = {
           "zh": "天鹅",
           "id": "11-1",
           "image": "assets/cards/11-1.webp",
-          "enAudio": "assets/audio/9e8dfe90588e85.m4a",
+          "enAudio": "assets/audio/en-gb/9e8dfe90588e85.m4a",
           "zhAudio": "assets/audio/972df3d3847f15.m4a"
         },
         {
@@ -1042,7 +1042,7 @@ window.ENGLISH_DATA = {
           "zh": "绵羊",
           "id": "11-2",
           "image": "assets/cards/11-2.webp",
-          "enAudio": "assets/audio/7ee7ce3edafc9a.m4a",
+          "enAudio": "assets/audio/en-gb/7ee7ce3edafc9a.m4a",
           "zhAudio": "assets/audio/c0668c37c38667.m4a"
         },
         {
@@ -1050,7 +1050,7 @@ window.ENGLISH_DATA = {
           "zh": "长颈鹿",
           "id": "11-3",
           "image": "assets/cards/11-3.webp",
-          "enAudio": "assets/audio/279e11f41bcf59.m4a",
+          "enAudio": "assets/audio/en-gb/279e11f41bcf59.m4a",
           "zhAudio": "assets/audio/91a6a55ec52bb4.m4a"
         },
         {
@@ -1058,7 +1058,7 @@ window.ENGLISH_DATA = {
           "zh": "熊",
           "id": "11-4",
           "image": "assets/cards/11-4.webp",
-          "enAudio": "assets/audio/fca78794d75fcc.m4a",
+          "enAudio": "assets/audio/en-gb/fca78794d75fcc.m4a",
           "zhAudio": "assets/audio/59662b9c36e9da.m4a"
         },
         {
@@ -1066,7 +1066,7 @@ window.ENGLISH_DATA = {
           "zh": "狮子",
           "id": "11-5",
           "image": "assets/cards/11-5.webp",
-          "enAudio": "assets/audio/3c01a70d7ad472.m4a",
+          "enAudio": "assets/audio/en-gb/3c01a70d7ad472.m4a",
           "zhAudio": "assets/audio/46d6dae3714410.m4a"
         },
         {
@@ -1074,7 +1074,7 @@ window.ENGLISH_DATA = {
           "zh": "海豚",
           "id": "11-6",
           "image": "assets/cards/11-6.webp",
-          "enAudio": "assets/audio/72ddbbf011b466.m4a",
+          "enAudio": "assets/audio/en-gb/72ddbbf011b466.m4a",
           "zhAudio": "assets/audio/3943fb5e8979af.m4a"
         },
         {
@@ -1082,7 +1082,7 @@ window.ENGLISH_DATA = {
           "zh": "大象",
           "id": "11-7",
           "image": "assets/cards/11-7.webp",
-          "enAudio": "assets/audio/e2281ac7b991ad.m4a",
+          "enAudio": "assets/audio/en-gb/e2281ac7b991ad.m4a",
           "zhAudio": "assets/audio/b1753bac01b5f1.m4a"
         },
         {
@@ -1090,7 +1090,7 @@ window.ENGLISH_DATA = {
           "zh": "猴子",
           "id": "11-8",
           "image": "assets/cards/11-8.webp",
-          "enAudio": "assets/audio/58834339b03a95.m4a",
+          "enAudio": "assets/audio/en-gb/58834339b03a95.m4a",
           "zhAudio": "assets/audio/f1af4f3551b66f.m4a"
         },
         {
@@ -1098,7 +1098,7 @@ window.ENGLISH_DATA = {
           "zh": "狐狸",
           "id": "11-9",
           "image": "assets/cards/11-9.webp",
-          "enAudio": "assets/audio/ac2303f8dcaf75.m4a",
+          "enAudio": "assets/audio/en-gb/ac2303f8dcaf75.m4a",
           "zhAudio": "assets/audio/aaea458afb54f5.m4a"
         },
         {
@@ -1106,7 +1106,7 @@ window.ENGLISH_DATA = {
           "zh": "袋鼠",
           "id": "11-10",
           "image": "assets/cards/11-10.webp",
-          "enAudio": "assets/audio/4402a349b457d6.m4a",
+          "enAudio": "assets/audio/en-gb/4402a349b457d6.m4a",
           "zhAudio": "assets/audio/fe6e2f54e4eba9.m4a"
         }
       ],
@@ -1114,25 +1114,25 @@ window.ENGLISH_DATA = {
         {
           "en": "What animal is it?",
           "zh": "它是什么动物？",
-          "enAudio": "assets/audio/822cd33261bf1c.m4a",
+          "enAudio": "assets/audio/en-gb/822cd33261bf1c.m4a",
           "zhAudio": "assets/audio/f75bc0a49ba45a.m4a"
         },
         {
           "en": "It’s a penguin.",
           "zh": "它是一只企鹅。",
-          "enAudio": "assets/audio/f8712a14f2de26.m4a",
+          "enAudio": "assets/audio/en-gb/f8712a14f2de26.m4a",
           "zhAudio": "assets/audio/c56ce7abf6ae01.m4a"
         },
         {
           "en": "It’s an elephant.",
           "zh": "它是一头大象。",
-          "enAudio": "assets/audio/3d34bee43fa065.m4a",
+          "enAudio": "assets/audio/en-gb/3d34bee43fa065.m4a",
           "zhAudio": "assets/audio/27831d91deaaf6.m4a"
         },
         {
           "en": "It’s a giraffe.",
           "zh": "它是一只长颈鹿。",
-          "enAudio": "assets/audio/a7bb6500abca97.m4a",
+          "enAudio": "assets/audio/en-gb/a7bb6500abca97.m4a",
           "zhAudio": "assets/audio/1c8d594f9a41c6.m4a"
         }
       ],
@@ -1149,7 +1149,7 @@ window.ENGLISH_DATA = {
           "zh": "阿姨或姑姑等女性长辈",
           "id": "12-0",
           "image": "assets/cards/12-0.webp",
-          "enAudio": "assets/audio/dcc6f4873bf6f8.m4a",
+          "enAudio": "assets/audio/en-gb/dcc6f4873bf6f8.m4a",
           "zhAudio": "assets/audio/a77b9fd8f13bd8.m4a"
         },
         {
@@ -1157,7 +1157,7 @@ window.ENGLISH_DATA = {
           "zh": "叔叔或舅舅等男性长辈",
           "id": "12-1",
           "image": "assets/cards/12-1.webp",
-          "enAudio": "assets/audio/cf8c62069966b1.m4a",
+          "enAudio": "assets/audio/en-gb/cf8c62069966b1.m4a",
           "zhAudio": "assets/audio/212e5c515c195e.m4a"
         },
         {
@@ -1165,7 +1165,7 @@ window.ENGLISH_DATA = {
           "zh": "堂表兄弟姐妹",
           "id": "12-2",
           "image": "assets/cards/12-2.webp",
-          "enAudio": "assets/audio/530d5ef6726287.m4a",
+          "enAudio": "assets/audio/en-gb/530d5ef6726287.m4a",
           "zhAudio": "assets/audio/de2c9d28eeb3b2.m4a"
         },
         {
@@ -1173,7 +1173,7 @@ window.ENGLISH_DATA = {
           "zh": "朋友",
           "id": "12-3",
           "image": "assets/cards/12-3.webp",
-          "enAudio": "assets/audio/0b28af8040c20e.m4a",
+          "enAudio": "assets/audio/en-gb/0b28af8040c20e.m4a",
           "zhAudio": "assets/audio/eb5bc51afab9f9.m4a"
         },
         {
@@ -1181,7 +1181,7 @@ window.ENGLISH_DATA = {
           "zh": "家人",
           "id": "12-4",
           "image": "assets/cards/12-4.webp",
-          "enAudio": "assets/audio/5fb5fc130be17d.m4a",
+          "enAudio": "assets/audio/en-gb/5fb5fc130be17d.m4a",
           "zhAudio": "assets/audio/c2b28e63f2a999.m4a"
         },
         {
@@ -1189,7 +1189,7 @@ window.ENGLISH_DATA = {
           "zh": "老师",
           "id": "12-5",
           "image": "assets/cards/12-5.webp",
-          "enAudio": "assets/audio/10389f674cc4e4.m4a",
+          "enAudio": "assets/audio/en-gb/10389f674cc4e4.m4a",
           "zhAudio": "assets/audio/3ac633f369be58.m4a"
         }
       ],
@@ -1197,25 +1197,25 @@ window.ENGLISH_DATA = {
         {
           "en": "Who do you see?",
           "zh": "你看见谁了？",
-          "enAudio": "assets/audio/97a0e7ac865d9c.m4a",
+          "enAudio": "assets/audio/en-gb/97a0e7ac865d9c.m4a",
           "zhAudio": "assets/audio/b778350b4ec680.m4a"
         },
         {
           "en": "I see my friend.",
           "zh": "我看见了我的朋友。",
-          "enAudio": "assets/audio/fed8102e9a7470.m4a",
+          "enAudio": "assets/audio/en-gb/fed8102e9a7470.m4a",
           "zhAudio": "assets/audio/11772bd1684969.m4a"
         },
         {
           "en": "Who is this?",
           "zh": "这是谁？",
-          "enAudio": "assets/audio/ecc8c36e0c2b27.m4a",
+          "enAudio": "assets/audio/en-gb/ecc8c36e0c2b27.m4a",
           "zhAudio": "assets/audio/660b51e7b97f99.m4a"
         },
         {
           "en": "Here’s my teacher.",
           "zh": "这是我的老师。",
-          "enAudio": "assets/audio/0e14492de41916.m4a",
+          "enAudio": "assets/audio/en-gb/0e14492de41916.m4a",
           "zhAudio": "assets/audio/536c8c2fe02dc3.m4a"
         }
       ],
@@ -1232,7 +1232,7 @@ window.ENGLISH_DATA = {
           "zh": "跷跷板",
           "id": "13-0",
           "image": "assets/cards/13-0.webp",
-          "enAudio": "assets/audio/31f5f078cf7035.m4a",
+          "enAudio": "assets/audio/en-gb/31f5f078cf7035.m4a",
           "zhAudio": "assets/audio/9a43e22afce9a9.m4a"
         },
         {
@@ -1240,7 +1240,7 @@ window.ENGLISH_DATA = {
           "zh": "攀岩墙",
           "id": "13-1",
           "image": "assets/cards/13-1.webp",
-          "enAudio": "assets/audio/0b0ab28aed4283.m4a",
+          "enAudio": "assets/audio/en-gb/0b0ab28aed4283.m4a",
           "zhAudio": "assets/audio/2e4cd2d3439d39.m4a"
         },
         {
@@ -1248,7 +1248,7 @@ window.ENGLISH_DATA = {
           "zh": "弹簧摇摇马",
           "id": "13-2",
           "image": "assets/cards/13-2.webp",
-          "enAudio": "assets/audio/d35f20e924cb73.m4a",
+          "enAudio": "assets/audio/en-gb/d35f20e924cb73.m4a",
           "zhAudio": "assets/audio/7a1d275efba2b0.m4a"
         },
         {
@@ -1256,7 +1256,7 @@ window.ENGLISH_DATA = {
           "zh": "旋转木马或旋转游乐盘",
           "id": "13-3",
           "image": "assets/cards/13-3.webp",
-          "enAudio": "assets/audio/c1da697e5496ae.m4a",
+          "enAudio": "assets/audio/en-gb/c1da697e5496ae.m4a",
           "zhAudio": "assets/audio/c99feeeb5f73ca.m4a"
         }
       ],
@@ -1264,31 +1264,31 @@ window.ENGLISH_DATA = {
         {
           "en": "Is it a seesaw?",
           "zh": "它是跷跷板吗？",
-          "enAudio": "assets/audio/2b8b2c4a6bbbee.m4a",
+          "enAudio": "assets/audio/en-gb/2b8b2c4a6bbbee.m4a",
           "zhAudio": "assets/audio/fb921ee07eddbf.m4a"
         },
         {
           "en": "Yes, it is.",
           "zh": "是的，它是。",
-          "enAudio": "assets/audio/6ec4413b98503e.m4a",
+          "enAudio": "assets/audio/en-gb/6ec4413b98503e.m4a",
           "zhAudio": "assets/audio/63dfd4dd939f0e.m4a"
         },
         {
           "en": "No, it isn’t.",
           "zh": "不，它不是。",
-          "enAudio": "assets/audio/a7ce2981bc3373.m4a",
+          "enAudio": "assets/audio/en-gb/a7ce2981bc3373.m4a",
           "zhAudio": "assets/audio/63d39ff9e67798.m4a"
         },
         {
           "en": "What do you see?",
           "zh": "你看见什么了？",
-          "enAudio": "assets/audio/30c267008cff88.m4a",
+          "enAudio": "assets/audio/en-gb/30c267008cff88.m4a",
           "zhAudio": "assets/audio/17b63739d3990d.m4a"
         },
         {
           "en": "I see a climbing wall.",
           "zh": "我看见了一面攀岩墙。",
-          "enAudio": "assets/audio/cd22dff14a024f.m4a",
+          "enAudio": "assets/audio/en-gb/cd22dff14a024f.m4a",
           "zhAudio": "assets/audio/29cf455201d95a.m4a"
         }
       ],
@@ -1304,21 +1304,21 @@ window.ENGLISH_DATA = {
           "en": "slide",
           "zh": "滑梯",
           "id": "14-0",
-          "enAudio": "assets/audio/8decce7de666da.m4a",
+          "enAudio": "assets/audio/en-gb/8decce7de666da.m4a",
           "zhAudio": "assets/audio/1dd717db4c1c66.m4a"
         },
         {
           "en": "trampoline",
           "zh": "蹦床",
           "id": "14-1",
-          "enAudio": "assets/audio/c810a3eb6bb8d2.m4a",
+          "enAudio": "assets/audio/en-gb/c810a3eb6bb8d2.m4a",
           "zhAudio": "assets/audio/e00befa7363a49.m4a"
         },
         {
           "en": "bike",
           "zh": "自行车",
           "id": "14-2",
-          "enAudio": "assets/audio/8ae9be56b2902e.m4a",
+          "enAudio": "assets/audio/en-gb/8ae9be56b2902e.m4a",
           "zhAudio": "assets/audio/b472c22b45ea84.m4a"
         }
       ],
@@ -1326,31 +1326,31 @@ window.ENGLISH_DATA = {
         {
           "en": "Is it a slide?",
           "zh": "它是滑梯吗？",
-          "enAudio": "assets/audio/12d1daf5ac0307.m4a",
+          "enAudio": "assets/audio/en-gb/12d1daf5ac0307.m4a",
           "zhAudio": "assets/audio/1a5abf4a3ccfb4.m4a"
         },
         {
           "en": "No, it isn’t.",
           "zh": "不，它不是。",
-          "enAudio": "assets/audio/a7ce2981bc3373.m4a",
+          "enAudio": "assets/audio/en-gb/a7ce2981bc3373.m4a",
           "zhAudio": "assets/audio/63d39ff9e67798.m4a"
         },
         {
           "en": "It’s a trampoline.",
           "zh": "它是蹦床。",
-          "enAudio": "assets/audio/5f549680e083d4.m4a",
+          "enAudio": "assets/audio/en-gb/5f549680e083d4.m4a",
           "zhAudio": "assets/audio/dce1bc4bfe5667.m4a"
         },
         {
           "en": "Is it a bike?",
           "zh": "它是自行车吗？",
-          "enAudio": "assets/audio/78680d16ba3406.m4a",
+          "enAudio": "assets/audio/en-gb/78680d16ba3406.m4a",
           "zhAudio": "assets/audio/21789368fbaa16.m4a"
         },
         {
           "en": "Yes, it is.",
           "zh": "是的，它是。",
-          "enAudio": "assets/audio/6ec4413b98503e.m4a",
+          "enAudio": "assets/audio/en-gb/6ec4413b98503e.m4a",
           "zhAudio": "assets/audio/63dfd4dd939f0e.m4a"
         }
       ],
@@ -1367,7 +1367,7 @@ window.ENGLISH_DATA = {
           "zh": "滑梯",
           "id": "15-0",
           "image": "assets/cards/15-0.webp",
-          "enAudio": "assets/audio/8decce7de666da.m4a",
+          "enAudio": "assets/audio/en-gb/8decce7de666da.m4a",
           "zhAudio": "assets/audio/1dd717db4c1c66.m4a"
         },
         {
@@ -1375,7 +1375,7 @@ window.ENGLISH_DATA = {
           "zh": "蹦床",
           "id": "15-1",
           "image": "assets/cards/15-1.webp",
-          "enAudio": "assets/audio/c810a3eb6bb8d2.m4a",
+          "enAudio": "assets/audio/en-gb/c810a3eb6bb8d2.m4a",
           "zhAudio": "assets/audio/e00befa7363a49.m4a"
         },
         {
@@ -1383,7 +1383,7 @@ window.ENGLISH_DATA = {
           "zh": "滑板车",
           "id": "15-2",
           "image": "assets/cards/15-2.webp",
-          "enAudio": "assets/audio/ed794d01229879.m4a",
+          "enAudio": "assets/audio/en-gb/ed794d01229879.m4a",
           "zhAudio": "assets/audio/ba3d8da1c5caed.m4a"
         },
         {
@@ -1391,7 +1391,7 @@ window.ENGLISH_DATA = {
           "zh": "秋千",
           "id": "15-3",
           "image": "assets/cards/15-3.webp",
-          "enAudio": "assets/audio/d7b2e9f1d66846.m4a",
+          "enAudio": "assets/audio/en-gb/d7b2e9f1d66846.m4a",
           "zhAudio": "assets/audio/59020a7fb145b8.m4a"
         },
         {
@@ -1399,7 +1399,7 @@ window.ENGLISH_DATA = {
           "zh": "自行车",
           "id": "15-4",
           "image": "assets/cards/15-4.webp",
-          "enAudio": "assets/audio/8ae9be56b2902e.m4a",
+          "enAudio": "assets/audio/en-gb/8ae9be56b2902e.m4a",
           "zhAudio": "assets/audio/b472c22b45ea84.m4a"
         },
         {
@@ -1407,7 +1407,7 @@ window.ENGLISH_DATA = {
           "zh": "攀爬架",
           "id": "15-5",
           "image": "assets/cards/15-5.webp",
-          "enAudio": "assets/audio/588411a08b06dc.m4a",
+          "enAudio": "assets/audio/en-gb/588411a08b06dc.m4a",
           "zhAudio": "assets/audio/b824ba5dd83299.m4a"
         },
         {
@@ -1415,7 +1415,7 @@ window.ENGLISH_DATA = {
           "zh": "游乐场",
           "id": "15-6",
           "image": "assets/cards/15-6.webp",
-          "enAudio": "assets/audio/36d891b9256cda.m4a",
+          "enAudio": "assets/audio/en-gb/36d891b9256cda.m4a",
           "zhAudio": "assets/audio/149a4898ad94ed.m4a"
         },
         {
@@ -1423,7 +1423,7 @@ window.ENGLISH_DATA = {
           "zh": "超级英雄",
           "id": "15-7",
           "image": "assets/cards/15-7.webp",
-          "enAudio": "assets/audio/fd5bfcd3c5dd75.m4a",
+          "enAudio": "assets/audio/en-gb/fd5bfcd3c5dd75.m4a",
           "zhAudio": "assets/audio/5c20fecd912df3.m4a"
         }
       ],
@@ -1431,25 +1431,25 @@ window.ENGLISH_DATA = {
         {
           "en": "Is it a swing?",
           "zh": "它是秋千吗？",
-          "enAudio": "assets/audio/a48ef4ab4c43aa.m4a",
+          "enAudio": "assets/audio/en-gb/a48ef4ab4c43aa.m4a",
           "zhAudio": "assets/audio/186836f8c3bdc4.m4a"
         },
         {
           "en": "Yes, it is.",
           "zh": "是的，它是。",
-          "enAudio": "assets/audio/6ec4413b98503e.m4a",
+          "enAudio": "assets/audio/en-gb/6ec4413b98503e.m4a",
           "zhAudio": "assets/audio/63dfd4dd939f0e.m4a"
         },
         {
           "en": "I see a scooter.",
           "zh": "我看见了一辆滑板车。",
-          "enAudio": "assets/audio/740efcf72f6529.m4a",
+          "enAudio": "assets/audio/en-gb/740efcf72f6529.m4a",
           "zhAudio": "assets/audio/aaa2cbcb64960b.m4a"
         },
         {
           "en": "I see a superhero.",
           "zh": "我看见了一位超级英雄。",
-          "enAudio": "assets/audio/7417b5d7662318.m4a",
+          "enAudio": "assets/audio/en-gb/7417b5d7662318.m4a",
           "zhAudio": "assets/audio/cb8b83882e9431.m4a"
         }
       ],
@@ -1466,7 +1466,7 @@ window.ENGLISH_DATA = {
           "zh": "攀爬",
           "id": "16-0",
           "image": "assets/cards/16-0.webp",
-          "enAudio": "assets/audio/65ff7b5f7aa332.m4a",
+          "enAudio": "assets/audio/en-gb/65ff7b5f7aa332.m4a",
           "zhAudio": "assets/audio/a48ded38b27cec.m4a"
         },
         {
@@ -1474,7 +1474,7 @@ window.ENGLISH_DATA = {
           "zh": "跺脚",
           "id": "16-1",
           "image": "assets/cards/16-1.webp",
-          "enAudio": "assets/audio/662c3b5a2d94ef.m4a",
+          "enAudio": "assets/audio/en-gb/662c3b5a2d94ef.m4a",
           "zhAudio": "assets/audio/21fcd7ad81d128.m4a"
         },
         {
@@ -1482,7 +1482,7 @@ window.ENGLISH_DATA = {
           "zh": "蜿蜒爬行",
           "id": "16-2",
           "image": "assets/cards/16-2.webp",
-          "enAudio": "assets/audio/010cb01dbf6739.m4a",
+          "enAudio": "assets/audio/en-gb/010cb01dbf6739.m4a",
           "zhAudio": "assets/audio/eb3a535d063395.m4a"
         },
         {
@@ -1490,7 +1490,7 @@ window.ENGLISH_DATA = {
           "zh": "爬行",
           "id": "16-3",
           "image": "assets/cards/16-3.webp",
-          "enAudio": "assets/audio/10f09263613442.m4a",
+          "enAudio": "assets/audio/en-gb/10f09263613442.m4a",
           "zhAudio": "assets/audio/c39d8497d5a27d.m4a"
         },
         {
@@ -1498,7 +1498,7 @@ window.ENGLISH_DATA = {
           "zh": "跑",
           "id": "16-4",
           "image": "assets/cards/16-4.webp",
-          "enAudio": "assets/audio/aaf6b7a42abccf.m4a",
+          "enAudio": "assets/audio/en-gb/aaf6b7a42abccf.m4a",
           "zhAudio": "assets/audio/c00ffe4470d9e9.m4a"
         },
         {
@@ -1506,7 +1506,7 @@ window.ENGLISH_DATA = {
           "zh": "飞",
           "id": "16-5",
           "image": "assets/cards/16-5.webp",
-          "enAudio": "assets/audio/39e12d1685dff7.m4a",
+          "enAudio": "assets/audio/en-gb/39e12d1685dff7.m4a",
           "zhAudio": "assets/audio/49c0738ab61bc4.m4a"
         }
       ],
@@ -1514,55 +1514,55 @@ window.ENGLISH_DATA = {
         {
           "en": "What can you do?",
           "zh": "你会做什么？",
-          "enAudio": "assets/audio/a7d5af01aa3592.m4a",
+          "enAudio": "assets/audio/en-gb/a7d5af01aa3592.m4a",
           "zhAudio": "assets/audio/331908c3156089.m4a"
         },
         {
           "en": "I can stomp.",
           "zh": "我会跺脚。",
-          "enAudio": "assets/audio/b5f7cbdd62b888.m4a",
+          "enAudio": "assets/audio/en-gb/b5f7cbdd62b888.m4a",
           "zhAudio": "assets/audio/ea4c9dfd1560b9.m4a"
         },
         {
           "en": "What can a monkey do?",
           "zh": "猴子会做什么？",
-          "enAudio": "assets/audio/b101b3ce02709d.m4a",
+          "enAudio": "assets/audio/en-gb/b101b3ce02709d.m4a",
           "zhAudio": "assets/audio/7a9fe50651d00e.m4a"
         },
         {
           "en": "A monkey can climb.",
           "zh": "猴子会攀爬。",
-          "enAudio": "assets/audio/ffe47289d89234.m4a",
+          "enAudio": "assets/audio/en-gb/ffe47289d89234.m4a",
           "zhAudio": "assets/audio/cf038d08c88c3c.m4a"
         },
         {
           "en": "An elephant can stomp.",
           "zh": "大象会跺脚。",
-          "enAudio": "assets/audio/3b53811bc26e98.m4a",
+          "enAudio": "assets/audio/en-gb/3b53811bc26e98.m4a",
           "zhAudio": "assets/audio/139cc9d19f4c6a.m4a"
         },
         {
           "en": "A snake can slither.",
           "zh": "蛇会蜿蜒爬行。",
-          "enAudio": "assets/audio/4ad0ee110fc9d6.m4a",
+          "enAudio": "assets/audio/en-gb/4ad0ee110fc9d6.m4a",
           "zhAudio": "assets/audio/9e64722207b96d.m4a"
         },
         {
           "en": "A crocodile can crawl.",
           "zh": "鳄鱼会爬行。",
-          "enAudio": "assets/audio/7112a99858517e.m4a",
+          "enAudio": "assets/audio/en-gb/7112a99858517e.m4a",
           "zhAudio": "assets/audio/9c8e0f45604061.m4a"
         },
         {
           "en": "A lion can run.",
           "zh": "狮子会跑。",
-          "enAudio": "assets/audio/0942b3468be1a0.m4a",
+          "enAudio": "assets/audio/en-gb/0942b3468be1a0.m4a",
           "zhAudio": "assets/audio/e4122b00452909.m4a"
         },
         {
           "en": "A parrot can fly.",
           "zh": "鹦鹉会飞。",
-          "enAudio": "assets/audio/062970388672b5.m4a",
+          "enAudio": "assets/audio/en-gb/062970388672b5.m4a",
           "zhAudio": "assets/audio/bdf24e0cbdbc1b.m4a"
         }
       ],
@@ -1579,7 +1579,7 @@ window.ENGLISH_DATA = {
           "zh": "探险家",
           "id": "17-0",
           "image": "assets/cards/17-0.webp",
-          "enAudio": "assets/audio/f40b6eecf31343.m4a",
+          "enAudio": "assets/audio/en-gb/f40b6eecf31343.m4a",
           "zhAudio": "assets/audio/7f82838195fec2.m4a"
         },
         {
@@ -1587,7 +1587,7 @@ window.ENGLISH_DATA = {
           "zh": "猴子",
           "id": "17-1",
           "image": "assets/cards/17-1.webp",
-          "enAudio": "assets/audio/58834339b03a95.m4a",
+          "enAudio": "assets/audio/en-gb/58834339b03a95.m4a",
           "zhAudio": "assets/audio/f1af4f3551b66f.m4a"
         },
         {
@@ -1595,7 +1595,7 @@ window.ENGLISH_DATA = {
           "zh": "蛇",
           "id": "17-2",
           "image": "assets/cards/17-2.webp",
-          "enAudio": "assets/audio/9ac9a2afeca903.m4a",
+          "enAudio": "assets/audio/en-gb/9ac9a2afeca903.m4a",
           "zhAudio": "assets/audio/ed3f982f92c8cf.m4a"
         },
         {
@@ -1603,7 +1603,7 @@ window.ENGLISH_DATA = {
           "zh": "鹦鹉",
           "id": "17-3",
           "image": "assets/cards/17-3.webp",
-          "enAudio": "assets/audio/97877cb7739f61.m4a",
+          "enAudio": "assets/audio/en-gb/97877cb7739f61.m4a",
           "zhAudio": "assets/audio/8b2c21842c203f.m4a"
         },
         {
@@ -1611,7 +1611,7 @@ window.ENGLISH_DATA = {
           "zh": "狮子",
           "id": "17-4",
           "image": "assets/cards/17-4.webp",
-          "enAudio": "assets/audio/3c01a70d7ad472.m4a",
+          "enAudio": "assets/audio/en-gb/3c01a70d7ad472.m4a",
           "zhAudio": "assets/audio/46d6dae3714410.m4a"
         },
         {
@@ -1619,7 +1619,7 @@ window.ENGLISH_DATA = {
           "zh": "大象",
           "id": "17-5",
           "image": "assets/cards/17-5.webp",
-          "enAudio": "assets/audio/e2281ac7b991ad.m4a",
+          "enAudio": "assets/audio/en-gb/e2281ac7b991ad.m4a",
           "zhAudio": "assets/audio/b1753bac01b5f1.m4a"
         },
         {
@@ -1627,7 +1627,7 @@ window.ENGLISH_DATA = {
           "zh": "鳄鱼",
           "id": "17-6",
           "image": "assets/cards/17-6.webp",
-          "enAudio": "assets/audio/2237e1bc091d70.m4a",
+          "enAudio": "assets/audio/en-gb/2237e1bc091d70.m4a",
           "zhAudio": "assets/audio/9f62ee16dcf4c6.m4a"
         }
       ],
@@ -1635,31 +1635,31 @@ window.ENGLISH_DATA = {
         {
           "en": "Who is this?",
           "zh": "这是谁？",
-          "enAudio": "assets/audio/ecc8c36e0c2b27.m4a",
+          "enAudio": "assets/audio/en-gb/ecc8c36e0c2b27.m4a",
           "zhAudio": "assets/audio/660b51e7b97f99.m4a"
         },
         {
           "en": "This is an explorer.",
           "zh": "这是一位探险家。",
-          "enAudio": "assets/audio/d94b685678bd54.m4a",
+          "enAudio": "assets/audio/en-gb/d94b685678bd54.m4a",
           "zhAudio": "assets/audio/f49ff1fcdcf259.m4a"
         },
         {
           "en": "What animals can you see?",
           "zh": "你能看见哪些动物？",
-          "enAudio": "assets/audio/e4f3cffe6bb7a8.m4a",
+          "enAudio": "assets/audio/en-gb/e4f3cffe6bb7a8.m4a",
           "zhAudio": "assets/audio/415653b2f5d683.m4a"
         },
         {
           "en": "I can see a monkey.",
           "zh": "我能看见一只猴子。",
-          "enAudio": "assets/audio/54621448edf9b3.m4a",
+          "enAudio": "assets/audio/en-gb/54621448edf9b3.m4a",
           "zhAudio": "assets/audio/a07db317eb266a.m4a"
         },
         {
           "en": "I can see an elephant.",
           "zh": "我能看见一头大象。",
-          "enAudio": "assets/audio/661cf693dbad52.m4a",
+          "enAudio": "assets/audio/en-gb/661cf693dbad52.m4a",
           "zhAudio": "assets/audio/0049dd70bdfd7c.m4a"
         }
       ],
@@ -1676,7 +1676,7 @@ window.ENGLISH_DATA = {
           "zh": "正在吃",
           "id": "18-0",
           "image": "assets/cards/18-0.webp",
-          "enAudio": "assets/audio/152044c7fdfcde.m4a",
+          "enAudio": "assets/audio/en-gb/152044c7fdfcde.m4a",
           "zhAudio": "assets/audio/ffce5a4023dca3.m4a"
         },
         {
@@ -1684,7 +1684,7 @@ window.ENGLISH_DATA = {
           "zh": "正在睡觉",
           "id": "18-1",
           "image": "assets/cards/18-1.webp",
-          "enAudio": "assets/audio/728ff93356dbfe.m4a",
+          "enAudio": "assets/audio/en-gb/728ff93356dbfe.m4a",
           "zhAudio": "assets/audio/2b24d9ea3057b9.m4a"
         },
         {
@@ -1692,7 +1692,7 @@ window.ENGLISH_DATA = {
           "zh": "正在蜿蜒爬行",
           "id": "18-2",
           "image": "assets/cards/18-2.webp",
-          "enAudio": "assets/audio/8669f92bac572c.m4a",
+          "enAudio": "assets/audio/en-gb/8669f92bac572c.m4a",
           "zhAudio": "assets/audio/fa0efeef3ecce9.m4a"
         },
         {
@@ -1700,7 +1700,7 @@ window.ENGLISH_DATA = {
           "zh": "正在攀爬",
           "id": "18-3",
           "image": "assets/cards/18-3.webp",
-          "enAudio": "assets/audio/c05dba3a8ecb4d.m4a",
+          "enAudio": "assets/audio/en-gb/c05dba3a8ecb4d.m4a",
           "zhAudio": "assets/audio/c4ef2ebf7f582e.m4a"
         },
         {
@@ -1708,7 +1708,7 @@ window.ENGLISH_DATA = {
           "zh": "正在跑步",
           "id": "18-4",
           "image": "assets/cards/18-4.webp",
-          "enAudio": "assets/audio/59f3d25459f21b.m4a",
+          "enAudio": "assets/audio/en-gb/59f3d25459f21b.m4a",
           "zhAudio": "assets/audio/5b3a1901b03aa4.m4a"
         },
         {
@@ -1716,7 +1716,7 @@ window.ENGLISH_DATA = {
           "zh": "正在走路",
           "id": "18-5",
           "image": "assets/cards/18-5.webp",
-          "enAudio": "assets/audio/14fbe4f9c08a11.m4a",
+          "enAudio": "assets/audio/en-gb/14fbe4f9c08a11.m4a",
           "zhAudio": "assets/audio/c1fe123f72d371.m4a"
         }
       ],
@@ -1724,37 +1724,37 @@ window.ENGLISH_DATA = {
         {
           "en": "What are you doing?",
           "zh": "你正在做什么？",
-          "enAudio": "assets/audio/98d37d2337399f.m4a",
+          "enAudio": "assets/audio/en-gb/98d37d2337399f.m4a",
           "zhAudio": "assets/audio/3a3f3a51ed1714.m4a"
         },
         {
           "en": "I’m eating.",
           "zh": "我正在吃东西。",
-          "enAudio": "assets/audio/4c69ef2835aea4.m4a",
+          "enAudio": "assets/audio/en-gb/4c69ef2835aea4.m4a",
           "zhAudio": "assets/audio/49a560777ca869.m4a"
         },
         {
           "en": "What is he doing?",
           "zh": "他正在做什么？",
-          "enAudio": "assets/audio/361cdcbd5d6285.m4a",
+          "enAudio": "assets/audio/en-gb/361cdcbd5d6285.m4a",
           "zhAudio": "assets/audio/ed96644d386bb0.m4a"
         },
         {
           "en": "He is sleeping.",
           "zh": "他正在睡觉。",
-          "enAudio": "assets/audio/2dd454ee23a7c1.m4a",
+          "enAudio": "assets/audio/en-gb/2dd454ee23a7c1.m4a",
           "zhAudio": "assets/audio/96a2b00f0498f5.m4a"
         },
         {
           "en": "What is she doing?",
           "zh": "她正在做什么？",
-          "enAudio": "assets/audio/9ba3b5414f69b6.m4a",
+          "enAudio": "assets/audio/en-gb/9ba3b5414f69b6.m4a",
           "zhAudio": "assets/audio/feeb13fc0d7784.m4a"
         },
         {
           "en": "She is running.",
           "zh": "她正在跑步。",
-          "enAudio": "assets/audio/a12bf488638118.m4a",
+          "enAudio": "assets/audio/en-gb/a12bf488638118.m4a",
           "zhAudio": "assets/audio/3d91530e72a7ad.m4a"
         }
       ],
@@ -1771,7 +1771,7 @@ window.ENGLISH_DATA = {
           "zh": "岩石",
           "id": "19-0",
           "image": "assets/cards/19-0.webp",
-          "enAudio": "assets/audio/93a0dc47a2ba08.m4a",
+          "enAudio": "assets/audio/en-gb/93a0dc47a2ba08.m4a",
           "zhAudio": "assets/audio/e2dee400d1b189.m4a"
         },
         {
@@ -1779,7 +1779,7 @@ window.ENGLISH_DATA = {
           "zh": "草地",
           "id": "19-1",
           "image": "assets/cards/19-1.webp",
-          "enAudio": "assets/audio/25daf2b06ad4f1.m4a",
+          "enAudio": "assets/audio/en-gb/25daf2b06ad4f1.m4a",
           "zhAudio": "assets/audio/503d7962c18a10.m4a"
         },
         {
@@ -1787,7 +1787,7 @@ window.ENGLISH_DATA = {
           "zh": "冰山",
           "id": "19-2",
           "image": "assets/cards/19-2.webp",
-          "enAudio": "assets/audio/0dc3acfcbb8bd1.m4a",
+          "enAudio": "assets/audio/en-gb/0dc3acfcbb8bd1.m4a",
           "zhAudio": "assets/audio/4cdbd9ed5b68c5.m4a"
         },
         {
@@ -1795,7 +1795,7 @@ window.ENGLISH_DATA = {
           "zh": "海洋",
           "id": "19-3",
           "image": "assets/cards/19-3.webp",
-          "enAudio": "assets/audio/da4dd29a108fff.m4a",
+          "enAudio": "assets/audio/en-gb/da4dd29a108fff.m4a",
           "zhAudio": "assets/audio/1822effcf5d3d5.m4a"
         },
         {
@@ -1803,7 +1803,7 @@ window.ENGLISH_DATA = {
           "zh": "河流",
           "id": "19-4",
           "image": "assets/cards/19-4.webp",
-          "enAudio": "assets/audio/66d20f9fe64953.m4a",
+          "enAudio": "assets/audio/en-gb/66d20f9fe64953.m4a",
           "zhAudio": "assets/audio/edb6f7e233e59e.m4a"
         }
       ],
@@ -1811,25 +1811,25 @@ window.ENGLISH_DATA = {
         {
           "en": "Where does a dolphin live?",
           "zh": "海豚住在哪里？",
-          "enAudio": "assets/audio/6afe9cc3cff008.m4a",
+          "enAudio": "assets/audio/en-gb/6afe9cc3cff008.m4a",
           "zhAudio": "assets/audio/5aa1c14f23ca59.m4a"
         },
         {
           "en": "A dolphin lives in the ocean.",
           "zh": "海豚生活在海洋里。",
-          "enAudio": "assets/audio/3d4761fe31cbc8.m4a",
+          "enAudio": "assets/audio/en-gb/3d4761fe31cbc8.m4a",
           "zhAudio": "assets/audio/720c721e682955.m4a"
         },
         {
           "en": "Where does a crocodile live?",
           "zh": "鳄鱼住在哪里？",
-          "enAudio": "assets/audio/80194870606990.m4a",
+          "enAudio": "assets/audio/en-gb/80194870606990.m4a",
           "zhAudio": "assets/audio/8c1284e920adda.m4a"
         },
         {
           "en": "A crocodile lives in the river.",
           "zh": "鳄鱼生活在河流里。",
-          "enAudio": "assets/audio/084c8ee9c64ac1.m4a",
+          "enAudio": "assets/audio/en-gb/084c8ee9c64ac1.m4a",
           "zhAudio": "assets/audio/55668273f0f062.m4a"
         }
       ],
@@ -1846,7 +1846,7 @@ window.ENGLISH_DATA = {
           "zh": "宇航员",
           "id": "20-0",
           "image": "assets/cards/20-0.webp",
-          "enAudio": "assets/audio/bdd0f9781c294b.m4a",
+          "enAudio": "assets/audio/en-gb/bdd0f9781c294b.m4a",
           "zhAudio": "assets/audio/268033d4eb0d67.m4a"
         },
         {
@@ -1854,7 +1854,7 @@ window.ENGLISH_DATA = {
           "zh": "飞行员",
           "id": "20-1",
           "image": "assets/cards/20-1.webp",
-          "enAudio": "assets/audio/2ec27af96d02a1.m4a",
+          "enAudio": "assets/audio/en-gb/2ec27af96d02a1.m4a",
           "zhAudio": "assets/audio/848c4e0908f9a6.m4a"
         },
         {
@@ -1862,7 +1862,7 @@ window.ENGLISH_DATA = {
           "zh": "消防员",
           "id": "20-2",
           "image": "assets/cards/20-2.webp",
-          "enAudio": "assets/audio/ca365d4438bdae.m4a",
+          "enAudio": "assets/audio/en-gb/ca365d4438bdae.m4a",
           "zhAudio": "assets/audio/ddb2335906d8db.m4a"
         },
         {
@@ -1870,7 +1870,7 @@ window.ENGLISH_DATA = {
           "zh": "男警察",
           "id": "20-3",
           "image": "assets/cards/20-3.webp",
-          "enAudio": "assets/audio/f5992f2ba57c8e.m4a",
+          "enAudio": "assets/audio/en-gb/f5992f2ba57c8e.m4a",
           "zhAudio": "assets/audio/628ead98507b75.m4a"
         }
       ],
@@ -1878,31 +1878,31 @@ window.ENGLISH_DATA = {
         {
           "en": "Who is this?",
           "zh": "这是谁？",
-          "enAudio": "assets/audio/ecc8c36e0c2b27.m4a",
+          "enAudio": "assets/audio/en-gb/ecc8c36e0c2b27.m4a",
           "zhAudio": "assets/audio/660b51e7b97f99.m4a"
         },
         {
           "en": "This is an astronaut.",
           "zh": "这是一位宇航员。",
-          "enAudio": "assets/audio/3edb623a2f30b6.m4a",
+          "enAudio": "assets/audio/en-gb/3edb623a2f30b6.m4a",
           "zhAudio": "assets/audio/26610440e0a357.m4a"
         },
         {
           "en": "This is a pilot.",
           "zh": "这是一位飞行员。",
-          "enAudio": "assets/audio/8a2efb44ba8d14.m4a",
+          "enAudio": "assets/audio/en-gb/8a2efb44ba8d14.m4a",
           "zhAudio": "assets/audio/9d4dc2775cc30f.m4a"
         },
         {
           "en": "This is a firefighter.",
           "zh": "这是一位消防员。",
-          "enAudio": "assets/audio/e3fc5c66d93d42.m4a",
+          "enAudio": "assets/audio/en-gb/e3fc5c66d93d42.m4a",
           "zhAudio": "assets/audio/08018e7fa9d5d2.m4a"
         },
         {
           "en": "This is a policeman.",
           "zh": "这是一位男警察。",
-          "enAudio": "assets/audio/3633ef06191731.m4a",
+          "enAudio": "assets/audio/en-gb/3633ef06191731.m4a",
           "zhAudio": "assets/audio/76f9d2ef9c7251.m4a"
         }
       ],
@@ -1919,7 +1919,7 @@ window.ENGLISH_DATA = {
           "zh": "宇航员",
           "id": "21-0",
           "image": "assets/cards/21-0.webp",
-          "enAudio": "assets/audio/bdd0f9781c294b.m4a",
+          "enAudio": "assets/audio/en-gb/bdd0f9781c294b.m4a",
           "zhAudio": "assets/audio/268033d4eb0d67.m4a"
         },
         {
@@ -1927,7 +1927,7 @@ window.ENGLISH_DATA = {
           "zh": "火箭",
           "id": "21-1",
           "image": "assets/cards/21-1.webp",
-          "enAudio": "assets/audio/4acdc8e8d0944f.m4a",
+          "enAudio": "assets/audio/en-gb/4acdc8e8d0944f.m4a",
           "zhAudio": "assets/audio/0aa13f856f4c98.m4a"
         },
         {
@@ -1935,7 +1935,7 @@ window.ENGLISH_DATA = {
           "zh": "地球",
           "id": "21-2",
           "image": "assets/cards/21-2.webp",
-          "enAudio": "assets/audio/c2a268408ff140.m4a",
+          "enAudio": "assets/audio/en-gb/c2a268408ff140.m4a",
           "zhAudio": "assets/audio/57aaab396e23b9.m4a"
         },
         {
@@ -1943,7 +1943,7 @@ window.ENGLISH_DATA = {
           "zh": "天空",
           "id": "21-3",
           "image": "assets/cards/21-3.webp",
-          "enAudio": "assets/audio/7f73bfebc7f915.m4a",
+          "enAudio": "assets/audio/en-gb/7f73bfebc7f915.m4a",
           "zhAudio": "assets/audio/c2e32a980f3892.m4a"
         },
         {
@@ -1951,7 +1951,7 @@ window.ENGLISH_DATA = {
           "zh": "星星",
           "id": "21-4",
           "image": "assets/cards/21-4.webp",
-          "enAudio": "assets/audio/89c78e0e1972cf.m4a",
+          "enAudio": "assets/audio/en-gb/89c78e0e1972cf.m4a",
           "zhAudio": "assets/audio/f9600c9ea3ac7c.m4a"
         },
         {
@@ -1959,7 +1959,7 @@ window.ENGLISH_DATA = {
           "zh": "月亮",
           "id": "21-5",
           "image": "assets/cards/21-5.webp",
-          "enAudio": "assets/audio/0a2dac72347144.m4a",
+          "enAudio": "assets/audio/en-gb/0a2dac72347144.m4a",
           "zhAudio": "assets/audio/6de2420005e6f1.m4a"
         }
       ],
@@ -1967,31 +1967,31 @@ window.ENGLISH_DATA = {
         {
           "en": "This is an astronaut.",
           "zh": "这是一位宇航员。",
-          "enAudio": "assets/audio/3edb623a2f30b6.m4a",
+          "enAudio": "assets/audio/en-gb/3edb623a2f30b6.m4a",
           "zhAudio": "assets/audio/26610440e0a357.m4a"
         },
         {
           "en": "What can you see?",
           "zh": "你能看见什么？",
-          "enAudio": "assets/audio/7e121fd32f2762.m4a",
+          "enAudio": "assets/audio/en-gb/7e121fd32f2762.m4a",
           "zhAudio": "assets/audio/6516741bd5da65.m4a"
         },
         {
           "en": "I can see a rocket.",
           "zh": "我能看见一枚火箭。",
-          "enAudio": "assets/audio/90ce6804edc9e9.m4a",
+          "enAudio": "assets/audio/en-gb/90ce6804edc9e9.m4a",
           "zhAudio": "assets/audio/19fb5dae3b3c25.m4a"
         },
         {
           "en": "I can see the moon.",
           "zh": "我能看见月亮。",
-          "enAudio": "assets/audio/bc679c2bae1863.m4a",
+          "enAudio": "assets/audio/en-gb/bc679c2bae1863.m4a",
           "zhAudio": "assets/audio/d12fbb0ef49f59.m4a"
         },
         {
           "en": "I can see the Earth.",
           "zh": "我能看见地球。",
-          "enAudio": "assets/audio/ca56b7c2d01568.m4a",
+          "enAudio": "assets/audio/en-gb/ca56b7c2d01568.m4a",
           "zhAudio": "assets/audio/586cb7ef8e7054.m4a"
         }
       ],
@@ -2007,35 +2007,35 @@ window.ENGLISH_DATA = {
           "en": "daytime",
           "zh": "白天",
           "id": "22-0",
-          "enAudio": "assets/audio/ba200f010d48ae.m4a",
+          "enAudio": "assets/audio/en-gb/ba200f010d48ae.m4a",
           "zhAudio": "assets/audio/f0ceb7a9002d7f.m4a"
         },
         {
           "en": "nighttime",
           "zh": "夜晚",
           "id": "22-1",
-          "enAudio": "assets/audio/5627ac47575580.m4a",
+          "enAudio": "assets/audio/en-gb/5627ac47575580.m4a",
           "zhAudio": "assets/audio/be233edaf4da49.m4a"
         },
         {
           "en": "light",
           "zh": "明亮的",
           "id": "22-2",
-          "enAudio": "assets/audio/0eeb20388fa1b9.m4a",
+          "enAudio": "assets/audio/en-gb/0eeb20388fa1b9.m4a",
           "zhAudio": "assets/audio/b19bf00ae596ec.m4a"
         },
         {
           "en": "dark",
           "zh": "黑暗的",
           "id": "22-3",
-          "enAudio": "assets/audio/08bde6e958132c.m4a",
+          "enAudio": "assets/audio/en-gb/08bde6e958132c.m4a",
           "zhAudio": "assets/audio/3002c23f34b50d.m4a"
         },
         {
           "en": "owls",
           "zh": "猫头鹰们",
           "id": "22-4",
-          "enAudio": "assets/audio/dd1efa17bcf2e6.m4a",
+          "enAudio": "assets/audio/en-gb/dd1efa17bcf2e6.m4a",
           "zhAudio": "assets/audio/b08fee71a63123.m4a"
         }
       ],
@@ -2043,97 +2043,97 @@ window.ENGLISH_DATA = {
         {
           "en": "It’s daytime. It’s light.",
           "zh": "现在是白天，天是亮的。",
-          "enAudio": "assets/audio/0103697e84a0d6.m4a",
+          "enAudio": "assets/audio/en-gb/0103697e84a0d6.m4a",
           "zhAudio": "assets/audio/be87242a60b96c.m4a"
         },
         {
           "en": "It’s nighttime. It’s dark.",
           "zh": "现在是夜晚，天是黑的。",
-          "enAudio": "assets/audio/51bca951e82fca.m4a",
+          "enAudio": "assets/audio/en-gb/51bca951e82fca.m4a",
           "zhAudio": "assets/audio/13a4b5890cc875.m4a"
         },
         {
           "en": "What are you doing?",
           "zh": "你正在做什么？",
-          "enAudio": "assets/audio/98d37d2337399f.m4a",
+          "enAudio": "assets/audio/en-gb/98d37d2337399f.m4a",
           "zhAudio": "assets/audio/3a3f3a51ed1714.m4a"
         },
         {
           "en": "I’m walking.",
           "zh": "我正在走路。",
-          "enAudio": "assets/audio/ca07e0cdd4d27f.m4a",
+          "enAudio": "assets/audio/en-gb/ca07e0cdd4d27f.m4a",
           "zhAudio": "assets/audio/47a2422366916d.m4a"
         },
         {
           "en": "What is he doing?",
           "zh": "他正在做什么？",
-          "enAudio": "assets/audio/361cdcbd5d6285.m4a",
+          "enAudio": "assets/audio/en-gb/361cdcbd5d6285.m4a",
           "zhAudio": "assets/audio/ed96644d386bb0.m4a"
         },
         {
           "en": "He is sleeping.",
           "zh": "他正在睡觉。",
-          "enAudio": "assets/audio/2dd454ee23a7c1.m4a",
+          "enAudio": "assets/audio/en-gb/2dd454ee23a7c1.m4a",
           "zhAudio": "assets/audio/96a2b00f0498f5.m4a"
         },
         {
           "en": "What can we see in the daytime?",
           "zh": "我们白天能看见什么？",
-          "enAudio": "assets/audio/b95df62cd8f004.m4a",
+          "enAudio": "assets/audio/en-gb/b95df62cd8f004.m4a",
           "zhAudio": "assets/audio/071bff3f05120f.m4a"
         },
         {
           "en": "We can see the sun in the daytime.",
           "zh": "我们白天能看见太阳。",
-          "enAudio": "assets/audio/5f613de7e236c5.m4a",
+          "enAudio": "assets/audio/en-gb/5f613de7e236c5.m4a",
           "zhAudio": "assets/audio/deb64802303827.m4a"
         },
         {
           "en": "What can we see at night?",
           "zh": "我们夜晚能看见什么？",
-          "enAudio": "assets/audio/0bbbd4bef25ecf.m4a",
+          "enAudio": "assets/audio/en-gb/0bbbd4bef25ecf.m4a",
           "zhAudio": "assets/audio/fa0287e2ac78f3.m4a"
         },
         {
           "en": "We can see stars at night.",
           "zh": "我们夜晚能看见星星。",
-          "enAudio": "assets/audio/eba52763e76b43.m4a",
+          "enAudio": "assets/audio/en-gb/eba52763e76b43.m4a",
           "zhAudio": "assets/audio/7696a6f04e1c11.m4a"
         },
         {
           "en": "What can we do in the daytime?",
           "zh": "我们白天可以做什么？",
-          "enAudio": "assets/audio/b33432673d3d91.m4a",
+          "enAudio": "assets/audio/en-gb/b33432673d3d91.m4a",
           "zhAudio": "assets/audio/b93e95aed3ea99.m4a"
         },
         {
           "en": "We can play in the daytime.",
           "zh": "我们白天可以玩耍。",
-          "enAudio": "assets/audio/c7c0e54ee29896.m4a",
+          "enAudio": "assets/audio/en-gb/c7c0e54ee29896.m4a",
           "zhAudio": "assets/audio/28e84655c7c28c.m4a"
         },
         {
           "en": "What can we do at night?",
           "zh": "我们夜晚可以做什么？",
-          "enAudio": "assets/audio/99d7e14c3f269c.m4a",
+          "enAudio": "assets/audio/en-gb/99d7e14c3f269c.m4a",
           "zhAudio": "assets/audio/743942b763c95e.m4a"
         },
         {
           "en": "We can sleep at night.",
           "zh": "我们夜晚可以睡觉。",
-          "enAudio": "assets/audio/779e6918f958cb.m4a",
+          "enAudio": "assets/audio/en-gb/779e6918f958cb.m4a",
           "zhAudio": "assets/audio/309c4039dfd57f.m4a"
         },
         {
           "en": "What animals like nighttime?",
           "zh": "哪些动物喜欢夜晚？",
-          "enAudio": "assets/audio/12374d8c38342b.m4a",
+          "enAudio": "assets/audio/en-gb/12374d8c38342b.m4a",
           "zhAudio": "assets/audio/c0c91f618f4311.m4a"
         },
         {
           "en": "Owls like the nighttime.",
           "zh": "猫头鹰喜欢夜晚。",
-          "enAudio": "assets/audio/433a23fc4a1c84.m4a",
+          "enAudio": "assets/audio/en-gb/433a23fc4a1c84.m4a",
           "zhAudio": "assets/audio/e5ca0d261237fe.m4a"
         }
       ],
@@ -2150,7 +2150,7 @@ window.ENGLISH_DATA = {
           "zh": "夜晚",
           "id": "23-0",
           "image": "assets/cards/23-0.webp",
-          "enAudio": "assets/audio/5627ac47575580.m4a",
+          "enAudio": "assets/audio/en-gb/5627ac47575580.m4a",
           "zhAudio": "assets/audio/be233edaf4da49.m4a"
         },
         {
@@ -2158,7 +2158,7 @@ window.ENGLISH_DATA = {
           "zh": "黑暗的",
           "id": "23-1",
           "image": "assets/cards/23-1.webp",
-          "enAudio": "assets/audio/08bde6e958132c.m4a",
+          "enAudio": "assets/audio/en-gb/08bde6e958132c.m4a",
           "zhAudio": "assets/audio/3002c23f34b50d.m4a"
         },
         {
@@ -2166,7 +2166,7 @@ window.ENGLISH_DATA = {
           "zh": "白天",
           "id": "23-2",
           "image": "assets/cards/23-2.webp",
-          "enAudio": "assets/audio/ba200f010d48ae.m4a",
+          "enAudio": "assets/audio/en-gb/ba200f010d48ae.m4a",
           "zhAudio": "assets/audio/f0ceb7a9002d7f.m4a"
         },
         {
@@ -2174,7 +2174,7 @@ window.ENGLISH_DATA = {
           "zh": "明亮的",
           "id": "23-3",
           "image": "assets/cards/23-3.webp",
-          "enAudio": "assets/audio/0eeb20388fa1b9.m4a",
+          "enAudio": "assets/audio/en-gb/0eeb20388fa1b9.m4a",
           "zhAudio": "assets/audio/b19bf00ae596ec.m4a"
         },
         {
@@ -2182,7 +2182,7 @@ window.ENGLISH_DATA = {
           "zh": "月亮",
           "id": "23-4",
           "image": "assets/cards/23-4.webp",
-          "enAudio": "assets/audio/0a2dac72347144.m4a",
+          "enAudio": "assets/audio/en-gb/0a2dac72347144.m4a",
           "zhAudio": "assets/audio/6de2420005e6f1.m4a"
         },
         {
@@ -2190,7 +2190,7 @@ window.ENGLISH_DATA = {
           "zh": "星星",
           "id": "23-5",
           "image": "assets/cards/23-5.webp",
-          "enAudio": "assets/audio/89c78e0e1972cf.m4a",
+          "enAudio": "assets/audio/en-gb/89c78e0e1972cf.m4a",
           "zhAudio": "assets/audio/f9600c9ea3ac7c.m4a"
         },
         {
@@ -2198,7 +2198,7 @@ window.ENGLISH_DATA = {
           "zh": "太阳",
           "id": "23-6",
           "image": "assets/cards/23-6.webp",
-          "enAudio": "assets/audio/f527595ff396e3.m4a",
+          "enAudio": "assets/audio/en-gb/f527595ff396e3.m4a",
           "zhAudio": "assets/audio/be076472ba1f03.m4a"
         },
         {
@@ -2206,7 +2206,7 @@ window.ENGLISH_DATA = {
           "zh": "猫头鹰",
           "id": "23-7",
           "image": "assets/cards/23-7.webp",
-          "enAudio": "assets/audio/79337fc18a901a.m4a",
+          "enAudio": "assets/audio/en-gb/79337fc18a901a.m4a",
           "zhAudio": "assets/audio/5bde2e86c20ec7.m4a"
         }
       ],
@@ -2214,37 +2214,37 @@ window.ENGLISH_DATA = {
         {
           "en": "It’s nighttime. It’s dark.",
           "zh": "现在是夜晚，天是黑的。",
-          "enAudio": "assets/audio/51bca951e82fca.m4a",
+          "enAudio": "assets/audio/en-gb/51bca951e82fca.m4a",
           "zhAudio": "assets/audio/13a4b5890cc875.m4a"
         },
         {
           "en": "It’s daytime. It’s light.",
           "zh": "现在是白天，天是亮的。",
-          "enAudio": "assets/audio/0103697e84a0d6.m4a",
+          "enAudio": "assets/audio/en-gb/0103697e84a0d6.m4a",
           "zhAudio": "assets/audio/be87242a60b96c.m4a"
         },
         {
           "en": "What can we do in the daytime?",
           "zh": "我们白天可以做什么？",
-          "enAudio": "assets/audio/b33432673d3d91.m4a",
+          "enAudio": "assets/audio/en-gb/b33432673d3d91.m4a",
           "zhAudio": "assets/audio/b93e95aed3ea99.m4a"
         },
         {
           "en": "We can play in the daytime.",
           "zh": "我们白天可以玩耍。",
-          "enAudio": "assets/audio/c7c0e54ee29896.m4a",
+          "enAudio": "assets/audio/en-gb/c7c0e54ee29896.m4a",
           "zhAudio": "assets/audio/28e84655c7c28c.m4a"
         },
         {
           "en": "What can we do at night?",
           "zh": "我们夜晚可以做什么？",
-          "enAudio": "assets/audio/99d7e14c3f269c.m4a",
+          "enAudio": "assets/audio/en-gb/99d7e14c3f269c.m4a",
           "zhAudio": "assets/audio/743942b763c95e.m4a"
         },
         {
           "en": "We can sleep at night.",
           "zh": "我们夜晚可以睡觉。",
-          "enAudio": "assets/audio/779e6918f958cb.m4a",
+          "enAudio": "assets/audio/en-gb/779e6918f958cb.m4a",
           "zhAudio": "assets/audio/309c4039dfd57f.m4a"
         }
       ],
@@ -2261,7 +2261,7 @@ window.ENGLISH_DATA = {
           "zh": "饿的",
           "id": "24-0",
           "image": "assets/cards/24-0.webp",
-          "enAudio": "assets/audio/e4c3f604b117b0.m4a",
+          "enAudio": "assets/audio/en-gb/e4c3f604b117b0.m4a",
           "zhAudio": "assets/audio/d5130108148f95.m4a"
         },
         {
@@ -2269,7 +2269,7 @@ window.ENGLISH_DATA = {
           "zh": "吃",
           "id": "24-1",
           "image": "assets/cards/24-1.webp",
-          "enAudio": "assets/audio/428dfde4b17465.m4a",
+          "enAudio": "assets/audio/en-gb/428dfde4b17465.m4a",
           "zhAudio": "assets/audio/b57d3ed3cbcc84.m4a"
         },
         {
@@ -2277,7 +2277,7 @@ window.ENGLISH_DATA = {
           "zh": "食物",
           "id": "24-2",
           "image": "assets/cards/24-2.webp",
-          "enAudio": "assets/audio/5083ac16641160.m4a",
+          "enAudio": "assets/audio/en-gb/5083ac16641160.m4a",
           "zhAudio": "assets/audio/640eab04629121.m4a"
         },
         {
@@ -2285,7 +2285,7 @@ window.ENGLISH_DATA = {
           "zh": "渴的",
           "id": "24-3",
           "image": "assets/cards/24-3.webp",
-          "enAudio": "assets/audio/4c5615cf0cd8b2.m4a",
+          "enAudio": "assets/audio/en-gb/4c5615cf0cd8b2.m4a",
           "zhAudio": "assets/audio/3cad91af65edd2.m4a"
         },
         {
@@ -2293,7 +2293,7 @@ window.ENGLISH_DATA = {
           "zh": "喝",
           "id": "24-4",
           "image": "assets/cards/24-4.webp",
-          "enAudio": "assets/audio/33fc9deaee0b7f.m4a",
+          "enAudio": "assets/audio/en-gb/33fc9deaee0b7f.m4a",
           "zhAudio": "assets/audio/24b22b4400f28a.m4a"
         },
         {
@@ -2301,7 +2301,7 @@ window.ENGLISH_DATA = {
           "zh": "饮品",
           "id": "24-5",
           "image": "assets/cards/24-5.webp",
-          "enAudio": "assets/audio/bd2de3cbf35d88.m4a",
+          "enAudio": "assets/audio/en-gb/bd2de3cbf35d88.m4a",
           "zhAudio": "assets/audio/7faf29a3ddef06.m4a"
         }
       ],
@@ -2309,31 +2309,31 @@ window.ENGLISH_DATA = {
         {
           "en": "How do you feel?",
           "zh": "你感觉怎么样？",
-          "enAudio": "assets/audio/c18c58bfdf9d3d.m4a",
+          "enAudio": "assets/audio/en-gb/c18c58bfdf9d3d.m4a",
           "zhAudio": "assets/audio/5d9d580b87e38f.m4a"
         },
         {
           "en": "I’m hungry.",
           "zh": "我饿了。",
-          "enAudio": "assets/audio/2806e18130218e.m4a",
+          "enAudio": "assets/audio/en-gb/2806e18130218e.m4a",
           "zhAudio": "assets/audio/bb2f75d8fd0e3c.m4a"
         },
         {
           "en": "I’m thirsty.",
           "zh": "我渴了。",
-          "enAudio": "assets/audio/fc96a3bf209ded.m4a",
+          "enAudio": "assets/audio/en-gb/fc96a3bf209ded.m4a",
           "zhAudio": "assets/audio/547a47e753f907.m4a"
         },
         {
           "en": "Let’s eat.",
           "zh": "我们来吃东西吧。",
-          "enAudio": "assets/audio/c1312b0e344922.m4a",
+          "enAudio": "assets/audio/en-gb/c1312b0e344922.m4a",
           "zhAudio": "assets/audio/d4d23b4b9eede3.m4a"
         },
         {
           "en": "Let’s drink some water.",
           "zh": "我们喝点水吧。",
-          "enAudio": "assets/audio/7a16fcc184c10f.m4a",
+          "enAudio": "assets/audio/en-gb/7a16fcc184c10f.m4a",
           "zhAudio": "assets/audio/56bf284255ca2b.m4a"
         }
       ],
@@ -2350,7 +2350,7 @@ window.ENGLISH_DATA = {
           "zh": "橙子",
           "id": "25-0",
           "image": "assets/cards/25-0.webp",
-          "enAudio": "assets/audio/067fd7227921a3.m4a",
+          "enAudio": "assets/audio/en-gb/067fd7227921a3.m4a",
           "zhAudio": "assets/audio/65d8afb368d723.m4a"
         },
         {
@@ -2358,7 +2358,7 @@ window.ENGLISH_DATA = {
           "zh": "香蕉",
           "id": "25-1",
           "image": "assets/cards/25-1.webp",
-          "enAudio": "assets/audio/9225661970b7a3.m4a",
+          "enAudio": "assets/audio/en-gb/9225661970b7a3.m4a",
           "zhAudio": "assets/audio/b6c8a1fb479539.m4a"
         },
         {
@@ -2366,7 +2366,7 @@ window.ENGLISH_DATA = {
           "zh": "梨",
           "id": "25-2",
           "image": "assets/cards/25-2.webp",
-          "enAudio": "assets/audio/deacd8205ddb5b.m4a",
+          "enAudio": "assets/audio/en-gb/deacd8205ddb5b.m4a",
           "zhAudio": "assets/audio/da2e6400c1ad1f.m4a"
         },
         {
@@ -2374,7 +2374,7 @@ window.ENGLISH_DATA = {
           "zh": "樱桃",
           "id": "25-3",
           "image": "assets/cards/25-3.webp",
-          "enAudio": "assets/audio/93286dcad6b6dc.m4a",
+          "enAudio": "assets/audio/en-gb/93286dcad6b6dc.m4a",
           "zhAudio": "assets/audio/45135414e6797d.m4a"
         },
         {
@@ -2382,7 +2382,7 @@ window.ENGLISH_DATA = {
           "zh": "草莓",
           "id": "25-4",
           "image": "assets/cards/25-4.webp",
-          "enAudio": "assets/audio/694a561e39b8c4.m4a",
+          "enAudio": "assets/audio/en-gb/694a561e39b8c4.m4a",
           "zhAudio": "assets/audio/fbe044b3cc5b2c.m4a"
         },
         {
@@ -2390,7 +2390,7 @@ window.ENGLISH_DATA = {
           "zh": "公主",
           "id": "25-5",
           "image": "assets/cards/25-5.webp",
-          "enAudio": "assets/audio/6502146b2ce0f5.m4a",
+          "enAudio": "assets/audio/en-gb/6502146b2ce0f5.m4a",
           "zhAudio": "assets/audio/70dae6299b9242.m4a"
         },
         {
@@ -2398,7 +2398,7 @@ window.ENGLISH_DATA = {
           "zh": "王子",
           "id": "25-6",
           "image": "assets/cards/25-6.webp",
-          "enAudio": "assets/audio/e2dc26f3cb42e0.m4a",
+          "enAudio": "assets/audio/en-gb/e2dc26f3cb42e0.m4a",
           "zhAudio": "assets/audio/4185d3ec40900b.m4a"
         },
         {
@@ -2406,7 +2406,7 @@ window.ENGLISH_DATA = {
           "zh": "龙",
           "id": "25-7",
           "image": "assets/cards/25-7.webp",
-          "enAudio": "assets/audio/c84572dbd011e8.m4a",
+          "enAudio": "assets/audio/en-gb/c84572dbd011e8.m4a",
           "zhAudio": "assets/audio/04d50d24ed4703.m4a"
         },
         {
@@ -2414,7 +2414,7 @@ window.ENGLISH_DATA = {
           "zh": "苹果",
           "id": "25-8",
           "image": "assets/cards/25-8.webp",
-          "enAudio": "assets/audio/787f21812ada6b.m4a",
+          "enAudio": "assets/audio/en-gb/787f21812ada6b.m4a",
           "zhAudio": "assets/audio/f76c2a33f52801.m4a"
         }
       ],
@@ -2422,37 +2422,37 @@ window.ENGLISH_DATA = {
         {
           "en": "What fruit can you see?",
           "zh": "你能看见什么水果？",
-          "enAudio": "assets/audio/4d5ee0bb1c9b3e.m4a",
+          "enAudio": "assets/audio/en-gb/4d5ee0bb1c9b3e.m4a",
           "zhAudio": "assets/audio/951663ba78fa9a.m4a"
         },
         {
           "en": "I can see oranges.",
           "zh": "我能看见橙子。",
-          "enAudio": "assets/audio/68547a7c2305c8.m4a",
+          "enAudio": "assets/audio/en-gb/68547a7c2305c8.m4a",
           "zhAudio": "assets/audio/18f9131840f37b.m4a"
         },
         {
           "en": "What do you see?",
           "zh": "你看见什么了？",
-          "enAudio": "assets/audio/30c267008cff88.m4a",
+          "enAudio": "assets/audio/en-gb/30c267008cff88.m4a",
           "zhAudio": "assets/audio/17b63739d3990d.m4a"
         },
         {
           "en": "I see a princess.",
           "zh": "我看见了一位公主。",
-          "enAudio": "assets/audio/39baa7f922c827.m4a",
+          "enAudio": "assets/audio/en-gb/39baa7f922c827.m4a",
           "zhAudio": "assets/audio/c13241aacee0ac.m4a"
         },
         {
           "en": "I see a prince.",
           "zh": "我看见了一位王子。",
-          "enAudio": "assets/audio/421a1ddf27d286.m4a",
+          "enAudio": "assets/audio/en-gb/421a1ddf27d286.m4a",
           "zhAudio": "assets/audio/2d659ae1e6ecdb.m4a"
         },
         {
           "en": "I see a dragon.",
           "zh": "我看见了一条龙。",
-          "enAudio": "assets/audio/177526da962e1d.m4a",
+          "enAudio": "assets/audio/en-gb/177526da962e1d.m4a",
           "zhAudio": "assets/audio/3b1c4a169996b4.m4a"
         }
       ],
@@ -2469,7 +2469,7 @@ window.ENGLISH_DATA = {
           "zh": "牛奶",
           "id": "26-0",
           "image": "assets/cards/26-0.webp",
-          "enAudio": "assets/audio/bbf977bf5875de.m4a",
+          "enAudio": "assets/audio/en-gb/bbf977bf5875de.m4a",
           "zhAudio": "assets/audio/212b651fe7ad6f.m4a"
         },
         {
@@ -2477,7 +2477,7 @@ window.ENGLISH_DATA = {
           "zh": "果汁",
           "id": "26-1",
           "image": "assets/cards/26-1.webp",
-          "enAudio": "assets/audio/947c8f161018dc.m4a",
+          "enAudio": "assets/audio/en-gb/947c8f161018dc.m4a",
           "zhAudio": "assets/audio/c989c0667bf070.m4a"
         },
         {
@@ -2485,7 +2485,7 @@ window.ENGLISH_DATA = {
           "zh": "水",
           "id": "26-2",
           "image": "assets/cards/26-2.webp",
-          "enAudio": "assets/audio/5856e45c21c004.m4a",
+          "enAudio": "assets/audio/en-gb/5856e45c21c004.m4a",
           "zhAudio": "assets/audio/6e71dd3b101045.m4a"
         },
         {
@@ -2493,7 +2493,7 @@ window.ENGLISH_DATA = {
           "zh": "三明治",
           "id": "26-3",
           "image": "assets/cards/26-3.webp",
-          "enAudio": "assets/audio/a5a22cc1ac1b04.m4a",
+          "enAudio": "assets/audio/en-gb/a5a22cc1ac1b04.m4a",
           "zhAudio": "assets/audio/aa0ce55db68156.m4a"
         },
         {
@@ -2501,7 +2501,7 @@ window.ENGLISH_DATA = {
           "zh": "披萨",
           "id": "26-4",
           "image": "assets/cards/26-4.webp",
-          "enAudio": "assets/audio/736b1d28c7e5b1.m4a",
+          "enAudio": "assets/audio/en-gb/736b1d28c7e5b1.m4a",
           "zhAudio": "assets/audio/82cec5c5b64cc0.m4a"
         },
         {
@@ -2509,7 +2509,7 @@ window.ENGLISH_DATA = {
           "zh": "酸奶",
           "id": "26-5",
           "image": "assets/cards/26-5.webp",
-          "enAudio": "assets/audio/dcefdec4dec1ed.m4a",
+          "enAudio": "assets/audio/en-gb/dcefdec4dec1ed.m4a",
           "zhAudio": "assets/audio/4b96cca42514f7.m4a"
         }
       ],
@@ -2517,37 +2517,37 @@ window.ENGLISH_DATA = {
         {
           "en": "What do you see?",
           "zh": "你看见什么了？",
-          "enAudio": "assets/audio/30c267008cff88.m4a",
+          "enAudio": "assets/audio/en-gb/30c267008cff88.m4a",
           "zhAudio": "assets/audio/17b63739d3990d.m4a"
         },
         {
           "en": "I see milk.",
           "zh": "我看见了牛奶。",
-          "enAudio": "assets/audio/8999441d4bd695.m4a",
+          "enAudio": "assets/audio/en-gb/8999441d4bd695.m4a",
           "zhAudio": "assets/audio/7e31ec680e397b.m4a"
         },
         {
           "en": "What do you want?",
           "zh": "你想要什么？",
-          "enAudio": "assets/audio/ec7e1f6f966f8a.m4a",
+          "enAudio": "assets/audio/en-gb/ec7e1f6f966f8a.m4a",
           "zhAudio": "assets/audio/ac5c38744fb7ec.m4a"
         },
         {
           "en": "I want water.",
           "zh": "我想要水。",
-          "enAudio": "assets/audio/5fb12c64321ebe.m4a",
+          "enAudio": "assets/audio/en-gb/5fb12c64321ebe.m4a",
           "zhAudio": "assets/audio/8e5baefa00c4a2.m4a"
         },
         {
           "en": "I want a sandwich.",
           "zh": "我想要一个三明治。",
-          "enAudio": "assets/audio/c47c26996baead.m4a",
+          "enAudio": "assets/audio/en-gb/c47c26996baead.m4a",
           "zhAudio": "assets/audio/581da3eb6320c6.m4a"
         },
         {
           "en": "I want some pizza.",
           "zh": "我想要一些披萨。",
-          "enAudio": "assets/audio/672b5dd031c3ee.m4a",
+          "enAudio": "assets/audio/en-gb/672b5dd031c3ee.m4a",
           "zhAudio": "assets/audio/c0f2eeece5b0dc.m4a"
         }
       ],
@@ -2564,7 +2564,7 @@ window.ENGLISH_DATA = {
           "zh": "草莓",
           "id": "27-0",
           "image": "assets/cards/27-0.webp",
-          "enAudio": "assets/audio/694a561e39b8c4.m4a",
+          "enAudio": "assets/audio/en-gb/694a561e39b8c4.m4a",
           "zhAudio": "assets/audio/fbe044b3cc5b2c.m4a"
         },
         {
@@ -2572,7 +2572,7 @@ window.ENGLISH_DATA = {
           "zh": "橙子",
           "id": "27-1",
           "image": "assets/cards/27-1.webp",
-          "enAudio": "assets/audio/067fd7227921a3.m4a",
+          "enAudio": "assets/audio/en-gb/067fd7227921a3.m4a",
           "zhAudio": "assets/audio/65d8afb368d723.m4a"
         },
         {
@@ -2580,7 +2580,7 @@ window.ENGLISH_DATA = {
           "zh": "香蕉",
           "id": "27-2",
           "image": "assets/cards/27-2.webp",
-          "enAudio": "assets/audio/9225661970b7a3.m4a",
+          "enAudio": "assets/audio/en-gb/9225661970b7a3.m4a",
           "zhAudio": "assets/audio/b6c8a1fb479539.m4a"
         },
         {
@@ -2588,7 +2588,7 @@ window.ENGLISH_DATA = {
           "zh": "樱桃",
           "id": "27-3",
           "image": "assets/cards/27-3.webp",
-          "enAudio": "assets/audio/93286dcad6b6dc.m4a",
+          "enAudio": "assets/audio/en-gb/93286dcad6b6dc.m4a",
           "zhAudio": "assets/audio/45135414e6797d.m4a"
         },
         {
@@ -2596,7 +2596,7 @@ window.ENGLISH_DATA = {
           "zh": "梨",
           "id": "27-4",
           "image": "assets/cards/27-4.webp",
-          "enAudio": "assets/audio/deacd8205ddb5b.m4a",
+          "enAudio": "assets/audio/en-gb/deacd8205ddb5b.m4a",
           "zhAudio": "assets/audio/da2e6400c1ad1f.m4a"
         }
       ],
@@ -2604,31 +2604,31 @@ window.ENGLISH_DATA = {
         {
           "en": "Do you like strawberries?",
           "zh": "你喜欢草莓吗？",
-          "enAudio": "assets/audio/ac54a8fefd421d.m4a",
+          "enAudio": "assets/audio/en-gb/ac54a8fefd421d.m4a",
           "zhAudio": "assets/audio/4b8cc16ec206ba.m4a"
         },
         {
           "en": "Yes, I do.",
           "zh": "是的，我喜欢。",
-          "enAudio": "assets/audio/665a3b5dcdfda9.m4a",
+          "enAudio": "assets/audio/en-gb/665a3b5dcdfda9.m4a",
           "zhAudio": "assets/audio/53143c5939676f.m4a"
         },
         {
           "en": "No, I don’t.",
           "zh": "不，我不喜欢。",
-          "enAudio": "assets/audio/d4c04c7a81f76b.m4a",
+          "enAudio": "assets/audio/en-gb/d4c04c7a81f76b.m4a",
           "zhAudio": "assets/audio/62957497bd778d.m4a"
         },
         {
           "en": "I like bananas.",
           "zh": "我喜欢香蕉。",
-          "enAudio": "assets/audio/e7d4d6bf1eb435.m4a",
+          "enAudio": "assets/audio/en-gb/e7d4d6bf1eb435.m4a",
           "zhAudio": "assets/audio/a097118c1cc45d.m4a"
         },
         {
           "en": "I don’t like pears.",
           "zh": "我不喜欢梨。",
-          "enAudio": "assets/audio/fe9a4d1d59e243.m4a",
+          "enAudio": "assets/audio/en-gb/fe9a4d1d59e243.m4a",
           "zhAudio": "assets/audio/9eb38c3ffb9964.m4a"
         }
       ],
