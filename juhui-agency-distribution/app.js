@@ -38,7 +38,7 @@ function esc(value) {
 const icon = name => '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
 const mark = number => '<button type="button" class="mark" data-note="' + number + '" aria-label="查看说明 ' + number + '">' + number + '</button>';
 const changedFields = new Set(['意向发行渠道', '国内渠道排除项', '红果评估', '综合结果', '漫剧专项AI创作佐证材料',
-  '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '发行状态', '渠道发行状态', '内容评估状态', '微信视频号送审情况', '送审状态', '送审时间']);
+  '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '内容评估状态', '微信视频号送审情况', '送审状态', '送审时间']);
 const fieldName = name => '<span' + (changedFields.has(name) ? ' class="changed-field"' : '') + '>' + esc(name) + '</span>';
 const opt = (value, current) => '<option value="' + esc(value) + '"' + (value === current ? ' selected' : '') + '>' + esc(value) + '</option>';
 const options = (values, current) => values.map(value => opt(value, current)).join('');
@@ -153,8 +153,8 @@ function supplierContent() {
     ['name', '合集名称'], ['release', '渠道', RELEASE], ['type', '剧集类型', TYPES], ['round', '发行轮次', ['首发', '二轮']],
     ['material', '物料状态', ['待提交', '审核中', '通过', '拒绝']], ['film', '正片状态', ['待提交', '审核中', '通过']],
     ['status', '渠道发行状态', ['待生成', ...STAGES]]
-  ]) + listing('合集列表', ['ID', '合集名称', '集数', '创建时间', '物料审核状态', '正片审核状态', '渠道发行状态', '操作 ' + mark(2)], rows,
-    act('＋ 提交剧集信息', 'submit', '', 'btn primary'), { note: 1 });
+  ]) + listing('合集列表', ['ID', '合集名称', '集数', '创建时间', '物料审核状态', '正片审核状态', '渠道发行状态', '操作 ' + mark(1)], rows,
+    act('＋ 提交剧集信息', 'submit', '', 'btn primary'));
 }
 
 function checkList(name, values, selected, kind = 'checkbox') {
@@ -467,8 +467,8 @@ function dialogBody(modal) {
       const rows = channelsFor(r).map(channel => line(esc(r.id + '-' + (channelsFor(r).indexOf(channel) + 1)), esc(channel), tag(issuanceStatus(r)),
         tag(r.stage === STAGES[3] ? '已上线' : '待上线'), esc(r.assignment[channel] || '—'), '—',
         buttons(act('查看详情', 'channel-detail', channel), r.stage === STAGES[2] ? act(r.assignment[channel] ? '修改运营' : '分配运营', 'assign', channel) : '')));
-      return [r.name + ' — 渠道明细', '<dl class="detail-grid">' + detailField('转免时间', timestamp(r.freeTime)) + '</dl>' +
-        table(['渠道记录ID', '渠道名称', fieldName('发行状态') + ' ' + mark(1), '上线状态', '渠道运营', '驳回原因', '操作'], rows, { key: 'channelList' })];
+      return [r.name + ' — 渠道明细', '<dl class="detail-grid">' + detailField('转免时间', timestamp(r.freeTime) + ' ' + mark(1)) + '</dl>' +
+        table(['渠道记录ID', '渠道名称', '发行状态', '上线状态', '渠道运营', '驳回原因', '操作'], rows, { key: 'channelList' })];
     }
     case 'assign':
       return ['分配运营', formField('发行渠道', input('channelLabel', modal.channel, '', 'text', 'readonly')) +
