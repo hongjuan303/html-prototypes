@@ -9,7 +9,7 @@ const store={read(k,f){try{return JSON.parse(localStorage.getItem('little-englis
 const known=new Set(store.read('known',[]));
 const daysDone=new Set(store.read('days',[]));
 const params=new URLSearchParams(location.search);
-const state={view:'learn',group:params.get('topic')||store.read('topic','move'),lesson:Number(params.get('lesson'))||store.read('lesson',1),chinese:store.read('chinese',true),bilingual:store.read('bilingual',true),speed:store.read('speed',1),playlist:null,wordIndex:0};
+const state={view:'learn',group:params.get('topic')||store.read('topic','move'),lesson:Number(params.get('lesson'))||store.read('lesson',1),chinese:store.read('chinese',true),speed:store.read('speed',1),playlist:null,wordIndex:0};
 if(!D.groups.some(g=>g.id===state.group))state.group='move';
 if(!D.groups.find(g=>g.id===state.group).lessons.includes(state.lesson))state.lesson=D.groups.find(g=>g.id===state.group).lessons[0];
 const group=()=>D.groups.find(g=>g.id===state.group);
@@ -22,22 +22,22 @@ const visualMap=new Map(allWords.filter(w=>w.image).map(w=>[w.en,w.image]));
 const abstract={'daytime':'☀️','nighttime':'🌙','light':'☀️','dark':'🌌','owls':'🦉','owl':'🦉'};
 function picture(w){const src=w.image||visualMap.get(w.en);return src?`<img src="./${escape(src)}" alt="${escape(w.zh)}" loading="lazy">`:`<span class="fallback-image" aria-hidden="true">${abstract[w.en]||'🌱'}</span>`;}
 function toast(text){$('#toast').textContent=text;$('#toast').classList.add('visible');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('visible'),3000);}
-function persist(){for(const key of ['chinese','bilingual','speed','topic','lesson'])store.write(key,key==='topic'?state.group:state[key]);}
+function persist(){for(const key of ['chinese','speed','topic','lesson'])store.write(key,key==='topic'?state.group:state[key]);}
 function updateProgress(){const count=allWords.filter(w=>known.has(w.id)).length;$('#progressBar').style.width=(count/allWords.length*100)+'%';$('#progressText').textContent=`已认识 ${count} / ${allWords.length} 个词条`;}
 function renderNav(){
  $('#topicNav').innerHTML=D.groups.map(g=>`<button class="topic ${g.id===state.group?'active':''}" data-group="${g.id}" aria-current="${g.id===state.group?'true':'false'}"><span class="topic-icon" style="background:${g.color}" aria-hidden="true">${g.icon}</span><span><strong>${g.title}</strong><small>${g.en}</small></span><span class="topic-arrow" aria-hidden="true">›</span></button>`).join('');
  updateProgress();
 }
-function settings(){return `<div class="tools"><label class="switch-label"><input type="checkbox" data-setting="chinese" ${state.chinese?'checked':''}>显示中文</label><label class="switch-label"><input type="checkbox" data-setting="bilingual" ${state.bilingual?'checked':''}>双语连读</label><select aria-label="朗读速度" data-setting="speed"><option value="0.8" ${state.speed===.8?'selected':''}>慢速 0.8×</option><option value="1" ${state.speed===1?'selected':''}>正常 1×</option></select></div>`;}
+function settings(){return `<div class="tools"><label class="switch-label"><input type="checkbox" data-setting="chinese" ${state.chinese?'checked':''}>显示中文</label><select aria-label="朗读速度" data-setting="speed"><option value="0.8" ${state.speed===.8?'selected':''}>慢速 0.8×</option><option value="1" ${state.speed===1?'selected':''}>正常 1×</option></select></div>`;}
 function renderHeader(subtitle){return `<div class="section-top"><div><div class="topic-label">${escape(group().en.toUpperCase())}</div><h2>${group().icon} ${escape(group().title)}</h2><p>${escape(subtitle)} <span id="audioReady" class="audio-ready" role="status"></span></p></div>${settings()}</div>`;}
 function playlistLabel(){return state.playlist?`<div class="playlist-label"><span>第 ${state.playlist.day} 天的复习清单 · ${state.playlist.lessons.length} 个小节，可分次完成</span><button data-action="exitPlaylist">退出清单</button></div>`:'';}
 function renderChips(){return `<div class="lesson-strip" aria-label="学习小节">${getSequence().map(id=>`<button class="lesson-chip ${id===state.lesson?'active':''}" data-lesson="${id}" aria-pressed="${id===state.lesson}">${escape(getLesson(id).title)}</button>`).join('')}</div>`;}
-function voice(o,lang,kind,index){return `<button class="voice-button ${lang==='zh'?'zh':''}" data-speech="${kind}" data-index="${index}" data-lang="${lang}" aria-label="朗读${lang==='en'?'英文':'中文'} ${escape(o[lang])}">${icon}<span>${lang==='en'?'英文':'中文'}</span></button>`;}
+function voice(o,kind,index){return `<button class="voice-button" data-speech="${kind}" data-index="${index}" data-lang="en" aria-label="朗读英文 ${escape(o.en)}">${icon}<span>英文</span></button>`;}
 function currentPractice(){return P[lesson().words[state.wordIndex]?.id]||[];}
 function practiceMarkup(){
  const w=lesson().words[state.wordIndex],pairs=currentPractice();
  return `<div class="practice-head"><div class="practice-thumb">${picture(w)}</div><div><span class="practice-caption">看这张图，说一句</span><h3 id="practiceHeading" lang="en-GB">${escape(w.en)}</h3><small class="translation">${escape(w.zh)}</small></div></div>
- <div class="practice-dialogue">${pairs.map((pair,i)=>`${i===0||pair.question.en!==pairs[i-1].question.en?`<div class="practice-line practice-question"><span class="speaker-label">家长问</span><p lang="en-GB">${escape(pair.question.en)}</p><small class="translation">${escape(pair.question.zh)}</small><div class="practice-voices">${voice(pair.question,'en','practice-q',i)}${voice(pair.question,'zh','practice-q',i)}</div></div>`:''}<div class="practice-line practice-answer"><span class="speaker-label">${escape(pair.label||'宝宝答')}</span><p lang="en-GB">${escape(pair.answer.en)}</p><small class="translation">${escape(pair.answer.zh)}</small><div class="practice-voices">${voice(pair.answer,'en','practice-a',i)}${voice(pair.answer,'zh','practice-a',i)}</div></div>`).join('')}</div>
+ <div class="practice-dialogue">${pairs.map((pair,i)=>`${i===0||pair.question.en!==pairs[i-1].question.en?`<div class="practice-line practice-question"><span class="speaker-label">家长问</span><p lang="en-GB">${escape(pair.question.en)}</p><small class="translation">${escape(pair.question.zh)}</small><div class="practice-voices">${voice(pair.question,'practice-q',i)}</div></div>`:''}<div class="practice-line practice-answer"><span class="speaker-label">${escape(pair.label||'宝宝答')}</span><p lang="en-GB">${escape(pair.answer.en)}</p><small class="translation">${escape(pair.answer.zh)}</small><div class="practice-voices">${voice(pair.answer,'practice-a',i)}</div></div>`).join('')}</div>
  <button class="practice-play" data-action="practiceAll">${icon} 听这组问答</button><p class="practice-note">回答示例可按真实情况调整，愿意跟说就很棒。</p>`;
 }
 function positionPracticePanel(){
@@ -71,9 +71,9 @@ function renderLearn(){const l=lesson();
  const seq=getSequence(),position=seq.indexOf(l.id),next=seq[(position+1)%seq.length];
  return `${playlistLabel()}${renderHeader('选一张卡片，看图、听词，再练一句相关问答。')}${renderChips()}
  <div class="lesson-heading" id="wordSection"><div><h3>${escape(l.title)}</h3><span class="tag">${l.words.length} 个词条</span></div><button class="small-button" data-action="readAll">${icon} 一起听</button></div>
- <p class="review-guide">点图片${state.bilingual?'听英文＋中文':'听英文'}，相关问答跟着卡片走 · 点 ☆ 标记“认识了”</p>
- <div class="learn-layout"><div class="word-grid">${l.words.map((w,i)=>`<article class="word-card ${known.has(w.id)?'known':''} ${i===state.wordIndex?'selected':''}" data-word="${w.id}"><button class="word-visual" data-action="word" data-index="${i}" aria-label="点读 ${escape(w.en)} ${escape(w.zh)}">${picture(w)}<strong lang="en-GB">${escape(w.en)}</strong><small class="translation">${escape(w.zh)}</small></button><div class="word-actions">${voice(w,'en','word',i)}${voice(w,'zh','word',i)}<button class="known-button" data-known="${w.id}" aria-label="${escape(w.en)} 认识了" aria-pressed="${known.has(w.id)}" title="认识了">${known.has(w.id)?'★':'☆'}</button></div><button class="practice-trigger" data-practice="${i}" aria-controls="cardPractice" aria-expanded="${i===state.wordIndex}"><span>练问答</span><span aria-hidden="true">${i===state.wordIndex?'↗':'↓'}</span></button></article>`).join('')}</div><aside class="practice-dock"><section class="card-practice" id="cardPractice" aria-labelledby="practiceHeading">${practiceMarkup()}</section></aside></div>
- <div class="study-support"><aside class="coach"><h3><span aria-hidden="true">🌿</span>陪娃这样玩</h3><p>${escape(l.tip)}</p><div class="coach-step"><b>先听懂</b> → 指图或做动作　<b>再模仿</b> → 愿意就说</div>${l.note?`<p class="note">${escape(l.note)}</p>`:''}</aside><details class="sentence-reference"><summary>本小节完整句型 · ${l.sentences.length} 句</summary><p class="reference-hint">卡片旁边可直接练相关问答。这里保留原小节的完整表达，方便家长查阅。</p><div class="sentences">${l.sentences.map((s,i)=>`<div class="sentence"><div><p lang="en-GB">${escape(s.en)}</p><small class="translation">${escape(s.zh)}</small></div><div class="voice-controls">${voice(s,'en','sentence',i)}${voice(s,'zh','sentence',i)}</div></div>`).join('')}</div></details></div>
+ <p class="review-guide">点图片听英文，相关问答跟着卡片走 · 点 ☆ 标记“认识了”</p>
+ <div class="learn-layout"><div class="word-grid">${l.words.map((w,i)=>`<article class="word-card ${known.has(w.id)?'known':''} ${i===state.wordIndex?'selected':''}" data-word="${w.id}"><button class="word-visual" data-action="word" data-index="${i}" aria-label="点读 ${escape(w.en)} ${escape(w.zh)}">${picture(w)}<strong lang="en-GB">${escape(w.en)}</strong><small class="translation">${escape(w.zh)}</small></button><div class="word-actions">${voice(w,'word',i)}<button class="known-button" data-known="${w.id}" aria-label="${escape(w.en)} 认识了" aria-pressed="${known.has(w.id)}" title="认识了">${known.has(w.id)?'★':'☆'}</button></div><button class="practice-trigger" data-practice="${i}" aria-controls="cardPractice" aria-expanded="${i===state.wordIndex}"><span>练问答</span><span aria-hidden="true">${i===state.wordIndex?'↗':'↓'}</span></button></article>`).join('')}</div><aside class="practice-dock"><section class="card-practice" id="cardPractice" aria-labelledby="practiceHeading">${practiceMarkup()}</section></aside></div>
+ <div class="study-support"><aside class="coach"><h3><span aria-hidden="true">🌿</span>陪娃这样玩</h3><p>${escape(l.tip)}</p><div class="coach-step"><b>先听懂</b> → 指图或做动作　<b>再模仿</b> → 愿意就说</div>${l.note?`<p class="note">${escape(l.note)}</p>`:''}</aside><details class="sentence-reference"><summary>本小节完整句型 · ${l.sentences.length} 句</summary><p class="reference-hint">卡片旁边可直接练相关问答。这里保留原小节的完整表达，方便家长查阅。</p><div class="sentences">${l.sentences.map((s,i)=>`<div class="sentence"><div><p lang="en-GB">${escape(s.en)}</p><small class="translation">${escape(s.zh)}</small></div><div class="voice-controls">${voice(s,'sentence',i)}</div></div>`).join('')}</div></details></div>
  <details class="original"><summary>对照原卷 · 第 ${l.id} 张学习图</summary><img src="./${l.original}" alt="原卷第${l.id}张学习图 ${escape(l.title)}" loading="lazy"><p>Talk & Tell：看图说一说。Point to an image：指一张图。Ask：提问。Say：说一说。原图中的留空问答可参考上方句子，按图片或真实情境替换。</p></details><div class="lesson-footer"><span>这一小节可以分几次玩，<br>宝宝累了就休息。</span><button class="primary" data-lesson="${next}">${position===seq.length-1?'回到第一个小节':'下一个小节'} <span>→</span></button></div>`;
 }
 let game=null;
@@ -102,26 +102,36 @@ function prepareLessonAudio(){
  const status=$('#audioReady');if(status)status.textContent='语音准备中…';
  audioCache.warm(target.id).then(ready=>{if(status&&status===$('#audioReady'))status.textContent=ready?'语音已就绪':'点读时加载语音';});
 }
-function stopPlayback(){serial++;if(finishPending){const done=finishPending;finishPending=null;done(false);}audio.pause();try{audio.currentTime=0;}catch{}audio.dataset.state='idle';if('speechSynthesis'in window)window.speechSynthesis.cancel();$('#playerBar').hidden=true;document.querySelectorAll('.playing').forEach(e=>e.classList.remove('playing'));}
-function speechFallback(item,lang,token){return new Promise(resolve=>{if(lang==='en'||token!==serial||!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){resolve(false);return;}const u=new SpeechSynthesisUtterance(item.zh);u.lang='zh-CN';u.rate=state.speed;const voices=window.speechSynthesis.getVoices();const found=voices.find(v=>v.lang.replace('_','-').toLowerCase()==='zh-cn')||voices.find(v=>v.lang.startsWith('zh'));if(found)u.voice=found;finishPending=resolve;u.onend=()=>{finishPending=null;resolve(true);};u.onerror=()=>{finishPending=null;resolve(false);};window.speechSynthesis.speak(u);});}
-function clip(item,lang,token){return new Promise(resolve=>{
+function stopPlayback(){serial++;if(finishPending){const done=finishPending;finishPending=null;done(false);}audio.pause();try{audio.currentTime=0;}catch{}audio.dataset.state='idle';$('#playerBar').hidden=true;document.querySelectorAll('.playing').forEach(e=>e.classList.remove('playing'));}
+function clip(item,token){return new Promise(resolve=>{
  if(token!==serial){resolve(false);return;}
  let settled=false;
  const done=value=>{if(settled)return;settled=true;clearTimeout(timer);audio.onended=null;audio.onerror=null;audio.onplaying=null;audio.onwaiting=null;if(value!==true)audio.pause();if(finishPending===done)finishPending=null;resolve(value);};
  finishPending=done;const timer=setTimeout(()=>done(false),25000);
- const source=audioCache.source(item[lang+'Audio']),started=performance.now();
+ const source=audioCache.source(item.enAudio),started=performance.now();
  audio.dataset.source=source.startsWith('blob:')?'prepared':'network';audio.dataset.state='loading';audio.dataset.startDelayMs='';
  if(audio.getAttribute('src')!==source)audio.src=source;else try{audio.currentTime=0;}catch{}
  audio.playbackRate=Number(state.speed);
- const label=(lang==='en'?'英文 · ':'中文 · ')+item[lang];
- $('#playerText').textContent='正在加载语音 · '+item[lang];
- audio.onwaiting=()=>{$('#playerText').textContent='正在加载语音 · '+item[lang];};
+ const label='英文 · '+item.en;
+ $('#playerText').textContent='正在加载语音 · '+item.en;
+ audio.onwaiting=()=>{$('#playerText').textContent='正在加载语音 · '+item.en;};
  audio.onplaying=()=>{audio.dataset.state='playing';audio.dataset.startDelayMs=String(Math.round(performance.now()-started));$('#playerText').textContent=label;};
  audio.onended=()=>{audio.dataset.state='ended';done(true);};audio.onerror=()=>done('fallback');
  const play=audio.play();if(play)play.catch(err=>{if(token===serial)done(err.name==='NotAllowedError'?'blocked':'fallback');else done(false);});
  });}
 function listeningPause(ms,token){return new Promise(resolve=>{if(token!==serial){resolve(false);return;}const done=value=>{clearTimeout(timer);if(finishPending===done)finishPending=null;resolve(value);};const timer=setTimeout(()=>done(token===serial),ms);finishPending=done;});}
-async function playItems(items,lang='en',highlight=null){stopPlayback();const token=serial;$('#playerBar').hidden=false;$('#playerText').textContent='正在加载点读音频…';if(highlight)document.querySelector(`[data-word="${highlight}"]`)?.classList.add('playing');let ok=true;for(let i=0;i<items.length;i++){const item=items[i],langs=lang==='both'?['en','zh']:[lang];for(let j=0;j<langs.length;j++){const l=langs[j];if(token!==serial)return;$('#playerText').textContent=(l==='en'?'英文 · ':'中文 · ')+item[l];let result=await clip(item,l,token);if(result==='fallback'&&token===serial)result=await speechFallback(item,l,token);if(result!==true){ok=false;break;}if(j<langs.length-1&&!await listeningPause(500,token))return;}if(!ok)break;if(i<items.length-1&&!await listeningPause(1000,token))return;}if(token!==serial)return;$('#playerBar').hidden=true;document.querySelectorAll('.playing').forEach(e=>e.classList.remove('playing'));if(!ok)toast('暂时无法播放。请检查网络和媒体音量，或用系统浏览器打开后重试。');}
+async function playItems(items,highlight=null){
+ stopPlayback();const token=serial;$('#playerBar').hidden=false;$('#playerText').textContent='正在加载点读音频…';
+ if(highlight)document.querySelector(`[data-word="${highlight}"]`)?.classList.add('playing');
+ let ok=true;
+ for(let i=0;i<items.length;i++){
+  if(token!==serial)return;
+  if(await clip(items[i],token)!==true){ok=false;break;}
+  if(i<items.length-1&&!await listeningPause(1000,token))return;
+ }
+ if(token!==serial)return;$('#playerBar').hidden=true;document.querySelectorAll('.playing').forEach(e=>e.classList.remove('playing'));
+ if(!ok)toast('暂时无法播放。请检查网络和媒体音量，或用系统浏览器打开后重试。');
+}
 
 document.addEventListener('click',e=>{
  const b=e.target.closest('button');if(!b)return;
@@ -130,17 +140,17 @@ document.addEventListener('click',e=>{
  if(b.dataset.lesson){selectLesson(b.dataset.lesson);return;}
  if(b.dataset.known){const id=b.dataset.known;known.has(id)?known.delete(id):known.add(id);store.write('known',[...known]);const card=b.closest('.word-card');card?.classList.toggle('known',known.has(id));b.setAttribute('aria-pressed',String(known.has(id)));b.textContent=known.has(id)?'★':'☆';updateProgress();return;}
  if(b.dataset.practice!==undefined){stopPlayback();selectPracticeCard(b.dataset.practice,true);return;}
- if(b.dataset.speech){const kind=b.dataset.speech,index=Number(b.dataset.index);if(kind==='word')selectPracticeCard(index,true);const item=kind==='word'?lesson().words[index]:kind==='sentence'?lesson().sentences[index]:currentPractice()[index]?.[kind==='practice-q'?'question':'answer'];if(item)playItems([item],b.dataset.lang,kind==='word'?item.id:null);return;}
+ if(b.dataset.speech){const kind=b.dataset.speech,index=Number(b.dataset.index);if(kind==='word')selectPracticeCard(index,true);const item=kind==='word'?lesson().words[index]:kind==='sentence'?lesson().sentences[index]:currentPractice()[index]?.[kind==='practice-q'?'question':'answer'];if(item)playItems([item],kind==='word'?item.id:null);return;}
  if(b.dataset.day){stopPlayback();const d=D.plan.find(x=>x.day===Number(b.dataset.day));state.playlist=d;state.lesson=d.lessons[0];state.wordIndex=0;state.group=D.groups.find(g=>g.lessons.includes(state.lesson)).id;state.view='learn';game=null;render();scrollWorkspace();return;}
  if(b.dataset.dayDone){const n=Number(b.dataset.dayDone);daysDone.has(n)?daysDone.delete(n):daysDone.add(n);store.write('days',[...daysDone]);b.closest('.day').classList.toggle('done',daysDone.has(n));b.setAttribute('aria-pressed',String(daysDone.has(n)));b.textContent=daysDone.has(n)?'✓ 今天一起玩过了':'○ 标记今天玩过了';return;}
- if(b.dataset.answer!==undefined&&game&&!game.answered){const chosen=game.choiceWords[Number(b.dataset.answer)];const target=game.questions[game.index];if(chosen.id===target.id){game.answered=true;b.classList.add('correct');document.querySelectorAll('.answer').forEach(el=>el.disabled=true);$('#gameFeedback').textContent=`找到了！${target.en}，${target.zh}。` ;$('#gameNext').hidden=false;$('#gameNext').textContent=game.index===game.questions.length-1?'完成这一轮 ✓':'下一题 →';playItems([target],'both');}else{b.classList.add('retry');$('#gameFeedback').textContent='再听一次，慢慢找。可以请爸爸妈妈一起帮忙。';playItems([target],'en');}return;}
+ if(b.dataset.answer!==undefined&&game&&!game.answered){const chosen=game.choiceWords[Number(b.dataset.answer)];const target=game.questions[game.index];if(chosen.id===target.id){game.answered=true;b.classList.add('correct');document.querySelectorAll('.answer').forEach(el=>el.disabled=true);$('#gameFeedback').textContent=`找到了！${target.en}，${target.zh}。` ;$('#gameNext').hidden=false;$('#gameNext').textContent=game.index===game.questions.length-1?'完成这一轮 ✓':'下一题 →';playItems([target]);}else{b.classList.add('retry');$('#gameFeedback').textContent='再听一次，慢慢找。可以请爸爸妈妈一起帮忙。';playItems([target]);}return;}
  switch(b.dataset.action){
-  case 'word':{selectPracticeCard(b.dataset.index,true);const w=lesson().words[state.wordIndex];playItems([w],state.bilingual?'both':'en',w.id);break;}
-  case 'practiceAll':playItems(currentPractice().flatMap(p=>[p.question,p.answer]),state.bilingual?'both':'en');break;
-  case 'readAll':playItems(lesson().words,state.bilingual?'both':'en');break;
+  case 'word':{selectPracticeCard(b.dataset.index,true);const w=lesson().words[state.wordIndex];playItems([w],w.id);break;}
+  case 'practiceAll':playItems(currentPractice().flatMap(p=>[p.question,p.answer]));break;
+  case 'readAll':playItems(lesson().words);break;
   case 'exitPlaylist':state.playlist=null;stopPlayback();render();break;
   case 'startGame':stopPlayback();startGame();break;
-  case 'gameListen':if(game)playItems([game.questions[game.index]],'en');break;
+  case 'gameListen':if(game)playItems([game.questions[game.index]]);break;
   case 'gameNext':if(!game?.answered)break;stopPlayback();game.index++;if(game.index>=game.questions.length)game.finished=true;else prepareQuestion();render();break;
   case 'resetProgress':if(confirm('清除当前浏览器的星星和每日复习记录？')){known.clear();daysDone.clear();store.write('known',[]);store.write('days',[]);render();toast('学习记录已清除，可以重新开始。');}break;
  }
