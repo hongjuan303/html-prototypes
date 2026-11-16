@@ -106,7 +106,8 @@ function persist() {
 function rememberFile(file) {
   const id = crypto.randomUUID();
   attachments.set(id, { url: URL.createObjectURL(file), type: file.type });
-  return { id, name: file.name };
+  storeOriginal(file, id);
+  return { id, name: file.name, originalName: file.name, size: file.size, type: file.type };
 }
 
 function recordLog(record, text) {

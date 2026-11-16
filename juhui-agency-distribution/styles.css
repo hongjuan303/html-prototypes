@@ -277,6 +277,28 @@ td.empty { height: 190px; text-align: center; color: var(--muted); }
 .channel-descriptions > div { grid-template-columns: 110px minmax(0, 1fr); }
 .channel-descriptions dt, .channel-descriptions dd { font-size: 12px; padding: 5px 8px; line-height: 21px; }
 .channel-card footer { display: flex; justify-content: flex-end; margin-top: 16px; }
+.channel-card footer { gap: 8px; align-items: center; flex-wrap: wrap; }
+.channel-card .bordered-descriptions dd { overflow-wrap: anywhere; }
+.file-name { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+.file-view .file-name { flex: 1; }
+.file-view .link, .files .link { flex-shrink: 0; }
+.file-label { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.notes .note-update { color: #e65b4e; font-weight: 600; margin: 10px 0; }
+.rework-fields { margin-top: 12px; }
+.rework-heading { margin: 22px 0 12px; font-size: 14px; }
+.rework-reason { background: #fef0f0; color: #bc4141; padding: 12px; border-radius: 4px; line-height: 1.7; }
+.rework-file-field { margin: 16px 0; }
+.rework-file-field > strong { font-size: 13px; font-weight: 500; }
+.rework-note { display: flex; gap: 8px; align-items: flex-start; margin-top: 16px; line-height: 1.7; color: #909399; font-size: 13px; }
+.video-count { color: #606266; margin-bottom: 12px; }
+.download-lead { font-size: 16px; margin-bottom: 20px; }
+.download-folder { display: flex; gap: 18px; align-items: center; padding: 20px; border: 1px solid #dcdfe6; border-radius: 8px; }
+.download-folder strong { overflow-wrap: anywhere; font-size: 14px; font-weight: 500; }
+.download-folder p { margin-top: 8px; color: #909399; font-size: 13px; }
+.folder-shape { position: relative; display: block; width: 46px; height: 34px; border-radius: 5px; background: #ffca68; flex-shrink: 0; }
+.folder-shape::before { content: ''; position: absolute; left: 0; top: -6px; width: 23px; height: 10px; border-radius: 6px 7px 0 0; background: #ffca68; }
+.thunder-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.thunder-actions .btn { padding: 13px 8px; font-size: 14px; }
 .channel-card footer .btn { min-height: 32px; padding: 5px 14px; }
 .channel-card .timestamp { white-space: normal; }
 .empty-channels { grid-column: 1 / -1; color: #909399; text-align: center; padding: 60px 20px; }

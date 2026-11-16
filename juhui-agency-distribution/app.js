@@ -38,7 +38,7 @@ function esc(value) {
 const icon = name => '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[name] + '</svg>';
 const mark = number => '<button type="button" class="mark" data-note="' + number + '" aria-label="查看说明 ' + number + '">' + number + '</button>';
 const changedFields = new Set(['意向发行渠道', '意向渠道', '国内渠道排除项', '红果评估', '综合结果', '漫剧专项AI创作佐证材料',
-  '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '内容评估状态', '送审情况', '送审状态', '送审时间']);
+  '权利声明及不侵权承诺（微信模板）', '上线时间', '转免时间', '内容评估状态', '送审情况', '送审状态', '送审时间', '剧集名称', '集数', '作品名称', '正片视频', '文件名']);
 const fieldName = name => '<span' + (changedFields.has(name) ? ' class="changed-field"' : '') + '>' + esc(name) + '</span>';
 const opt = (value, current) => '<option value="' + esc(value) + '"' + (value === current ? ' selected' : '') + '>' + esc(value) + '</option>';
 const options = (values, current) => values.map(value => opt(value, current)).join('');
@@ -148,10 +148,11 @@ function supplierContent() {
   const rows = filtered(records.filter(r => combined(r) === '通过'), issuanceStatus)
     .map(r => line(esc(r.id), esc(r.name), esc(r.episodes), esc(r.submitted), tag(r.materialStatus), tag(r.filmStatus),
       tag(issuanceStatus(r)),
-      !r.stage && r.materialStatus !== '审核中' ? act('编辑合集', 'edit-material', r.id) : act('查看详情', 'supplier-info', r.id)));
+      buttons(!r.stage && isReviewRework(r) ? act('编辑/提审', 'review-rework', r.id) : !r.stage && r.materialStatus !== '审核中' ? act('编辑合集', 'edit-material', r.id) : act('查看详情', 'supplier-info', r.id),
+        r.stage ? act('渠道明细', 'supplier-channels', r.id) : '')));
   return heading('内容管理') + filters([
     ['name', '合集名称'], ['release', '渠道', RELEASE], ['type', '剧集类型', TYPES], ['round', '发行轮次', ['首发', '二轮']],
-    ['material', '物料状态', ['待提交', '审核中', '通过', '拒绝']], ['film', '正片状态', ['待提交', '审核中', '通过']],
+    ['material', '物料状态', ['待提交', '审核中', '通过', '拒绝']], ['film', '正片状态', ['待提交', '审核中', '通过', '驳回']],
     ['status', '渠道发行状态', ['待生成', ...STAGES]]
   ]) + listing('合集列表', ['ID', '合集名称', '集数', '创建时间', '物料审核状态', '正片审核状态', '渠道发行状态', '操作 ' + mark(1)], rows,
     act('＋ 提交剧集信息', 'submit', '', 'btn primary'));
@@ -163,7 +164,7 @@ function checkList(name, values, selected, kind = 'checkbox') {
 }
 
 function fileList(items, key) {
-  return (items || []).map((file, index) => '<li><span class="file-name">' + esc(file.name) + '</span>' +
+  return (items || []).map((file, index) => '<li><span class="file-name">' + esc(attachmentName(file)) + '</span>' +
     act('移除', 'remove-file', key + ':' + index) + '</li>').join('');
 }
 
@@ -342,14 +343,14 @@ function schedule() {
 function channelPage() {
   const operator = ui.view === 'operator';
   const items = filtered(records.filter(r => [STAGES[2], STAGES[3]].includes(r.stage)
-    && (!operator || (channelsFor(r).includes(ui.channel) && (r.assignment[ui.channel] || r.stage === STAGES[3])))))
+    && (!operator || (channelsFor(r).includes(ui.channel) && (r.assignment[ui.channel] || r.stage === STAGES[3])))).map(r => operator ? { ...r, name: channelTitle(r, ui.channel) } : r))
     .filter(r => (!ui.filters.launchStart || r.launch.slice(0, 10) >= ui.filters.launchStart) &&
       (!ui.filters.launchEnd || r.launch.slice(0, 10) <= ui.filters.launchEnd));
   const rows = items.map(r => {
     const channels = operator ? esc(ui.channel) : act('共 ' + channelsFor(r).length + ' 个渠道', 'channel-list', r.id);
-    return line(esc(r.id), esc(r.name), esc(r.supplier), channels, tag(issuanceStatus(r)), tag(r.stage === STAGES[3] ? '已上线' : '待上线'),
+    return line(esc(r.id), act(r.name, 'open-detail', r.id), esc(r.supplier), channels, tag(issuanceStatus(r)), tag(r.stage === STAGES[3] ? '已上线' : '待上线'),
       '示例审核员', timestamp(r.launch), timestamp(r.freeTime), buttons(act('审核记录', 'history', r.id),
-        operator ? act('查看详情', 'open-detail', r.id) : act('查看渠道', 'channel-list', r.id)));
+        operator ? '' : act('查看渠道', 'channel-list', r.id)));
   });
   return heading(operator ? '渠道运营' : '渠道负责人') +
     filters([supplierFilter, collectionFilter, ...reviewerFilters, ['launchStart', '上线时间', 'date'], ['launchEnd', '结束日期', 'date']]) +
@@ -357,19 +358,17 @@ function channelPage() {
 }
 
 function canSeeWechat(record) {
-  return ['channel', 'operator'].includes(ui.detailFrom) && channelsFor(record).includes(ui.channel)
-    && ['微信视频号', '字节系'].includes(ui.channel)
-    && (ui.detailFrom === 'channel' || record.assignment[ui.channel] || record.stage === STAGES[3]);
+  return Boolean(record) && channelsFor(record).includes('微信视频号');
 }
 
 function canEditWechat(record) {
-  return canSeeWechat(record) && ui.detailFrom === 'operator' && ui.channel === '微信视频号' && Boolean(record.assignment[ui.channel]);
+  return canSeeWechat(record) && ui.side === 'platform' && ui.detailFrom === 'operator' && ui.channel === '微信视频号';
 }
 
 function collectionMaterialAreas(r, marker = 2, allowAudit = true) {
   const hasFiles = needsAI(r) || needsWechat(r);
   const fileGroup = (label, key) => detailField(label, (r.materials[key] || []).map((file, index) =>
-    '<div class="file-view">' + esc(file.name) + act('查看', 'preview-material', key + ':' + index) + '</div>').join('') || '—');
+    '<div class="file-view"><span class="file-name">' + esc(attachmentName(file)) + '</span>' + act('查看', 'preview-material', key + ':' + index) + '</div>').join('') || '—');
   const extra = r.materialExtras || {};
   const extraDetails = fields => fields.map(([key, label]) => detailField(label, esc(extra[key] || '—'))).join('');
   const descriptionArea = content => '<dl class="bordered-descriptions tab-content">' + content + '</dl>';
@@ -393,7 +392,7 @@ function collectionMaterialAreas(r, marker = 2, allowAudit = true) {
     成片素材: descriptionArea(detailField('全集资源', esc(r.filmLink || '—')) + extraDetails([['previewLink', '试看链接'], ['highlightLink', '高光素材视频'], ['aiEpisodes', 'AI具体集数']]) +
       fileGroup('横版剧集海报', 'posterHorizontal') + fileGroup('竖版剧集海报', 'posterVertical')),
     合规文件: compliance,
-    授权书: '<div class="tab-content">' + (r.authorization.map(f => '<div>' + esc(f.name) + '</div>').join('') || '暂无授权书') + '</div>'
+    授权书: '<div class="tab-content">' + (r.authorization.map(f => '<div class="file-name">' + esc(attachmentName(f)) + '</div>').join('') || '暂无授权书') + '</div>'
   };
 }
 
@@ -404,13 +403,14 @@ function channelCards(r) {
     const seeWechat = channel === '微信视频号' && canSeeWechat(r);
     const wechat = seeWechat ? detailField('送审情况', '<div class="status-inline">' + tag(r.wechat?.status || '—') +
       (r.wechat?.time ? '<span>' + esc(r.wechat.time) + '</span>' : '') +
-      (canEditWechat(r) ? act('填写', 'wechat', r.id) : '') + '</div>') : '';
-    return '<article class="channel-card"><header><h2>' + esc(channelName(channel)) + (seeWechat ? ' ' + mark(2) : '') + '</h2>' + tag(status) + '</header>' +
+      act('填写', 'wechat', r.id) + '</div>') : '';
+    const infoMark = canSeeWechat(r) ? 3 : 2;
+    return '<article class="channel-card" data-channel-card="' + esc(channel) + '"><header><h2>' + esc(channelName(channel)) + (seeWechat ? ' ' + mark(2) : '') + '</h2>' + tag(status) + '</header>' +
     '<div class="channel-card-body"><dl class="bordered-descriptions channel-descriptions">' +
-    detailField('作品名称', esc(r.name)) + detailField('发布状态', tag(status)) +
+    detailField('作品名称', esc(channelTitle(r, channel)) + ' ' + mark(infoMark)) + detailField('集数', esc(channelEpisodes(r, channel)) + ' 集') + detailField('发布状态', tag(status)) +
     detailField('上线时间', timestamp(r.launch)) + detailField('转免时间', timestamp(r.freeTime)) +
     detailField('渠道内容ID', esc(r.channelContentIds?.[channel] || '—')) + detailField('渠道运营', esc(r.assignment[channel] || '—')) + wechat + '</dl>' +
-    '<footer><button type="button" class="btn" data-act="inspect-channel" data-id="' + esc(channel) + '">' + icon('eye') + '查看</button></footer></div></article>';
+    '<footer>' + mark(infoMark + 1) + act('下载全集', 'full-download', channel, 'btn changed-field') + '<button type="button" class="btn" data-act="inspect-channel" data-id="' + esc(channel) + '">' + icon('eye') + '查看</button></footer></div></article>';
   });
   return '<div class="channel-card-grid">' + (cards.join('') || '<div class="panel empty-channels">暂无渠道信息</div>') + '</div>';
 }
@@ -424,15 +424,20 @@ function detail() {
     detailField('物料审核状态', tag(r.materialStatus)) + '<div class="description-span-two"><dt>正片审核状态</dt><dd>' + tag(r.filmStatus) + '</dd></div>' +
     detailField('上线时间', timestamp(r.launch)) + detailField('转免时间', timestamp(r.freeTime) + ' ' + mark(1)) + '</dl></section>';
   const areas = { 剧集管理: channelCards(r), ...collectionMaterialAreas(r) };
+  const fileTabs = ['备案信息', '角色资料', '主创团队', '成片素材', '合规文件', '授权书'];
+  const fileMarker = ui.detailTab === '合规文件' && (needsAI(r) || needsWechat(r)) ? 3 : 2;
   return '<div class="page-heading collection-heading"><h1>合集详情</h1>' + act('← 返回列表', 'detail-back', '', 'btn') + '</div>' + details +
     tabs(Object.keys(areas).map(key => [key, key]), ui.detailTab, 'detail-tab') +
-    (ui.detailTab === '剧集管理' ? areas[ui.detailTab] : '<section class="panel detail-tab-panel">' + areas[ui.detailTab] + '</section>');
+    (ui.detailTab === '剧集管理' ? areas[ui.detailTab] : '<section class="panel detail-tab-panel">' + (fileTabs.includes(ui.detailTab) ? '<div class="file-label">' + fieldName('文件名') + ' ' + mark(fileMarker) + '</div>' : '') + areas[ui.detailTab] + '</section>');
 }
 
 function dialogBody(modal) {
   const r = val(modal.id);
   const d = modal.draft;
   switch (modal.type) {
+    case 'rework': return reworkDialog(modal);
+    case 'supplier-channels': return supplierChannels(r);
+    case 'full-download': return fullDownloadDialog(modal);
     case 'submit': {
       const fields = formField('合集名称', input('name', d.name, '请输入合集名称', 'text', 'maxlength="50" required'), true) +
         formField('集数', input('episodes', d.episodes, '请输入剧集集数', 'number', 'required min="1" step="1"'), true) +
@@ -494,21 +499,23 @@ function dialogBody(modal) {
         detailField('物料审核状态', tag(r.materialStatus)) + detailField('正片审核状态', tag(r.filmStatus)) +
         detailField('上线时间', esc(r.launch || '—')) + detailField('转免时间', timestamp(r.freeTime) + ' ' + mark(1)) + '</dl>'];
     case 'collection-info': {
-      const areas = collectionMaterialAreas(r, 0, false);
+      const shown = modal.channel ? { ...r, name: channelTitle(r, modal.channel), episodes: channelEpisodes(r, modal.channel), materials: channelVersion(r, modal.channel).materials || r.materials } : r;
+      const areas = collectionMaterialAreas(shown, 0, false);
       const material = '<div class="inspection-material"><nav aria-label="物料分组">' + MATERIAL_SECTIONS.map(([id, label]) =>
         act(label, 'inspect-section', id, d.section === id ? 'inspection-nav active' : 'inspection-nav')).join('') + '</nav><div class="inspection-sections">' +
         MATERIAL_SECTIONS.map(([id, label]) => '<section id="inspect-' + id + '"><h3>' + esc(label) +
           (id === 'compliance' && (needsAI(r) || needsWechat(r)) ? ' ' + mark(1) : '') + '</h3>' + areas[label] + '</section>').join('') + '</div></div>';
-      const episodes = table(['序号', '集数', '标题', '操作'], Array.from({ length: r.episodes }, (_, i) => line(i + 1, i + 1,
-        esc(r.name) + ' 第 ' + (i + 1) + ' 集', '<button type="button" class="btn small" disabled>预览</button>')), { key: 'inspect-episodes-' + r.id });
+      const videos = videosFor(r, modal.channel);
+      const episodes = '<p class="file-label">' + fieldName('文件名') + ' ' + mark(1) + '</p>' + table(['序号', '集数', '标题', '文件名'], Array.from({ length: shown.episodes }, (_, i) => line(i + 1, i + 1,
+        esc(shown.name) + ' 第 ' + (i + 1) + ' 集', esc(videos[i] ? attachmentName(videos[i]) : '未记录文件名'))), { key: 'inspect-episodes-' + r.id });
       return [modal.channel ? (modal.channel === '字节系' ? '字节系（红果和抖音）' : modal.channel) + '详情' : '合集详情',
-        tabs([['物料详情', '物料详情'], ['正片详情', '正片详情']], d.tab, 'inspect-tab') + (d.tab === '物料详情' ? material : episodes)];
+        tabs([['物料详情', '物料详情'], ['正片详情', '正片详情']], d.tab, 'inspect-tab') + (d.tab === '物料详情' ? '<p class="file-label">' + fieldName('文件名') + ' ' + mark(needsAI(r) || needsWechat(r) ? 2 : 1) + '</p>' + material : episodes)];
     }
     case 'attachment': {
       const stored = attachments.get(modal.file.id);
-      return ['查看附件', '<div class="file-preview"><strong>' + esc(modal.file.name) + '</strong>' +
-        (stored ? (stored.type.startsWith('image/') ? '<img src="' + stored.url + '" alt="' + esc(modal.file.name) + '">' : '') +
-          '<a class="btn" href="' + stored.url + '" download="' + esc(modal.file.name) + '">下载附件</a>'
+      return ['查看附件', '<div class="file-preview"><strong>' + esc(attachmentName(modal.file)) + '</strong> ' + mark(1) +
+        (stored ? (stored.type.startsWith('image/') ? '<img src="' + stored.url + '" alt="' + esc(attachmentName(modal.file)) + '">' : '') +
+          '<a class="btn" href="' + stored.url + '" download="' + esc(attachmentName(modal.file)) + '">下载附件</a>'
           : '<p class="muted">当前记录保留了附件名称。上传本地文件后可在本次浏览器会话查看文件。</p>') + '</div>'];
     }
     default: return ['', ''];
@@ -517,7 +524,7 @@ function dialogBody(modal) {
 
 function dialog(modal) {
   const [title, body, submit, footerMark] = dialogBody(modal);
-  const wide = ['review', 'channelList', 'history'].includes(modal.type);
+  const wide = ['review', 'channelList', 'history', 'rework', 'supplier-channels'].includes(modal.type);
   return '<div class="shade"><section class="dialog ' + (modal.type === 'collection-info' ? 'inspection-dialog' : wide ? 'wide' : '') + '" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1">' +
     '<header><h2 id="dialog-title">' + esc(title) + '</h2><button type="button" class="close" data-act="close" aria-label="关闭此对话框">×</button></header>' +
     '<form data-form="dialog"><div class="dialog-body">' + body + '<p id="dialog-error" class="error" role="alert"></p></div>' +
@@ -530,7 +537,7 @@ function noteInfo() {
   if (key === 'collection-info') {
     const r = val(ui.modal.id);
     const items = ui.modal.draft.tab === '物料详情' ? NOTES.compliance.sections[0][1].filter(([name]) => name.startsWith('漫剧') ? needsAI(r) : needsWechat(r)) : [];
-    return { ...NOTES.collectionInfo, sections: items.length ? [['列表项', items]] : [] };
+    return { ...NOTES.collectionInfo, updated: '11.13 更新', sections: [...(items.length ? [['列表项', items]] : []), ['列表项', NOTES.fileNames.sections[0][1]]] };
   }
   if (key === 'detail') {
     const r = val(ui.selected);
@@ -539,8 +546,10 @@ function noteInfo() {
     if (ui.detailTab === '合规文件' && (needsAI(r) || needsWechat(r))) {
       const section = NOTES.compliance.sections[0];
       const items = section[1].filter(([name]) => name.startsWith('漫剧') ? needsAI(r) : needsWechat(r));
-      return { ...NOTES.compliance, sections: [...context.sections, [section[0], items]], caution: context.caution };
+      return { ...NOTES.compliance, updated: '11.13 更新', sections: [...context.sections, [section[0], items], ['列表项', NOTES.fileNames.sections[0][1]]], caution: context.caution };
     }
+    if (ui.detailTab === '剧集管理') return { ...context, updated: '11.13 更新', sections: [...context.sections, NOTES.channelInfo.sections[0], NOTES.fullDownloadEntry.sections[0]] };
+    if (['备案信息', '角色资料', '主创团队', '成片素材', '合规文件', '授权书'].includes(ui.detailTab)) return { ...context, updated: '11.13 更新', sections: [...context.sections, ['列表项', NOTES.fileNames.sections[0][1]]] };
     return context;
   }
   if (key === 'material') {
@@ -557,7 +566,7 @@ function noteInfo() {
 function notes() {
   const n = noteInfo();
   return '<aside class="notes" id="prototype-notes" aria-label="原型说明"><div class="notes-body">' +
-    '<h2>#页面说明</h2><p>' + esc(n.page) + '</p><h2>#原型说明</h2><ul class="context">' +
+    '<h2>#页面说明</h2><p>' + esc(n.page) + '</p>' + (n.updated ? '<p class="note-update">' + esc(n.updated) + '</p>' : '') + '<h2>#原型说明</h2><ul class="context">' +
     '<li><strong>背景</strong> ' + esc(n.background) + '</li><li><strong>需求</strong> ' + esc(n.goal) + '</li></ul>' +
     (n.sections || []).map(([title, items], i) => '<section class="note-section" id="note-' + (i + 1) +
       '" tabindex="-1"><h3><span class="mark">' + (i + 1) + '</span>' + esc(title) + '</h3><ul>' +
@@ -587,7 +596,7 @@ function render({ reset = false, focusDialog = false } = {}) {
   root.innerHTML = '<header class="review-bar"><div class="review-name"><span class="review-badge">T0</span><strong>代理发行需求原型</strong></div>' +
     '<nav aria-label="切换系统">' + act('供应商端', 'side', 'supplier', ui.side === 'supplier' ? 'selected' : '') +
     act('平台端', 'side', 'platform', ui.side === 'platform' ? 'selected' : '') + '</nav>' +
-    '<div class="review-tools">' + roles + '<button class="review-note" type="button" data-act="toggle-notes">' +
+    '<div class="review-tools">' + act('11.13需求示例', 'rework-samples', '', 'review-note') + roles + '<button class="review-note" type="button" data-act="toggle-notes">' +
     icon('notes') + '查看说明</button></div></header>' +
     '<div class="canvas"><div class="product ' + ui.side + (ui.view === 'detail' ? ' collection-view' : '') + '"><div class="product-inner"' + (ui.modal ? ' inert' : '') + '>' +
     '<aside class="sidebar"><div class="logo">' + icon('video') + '<strong>容量剧汇</strong><span>' +
@@ -669,7 +678,7 @@ function closeModal() {
   render();
 }
 
-function saveMaterial(nextView) {
+async function saveMaterial(nextView) {
   const r = ui.edit;
   if (nextView) {
     if (!r.release.length) return materialError('请至少选择一个发行渠道。', 'basic');
@@ -680,6 +689,8 @@ function saveMaterial(nextView) {
     }
   }
   if (nextView && nextView !== 'submit') return navigate(nextView);
+  try { await waitForFiles(); } catch (e) { return error(e.message, '#editor-error'); }
+  if (ui.edit !== r || !['material', 'film', 'deliver'].includes(ui.view)) return;
   Object.assign(val(r.id), structuredClone(r));
   const saved = val(r.id);
   if (nextView === 'submit') {
@@ -751,6 +762,20 @@ const clickActions = {
     ui.checked.clear(); render(); announce('已下载所选合集列表');
   },
   close: closeModal,
+  'rework-samples': () => {
+    const samples = reworkSamples();
+    samples.forEach(sample => { if (!val(sample.id)) records.unshift(sample); });
+    persist(); navigate('supplierContent'); announce('已添加11.13需求示例，已有记录保持。');
+  },
+  'review-rework': r => startRework(r),
+  'supplier-channels': r => openModal('supplier-channels', r.id),
+  'channel-rework': (_, channel) => startRework(val(ui.modal.id), channel),
+  'full-download': (_, channel) => {
+    const r = val(ui.selected);
+    if (r && channelsFor(r).includes(channel)) openModal('full-download', r.id, {}, { channel });
+  },
+  'thunder-install': () => { window.open('https://www.xunlei.com/', '_blank', 'noopener'); announce('安装完成后，请返回点击“已有迅雷 开始下载”。'); },
+  'thunder-start': startThunder,
   submit: r => openModal('submit', r?.id, {
     name: r?.name || '', episodes: r?.episodes || '', link: r?.link || '', intent: r?.intent.slice() || [], exclude: r?.exclude.slice() || []
   }),
@@ -783,15 +808,26 @@ const clickActions = {
     if (list && target) list.scrollTo({ top: target.offsetTop, behavior: 'auto' });
   },
   'supplier-info': r => openModal('supplier-info', r.id),
-  'preview-material': (_, key) => {
+  'preview-material': async (_, key) => {
     const [field, index] = key.split(':');
     const record = val(ui.selected);
-    const file = record.materials[field]?.[index];
-    if (file) openModal('attachment', record.id, {}, { file, returnModal: ui.modal?.type === 'collection-info' ? structuredClone(ui.modal) : null });
+    const channel = ui.modal?.type === 'collection-info' ? ui.modal.channel : '';
+    const materials = channel ? channelVersion(record, channel).materials || record.materials : record.materials;
+    const file = materials[field]?.[index];
+    const previous = ui.modal?.type === 'collection-info' ? structuredClone(ui.modal) : null;
+    const origin = ui.view, activeModal = ui.modal;
+    if (file) {
+      try { const stored = await restoreAttachment(file); if (stored) attachments.set(file.id, stored); } catch { announce('附件原件暂不可用。'); }
+      if (ui.view !== origin || ui.modal !== activeModal) return;
+      openModal('attachment', record.id, {}, { file, returnModal: previous });
+    }
   },
   'remove-file': (_, key) => {
     const [field, index] = key.split(':');
-    if (field === 'auth') ui.modal.draft.authorization.splice(Number(index), 1);
+    if (field.startsWith('rework-') && ui.modal?.type === 'rework') {
+      const name = field.slice(7);
+      (name === 'videos' ? ui.modal.draft.videos : ui.modal.draft.materials[name])?.splice(Number(index), 1);
+    } else if (field === 'auth') ui.modal.draft.authorization.splice(Number(index), 1);
     else if (field === 'film') ui.edit.film = null;
     else ui.edit.materials[field]?.splice(Number(index), 1);
     render();
@@ -818,7 +854,7 @@ const clickActions = {
   },
   assign: (_, channel) => openModal('assign', ui.modal.id, { operator: channel + '运营' }, { channel }),
   wechat: r => {
-    if (!canEditWechat(r)) return;
+    if (!canEditWechat(r)) return announce('无填写权限');
     openModal('wechat', r.id, { status: r.wechat?.status || '未送审', time: r.wechat?.time?.replace(' ', 'T') || '' });
   }
 };
@@ -858,6 +894,8 @@ document.addEventListener('click', event => {
 function fileChanged(field) {
   const files = [...field.files];
   const allowed = file => {
+    if (field.name === 'rework-videos') return file.type.startsWith('video/') || /\.(mp4|mov|webm)$/i.test(file.name);
+    if (field.name.startsWith('rework-')) return /\.(pdf|png|jpe?g|gif|webp|svg|psd)$/i.test(file.name) && (field.accept.includes('image') || /\.pdf$/i.test(file.name));
     if (field.name === 'ai') return file.type.startsWith('image/') || /\.(pdf|png|jpe?g|gif|webp|bmp|svg|avif|heic|heif|tiff?)$/i.test(file.name);
     if (field.name === 'wx') return /\.pdf$/i.test(file.name);
     if (field.name === 'auth') return /\.(docx?|pdf)$/i.test(file.name);
@@ -865,7 +903,14 @@ function fileChanged(field) {
     return field.accept.includes('image') ? /\.(png|jpe?g)$/i.test(file.name) : field.accept.includes('.psd') ? /\.(png|jpe?g|psd)$/i.test(file.name) : /\.pdf$/i.test(file.name);
   };
   const accepted = files.filter(allowed).map(rememberFile);
-  if (field.name === 'auth') ui.modal.draft.authorization.push(...accepted);
+  if (field.name.startsWith('rework-') && ui.modal?.type === 'rework') {
+    const name = field.name.slice(7), target = name === 'videos' ? ui.modal.draft.videos : (ui.modal.draft.materials[name] ||= []);
+    accepted.forEach(file => {
+      const previous = target.findIndex(item => attachmentName(item) === attachmentName(file));
+      if (name === 'videos' && previous >= 0) target[previous] = file;
+      else target.push(file);
+    });
+  } else if (field.name === 'auth') ui.modal.draft.authorization.push(...accepted);
   else if (field.name === 'film' && accepted.length) ui.edit.film = accepted[0];
   else if (ui.edit) (ui.edit.materials[field.name] ||= []).push(...accepted);
   render();
@@ -957,13 +1002,14 @@ root.addEventListener('toggle', event => {
   if (event.target.matches('.release-select')) ui.releaseMenu = event.target.open;
 }, true);
 
-function submitDialog(form) {
+async function submitDialog(form) {
   const modal = ui.modal;
   const d = modal.draft;
   const r = val(modal.id);
   const data = new FormData(form);
   let success = '已保存';
   switch (modal.type) {
+    case 'rework': return saveRework();
     case 'submit': {
       if (!d.intent.length) return error('请选择至少一个意向发行渠道。');
       const title = String(data.get('name')).trim();
@@ -1007,6 +1053,8 @@ function submitDialog(form) {
     case 'auth':
       if (r.stage !== STAGES[0]) return error('该合集已离开待授权书。');
       if (!d.authorization.length) return error('请先上传授权书。');
+      try { await waitForFiles(); } catch (e) { return error(e.message); }
+      if (ui.modal !== modal || r.stage !== STAGES[0]) return;
       r.contact = String(data.get('contact'));
       r.authorization.push(...d.authorization);
       r.stage = STAGES[1];
@@ -1035,7 +1083,7 @@ function submitDialog(form) {
       success = '已分配渠道运营';
       break;
     case 'wechat': {
-      if (!canEditWechat(r)) return error('当前身份无法编辑此合集。');
+      if (!canEditWechat(r)) { announce('无填写权限'); return error('无填写权限'); }
       const status = String(data.get('status'));
       const time = status === '已送审' ? String(data.get('time') || '').replace('T', ' ') : '';
       if (!WECHAT.includes(status) || (status === '已送审' && !time)) return error('请选择送审状态并补齐时间。');
