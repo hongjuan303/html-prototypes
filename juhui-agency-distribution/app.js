@@ -570,7 +570,8 @@ function notes() {
     '<li><strong>背景</strong> ' + esc(n.background) + '</li><li><strong>需求</strong> ' + esc(n.goal) + '</li></ul>' +
     (n.sections || []).map(([title, items], i) => '<section class="note-section" id="note-' + (i + 1) +
       '" tabindex="-1"><h3><span class="mark">' + (i + 1) + '</span>' + esc(title) + '</h3><ul>' +
-      items.map(([field, description]) => '<li><strong>' + esc(field) + '</strong>：' + esc(description) + '</li>').join('') +
+      items.map(([field, description, change]) => '<li>' + (change?.deferred ? '<del>' : '') + '<strong>' + esc(field) + '</strong>：' + esc(description) +
+        (change?.deferred ? '</del><p class="note-update">' + esc(change.deferred) + '</p>' : '') + '</li>').join('') +
       '</ul></section>').join('') + (n.caution ? '<p class="caution">' + esc(n.caution) + '</p>' : '') +
     '</div></aside>';
 }

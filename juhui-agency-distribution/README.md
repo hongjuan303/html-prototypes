@@ -1,10 +1,12 @@
 # 代理发行 V1 本地原型
 
-本次发布版本：`20261116-permission18`。四项新增需求及送审权限说明按用户指定标注【11.13 更新】。
+当前本地版本：`20261116-defer19`。商务【编辑】及对应弹窗【保存】的统一排播确认说明加删除线，并标注【11.16 更新：此修改点放在 v1.3 版本里处理。】。本次仅调整说明，原型演示流转沿用已有实现。
 
-[公开原型](https://hongjuan303.github.io/html-prototypes/juhui-agency-distribution/?v=20261116-permission18#channel)
+四项新增需求及送审权限说明按用户指定保留【11.13 更新】。
 
-[供应商内容管理](http://127.0.0.1:4186/juhui-agency-distribution/?v=20261116-permission18#supplierContent) · [渠道运营](http://127.0.0.1:4186/juhui-agency-distribution/?v=20261116-permission18#operator)
+[公开原型](https://hongjuan303.github.io/html-prototypes/juhui-agency-distribution/?v=20261116-defer19#business)
+
+[商务负责人](http://127.0.0.1:4186/juhui-agency-distribution/?v=20261116-defer19#business) · [供应商内容管理](http://127.0.0.1:4186/juhui-agency-distribution/?v=20261116-defer19#supplierContent) · [渠道运营](http://127.0.0.1:4186/juhui-agency-distribution/?v=20261116-defer19#operator)
 
 新增物料／正片驳回后改集数、渠道驳回后改本渠道剧名及集数、按实际视频清单校验数量、文件原名回显和渠道卡片【下载全集】。右侧说明与橙色序号遵循工作区`99-模板/产品原型说明标准.md`。
 
