@@ -1,3 +1,4 @@
+const v2SubmittedIntroCell = r => '<span class="v2-assessment-intro" title="' + esc(r.intro || '—') + '">' + esc(r.intro || '—') + '</span>';
 const v2Badge = text => '<span class="tag blue">' + esc(text) + '</span>';
 const V2_EVALUATION_TABS = [['qualityV2', '内容质量评估'], ['eval', '内容评估']];
 const v2SupplierLabel = r => esc(v2Supplier(r).name);
@@ -13,7 +14,7 @@ function v2Overview() {
     ['内容评估', '仅改集数复用意见、未出最终结果可改意见、重提标签（待补原型）', 'eval'],
     ['正片与商务并行', '正片选择发行渠道、展示五类意见、商务确认渠道（待补原型）', 'supplierContent'],
     ['物料填写', '支付宝删除、优酷文件、原文件名、梗概及成片字段关联', 'supplierContent'],
-    ['正片审核', '备选人员、常驻备注、最终确认、720尺寸、2.5倍速及审核时长', 'filmAuditV2'],
+    ['正片审核', '常驻备注、最终确认、720尺寸、2.5倍速及审核时长', 'filmAuditV2'],
     ['商务面板与授权书', '双角色共存、授权书删除和放宽大小、各评估组状态', 'business'],
     ['排播', '双审与授权书齐备；已有上线时间确认，未填时补充', 'schedule'],
     ['渠道运营', '内容ID修改、分集驳回、复制、新窗口下载及全渠道名称', 'operator'],
@@ -58,15 +59,18 @@ function v2Business() {
   return heading('商务负责人') + filters([collectionFilter, supplierFilter]) + listing('剧集列表', ['ID', '合集名称', '供应商', '内容质量评估', ...GROUPS, '正片审核状态', '物料审核状态', '进度', '操作 ' + mark(2)], rows, '', { className: 'v2-wide-table', note: 1 });
 }
 function v2Schedule() {
-  const items = filtered(records.filter(v2ReadyForSchedule), r => v2AwaitingSchedule(r) ? '待设置' : '已设置');
+  const items = filtered(records.filter(v2ReadyForSchedule), v2ScheduleStatus);
   const rows = items.map(r => {
     const pending = v2AwaitingSchedule(r), supplied = v2LaunchTime(r);
-    const when = supplied ? timestamp(supplied) + (pending ? '<span class="subline">' + tag('待确认') + '</span>' : '') : tag('待填写');
+    const when = timestamp(supplied) + '<span class="subline">' + tag(v2ScheduleStatus(r)) + '</span>';
     return line(esc(r.id), esc(r.name), v2SupplierLabel(r), when, timestamp(v2FreeTime(r)), buttons(
       act('审核记录', 'history', r.id), pending && supplied ? act('确认', 'v2-schedule-confirm', r.id) : act('设置上线时间', 'scheduling', r.id)));
   });
-  return heading('排播上线负责人') + filters([supplierFilter, collectionFilter, ['status', '上线时间设置', ['待设置', '已设置']], ...reviewerFilters, ['channelLead', '渠道负责人', ['示例负责人']]]) +
-    listing('剧集列表', ['ID', '剧集名称', '供应商', '上线时间', '转免时间', '操作 ' + mark(2)], rows, '', { note: 1 });
+  const filterPanel = document.createElement('div');
+  filterPanel.innerHTML = filters([supplierFilter, collectionFilter, ['status', '上线时间', ['待确认', '已确认']], ...reviewerFilters, ['channelLead', '渠道负责人', ['示例负责人']]]);
+  filterPanel.querySelector('h2').insertAdjacentHTML('beforeend', ' ' + mark(1));
+  return heading('排播上线负责人') + filterPanel.innerHTML +
+    listing('剧集列表', ['ID', '剧集名称', '供应商', '上线时间', '转免时间', '操作 ' + mark(3)], rows, '', { note: 2 });
 }
 function v2FilmQueue() {
   const rows = filtered(records.filter(r => r.episodeFiles.length)).map(r => line(esc(r.id), esc(r.name), v2SupplierLabel(r), esc(r.episodeFiles.length), tag(r.filmStatus), esc(r.filmRound?.kind || '—'), v2Duration(v2RoundDuration(r)), esc(v2User(r.filmReviewer)?.name || '待分配'),
@@ -80,13 +84,13 @@ function v2FilmReview() {
   const draft = ui.filmDraft ||= Object.fromEntries(r.episodeFiles.map(e => [e.id, { result: e.result || '', opinion: e.opinion || '' }]));
   const state = draft[episode.id], writable = r.filmStatus === '审核中' && ids.includes(episode.id);
   return heading('正片审核 · ' + r.name, '', 'v2-review-back') +
-    '<div class="panel v2-audit-summary"><strong>' + esc(r.filmRound?.kind || '已完成审核') + '</strong><span>本次审核 ' + ids.length + ' 集</span><span class="changed-field">本次审核总时长 ' + v2Duration(v2RoundDuration(r)) + '</span>' + mark(1) + '<span>审核人员：' + esc(v2User(r.filmReviewer)?.name || '待分配') + '</span></div>' +
+    '<div class="panel v2-audit-summary"><strong>' + esc(r.filmRound?.kind || '已完成审核') + '</strong><span class="changed-field">本次需审核总集数：' + ids.length + ' 集</span><span class="changed-field">本次需审核总时长：' + v2Duration(v2RoundDuration(r)) + '</span>' + mark(1) + '<span>审核人员：' + esc(v2User(r.filmReviewer)?.name || '待分配') + '</span></div>' +
     '<div class="v2-film-layout"><aside class="panel v2-episode-list"><h2>剧集列表</h2>' + r.episodeFiles.map(e => '<button class="episode-button' + (e.id === episode.id ? ' active' : '') + '" data-act="v2-episode" data-id="' + e.id + '"><span>第' + e.index + '集' + (ids.includes(e.id) ? '' : ' · 非本轮') + '</span>' + tag(draft[e.id].result || '待审核') + '</button>').join('') + '</aside>' +
-    '<section class="panel v2-player-panel"><div class="v2-player-toolbar"><strong>第' + episode.index + '集 · V' + episode.version + '</strong><label>播放倍速 <select data-v2-speed>' + [0.5, 1, 1.5, 2, 2.5].map(n => opt(n, 1)).join('') + '</select></label></div>' +
+    '<section class="panel v2-player-panel"><div class="v2-player-toolbar"><strong>第' + episode.index + '集 · V' + episode.version + '</strong><label>播放倍速 <select data-v2-speed>' + [0.5, 1, 1.5, 2, 2.5].map(n => opt(n, ui.filmSpeed || 1)).join('') + '</select></label></div>' +
     '<video id="v2-player" data-episode-id="' + esc(episode.id) + '" controls preload="auto"' + (episode.url || ui.filmUrls?.[episode.id] ? ' src="' + esc(episode.url || ui.filmUrls[episode.id]) + '"' : '') + '></video><div class="muted">' + episode.width + '×' + episode.height + ' · ' + v2Duration(episode.duration) + '</div>' +
     '<div class="actions v2-review-actions">' + (writable ? act('单集通过', 'v2-episode-pass', episode.id, 'btn primary') + act('单集驳回', 'v2-episode-reject', episode.id, 'btn') : tag(state.result || '本轮无需审核')) + '</div></section>' +
     '<aside class="panel v2-review-opinion"><h2>' + fieldName('单集审核备注') + ' ' + mark(2) + '</h2><label>第' + episode.index + '集<textarea rows="9" data-v2-episode-opinion="' + episode.id + '" placeholder="审核时可随时填写；单集驳回必须有备注"' + (!writable ? ' readonly' : '') + '>' + esc(state.opinion) + '</textarea></label><p class="muted">单集结果在最终确认前可继续修改。</p><p class="error" id="v2-film-error" role="alert"></p></aside></div>' +
-    '<footer class="panel v2-audit-footer"><span>本轮通过 ' + ids.filter(id => draft[id]?.result === '通过').length + ' / ' + ids.length + ' 集</span><div class="actions">' + mark(3) + act('返回列表', 'v2-review-back', '', 'btn') + (r.filmStatus === '审核中' ? act('完成审核', 'v2-finish-film', r.id, 'btn primary') : '') + '</div></footer>';
+    '<footer class="panel v2-audit-footer"><div class="actions">' + mark(3) + act('返回列表', 'v2-review-back', '', 'btn') + (r.filmStatus === '审核中' ? act('完成审核', 'v2-finish-film', r.id, 'btn primary') : '') + '</div></footer>';
 }
 function v2Material() {
   const r = ui.edit;
@@ -114,7 +118,7 @@ function v2Suppliers() {
   return heading('供应商管理') + listing('供应商列表', ['供应商名称', '负责商务', '登录账号', '绑定手机号', '操作 ' + mark(2)], v2Config.suppliers.map(s => line(esc(s.name), esc(v2User(s.business)?.name || '未绑定'), esc(s.account), esc(s.phone || '—'), act('编辑', 'v2-supplier-edit', s.id))), act('演示账号登录', 'v2-login', '', 'btn'), { note: 1 });
 }
 function v2Personnel() {
-  return heading('人员权限配置') + listing('人员列表', ['姓名', '角色', '负责评估渠道', '正片自动分配', '操作 ' + mark(2)], v2Config.users.map(u => line(esc(u.name), esc(u.roles.join('、')), esc(u.channels.join('、') || '—'), u.roles.includes('正片审核人员') ? tag(u.backup ? '仅手动调配' : '参与自动分配') : '—', act('配置', 'v2-user-edit', u.id))), '', { note: 1 });
+  return heading('人员权限配置') + listing('人员列表', ['姓名', '角色', '负责评估渠道', '操作 ' + mark(2)], v2Config.users.map(u => line(esc(u.name), esc(u.roles.join('、')), esc(u.channels.join('、') || '—'), act('配置', 'v2-user-edit', u.id))), '', { note: 1 });
 }
 function v2MaterialConfig() {
   const mode = ui.configTab || '物料字段';
@@ -134,6 +138,6 @@ function v2Opinions(r, annotated = false) {
   const rows = r.qualityTasks.map(t => line(esc(t.channel), esc(v2User(t.userId)?.name || t.userId), tag(t.result || '待评估'), esc(t.opinion || '—'), esc(t.time || '—')));
   return '<div class="v2-opinions"><dl class="detail-grid v2-opinion-summary">' + detailField('合集名称', esc(r.name)) + detailField('YouTube是否首发', esc(r.youtubeFirst || '—')) + detailField('意向渠道', intentChannels(r)) + detailField('剧集简介', esc(r.intro || '—')) + '</dl>' +
     '<div class="v2-opinion-heading"><h3>渠道评估意见</h3>' + (annotated ? mark(1) : '') + '</div>' + table(['渠道', '评估人员', '意见', '评估说明', '提交时间'], rows, { key: 'v2-opinions', className: 'v2-opinion-table' }) +
-    '<section class="v2-opinion-feedback"><h3 class="v2-subtitle">商务最终反馈</h3>' + (r.qualityFinal ? '<p>' + tag(r.qualityFinal.result) + ' ' + esc(r.qualityFinal.opinion) + '</p><p class="muted">' + esc(r.qualityFinal.actor || '') + ' · ' + esc(r.qualityFinal.time || '') + '</p>' : '<p class="muted">商务尚未提交最终反馈</p>') + '</section>' +
+    '<section class="v2-opinion-feedback"><h3 class="v2-subtitle">商务最终反馈</h3>' + (r.qualityFinal ? '<p>' + tag(r.qualityFinal.result) + ' ' + esc(r.qualityFinal.opinion || '未填写') + '</p><p class="muted">' + esc(r.qualityFinal.actor || '') + ' · ' + esc(r.qualityFinal.time || '') + '</p>' : '<p class="muted">商务尚未提交最终反馈</p>') + '</section>' +
     '<section class="v2-opinion-history"><h3 class="v2-subtitle">历史记录</h3>' + (r.qualityHistory.length ? r.qualityHistory.map(h => '<p>' + esc(h.time) + ' · ' + esc(h.action) + '</p>').join('') : '<p class="muted">暂无历史记录</p>') + '</section></div>';
 }

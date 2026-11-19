@@ -72,7 +72,7 @@
 .v2-review-opinion textarea { width: 100%; resize: vertical; }
 .v2-review-opinion .muted { line-height: 1.7; margin-top: 12px; }
 .v2-review-actions { margin-top: 18px; }
-.v2-audit-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding: 14px 20px; }
+.v2-audit-footer { display: flex; justify-content: flex-end; align-items: center; margin-top: 16px; padding: 14px 20px; }
 .v2-flow-steps { display: flex; gap: 20px; align-items: center; background: #fff; border: 1px solid var(--line); padding: 18px 22px; margin-bottom: 18px; }
 .v2-flow-steps strong { color: #409eff; }
 .v2-editor .field { margin-bottom: 18px; }
@@ -153,7 +153,7 @@
 .v2-channel-table th:first-child { z-index: 4; background: #fff; }
 .v2-channel-table td:first-child { background: #fff; font-weight: 500; }
 .v2-channel-table tr:nth-child(even) td:first-child { background: #fafafa; }
-.v2-channel-row-actions { justify-content: flex-start; flex-wrap: wrap; gap: 8px 14px; }
+.v2-channel-table .v2-channel-row-actions { justify-content: flex-start; flex-wrap: wrap; gap: 8px 14px; }
 .v2-channel-row-actions .link { white-space: nowrap; }
 .v2-channel-value { display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
 .v2-channel-value > span { min-width: 0; overflow-wrap: anywhere; }

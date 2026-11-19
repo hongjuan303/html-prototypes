@@ -8,7 +8,7 @@ function livePermissions() {
     id: 'legacy:' + u.id + ':' + role, userId: u.id, role,
     associatedChannels: v13HasChannelRole([role]) ? v13AssociatedChannels(u) : [],
     qualityChannels: role === '内容质量评估' ? v13QualityChannels(u) : [],
-    backup: role === '正片审核人员' && u.backup, aliasName: u.aliasName || '', created: u.permissionCreated || ''
+    aliasName: u.aliasName || '', created: u.permissionCreated || ''
   })));
 }
 function liveSavePermissions(rows) {
@@ -18,11 +18,12 @@ function liveSavePermissions(rows) {
     u.roles = [...new Set(own.map(r => r.role))];
     u.associatedChannels = [...new Set(own.flatMap(r => r.associatedChannels || []))];
     u.channels = [...new Set(own.flatMap(r => r.qualityChannels || []))];
-    u.backup = Boolean(own.find(r => r.role === '正片审核人员')?.backup);
     u.aliasName = own.find(r => r.role === '商务人员')?.aliasName || '';
   });
   v2SaveConfig();
 }
+const liveUserQualityChannels = userId => [...new Set(livePermissions().filter(r => r.userId === userId && r.role === '内容质量评估').flatMap(r => r.qualityChannels || []))];
+const liveNeedsQualityChannels = modal => modal.draft.roles.includes('内容质量评估') || livePermissions().some(r => r.userId === modal.draft.userId && r.role === '内容质量评估' && r.id !== modal.permissionId);
 function liveRoleError(userId, roles, omit = '') {
   if (!v2User(userId) || !roles.length) return '请选择用户和角色';
   const others = livePermissions().filter(r => r.userId === userId && r.id !== omit).map(r => r.role);
@@ -66,9 +67,6 @@ root.addEventListener('input', e => {
   }
   if (ui.modal?.type === 'live-permission' && e.target.name === 'aliasName') ui.modal.draft.aliasName = e.target.value;
 });
-root.addEventListener('change', e => {
-  if (ui.modal?.type === 'live-permission' && e.target.name === 'liveBackup') ui.modal.draft.backup = e.target.checked;
-});
 document.addEventListener('click', e => root.querySelectorAll('.live-select[open]').forEach(p => { if (!p.contains(e.target)) p.open = false; }));
 root.addEventListener('click', e => {
   const button = e.target.closest('[data-act="live-pick"]');
@@ -90,20 +88,21 @@ root.addEventListener('keydown', e => {
 clickActions['live-pick'] = (_, id) => {
   const [name, encoded] = id.split('|'), value = decodeURIComponent(encoded), modal = ui.modal;
   if (modal?.type !== 'live-permission') return;
+  const wasOpen = root.querySelector('[data-picker="' + name + '"]')?.open;
   const d = modal.draft, multiple = ['associatedChannels', 'qualityChannels'].includes(name) || name === 'roles' && !modal.permissionId;
   if (name === 'roles' && !d.roles.includes(value) && liveRoleError(d.userId, modal.permissionId ? [value] : [...d.roles, value], modal.permissionId)) return;
-  if (name === 'userId') { Object.assign(d, { userId: value, roles: [], associatedChannels: [], qualityChannels: [], aliasName: '', backup: false }); }
+  if (name === 'userId') { Object.assign(d, { userId: value, roles: [], associatedChannels: [], qualityChannels: liveUserQualityChannels(value), aliasName: '' }); }
   else if (name === 'roles') { d.roles = multiple ? d.roles.includes(value) ? d.roles.filter(x => x !== value) : [...d.roles, value] : [value]; }
   else if (multiple) { d[name] = d[name].includes(value) ? d[name].filter(x => x !== value) : [...d[name], value]; }
   render();
   const picker = root.querySelector('[data-picker="' + name + '"]');
-  if (multiple && picker) { picker.open = true; livePositionPicker(picker); picker.querySelector('[data-live-search]').focus(); }
+  if (multiple && picker && wasOpen) { picker.open = true; livePositionPicker(picker); picker.querySelector('[data-live-search]').focus(); }
   else picker?.querySelector('summary').focus();
 };
-clickActions['live-permission-new'] = () => openModal('live-permission', null, { userId: '', roles: [], associatedChannels: [], qualityChannels: [], aliasName: '', backup: false });
+clickActions['live-permission-new'] = () => openModal('live-permission', null, { userId: '', roles: [], associatedChannels: [], qualityChannels: [], aliasName: '' });
 clickActions['live-permission-edit'] = (_, id) => {
   const row = livePermissions().find(r => r.id === id); if (!row) return;
-  openModal('live-permission', null, { userId: row.userId, roles: [row.role], associatedChannels: [...row.associatedChannels], qualityChannels: [...row.qualityChannels], aliasName: row.aliasName, backup: row.backup }, { permissionId: row.id });
+  openModal('live-permission', null, { userId: row.userId, roles: [row.role], associatedChannels: [...row.associatedChannels], qualityChannels: liveUserQualityChannels(row.userId), aliasName: row.aliasName }, { permissionId: row.id });
 };
 clickActions['live-permission-delete'] = (_, id) => {
   const row = livePermissions().find(r => r.id === id); if (!row) return;
@@ -113,14 +112,23 @@ clickActions['live-permission-delete'] = (_, id) => {
 clickActions['v2-user-edit'] = (_, id) => {
   const row = livePermissions().find(r => r.userId === id); if (row) clickActions['live-permission-edit'](null, row.id);
 };
+changedFields.add('内容质量评估渠道');
+const livePermissionFilterChannels = value => Array.isArray(value) ? value : value && value !== '全部' ? [value] : [];
 function livePermissionView() {
-  const f = ui.filters;
-  const list = livePermissions().filter(r => (!f.userId || f.userId === '全部' || r.userId === f.userId) && (!f.role || f.role === '全部' || r.role === f.role) && (!f.associatedChannel || f.associatedChannel === '全部' || r.associatedChannels.includes(f.associatedChannel)));
+  ui.filterDraft.associatedChannel = livePermissionFilterChannels(ui.filterDraft.associatedChannel);
+  const f = ui.filters, channels = livePermissionFilterChannels(f.associatedChannel);
+  const list = livePermissions().filter(r => (!f.userId || f.userId === '全部' || r.userId === f.userId) && (!f.role || f.role === '全部' || r.role === f.role) && (!channels.length || channels.some(channel => r.associatedChannels.includes(channel))));
   const filter = filters([['userId', '用户'], ['role', '角色', LIVE_ROLES], ['associatedChannel', '关联渠道', V13_ASSOCIATED_CHANNELS]]);
   const dom = document.createElement('div'); dom.innerHTML = filter;
+  dom.querySelector('[name="associatedChannel"]').outerHTML = multiSelect('associatedChannel', V13_ASSOCIATED_CHANNELS, livePermissionFilterChannels(ui.filterDraft.associatedChannel));
+  const channelFilter = dom.querySelector('[data-multi="associatedChannel"]');
+  channelFilter.classList.add('permission-channel-filter');
+  channelFilter.querySelector('summary').setAttribute('aria-label', '关联渠道');
+  channelFilter.querySelector('.option-search').setAttribute('aria-label', '搜索关联渠道');
+
   const field = dom.querySelector('[name="userId"]'); field.outerHTML = '<select name="userId" aria-label="用户"><option value="全部">全部用户</option>' + liveUserOptions().map(([id, name]) => '<option value="' + esc(id) + '"' + (ui.filterDraft.userId === id ? ' selected' : '') + '>' + esc(name) + '</option>').join('') + '</select>';
   dom.querySelectorAll('[name="role"] option').forEach(o => o.textContent = liveRoleName(o.textContent));
-  return heading('用户权限分配') + dom.innerHTML + listing('用户权限列表', ['序号', '用户', '关联角色', '关联渠道', '负责质量评估渠道', '正片自动分配', '创建时间', '操作 ' + mark(3)], list.map((r, i) => line(String(i + 1), esc(v2User(r.userId)?.name || '—'), '<span class="live-role-tag">' + esc(liveRoleName(r.role)) + '</span>', esc(r.associatedChannels.join('、') || '—'), esc(r.qualityChannels.join('、') || '—'), r.role === '正片审核人员' ? r.backup ? '仅手动调配' : '参与自动分配' : '—', timestamp(r.created), buttons(act('编辑', 'live-permission-edit', r.id), act('删除', 'live-permission-delete', r.id, 'link danger')))), act('＋ 新增权限', 'live-permission-new', '', 'btn primary'), { note: 2, className: 'live-permission-table' }).replace('暂无匹配的合集', '暂无数据');
+  return heading('用户权限分配') + dom.innerHTML + listing('用户权限列表', ['序号', '用户', '关联角色', '关联渠道', '内容质量评估渠道', '创建时间', '操作 ' + mark(3)], list.map((r, i) => line(String(i + 1), esc(v2User(r.userId)?.name || '—'), '<span class="live-role-tag">' + esc(liveRoleName(r.role)) + '</span>', esc(r.associatedChannels.join('、') || '—'), esc(r.qualityChannels.join('、') || '—'), timestamp(r.created), buttons(act('编辑', 'live-permission-edit', r.id), act('删除', 'live-permission-delete', r.id, 'link danger')))), act('＋ 新增权限', 'live-permission-new', '', 'btn primary'), { note: 2, className: 'live-permission-table' }).replace('暂无匹配的合集', '暂无数据');
 }
 views.permissionsV2 = livePermissionView;
 const livePermissionDialogBody = dialogBody;
@@ -134,10 +142,9 @@ dialogBody = modal => {
       (own.length ? field(modal.permissionId ? '该用户已有角色' : '已关联角色', '<div class="live-existing-roles">' + own.map(r => '<span>' + esc(liveRoleName(r.role)) + '</span>').join('') + '</div>', false) : '') +
       field('关联角色', livePicker('roles', '关联角色', LIVE_ROLES.map(r => [r, liveRoleName(r)]), d.roles, !modal.permissionId, roleDisabled)) +
       (v13HasChannelRole(d.roles) ? field('关联渠道', livePicker('associatedChannels', '关联渠道', V13_ASSOCIATED_CHANNELS, d.associatedChannels, true)) : '') +
-      (d.roles.includes('内容质量评估') ? field(fieldName('负责质量评估渠道'), livePicker('qualityChannels', '负责质量评估渠道', V2_QUALITY_CHANNELS, d.qualityChannels, true)) : '') +
-      (d.roles.includes('正片审核人员') ? field(fieldName('正片自动分配'), '<label class="check"><input type="checkbox" name="liveBackup"' + (d.backup ? ' checked' : '') + '>正片备选审核人员（不参与自动分配）</label>', false) : '') +
+      (liveNeedsQualityChannels(modal) ? field(fieldName('内容质量评估渠道'), livePicker('qualityChannels', '内容质量评估渠道', V2_QUALITY_CHANNELS, d.qualityChannels, true)) : '') +
       (d.roles.includes('商务人员') ? field('化名', input('aliasName', d.aliasName, '请输入化名', 'text', 'maxlength="20"'), false) : '');
-    return [modal.permissionId ? '编辑用户权限' : '新增用户权限', '<div class="live-permission-form">' + body + '</div>', modal.permissionId ? '保存' : '创建', 2];
+    return [modal.permissionId ? '编辑用户权限' : '新增用户权限', '<div class="live-permission-form">' + body + '</div>', modal.permissionId ? '保存' : '创建'];
   }
   if (modal.type === 'live-permission-delete') {
     const row = livePermissions().find(r => r.id === modal.permissionId);
@@ -152,24 +159,29 @@ submitDialog = form => {
   if (m.type !== 'live-permission') return livePermissionSubmit(form);
   const reason = liveRoleError(d.userId, d.roles, m.permissionId); if (reason) return error(reason);
   if (v13HasChannelRole(d.roles) && (!d.associatedChannels.length || d.associatedChannels.some(c => !V13_ASSOCIATED_CHANNELS.includes(c)))) return error('请选择关联渠道');
-  if (d.roles.includes('内容质量评估') && (!d.qualityChannels.length || d.qualityChannels.some(c => !V2_QUALITY_CHANNELS.includes(c)))) return error('请配置负责质量评估的渠道');
+  if (liveNeedsQualityChannels(m) && (!d.qualityChannels.length || d.qualityChannels.some(c => !V2_QUALITY_CHANNELS.includes(c)))) return error('请选择内容质量评估渠道');
   if (Array.from(d.aliasName).length > 20) return error('化名不能超过20字');
   const rows = structuredClone(livePermissions()), old = rows.find(r => r.id === m.permissionId);
   if (m.permissionId && !old) return error('该权限记录已不存在，请关闭后重试');
-  const next = d.roles.map((role, i) => ({ id: old?.id || 'permission:' + Date.now() + ':' + i, userId: d.userId, role, associatedChannels: v13HasChannelRole([role]) ? [...d.associatedChannels] : [], qualityChannels: role === '内容质量评估' ? [...d.qualityChannels] : [], backup: role === '正片审核人员' && d.backup, aliasName: role === '商务人员' ? d.aliasName.trim() : '', created: old ? old.created : now() }));
-  liveSavePermissions([...rows.filter(r => r.id !== m.permissionId), ...next]);
+  const next = d.roles.map((role, i) => ({ id: old?.id || 'permission:' + Date.now() + ':' + i, userId: d.userId, role, associatedChannels: v13HasChannelRole([role]) ? [...d.associatedChannels] : [], qualityChannels: role === '内容质量评估' ? [...d.qualityChannels] : [], aliasName: role === '商务人员' ? d.aliasName.trim() : '', created: old ? old.created : now() }));
+  const remaining = rows.filter(r => r.id !== m.permissionId);
+  if (liveNeedsQualityChannels(m)) remaining.filter(r => r.userId === d.userId && r.role === '内容质量评估').forEach(r => { r.qualityChannels = [...d.qualityChannels]; });
+  liveSavePermissions([...remaining, ...next]);
   closeModal(); announce(old ? '保存成功' : '创建成功');
 };
-V2_NOTES.permissionsV2 = v13Note('用户权限分配', '沿用线上用户权限记录及新增、编辑、删除交互，补充V2人员配置。', [
-  ['筛选项', [['关联渠道', '在原用户、角色筛选后追加，按已保存具体渠道关联检索全量记录后分页；不按意向或质量职责匹配。']]],
-  ['列表项', [['负责质量评估渠道、正片自动分配', '在原用户、关联角色、关联渠道及创建时间基础上展示V2配置；一条关联角色一行，不合并成整个人员。']]],
-  ['操作项', [['新增权限、编辑', '复用线上用户下拉、已有角色标签、角色下拉及关联渠道多选。新增可关联多个角色；编辑只修改本条关联，其他角色保持。质量角色另配五类职责，正片审核人员可设为备选。'], ['删除', '确认后只删除本条权限，用户及其他角色保留；不清空历史任务和评估意见。']]]
+V2_NOTES.permissionsV2 = v13Note('用户权限分配', '新增【内容质量评估渠道】配置。', [
+  ['筛选项', [['关联渠道', '下拉多选。']]],
+  ['列表项', [['内容质量评估渠道', '内容质量评估角色需要必填内容质量评估渠道。']]],
+  ['操作项', [['新增权限、编辑', '复用线上用户下拉、已有角色标签、角色下拉及关联渠道多选。新增可关联多个角色；编辑维护当前关联，用户已有内容质量评估角色时同时维护其评估渠道，其他角色配置保留。'], ['删除', '确认后只删除本条权限，用户及其他角色保留；不清空历史任务和评估意见。']]]
 ]);
-V2_NOTES['live-permission'] = v13Note('用户权限配置弹窗', '沿用线上480px弹窗结构，在相关角色下追加V2配置。', [
-  ['配置项', [['用户、已有角色、关联角色', '从已有用户选择，不修改姓名；显示该用户已有角色。新增角色多选、编辑单条角色单选，禁止重复，评估A/B/C组互斥，管理员按V13-37可兼任商务／商务负责人；其他业务角色仍与管理员互斥。'], ['关联渠道', '渠道负责人或运营必填，沿用线上26项具体渠道，支持搜索、多选、移除。'], ['负责质量评估渠道', '仅质量角色展示并必选，五类职责与具体关联渠道分别保存。'], ['正片自动分配', '仅正片审核角色显示备选开关。'], ['化名', '商务角色选填，20字以内。']]],
-  ['操作项', [['创建／保存', '校验本条配置与该用户其他角色，不替换整个人员的全部权限。成功回显列表，后续任务使用新配置；已提交任务和历史不改写。'], ['取消', '不保存本次新增或修改。']]]
+V2_NOTES['live-permission'] = v13Note('用户权限配置弹窗', '增加内容质量评估渠道的配置。', [
+  ['配置项', [['角色', '管理员和商务负责人可以兼容并存。'], ['内容质量评估渠道', '若有【内容质量评估】角色，则必填【内容质量评估渠道】，下拉多选，枚举：国内渠道、YouTube、Tiktok端原生、TT小程序、仅微信视频号。']]]
 ]);
 V2_NOTES['live-permission-delete'] = v13Note('删除权限确认', '删除单条用户角色关联。', [['操作项', [['确认、取消', '确认删除当前关联；取消保留原权限。账号、其他角色与历史记录保持。']]]]);
+V2_NOTES.permissionsV2.caution = '11.18 更新。';
+V2_NOTES['live-permission'].caution = '11.19 更新。';
+const livePermissionNote = noteInfo;
+noteInfo = () => { const n = livePermissionNote(); return ui.modal?.type === 'live-permission' ? { ...n, page: '用户权限分配 / ' + (ui.modal.permissionId ? '编辑用户权限' : '新增用户权限') } : n; };
 const livePermissionRender = render;
 render = function (options) {
   livePermissionRender(options);

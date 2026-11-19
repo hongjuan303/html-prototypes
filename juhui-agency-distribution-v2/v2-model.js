@@ -14,12 +14,12 @@ const V2_REUSE_FIELDS = [
 const V2_SAMPLE = { name: '演示正片.webm', url: './assets/demo-720p.webm', width: 1280, height: 720, duration: 1.896998 };
 const v2Defaults = () => ({
   users: [
-    { id: 'admin', name: '管理员兼商务', roles: ['管理员', '商务负责人'], channels: [], backup: false },
-    { id: 'q-domestic', name: '国内质量评估员', roles: ['内容质量评估'], channels: ['国内渠道'], backup: false },
-    { id: 'q-youtube', name: 'YouTube评估员', roles: ['内容质量评估'], channels: ['海外 YouTube'], backup: false },
-    { id: 'q-tiktok', name: 'TikTok评估员', roles: ['内容质量评估'], channels: ['海外 TikTok 端原生', '海外 TT 小程序'], backup: false },
-    { id: 'film-a', name: '正片审核员甲', roles: ['正片审核人员'], channels: [], backup: false },
-    { id: 'film-b', name: '正片备选审核员', roles: ['正片审核人员'], channels: [], backup: true }
+    { id: 'admin', name: '管理员兼商务', roles: ['管理员', '商务负责人'], channels: [] },
+    { id: 'q-domestic', name: '国内质量评估员', roles: ['内容质量评估'], channels: ['国内渠道'] },
+    { id: 'q-youtube', name: 'YouTube评估员', roles: ['内容质量评估'], channels: ['海外 YouTube'] },
+    { id: 'q-tiktok', name: 'TikTok评估员', roles: ['内容质量评估'], channels: ['海外 TikTok 端原生', '海外 TT 小程序'] },
+    { id: 'film-a', name: '正片审核员甲', roles: ['正片审核人员'], channels: [] },
+    { id: 'film-b', name: '正片审核员乙', roles: ['正片审核人员'], channels: [] }
   ],
   suppliers: [
     { id: 's1', name: '星帆文化（演示）', business: 'admin', account: 'xingfan-demo', phone: '13800000001', password: 'DemoOnly123', managed: false, middleAccount: '', middlePassword: '' },
@@ -40,6 +40,16 @@ const v2Defaults = () => ({
 });
 let v2Config;
 try { v2Config = JSON.parse(localStorage.getItem(V2_CONFIG_KEY)) || v2Defaults(); } catch { v2Config = v2Defaults(); }
+// Add only missing observed suppliers; never overwrite a locally edited record.
+if (typeof V2_SUPPLIER_SNAPSHOT !== 'undefined') {
+  const missing = V2_SUPPLIER_SNAPSHOT.filter(observed => !v2Config.suppliers.some(saved => saved.id === observed.id || saved.account === observed.account));
+  v2Config.suppliers.unshift(...missing.map(supplier => structuredClone(supplier)));
+}
+// Keep existing demo users and assigned task IDs; the retired classification has no effect.
+for (const [id, previous, name] of [['film-b', '正片备选审核员', '正片审核员乙'], ['v24-film-backup', '正片备选（演示）', '正片审核员乙（演示）']]) {
+  const user = v2Config.users.find(u => u.id === id && u.name === previous);
+  if (user) user.name = name;
+}
 if (!Number.isFinite(v2Config.authorizationLimitMB)) v2Config.authorizationLimitMB = 100;
 if (!Number.isFinite(v2Config.authorizationTotalMB)) v2Config.authorizationTotalMB = 500;
 if (!Object.hasOwn(v2Config, 'managedRulesEnabled')) { v2Config.managedRulesEnabled = true; v2Config.managedSkipFields = V2_REUSE_FIELDS.map(([key]) => key); }
@@ -48,7 +58,10 @@ const v2Supplier = r => r.onlineSnapshot ? { id: r.supplierId, name: r.supplier,
 const v2User = id => v2Config.users.find(u => u.id === id);
 const v2HasAuthorization = r => r.authorization?.some(file => file && (file.name || file.id));
 const v2ReadyForSchedule = r => r.materialStatus === '通过' && r.filmStatus === '通过' && v2HasAuthorization(r);
-const v2AwaitingSchedule = r => v2ReadyForSchedule(r) && ![STAGES[2], STAGES[3]].includes(r.stage);
+// 待发行／已发行表示排播已确认；只有供应商填写时间不会推进阶段。
+const v2ScheduleConfirmed = r => [STAGES[2], STAGES[3]].includes(r.stage) && v2ValidScheduleDate(v2LaunchTime(r));
+const v2ScheduleStatus = r => v2ScheduleConfirmed(r) ? '已确认' : '待确认';
+const v2AwaitingSchedule = r => v2ReadyForSchedule(r) && !v2ScheduleConfirmed(r);
 const v2FlowStage = r => v2AwaitingSchedule(r) ? STAGES[1] : r.stage;
 const v2LaunchTime = r => String(r?.launch || r?.supplierDate || '').trim().replace('T', ' ');
 function v2SetLaunchTime(r, value) {
@@ -66,7 +79,7 @@ function v2SupplierDateInput(r) {
   return input('supplierDate', timed ? value.replace(' ', 'T') : value, '', timed ? 'datetime-local' : 'date', timed ? 'step="60"' : '') + '<span class="field-hint">转免时间默认与首发时间一致，无需另填。</span>';
 }
 syncBusiness = function (r) {
-  if ([STAGES[2], STAGES[3]].includes(r.stage)) return;
+  if (v2ScheduleConfirmed(r)) return;
   if (v2ReadyForSchedule(r)) {
     if (r.stage !== STAGES[1]) { r.stage = STAGES[1]; recordLog(r, '物料、正片审核通过且已有授权书，进入待排播确认'); }
   } else if (!r.stage && r.materialStatus === '通过' && r.filmStatus === '通过') {
@@ -81,21 +94,21 @@ function v2ValidScheduleDate(value, requireTime = false) {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day && hour < 24 && minute < 60;
 }
 function v2CompleteSchedule(r, launch, freeTime) {
-  if (!v2ReadyForSchedule(r)) return false;
+  if (!v2ReadyForSchedule(r) || !v2ValidScheduleDate(launch)) return false;
   const pending = v2AwaitingSchedule(r);
   v2SetLaunchTime(r, launch);
   if (freeTime !== undefined) r.freeTime = freeTime.replace('T', ' ');
   if (pending) r.stage = STAGES[2];
-  recordLog(r, (pending ? '排播确认，流转至运营阶段；上线时间 ' : '更新上线时间 ') + r.launch + (r.freeTime ? '；转免时间 ' + r.freeTime : ''));
+  recordLog(r, (pending ? '上线时间已确认，流转至渠道负责人阶段；上线时间 ' : '更新上线时间 ') + r.launch + (r.freeTime ? '；转免时间 ' + r.freeTime : ''));
   return true;
 }
 const v2ActiveChannels = () => v2Config.channels.filter(c => c.active).map(c => c.name);
-const v2Release = () => ['国内全渠道', '海外全渠道', ...v2ActiveChannels()];
+let v2Release = () => ['国内全渠道', '海外全渠道', ...v2ActiveChannels()];
 const v2ChannelList = r => [...new Set(r.release.flatMap(c => ['国内全渠道', '海外全渠道'].includes(c) ? v2Config.channels.filter(item => item.active && (item.market || (CHANNELS.slice(1).includes(item.name) ? '海外' : '国内')) === (c === '国内全渠道' ? '国内' : '海外')).map(item => item.name) : [c]))];
 const v2IsHuman = r => r.type.includes('真人实拍');
 const v2IsComic = r => r.type.includes('漫剧');
-const v2ContractVisible = r => !v2IsHuman(r) || v2ChannelList(r).includes('海外 TikTok 端原生');
-const v2EffectiveContract = (r, channel) => v2IsHuman(r) && channel !== '海外 TikTok 端原生' ? '有' : r.contract;
+const v2ContractVisible = () => true;
+const v2EffectiveContract = r => r.contract;
 function v2FieldsFor(r) {
   const selected = v2ChannelList(r.channelReworkMode ? { ...r, release: r.reworkChannels } : r);
   return v2Config.fields.filter(f => f.active && selected.some(c => (f.channels.includes('*') || f.channels.includes(c)) &&
@@ -190,8 +203,9 @@ async function v2VideoMetadata(file) {
     const timer = setTimeout(() => { URL.revokeObjectURL(url); reject(Error('无法读取视频信息，请更换文件')); }, 12000);
     video.preload = 'metadata'; video.src = url;
     video.onloadedmetadata = () => { clearTimeout(timer); URL.revokeObjectURL(url); const { videoWidth: width, videoHeight: height, duration } = video;
-      if (!Number.isFinite(duration) || !width || !height) reject(Error('无法读取视频尺寸或时长'));
+      if (!width || !height) reject(Error('无法读取视频尺寸'));
       else if (Math.min(width, height) < 720) reject(Error(file.name + '：视频短边需至少720像素，当前' + width + '×' + height));
+      else if (!Number.isFinite(duration)) reject(Error('无法读取视频时长'));
       else resolve({ width, height, duration }); };
     video.onerror = () => { clearTimeout(timer); URL.revokeObjectURL(url); reject(Error(file.name + '：文件无法识别为可播放视频')); };
   });

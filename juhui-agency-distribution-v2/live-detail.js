@@ -10,18 +10,7 @@ views.eval = () => {
 for (const [action, result] of [['live-content-pass', '通过'], ['live-content-reject', '驳回']]) clickActions[action] = r => {
   clickActions['v13-content-result'](r); if (ui.modal?.type === 'v13-content-result') { ui.modal.draft.result = result; ui.modal.liveDirect = true; render(); }
 };
-const liveBusinessView = views.business;
-views.business = () => {
-  const dom = document.createElement('div'); dom.innerHTML = liveBusinessView();
-  dom.querySelector('.filter-panel').outerHTML = filters([supplierFilter, collectionFilter, ['contact', '商务', v13Businesses().map(u => u.name)]]);
-  const table = dom.querySelector('table'); table.classList.add('live-business-table');
-  table.querySelector('th:last-child').insertAdjacentHTML('beforebegin', '<th>提交时间</th><th>' + fieldName('上线时间') + '</th><th>审核人员</th>');
-  table.querySelectorAll('tbody tr').forEach(tr => {
-    const r = val(tr.querySelector('[data-act="history"]')?.dataset.id); if (!r) { tr.querySelector('.empty')?.setAttribute('colspan', table.querySelectorAll('th').length); return; }
-    tr.children[1].innerHTML = act(r.name, 'open-detail', r.id);
-    tr.lastElementChild.insertAdjacentHTML('beforebegin', td(timestamp(r.submitted)) + td(timestamp(v2LaunchTime(r))) + td('物料：' + esc(liveReviewerName(r, 'material') || '—') + '<br>正片：' + esc(liveReviewerName(r, 'film') || '—')));
-  }); return dom.innerHTML;
-};
+// Business baseline columns and V2 increments are rendered together in v13BusinessView.
 const liveScheduleView = views.schedule;
 views.schedule = () => {
   const dom = document.createElement('div'); dom.innerHTML = liveScheduleView();

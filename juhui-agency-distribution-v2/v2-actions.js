@@ -6,12 +6,12 @@ dialogBody = function (modal) {
       return ['提交剧集信息', '<div class="two-fields">' + formField('合集名称', input('name', d.name, '', 'text', 'required maxlength="100"'), true) + formField('集数', input('episodes', d.episodes, '', 'number', 'required min="1" max="1000"'), true) + '</div>' +
         formField('一卡链接', input('link', d.link, 'https://', 'url', 'required'), true) + '<div class="two-fields">' + formField('内容类型', select('type', V2_TYPES, d.type), true) + formField('发行轮次', select('round', ['首发', '二轮'], d.round), true) + '</div>' +
         formField('剧集简介', '<textarea name="intro" rows="4" maxlength="1000" required placeholder="最多1000字">' + esc(d.intro) + '</textarea>', true) +
-        '<div class="form-group"><strong>提审信息 ' + mark(1) + '</strong></div><div class="field"><span>意向发行渠道</span>' + v2Checks('intent', CHANNELS, d.intent) + '</div>' +
+        '<div class="field"><span>意向发行渠道</span>' + v2Checks('intent', CHANNELS, d.intent) + '</div>' +
         (d.intent.includes('国内渠道') ? '<div class="field"><span>国内渠道排除项</span>' + v2Checks('exclude', EXCLUSIONS, d.exclude) + '</div>' : '') +
         (d.intent.includes('海外 YouTube') ? formField('海外YouTube是否首发', select('youtubeFirst', ['请选择', '是', '否'], d.youtubeFirst || '请选择'), true) : ''), '提交评估', 2];
     case 'v2-quality-result': {
       const task = r.qualityTasks.find(t => t.id === modal.taskId);
-      return ['渠道质量评估', '<p class="v2-dialog-summary">' + esc(r.name) + ' · ' + esc(task.channel) + '</p>' + mark(1) + formField('评估结果', select('result', ['通过', '驳回'], d.result), true) + formField('评估意见', '<textarea name="opinion" required rows="5">' + esc(d.opinion) + '</textarea>', true), '提交意见', 2];
+      return ['渠道质量评估', '<p class="v2-dialog-summary">' + esc(r.name) + ' · ' + esc(task.channel) + '</p>' + mark(1) + formField('评估结果', select('result', ['通过', '驳回'], d.result), true) + v24QualityRemark('评估意见', d), '提交意见', 2];
     }
     case 'v2-scheduling':
       return ['设置上线时间', '<div class="form-group"><strong>排播时间 ' + mark(1) + '</strong>' +
@@ -25,7 +25,7 @@ dialogBody = function (modal) {
         Array.from({ length: r.episodes }, (_, index) => { const old = r.episodeFiles.find(e => e.index === index + 1); const added = d.files.find(e => e.index === index + 1); return '<div class="v2-episode-upload"><strong>第' + (index + 1) + '集</strong>' + (old ? '<span>' + tag(old.result || '已上传') + ' ' + esc(old.name) + '</span>' + (old.opinion ? '<p class="error">' + esc(old.opinion) + '</p>' : '') : '') + '<label class="btn upload-label">' + (old ? '替换文件' : '选择视频') + '<input type="file" accept="video/*" data-v2-upload="film" data-v2-key="' + (index + 1) + '"></label>' + (added ? '<span class="changed-field">已选择：' + esc(added.name) + ' · ' + added.width + '×' + added.height + '</span>' : '') + '</div>'; }).join(''), '提交正片审核', 2];
     case 'v2-assign-film': {
       const people = v2Config.users.filter(u => u.roles.includes('正片审核人员'));
-      return ['调配正片审核人员', '<p>' + esc(r.name) + '</p>' + mark(1) + formField('审核人员', '<select name="reviewer" required>' + people.map(u => '<option value="' + u.id + '"' + (r.filmReviewer === u.id ? ' selected' : '') + '>' + esc(u.name) + (u.backup ? '（备选，仅手动调配）' : '') + '</option>').join('') + '</select>', true), '确认调配', 2];
+      return ['调配正片审核人员', '<p>' + esc(r.name) + '</p>' + mark(1) + formField('审核人员', '<select name="reviewer" required>' + people.map(u => '<option value="' + u.id + '"' + (r.filmReviewer === u.id ? ' selected' : '') + '>' + esc(u.name) + '</option>').join('') + '</select>', true), '确认调配', 2];
     }
     case 'v2-delivery':
       return ['交付记录 · ' + r.name, '<h3>正片文件 ' + mark(1) + '</h3>' + v2FileList(r.episodeFiles) + '<h3 class="v2-subtitle">单集审核意见</h3>' + r.episodeFiles.map(e => '<p>第' + e.index + '集 ' + tag(e.result || '待审核') + ' ' + esc(e.opinion || '') + '</p>').join('') + '<h3 class="v2-subtitle">物料附件</h3>' + Object.entries(r.materials).map(([key, files]) => '<p>' + esc(v2Config.fields.find(f => f.key === key)?.name || key) + '</p>' + v2FileList(files)).join(''), '', 0];
@@ -37,7 +37,7 @@ dialogBody = function (modal) {
     }
     case 'v2-user': {
       const u = v2User(modal.userId);
-      return ['人员权限配置', formField('姓名', input('displayName', u.name, '', 'text', 'required'), true) + '<div class="field"><span>角色 ' + mark(1) + '</span>' + v2Checks('roles', V2_ROLES, u.roles) + '</div><div class="field"><span>负责质量评估渠道</span>' + v2Checks('channels', CHANNELS, u.channels) + '</div><label class="check"><input type="checkbox" name="backup"' + (u.backup ? ' checked' : '') + '>正片备选审核人员（不参与自动分配）</label>', '保存', 2];
+      return ['人员权限配置', formField('姓名', input('displayName', u.name, '', 'text', 'required'), true) + '<div class="field"><span>角色 ' + mark(1) + '</span>' + v2Checks('roles', V2_ROLES, u.roles) + '</div><div class="field"><span>负责质量评估渠道</span>' + v2Checks('channels', CHANNELS, u.channels) + '</div>', '保存', 2];
     }
     case 'v2-field': {
       return [modal.fieldKey ? '配置物料字段' : '新增物料字段', mark(1) + '<div class="two-fields">' + formField('字段名称', input('fieldName', d.name || '', '', 'text', 'required'), true) + formField('录入组件', select('component', ['文本框', '文件上传', '图片上传'], d.component || '文本框'), true) + '</div>' +
@@ -47,6 +47,11 @@ dialogBody = function (modal) {
     case 'v2-channel': return ['新增发行渠道', mark(1) + formField('渠道名称', input('channelName', '', '', 'text', 'required'), true) + formField('渠道范围', select('market', ['国内', '海外'], '国内')), '新增', 2];
     case 'v2-auth':
       return ['维护授权书 · ' + r.name, '<strong>授权书 ' + mark(1) + '</strong><p class="field-hint">支持Word、PDF，单文件不超过100MB，单次上传合计不超过500MB。</p>' + '<label class="btn upload-label">＋ 上传授权书<input type="file" accept=".doc,.docx,.pdf" multiple data-v2-upload="auth"></label>' + v2FileList(d.files, 'v2-remove-auth'), '保存', 2];
+    case 'v2-channel-edit': {
+      const wechat = modal.channel === '微信视频号', writable = wechat && canEditWechat(r);
+      const status = wechat ? '<select name="status"' + (writable ? '' : ' disabled') + '><option value="">请选择送审情况</option>' + options(WECHAT, d.status) + '</select>' : input('notApplicable', '不适用', '', 'text', 'disabled');
+      return ['编辑渠道信息', '<div class="form-group">' + esc(r.name) + ' · ' + esc(modal.channel) + ' ' + mark(1) + '</div>' + formField('渠道内容ID', input('contentId', d.contentId, '请输入渠道内容ID', 'text', 'maxlength="100"')) + formField('送审情况', status) + (wechat && d.status === '已送审' ? formField('送审时间', input('time', d.time, '', 'datetime-local', 'step="60"' + (writable ? ' required' : ' disabled')), writable) : ''), '保存', 2];
+    }
     case 'v2-channel-id': return ['修改渠道内容ID', '<p>' + esc(r.name) + ' · ' + esc(modal.channel) + '</p>' + mark(1) + formField('渠道内容ID', input('contentId', d.contentId || '', '', 'text', 'required maxlength="100"'), true), '保存', 2];
     case 'v2-channel-reject':
       return ['驳回渠道正片', '<p>' + esc(r.name) + ' · ' + esc(modal.channel) + '</p>' + mark(1) + '<div class="v2-channel-rejections">' + r.episodeFiles.map(e => '<div><label class="check"><input type="checkbox" name="episodeIds" value="' + e.id + '">第' + e.index + '集</label><textarea name="opinion-' + e.id + '" rows="2" placeholder="本渠道该集的修改意见"></textarea>' + ((r.channelReturns[modal.channel] || []).some(item => item.episodeId === e.id && item.status === '待修改') ? '<span class="tag amber">已驳回待修改</span>' : '') + '</div>').join('') + '</div>', '确认驳回', 2];
@@ -90,17 +95,17 @@ Object.assign(clickActions, {
     if (!v2AwaitingSchedule(r)) return announce('该剧集已完成排播确认');
     const supplied = v2LaunchTime(r);
     if (!v2ValidScheduleDate(supplied)) return announce('请核对已填写的上线时间');
-    v2CompleteSchedule(r, supplied, v2FreeTime(r) || undefined); persist(); render(); announce('排播已确认，已流转至运营阶段');
+    v2CompleteSchedule(r, supplied, v2FreeTime(r) || undefined); persist(); render(); announce('上线时间已确认，已流转至渠道负责人阶段');
   },
   'v2-review-film': async r => { ui.selected = r.id; ui.filmDraft = null; ui.filmUrls = {}; for (const e of r.episodeFiles) if (e.id && !e.url) { try { ui.filmUrls[e.id] = URL.createObjectURL(await v2File(e)); } catch {} } ui.episodeId = r.filmRound?.ids[0] || r.episodeFiles[0]?.id; navigate('filmReviewV2'); },
-  'v2-episode': (_, id) => { ui.episodeId = id; render(); },
-  'v2-episode-pass': (_, id) => { if (val(ui.selected).filmStatus !== '审核中') return; ui.filmDraft[id].result = '通过'; render(); },
-  'v2-episode-reject': (_, id) => { if (val(ui.selected).filmStatus !== '审核中') return; ui.filmDraft[id].result = '驳回'; render(); },
+  'v2-episode': (_, id) => { ui.episodeId = id; render(); const video = root.querySelector('#v2-player'); if (video) video.playbackRate = ui.filmSpeed || 1; },
+  'v2-episode-pass': (_, id) => { if (val(ui.selected).filmStatus !== '审核中') return; if (!val(ui.selected).filmRound?.ids.includes(id)) return; ui.filmDraft[id].result = '通过'; v24RenderFilm(); },
+  'v2-episode-reject': (_, id) => { if (val(ui.selected).filmStatus !== '审核中') return; if (!val(ui.selected).filmRound?.ids.includes(id)) return; ui.filmDraft[id].result = '驳回'; v24RenderFilm(); },
   'v2-finish-film': r => {
     const ids = r.filmRound.ids;
     if (ids.some(id => !ui.filmDraft[id]?.result)) return error('请完成本轮所有分集的审核。', '#v2-film-error');
     if (ids.some(id => ui.filmDraft[id].result === '驳回' && !ui.filmDraft[id].opinion.trim())) return error('请为所有驳回分集填写修改意见。', '#v2-film-error');
-    r.filmHistory ||= []; r.filmHistory.unshift({ time: now(), round: structuredClone(r.filmRound), results: structuredClone(ui.filmDraft), duration: v2RoundDuration(r) });
+    r.filmHistory ||= []; r.filmHistory.unshift({ time: now(), actor: v2User(r.filmReviewer)?.name || '未记录', round: structuredClone(r.filmRound), results: structuredClone(ui.filmDraft), duration: v2RoundDuration(r) });
     r.episodeFiles.forEach(e => { if (ids.includes(e.id)) Object.assign(e, ui.filmDraft[e.id]); });
     r.filmStatus = r.episodeFiles.some(e => e.result === '驳回') ? '驳回' : '通过'; syncBusiness(r); persist(); ui.filmDraft = null; navigate('filmAuditV2'); announce('本轮正片审核已完成');
   },
@@ -115,10 +120,15 @@ Object.assign(clickActions, {
   'v2-channel-restore': (_, id) => { v2Config.channels.find(c => c.id === id).active = true; v2SaveConfig(); render(); },
   'v2-channel-new': () => openModal('v2-channel', null, {}),
   'v2-config-tab': (_, id) => { ui.configTab = id; render(); },
-  'v2-auth': r => openModal('v2-auth', r.id, { files: structuredClone(r.authorization) }),
+  'v2-auth': r => openModal('v2-auth', r.id, { release: [...r.release], files: structuredClone(r.authorization) }),
   'v2-remove-auth': (_, index) => { ui.modal.draft.files.splice(Number(index), 1); render(); },
   'v2-remove-material': (_, id) => { const [key, index] = id.split(':'); ui.edit.materials[key].splice(Number(index), 1); render(); },
   'v2-download': (_, value) => v2Download(JSON.parse(decodeURIComponent(value))),
+  'v2-channel-edit': r => {
+    if (!['channel', 'operator'].includes(ui.detailFrom) || !v2ChannelList(r).includes(ui.channel)) return;
+    const contentId = r.channelContentIds?.[ui.channel] || r.onlineSnapshot?.channels.find(c => c.key === ui.channel)?.contentId || '';
+    openModal('v2-channel-edit', r.id, { contentId, status: r.wechat?.status || '', time: r.wechat?.time?.replace(' ', 'T') || '' }, { channel: ui.channel, originalContentId: contentId, wechatWritable: ui.channel === '微信视频号' && canEditWechat(r) });
+  },
   'v2-channel-id': r => { if (!['channel', 'operator'].includes(ui.detailFrom) || !v2ChannelList(r).includes(ui.channel)) return; openModal('v2-channel-id', r.id, { contentId: r.channelContentIds?.[ui.channel] || '' }, { channel: ui.channel }); },
   'v2-channel-reject': r => { if (ui.detailFrom !== 'operator' || !r.assignment[ui.channel]) return; openModal('v2-channel-reject', r.id, {}, { channel: ui.channel }); },
   'v2-channel-material-reject': r => { if (ui.detailFrom !== 'operator' || !r.assignment[ui.channel]) return; openModal('v2-channel-material-reject', r.id, {}, { channel: ui.channel }); },
@@ -156,7 +166,7 @@ submitDialog = function (form) {
       if (text('freeTime') && !v2ValidScheduleDate(text('freeTime'), true)) return error('请选择完整的转免日期和时分。');
       const pending = v2AwaitingSchedule(r);
       v2CompleteSchedule(r, text('launch'), text('freeTime'));
-      message = pending ? '排播已确认，已流转至运营阶段' : '排播时间已更新'; break;
+      message = pending ? '上线时间已确认，已流转至渠道负责人阶段' : '排播时间已更新'; break;
     }
     case 'v2-submit': {
       if (!d.intent.length) return error('请至少选择一个意向发行渠道。');
@@ -186,10 +196,10 @@ submitDialog = function (form) {
       const merged = Array.from({ length: r.episodes }, (_, i) => d.files.find(e => e.index === i + 1) || r.episodeFiles.find(e => e.index === i + 1));
       if (merged.some(e => !e)) return error('首次提交需补齐全部分集。');
       if (r.episodeFiles.some(e => e.result === '驳回' && !d.files.some(f => f.index === e.index))) return error('请替换所有被驳回的分集后重提。');
-      const main = v2Config.users.filter(u => u.roles.includes('正片审核人员') && !u.backup);
+      const main = v2Config.users.filter(u => u.roles.includes('正片审核人员'));
       if (!main.length) return error('请先配置参与自动分配的正片审核人员。');
       r.episodeHistory ||= []; d.files.forEach(file => { const old = r.episodeFiles.find(e => e.index === file.index); if (old) r.episodeHistory.push({ ...old, archivedAt: now() }); });
-      r.episodeFiles = merged; r.filmReviewer ||= main[0].id; r.filmStatus = '审核中'; r.filmRound = { number: (r.filmRound?.number || 0) + 1, ids: d.files.map(e => e.id), kind: r.filmRound ? '复审' : '初审' }; message = '正片已提交审核'; break;
+      r.episodeFiles = merged; if (!v2User(r.filmReviewer)?.roles.includes('正片审核人员')) r.filmReviewer = main[0].id; r.filmStatus = '审核中'; r.filmRound = { submitted: now(), number: (r.filmRound?.number || 0) + 1, ids: d.files.map(e => e.id), kind: r.filmRound ? '复审' : '初审' }; message = '正片已提交审核'; break;
     }
     case 'v2-assign-film': if (!v2User(text('reviewer'))?.roles.includes('正片审核人员')) return error('请选择正片审核人员。'); r.filmReviewer = text('reviewer'); message = '审核人员已调配'; break;
     case 'v2-supplier': {
@@ -198,7 +208,7 @@ submitDialog = function (form) {
       Object.assign(s, { business: text('business'), account: text('account'), phone: text('phone') });
       if (text('password')) s.password = text('password'); v2SaveConfig(); break;
     }
-    case 'v2-user': { const u = v2User(modal.userId); const roles = data.getAll('roles'), channels = roles.includes('内容质量评估') ? data.getAll('channels') : []; if (!roles.length) return error('请至少选择一个角色。'); if (roles.includes('内容质量评估') && !channels.length) return error('请配置负责质量评估的渠道。'); Object.assign(u, { name: text('displayName'), roles, channels, backup: data.has('backup') }); v2SaveConfig(); break; }
+    case 'v2-user': { const u = v2User(modal.userId); const roles = data.getAll('roles'), channels = roles.includes('内容质量评估') ? data.getAll('channels') : []; if (!roles.length) return error('请至少选择一个角色。'); if (roles.includes('内容质量评估') && !channels.length) return error('请配置负责质量评估的渠道。'); Object.assign(u, { name: text('displayName'), roles, channels }); v2SaveConfig(); break; }
     case 'v2-field': {
       const channels = data.getAll('channels'); if (!channels.length) return error('请选择关联渠道。');
       if (v2Config.fields.some(f => f.key !== modal.fieldKey && f.active && f.name === text('fieldName'))) return error('已有同名物料字段。');
@@ -213,6 +223,24 @@ submitDialog = function (form) {
       if ([STAGES[1], STAGES[2], STAGES[3]].includes(r.stage) && !d.files.length) return error('该合集已进入后续环节，请保留至少一份有效授权书。');
       r.authorization = d.files;
       syncBusiness(r); message = '授权书已保存'; break;
+    case 'v2-channel-edit': {
+      if (modal.channel !== ui.channel || !['channel', 'operator'].includes(ui.detailFrom) || !v2ChannelList(r).includes(modal.channel)) return error('当前身份无法修改。');
+      if (modal.wechatWritable && !canEditWechat(r)) return error('送审情况填写权限已变化，请关闭后重新打开。');
+      const contentId = text('contentId'), idChanged = contentId !== modal.originalContentId;
+      if (contentId.length > 100 || idChanged && !contentId) return error('请填写渠道内容ID，最多100字。');
+      const status = modal.wechatWritable ? text('status') : r.wechat?.status || '';
+      const time = modal.wechatWritable && status === '已送审' ? text('time').replace('T', ' ') : '';
+      const statusChanged = modal.wechatWritable && (status !== (r.wechat?.status || '') || time !== (r.wechat?.time || ''));
+      if (statusChanged && (!WECHAT.includes(status) || status === '已送审' && (!time || !v2ValidScheduleDate(time, true)))) return error('请选择送审情况，已送审时请补齐送审时间。');
+      if (!idChanged && !statusChanged) { closeModal(); announce('未修改渠道信息'); return; }
+      if (idChanged) (r.channelContentIds ||= {})[modal.channel] = contentId;
+      if (statusChanged) {
+        if (r.wechat) (r.wechatHistory ||= []).unshift({ ...r.wechat, changedAt: now() });
+        r.wechat = { status, time };
+        recordLog(r, '送审情况更新为' + status + (time ? ' · ' + time : ''));
+      }
+      message = '渠道信息已保存'; break;
+    }
     case 'v2-channel-id':
       if (modal.channel !== ui.channel || !['channel', 'operator'].includes(ui.detailFrom)) return error('当前身份无法修改。');
       (r.channelContentIds ||= {})[modal.channel] = text('contentId'); message = '渠道内容ID已保存'; break;
@@ -252,9 +280,10 @@ function v2ReadMaterial() {
 }
 root.addEventListener('change', async event => {
   const f = event.target;
+  if (ui.modal?.type === 'v2-channel-edit' && f.name === 'status') { ui.modal.draft.status = f.value; if (f.value !== '已送审') ui.modal.draft.time = ''; render(); return; }
   if (f.dataset.v2Switch) { ui[f.dataset.v2Switch] = f.value; render(); }
   if (f.dataset.v2Supplier) { ui.supplierId = f.value; render(); }
-  if (f.hasAttribute('data-v2-speed')) { const video = root.querySelector('#v2-player'); if (video) video.playbackRate = Number(f.value); }
+  if (f.hasAttribute('data-v2-speed')) { const video = root.querySelector('#v2-player'); if (video) { ui.filmSpeed = Number(f.value); video.playbackRate = ui.filmSpeed; } }
   if (f.dataset.v2ExportId) { f.checked ? ui.exportIds.add(Number(f.dataset.v2ExportId)) : ui.exportIds.delete(Number(f.dataset.v2ExportId)); render(); }
   if (ui.modal?.type === 'v2-submit' && f.type === 'checkbox') {
     const form = f.closest('form'), data = new FormData(form); ui.modal.draft.intent = data.getAll('intent'); ui.modal.draft.exclude = ui.modal.draft.intent.includes('国内渠道') ? data.getAll('exclude') : []; render();
@@ -295,7 +324,7 @@ root.addEventListener('submit', event => {
     const missing = v2FieldsFor(r).filter(f => f.required && (f.component.includes('上传') ? !r.materials[f.key]?.length : !r.customMaterials[f.key]?.trim()));
     if (missing.length) return error('请补充：' + missing.map(f => f.name).join('、'), '#v2-material-error');
     if (r.channelReworkMode) r.reworkChannels.forEach(channel => { r.channelMaterialReturns[channel].status = '待复核'; r.channelMaterialReturns[channel].resubmittedAt = now(); });
-    else r.materialStatus = '审核中';
+    else { r.materialStatus = '审核中'; r.materialSubmitted = now(); }
   }
   const saved = structuredClone(r); delete saved.channelReworkMode; delete saved.reworkChannels;
   Object.assign(val(r.id), saved); persist(); if (submit) { ui.edit = null; navigate('supplierContent'); } else render(); announce(submit ? '物料已提交审核' : '物料草稿已保存');

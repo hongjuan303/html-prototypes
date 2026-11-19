@@ -520,7 +520,7 @@ function dialog(modal) {
   const opinions = ['v2-opinions', 'v2-business-final', 'v2-film-upload', 'v13-business-confirm'].includes(modal.type);
   const wide = ['review', 'channelList', 'history'].includes(modal.type) || opinions;
   return '<div class="shade"><section class="dialog ' + (modal.type === 'collection-info' ? 'inspection-dialog' : wide ? 'wide' : '') + (opinions ? ' v2-assessment-dialog' : '') + '" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1">' +
-    '<header><h2 id="dialog-title">' + esc(title) + '</h2><button type="button" class="close" data-act="close" aria-label="关闭此对话框">×</button></header>' +
+    '<header><h2 id="dialog-title">' + esc(title) + (modal.type === 'v2-submit' ? ' ' + mark(1) : '') + '</h2><button type="button" class="close" data-act="close" aria-label="关闭此对话框">×</button></header>' +
     '<form data-form="dialog"><div class="dialog-body">' + body + '<p id="dialog-error" class="error" role="alert"></p></div>' +
     '<footer>' + (footerMark ? mark(footerMark) : '') + act(submit ? '取消' : '关闭', 'close', '', 'btn') +
     (submit ? '<button class="btn primary" type="submit">' + submit + '</button>' : '') + '</footer></form></section></div>';
@@ -558,8 +558,8 @@ function noteInfo() {
 function notes() {
   const n = noteInfo();
   return '<aside class="notes" id="prototype-notes" aria-label="原型说明"><div class="notes-body">' +
-    '<h2>#页面说明</h2><p>' + esc(n.page) + '</p><h2>#原型说明</h2><ul class="context">' +
-    '<li><strong>背景</strong> ' + esc(n.background) + '</li><li><strong>需求</strong> ' + esc(n.goal) + '</li></ul>' +
+    '<h2>#页面说明</h2><p>' + esc(String(n.page).replace(/^代理发行\s*v2\s*[·/／：:–—-]?\s*/i, '')) + '</p><h2>#原型说明</h2>' +
+    (n.goal ? '<ul class="context"><li><strong>需求</strong> ' + esc(n.goal) + '</li></ul>' : '') +
     (n.sections || []).map(([title, items], i) => '<section class="note-section" id="note-' + (i + 1) +
       '" tabindex="-1"><h3><span class="mark">' + (i + 1) + '</span>' + esc(title) + '</h3><ul>' +
       items.map(([field, description]) => '<li><strong>' + esc(field) + '</strong>：' + esc(description) + '</li>').join('') +
@@ -596,7 +596,8 @@ function render({ reset = false, focusDialog = false } = {}) {
     '</nav><div class="profile"><span class="avatar">' + (ui.side === 'supplier' ? '星' : '剧') + '</span>' +
     (ui.side === 'supplier' ? '星帆文化' : '平台演示账号') + '</div></aside>' +
     '<div class="app-workspace">' + (ui.side === 'platform' ? '<header class="app-topbar">' + icon('user') + '<span>平台演示账号</span><span>⌄</span></header>' : '') +
-    '<main class="screen">' + views[ui.view]() + '</main></div></div>' + (ui.modal ? dialog(ui.modal) : '') + '</div>' + notes() + '</div>';
+    '<main class="screen">' + (ui.filmDialogLayout && ui.view === 'filmReviewV2' ? ui.filmBackdrop?.() || '' : views[ui.view]()) + '</main></div></div>' +
+    (ui.filmDialogLayout && ui.view === 'filmReviewV2' ? views[ui.view]() : '') + (ui.modal ? dialog(ui.modal) : '') + '</div>' + notes() + '</div>';
   root.querySelector('.canvas').scrollLeft = scrollLeft;
   root.querySelector('.screen').scrollTop = screenTop;
   root.querySelector('.notes').scrollTop = notesTop;

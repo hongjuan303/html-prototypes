@@ -5,7 +5,7 @@ const liveMatches = (f, value) => !f || f === '全部' || (Array.isArray(f) ? !f
 filtered = (items, status) => items.filter(r => {
   const f = ui.filters, date = (r.submitted || '').slice(0, 10);
   return (!f.name || r.name.includes(f.name)) && liveMatches(f.status, status?.(r)) && liveMatches(f.supplier, r.supplier) &&
-    liveMatches(f.contact, v2User(r.businessOwner || v2Supplier(r).business)?.name || r.contact) && liveMatches(f.type, r.type) && liveMatches(f.round, r.round) &&
+    liveMatches(f.contact, v2User(r.businessOwner || v2Supplier(r).business)?.name || r.contact) && (ui.view !== 'eval' || liveMatches(f.firstSubmission, v13ContentResubmitted(r) ? '否' : '是')) && liveMatches(f.type, r.type) && liveMatches(f.round, r.round) &&
     liveMatches(f.material, r.materialStatus) && liveMatches(f.film, r.filmStatus) && liveMatches(f.materialReviewer, liveReviewerName(r, 'material')) && liveMatches(f.filmReviewer, liveReviewerName(r, 'film')) &&
     liveMatches(f.channelLead, r.channelLead || '') && (!f.release || f.release === '全部' || channelsFor(r).includes(f.release) || r.release.includes(f.release)) &&
     (!f.start || date >= f.start) && (!f.end || date <= f.end);
@@ -17,46 +17,28 @@ filters = fields => liveOldFilters(fields.map(([name, label, values]) => [name, 
 const liveOldTable = table;
 table = (head, rows, settings = {}) => liveOldTable(head, rows, settings).replace('<option value="20"', '<option value="10"' + (ui.tablePages[settings.key || ui.view]?.size === 10 ? ' selected' : '') + '>10条/页</option><option value="20"');
 
+changedFields.add('白名单');
+changedFields.add('剧情简介');
 views.suppliersV2 = () => {
-  const list = v2Config.suppliers.filter(s => !ui.filters.supplierName || s.name.includes(ui.filters.supplierName));
-  return heading('供应商管理') + filters([['supplierName', '供应商名称']]) + listing('供应商列表', ['序号', '供应商名称', '登录账号', '创建时间', '账号状态', '负责商务', '绑定手机号', '供应商白名单', '操作 ' + mark(2)], list.map((s, i) => line(String(i + 1), esc(s.name), esc(s.account), timestamp(s.created || ''), tag(s.frozen ? '冻结' : '正常'), esc(v2User(s.business)?.name || '—'), esc(s.phone || '—'), tag(s.qualityWhitelist ? '已启用' : '未启用'), buttons(act('编辑', 'v2-supplier-edit', s.id), act(s.frozen ? '恢复' : '冻结', 'live-supplier-freeze', s.id, s.frozen ? 'link' : 'link danger'), act('重置密码', 'live-supplier-password', s.id)))), mark(3) + act('新建供应商', 'v13-supplier-new', '', 'btn primary') + act('演示账号登录', 'v2-login', '', 'btn'), { note: 1, className: 'live-supplier-table' }).replace('暂无匹配的合集', '暂无供应商数据');
+  const f = ui.filters, businesses = v13Businesses();
+  const list = v2Config.suppliers.filter(s => (!f.supplierName || s.name.includes(f.supplierName.trim())) &&
+    (!f.supplierBusiness || f.supplierBusiness === '全部' || v13SupplierBusinessIds(s).includes(f.supplierBusiness)) &&
+    (!f.supplierWhitelist || f.supplierWhitelist === '全部' || Boolean(s.qualityWhitelist) === (f.supplierWhitelist === '已启用')));
+  const filterPanel = document.createElement('div');
+  filterPanel.innerHTML = filters([['supplierName', '供应商名称'], ['supplierBusiness', '负责商务', businesses.map(u => u.id)], ['supplierWhitelist', '白名单', ['已启用', '未启用']]]);
+  filterPanel.querySelector('h2').insertAdjacentHTML('beforeend', ' ' + mark(1));
+  filterPanel.querySelectorAll('[name="supplierBusiness"] option').forEach(o => { const user = businesses.find(u => u.id === o.value); if (user) o.textContent = user.name; });
+  const html = heading('供应商管理') + filterPanel.innerHTML + listing('供应商列表', ['序号', '供应商名称', '登录账号', '创建时间', '账号状态', '负责商务', '绑定手机号', '供应商白名单', '操作 ' + mark(3)], list.map((s, i) => line(String(i + 1), esc(s.name), esc(s.account), timestamp(s.created || ''), tag(s.frozen ? '冻结' : '正常'), esc(v13SupplierBusinessIds(s).map(id => v2User(id)?.name || '未记录').join('、') || '—'), esc(s.phone || '—'), tag(s.qualityWhitelist ? '已启用' : '未启用'), buttons(act('编辑', 'v2-supplier-edit', s.id), act(s.frozen ? '恢复' : '冻结', 'live-supplier-freeze', s.id, s.frozen ? 'link' : 'link danger'), act('重置密码', 'live-supplier-password', s.id)))), mark(4) + act('新建供应商', 'v13-supplier-new', '', 'btn primary'), { note: 2, className: 'live-supplier-table' }).replace('暂无匹配的合集', '暂无供应商数据');
+  return html.replaceAll(fieldName('供应商名称'), '<span>供应商名称</span>').replaceAll(fieldName('登录账号'), '<span>登录账号</span>');
 };
 clickActions['live-supplier-freeze'] = (_, id) => { const s = v2Config.suppliers.find(x => x.id === id); if (s) openModal('live-supplier-freeze', null, { frozen: !s.frozen }, { supplierId: id }); };
 clickActions['live-supplier-password'] = (_, id) => openModal('live-supplier-password', null, {}, { supplierId: id });
 
-const liveQualityView = views.qualityV2;
-views.qualityV2 = () => {
-  const dom = document.createElement('div'); dom.innerHTML = liveQualityView();
-  const filter = dom.querySelector('.filter-panel'); filter.outerHTML = filters([supplierFilter, collectionFilter, ['status', '质量评估状态', ['待审核', '待商务反馈', '通过', '驳回']]]);
-  const table = dom.querySelector('table'); table.classList.add('live-quality-table');
-  const heads = table.querySelectorAll('th');
-  heads[4].insertAdjacentHTML('beforebegin', '<th>集数</th><th>一卡链接</th>');
-  heads[6].insertAdjacentHTML('beforebegin', '<th>' + fieldName('YouTube是否首发') + '</th>');
-  heads[heads.length - 1].insertAdjacentHTML('beforebegin', '<th>审核意见</th>');
-  table.querySelectorAll('tbody tr').forEach(tr => {
-    const r = val(tr.querySelector('[data-act="history"]')?.dataset.id); if (!r) { tr.querySelector('.empty')?.setAttribute('colspan', table.querySelectorAll('th').length); return; }
-    const cells = [...tr.children]; cells[4].insertAdjacentHTML('beforebegin', td(esc(r.episodes)) + td(link(r)));
-    cells[6].insertAdjacentHTML('beforebegin', td(esc(r.youtubeFirst || '—')));
-    cells[cells.length - 1].insertAdjacentHTML('beforebegin', td('<span title="' + esc(r.qualityFinal?.opinion || r.qualityTasks?.filter(t => t.opinion).map(t => t.channel + '：' + t.opinion).join('；') || '') + '">' + esc(r.qualityFinal?.opinion || r.qualityTasks?.filter(t => t.opinion).map(t => t.channel + '：' + t.opinion).join('；') || '—') + '</span>'));
-  });
-  return dom.innerHTML;
-};
+// Quality list baseline and V2 increments are rendered together in v13QualityView.
 views.supplierEval = () => {
   const status = r => v2QualityStatus(r) === '驳回' || combined(r) === '驳回' ? '拒绝' : r.quality === '通过' && combined(r) === '通过' ? '通过' : '审核中';
   const list = filtered(records.filter(r => v2Supplier(r).id === ui.supplierId && !r.onlineSnapshot), status);
-  return heading('内容评估') + filters([collectionFilter, ['status', '状态', ['审核中', '通过', '拒绝']], ['start', '提交时间', 'date'], ['end', '结束日期', 'date']]) + listing('评估记录', ['ID', '合集名称', '集数', '一卡链接', '提交时间', '内容类型', '意向渠道', '内容质量评估状态', '内容评估状态', '审核意见', '操作 ' + mark(2)], list.map(r => line(esc(r.id), esc(r.name) + (v13ContentResubmitted(r) ? '<span class="tag amber">重提</span>' : ''), esc(r.episodes), link(r), timestamp(r.submitted), esc(r.type), intentChannels(r), tag(v2QualityStatus(r)), tag(combined(r)), esc(r.qualityFinal?.opinion || r.reviews?.find(x => x.opinion)?.opinion || '—'), buttons(act('查看评估意见', 'v2-opinions', r.id), status(r) === '拒绝' ? act('修改后重提', 'submit', r.id) : ''))), mark(1) + act('＋ 提交剧集信息', 'submit', '', 'btn primary'), { className: 'live-wide-table' });
-};
-const liveSupplierContent = views.supplierContent;
-views.supplierContent = () => {
-  const dom = document.createElement('div'); dom.innerHTML = liveSupplierContent();
-  dom.querySelector('.filter-panel').outerHTML = filters([collectionFilter, ['release', '渠道', v2Release()], ['type', '剧集类型', V2_TYPES], ['round', '发行轮次', ['首发', '二轮']], ['material', '物料状态', ['待提交', '待分配', '审核中', '通过', '拒绝']], ['film', '正片状态', ['待提交', '待分配', '审核中', '通过', '驳回']]]);
-  const table = dom.querySelector('table'); table.classList.add('live-supplier-content-table'); table.querySelectorAll('th')[3].insertAdjacentHTML('beforebegin', '<th>创建时间</th>');
-  table.querySelectorAll('tbody tr').forEach(tr => {
-    const r = val(tr.querySelector('[data-act="history"]')?.dataset.id); if (!r) { tr.querySelector('.empty')?.setAttribute('colspan', table.querySelectorAll('th').length); return; }
-    tr.children[3].insertAdjacentHTML('beforebegin', td(timestamp(r.created || r.submitted)));
-    tr.lastElementChild.querySelector('.actions').insertAdjacentHTML('afterbegin', act('查看详情', 'live-supplier-detail', r.id));
-  });
-  return dom.innerHTML;
+  return heading('内容评估') + filters([collectionFilter, ['status', '状态', ['审核中', '通过', '拒绝']], ['start', '提交时间', 'date'], ['end', '结束日期', 'date']]) + listing('评估记录', ['ID', '合集名称', '集数', '一卡链接', '提交时间', '内容类型', '发行轮次', '剧情简介', '意向渠道', '内容质量评估状态', '内容评估状态', '审核意见', '操作 ' + mark(2)], list.map(r => line(esc(r.id), esc(r.name) + (v13ContentResubmitted(r) ? '<span class="tag amber">重提</span>' : ''), esc(r.episodes), link(r), timestamp(r.submitted), esc(r.type || '—'), esc(r.round || '—'), v2SubmittedIntroCell(r), intentChannels(r), tag(v2QualityStatus(r)), v2QualityStatus(r) === '待审核' ? '-' : tag(combined(r)), esc(r.qualityFinal?.opinion || r.reviews?.find(x => x.opinion)?.opinion || '—'), buttons(act('查看评估意见', 'v2-opinions', r.id), status(r) === '拒绝' ? act('修改后重提', 'submit', r.id) : ''))), act('＋ 提交剧集信息', 'submit', '', 'btn primary'), { note: 1, className: 'v2-supplier-eval-table' });
 };
 clickActions['live-supplier-detail'] = r => { openDetail(r, 'supplierContent'); ui.side = 'supplier'; render(); };
 
@@ -134,7 +116,7 @@ submitDialog = form => {
   return result;
 };
 for (const [id, title] of [['supplierDataV2', '短剧数据'], ['supplierProfileV2', '个人中心']]) { if (!NAV.supplier.some(x => x[0] === id)) NAV.supplier.push([id, title, id === 'supplierDataV2' ? 'grid' : 'user']); if (!entryViews.includes(id)) entryViews.push(id); }
-V2_NOTES.suppliersV2.sections[1][1].push(['冻结／恢复、重置密码', '沿用线上独立操作及确认弹窗；冻结后本地账号登录不可用，恢复不修改资料；重置不改登录账号。']);
+V2_NOTES.suppliersV2.sections[2][1].push(['冻结／恢复、重置密码', '沿用线上功能逻辑不做调整。']);
 for (const key of ['dataV2', 'supplierDataV2']) V2_NOTES[key] = v2Note('短剧数据', '查询合集各渠道累计播放量。', [
   ['筛选项', [['合集ID、合集名称、渠道', '按输入条件搜索，重置后显示当前身份全部可见记录。平台另可按供应商筛选。']]],
   ['列表项', [['合集与渠道', '展示对应合集、渠道及累计播放量；供应商仅可查看本方合集，平台同时展示供应商。']]],
