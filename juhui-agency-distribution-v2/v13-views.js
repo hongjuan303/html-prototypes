@@ -1,3 +1,15 @@
+function v13QualityDialog(modal) {
+  const r = val(modal.id), d = modal.draft;
+  const sections = modal.qualityTaskIds.map((id, i) => {
+    const task = r.qualityTasks.find(t => t.id === id);
+    if (!task) return '';
+    const result = d['qualityResult' + i], opinion = d['qualityOpinion' + i], rejected = result === '驳回';
+    const controls = '<div class="quality-review-fields">' + formField('评估结果', '<select name="qualityResult' + i + '" data-quality-channel-result="' + i + '"><option value="">请选择评估结果</option>' + options(['通过', '驳回'], result) + '</select>') +
+        formField('评估意见', '<textarea name="qualityOpinion' + i + '" rows="3" data-quality-channel-opinion="' + i + '" aria-required="' + rejected + '" aria-describedby="quality-channel-error-' + i + '" placeholder="通过时选填，驳回时必填">' + esc(opinion) + '</textarea><span id="quality-channel-error-' + i + '" class="error" role="alert"></span>', rejected) + '</div>';
+    return '<section class="quality-review-channel" data-quality-channel="' + i + '"><div class="quality-review-channel-heading"><h3 class="changed-field">' + esc(task.channel) + '</h3>' + tag(task.result ? '已提交' : '待审核') + '</div>' + controls + '</section>';
+  }).join('');
+  return ['渠道质量评估 · ' + r.name, '<div class="quality-channel-review"><div class="quality-review-intro"><strong>分渠道评估 ' + mark(1) + '</strong><span>各渠道独立填写，提交后可继续修改。</span></div>' + sections + '</div>', '提交意见', 2];
+}
 function v13QualityView() {
   const actors = v2Config.users.filter(u => u.roles.includes('内容质量评估') || v13QualityIsBusiness(u));
   const actor = actors.find(u => u.id === ui.qualityActor) || actors[0];
@@ -5,8 +17,9 @@ function v13QualityView() {
   const business = v13QualityIsBusiness(actor);
   const items = filtered(records.filter(r => !r.qualityBypass && (business ? r.qualityTasks?.length : r.qualityTasks?.some(t => t.userId === actor?.id))), v2QualityStatus);
   const rows = items.map(r => {
-    const tasks = r.qualityTasks.filter(t => t.userId === actor.id && v13QualityChannels(actor).includes(t.channel));
-    const actions = business ? r.qualityFinal ? r.qualityFinal.result === '驳回' ? act('撤回驳回', 'v13-business-withdraw', r.id) : '' : v2QualityReady(r) ? act('最终反馈', 'v2-business-final', r.id) : '<button type="button" class="link" disabled title="待国内或本轮参与渠道完成评估后填写">最终反馈</button>' : tasks.map(t => t.result ? v13CanWithdrawQuality(r, t) ? act('撤回' + (tasks.length > 1 ? t.channel : '') + t.result, 'v13-quality-withdraw', r.id + '|' + t.id) : '' : act(tasks.length > 1 ? '审核' + t.channel : '审核', 'v2-quality-result', r.id + '|' + t.id)).join('');
+    const tasks = v13OwnQualityTasks(r, actor.id);
+    const actions = business ? r.qualityFinal ? r.qualityFinal.result === '驳回' ? act('修改最终反馈', 'v2-business-final', r.id) + act('撤回驳回', 'v13-business-withdraw', r.id) : '' : v2QualityReady(r) ? act('最终反馈', 'v2-business-final', r.id) : '<button type="button" class="link" disabled title="待国内或本轮参与渠道完成评估后填写">最终反馈</button>' :
+      (tasks.length ? act('审核', 'v2-quality-result', r.id) : '') + tasks.filter(t => v13CanWithdrawQuality(r, t)).map(t => act('撤回' + (tasks.length > 1 ? t.channel : '') + t.result, 'v13-quality-withdraw', r.id + '|' + t.id)).join('');
     const opinion = r.qualityFinal ? r.qualityFinal.opinion || '未填写' : r.qualityTasks.filter(t => t.result).map(t => t.channel + '：' + (t.opinion || '未填写')).join('；') || '—';
     return line(esc(r.id), esc(r.name), v2SupplierLabel(r), esc(r.type || '—'), esc(r.episodes), link(r), intentChannels(r), esc(r.round || '—'), v2SubmittedIntroCell(r), esc(r.youtubeFirst || '—'),
       ...V13_QUALITY_COLUMNS.map(([, channel]) => v13QualityChannelCell(r, channel)),
@@ -62,7 +75,7 @@ function v13SupplierContentView() {
   });
   const rows = filtered(items).map(r => {
     const material = ['待提交', '拒绝', '驳回'].includes(r.materialStatus) ? '<button type="button" class="link' + (v13MaterialAllowed(r) ? '' : ' disabled-action') + '"' + (v13MaterialAllowed(r) ? '' : ' aria-disabled="true"') + ' data-act="v2-material" data-id="' + r.id + '">填写物料</button>' : '';
-    return line(esc(r.id), act(r.name, 'live-supplier-detail', r.id), esc(r.episodes), timestamp(r.created || r.submitted), tag(r.materialStatus), tag(r.filmStatus), v13SupplierIssuanceCell(r), timestamp(v2LaunchTime(r)), timestamp(v2FreeTime(r)), buttons(act('查看详情', 'live-supplier-detail', r.id), v13DeliveryExists(r) && !v13BusinessConfirmed(r) && ['审核中', '通过'].includes(r.filmStatus) ? act('修改发行渠道', 'v2-film-upload', r.id) : r.filmStatus !== '通过' ? act(r.filmStatus === '驳回' ? '替换并重提正片' : '上传正片', 'v2-film-upload', r.id) : '', material, Object.values(r.channelReturns || {}).some(list => list.length) || Object.keys(r.channelMaterialReturns || {}).length ? act('渠道修改意见', 'v2-channel-feedback', r.id) : ''));
+    return line(esc(r.id), act(r.name, 'live-supplier-detail', r.id), esc(r.episodes), timestamp(r.created || r.submitted), tag(r.materialStatus), tag(r.filmStatus), v13SupplierIssuanceCell(r), timestamp(v2LaunchTime(r)), timestamp(v2FreeTime(r)), buttons(act('查看详情', 'live-supplier-detail', r.id), !['审核中', '通过'].includes(r.filmStatus) ? act(r.filmStatus === '驳回' ? '替换并重提正片' : '上传正片', 'v2-film-upload', r.id) : '', material));
   });
   return heading('内容管理') + filters([collectionFilter, ['release', '渠道', v2Release()], ['type', '剧集类型', V2_TYPES], ['round', '发行轮次', ['首发', '二轮']], ['material', '物料状态', ['待提交', '待分配', '审核中', '通过', '拒绝']], ['film', '正片状态', ['待提交', '待分配', '审核中', '通过', '驳回']], ['channelIssuance', '渠道发行状态', ['待生成', '待发行', '已发行', '驳回']]]) + listing('评估记录', ['ID', '合集名称', '集数', '创建时间', '物料审核状态', '正片审核状态', '渠道发行状态', '上线时间', '转免时间', '操作 ' + mark(2)], rows, act('＋ 提交剧集信息', 'submit', '', 'btn primary'), { note: 1, className: 'v13-supplier-content' });
 }
@@ -110,12 +123,17 @@ dialogBody = modal => {
     if (intent) {
       intent.classList.add('v13-intent-field');
       intent.querySelector('span').innerHTML = '<b class="required" aria-hidden="true">*</b>' + fieldName('意向发行渠道');
-      intent.querySelector('.check-list')?.classList.add('v13-intent-options');
+      const selected = v13Intent(d);
+      intent.querySelector('.check-list').outerHTML = '<div class="check-list v13-intent-options">' + ['国内渠道', V13_WECHAT, ...CHANNELS.slice(1)].map(channel => {
+        const disabled = channel === '国内渠道' ? selected.includes(V13_WECHAT) : channel === V13_WECHAT && selected.includes('国内渠道');
+        return '<label class="check"><input type="checkbox" name="intent" value="' + esc(channel) + '"' + (selected.includes(channel) ? ' checked' : '') + (disabled ? ' disabled' : '') + '><span>' + esc(channel) + '</span></label>';
+      }).join('') + '</div>';
     }
     const exclude = dom.querySelector('[name="exclude"]')?.closest('.field');
-    if (exclude) {
+    if (exclude && d.domesticOnlyWechat) exclude.remove();
+    else if (exclude) {
       exclude.classList.add('v13-domestic-scope');
-      exclude.innerHTML = '<span>' + fieldName('国内发行范围') + '</span><div class="v13-scope-options"><label class="check"><input type="checkbox" name="domesticOnlyWechat"' + (d.domesticOnlyWechat ? ' checked' : '') + '>' + fieldName(V13_WECHAT) + '</label>' + EXCLUSIONS.map(value => '<label class="check"><input type="checkbox" name="exclude" value="' + esc(value) + '"' + (!d.domesticOnlyWechat && d.exclude.includes(value) ? ' checked' : '') + '><span>' + esc(value) + '</span></label>').join('') + '</div><p class="field-hint">不勾选时包含全部国内渠道；“仅微信视频号”与其他选项互斥。</p>';
+      exclude.innerHTML = '<span>' + fieldName('国内发行范围') + '</span><div class="v13-scope-options">' + EXCLUSIONS.map(value => '<label class="check"><input type="checkbox" name="exclude" value="' + esc(value) + '"' + (d.exclude.includes(value) ? ' checked' : '') + '><span>' + esc(value) + '</span></label>').join('') + '</div><p class="field-hint">不勾选时包含全部国内渠道。</p>';
     }
     content[1] = dom.innerHTML;
   }

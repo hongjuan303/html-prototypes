@@ -17,7 +17,7 @@ function filmReleasePicker(selected, fixed = false) {
   function problem(row, rows, r) {
     if (row.status === 'checking') return '正在读取视频信息';
     if (row.status === 'failed') return row.error;
-    if (!row.index || row.index < 1 || row.index > r.episodes) return '视频数量超出合集总集数，请移除多余视频';
+    if (!Number.isInteger(row.index) || row.index < 1) return '集序无效，请重新选择视频';
     if (locked(r, row.index)) return '该集已审核通过，无需重新上传';
     if (rows.filter(e => e.index === row.index).length > 1) return '集序重复，请调整集序或移除重复文件';
     return '';
@@ -29,9 +29,9 @@ function filmReleasePicker(selected, fixed = false) {
   }
   function facts(m) {
     const d = sync(m), r = val(m.id);
-    const effective = Array.from({ length: r.episodes }, (_, i) => d.files.find(e => e.index === i + 1) || r.episodeFiles.find(e => e.index === i + 1));
-    const ready = effective.filter(e => e && e.result !== '驳回');
-    return { r, d, ready: ready.length, duration: ready.reduce((sum, e) => sum + (Number(e.duration) || 0), 0), errors: d.uploadRows.filter(e => e.status !== 'checking' && problem(e, d.uploadRows, r)).length, checking: d.uploadRows.filter(e => e.status === 'checking').length };
+    const rows = orderedRows(m);
+    const ready = rows.filter(row => row.existing ? row.meta.result !== '驳回' : !problem(row, d.uploadRows, r)).map(row => row.meta);
+    return { r, d, total: rows.length, ready: ready.length, duration: ready.reduce((sum, e) => sum + (Number(e.duration) || 0), 0), errors: d.uploadRows.filter(e => e.status !== 'checking' && problem(e, d.uploadRows, r)).length, checking: d.uploadRows.filter(e => e.status === 'checking').length };
   }
   function refresh(m, focus) {
     if (ui.modal !== m) return;
@@ -54,9 +54,9 @@ function filmReleasePicker(selected, fixed = false) {
     const added = [];
     for (const file of targetKey || targetIndex ? ordered.slice(0, 1) : ordered) {
       const explicit = target?.index || targetIndex;
-      const available = Array.from({ length: r.episodes }, (_, i) => i + 1).find(index => !locked(r, index) && !d.uploadRows.some(e => e.index === index) && !r.episodeFiles.some(e => e.index === index && e.result !== '驳回')) || 0;
-      const overflow = Math.max(r.episodes, ...d.uploadRows.map(e => e.index)) + 1;
-      const row = { key: crypto.randomUUID(), index: explicit || available || overflow, name: file.name, size: file.size, status: 'checking' };
+      const available = r.episodeFiles.find(e => e.result === '驳回' && !d.uploadRows.some(row => row.index === e.index))?.index || 0;
+      const nextIndex = Math.max(0, ...r.episodeFiles.map(e => e.index), ...d.uploadRows.map(e => e.index)) + 1;
+      const row = { key: crypto.randomUUID(), index: explicit || available || nextIndex, name: file.name, size: file.size, status: 'checking' };
       // Keep the previous selection until its replacement validates successfully.
       if (target) row.replaces = target.key;
       d.uploadRows.push(row); added.push([row, file]);
@@ -119,7 +119,7 @@ function filmReleasePicker(selected, fixed = false) {
   function body(m) {
     const f = facts(m), { r, d } = f;
     const samples = r.demoScenario?.startsWith('v24-film-') ? '<details class="film-upload-samples"' + (d.sampleOpen ? ' open' : '') + '><summary>演示素材</summary><div>' + act('填入合格样片', 'v24-fill-film-sample', r.id) + '<a href="./assets/review-demo-720p.webm" download="第1集.webm">下载合格样片</a><a href="./assets/demo-360p.webm" download="第1集-不合格.webm">下载不合格样片</a></div></details>' : '';
-    return '<section class="film-upload-main"><div class="film-section-heading"><h3 class="changed-field">批量上传正片 ' + mark(1) + '</h3><span>合集总集数 <strong>' + r.episodes + '</strong> 集</span></div><label class="film-dropzone" data-film-drop><input type="file" accept="video/*" multiple data-film-files aria-label="批量选择正片视频"><svg viewBox="0 0 32 32" width="32" height="32" fill="none" aria-hidden="true"><path d="M8 20H6a4 4 0 0 1-1-7.9A10 10 0 0 1 24 10a5 5 0 0 1 2 9.6h-2M16 25V12m-5 5 5-5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>将视频拖拽到此处，或<span>点击批量选择</span></strong><p>支持一次选择多个视频 · 视频短边不低于 720 像素</p></div></label><div class="film-upload-toolbar"><h3 class="changed-field">视频列表 ' + mark(2) + '</h3><div class="film-upload-count" aria-live="polite">已就绪 <strong>' + f.ready + ' / ' + r.episodes + '</strong> 集<span>总时长 ' + v2Duration(f.duration) + '</span>' + (f.checking ? '<span>校验中 ' + f.checking + ' 个</span>' : f.errors ? '<span class="error">异常 ' + f.errors + ' 个</span>' : '') + '</div>' + samples + '</div><p class="film-order-hint">视频按列表顺序确定集序，可通过操作列的 ↑ ↓ 调整顺序。' + (r.filmStatus === '驳回' ? '已通过分集保留，仅需替换驳回分集。' : '') + '</p><div class="film-upload-table-wrap"><table class="film-upload-table"><colgroup><col style="width:76px"><col><col style="width:135px"><col style="width:110px"><col style="width:170px"></colgroup><thead><tr><th><span class="changed-field">集序</span></th><th>视频文件</th><th>大小 / 时长</th><th>校验状态</th><th>操作</th></tr></thead><tbody>' + uploadRows(m) + '</tbody></table></div></section>' + supporting(m);
+    return '<section class="film-upload-main"><div class="film-section-heading"><h3 class="changed-field">批量上传正片 ' + mark(1) + '</h3><span class="changed-field">当前总集数 <strong>' + f.total + '</strong> 集</span></div><label class="film-dropzone" data-film-drop><input type="file" accept="video/*" multiple data-film-files aria-label="批量选择正片视频"><svg viewBox="0 0 32 32" width="32" height="32" fill="none" aria-hidden="true"><path d="M8 20H6a4 4 0 0 1-1-7.9A10 10 0 0 1 24 10a5 5 0 0 1 2 9.6h-2M16 25V12m-5 5 5-5 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><div><strong>将视频拖拽到此处，或<span>点击批量选择</span></strong><p>支持一次选择多个视频 · 视频短边不低于 720 像素</p></div></label><div class="film-upload-toolbar"><h3 class="changed-field">视频列表 ' + mark(2) + '</h3><div class="film-upload-count" aria-live="polite">已就绪 <strong>' + f.ready + '</strong> 集<span>总时长 ' + v2Duration(f.duration) + '</span>' + (f.checking ? '<span>校验中 ' + f.checking + ' 个</span>' : f.errors ? '<span class="error">异常 ' + f.errors + ' 个</span>' : '') + '</div>' + samples + '</div><p class="film-order-hint">可增删视频，提交后按实际视频数量更新集数；通过 ↑ ↓ 调整顺序。' + (r.filmStatus === '驳回' ? '已通过分集保留，仅需替换驳回分集。' : '') + '</p><div class="film-upload-table-wrap"><table class="film-upload-table"><colgroup><col style="width:76px"><col><col style="width:135px"><col style="width:110px"><col style="width:170px"></colgroup><thead><tr><th><span class="changed-field">集序</span></th><th>视频文件</th><th>大小 / 时长</th><th>校验状态</th><th>操作</th></tr></thead><tbody>' + uploadRows(m) + '</tbody></table></div></section>' + supporting(m);
   }
   dialogBody = m => {
     if (m.type === 'v2-auth') {
@@ -152,7 +152,7 @@ function filmReleasePicker(selected, fixed = false) {
     if (m.type !== 'v2-film-upload') return html;
     const f = facts(m);
     html = html.replace('class="dialog ', 'class="dialog film-upload-dialog ');
-    return html.replace('<footer>', '<footer><span class="film-upload-footer-state" aria-live="polite">' + (m.draft.channelsOnly ? '仅修改待确认渠道，正片审核继续进行' : f.checking ? '正在校验视频，请稍候' : f.errors ? '请处理 ' + f.errors + ' 个异常文件' : f.ready < f.r.episodes ? '还需补齐 ' + (f.r.episodes - f.ready) + ' 集合格视频' : '已就绪 ' + f.ready + ' 集，请核对后提交') + '</span>');
+    return html.replace('<footer>', '<footer><span class="film-upload-footer-state" aria-live="polite">' + (m.draft.channelsOnly ? '仅修改待确认渠道，正片审核继续进行' : f.checking ? '正在校验视频，请稍候' : f.errors ? '请处理 ' + f.errors + ' 个异常文件' : f.ready < f.total ? '请替换尚未合格的分集' : !f.ready ? '请至少上传 1 集正片' : '已就绪 ' + f.ready + ' 集，请核对后提交') + '</span>');
   };
   const previousUploadAction = clickActions['v2-film-upload'];
   clickActions['v2-film-upload'] = r => {
@@ -187,10 +187,10 @@ function filmReleasePicker(selected, fixed = false) {
   clickActions['film-upload-remove'] = (_, key) => {
     const m = current(); if (!m || m.draft.channelsOnly) return;
     const d = state(m); d.uploadRows = d.uploadRows.filter(e => e.key !== key);
-    if (!val(m.id).episodeFiles.length) {
-      const positions = [...new Set(d.uploadRows.map(e => e.index))].sort((a, b) => a - b);
-      d.uploadRows.forEach(e => { e.index = positions.indexOf(e.index) + 1; });
-    }
+    const existingIndexes = new Set(val(m.id).episodeFiles.map(e => e.index));
+    const positions = [...new Set(d.uploadRows.filter(e => !existingIndexes.has(e.index)).map(e => e.index))].sort((a, b) => a - b);
+    const lastExisting = Math.max(0, ...existingIndexes);
+    d.uploadRows.forEach(e => { if (!existingIndexes.has(e.index)) e.index = lastExisting + positions.indexOf(e.index) + 1; });
     refresh(m);
   };
   clickActions['v24-fill-film-sample'] = async r => {
@@ -228,17 +228,23 @@ function filmReleasePicker(selected, fixed = false) {
       r.release = [...d.release]; recordLog(r, '供应商修改待商务确认的发行渠道：' + r.release.join('、')); persist(); closeModal(); announce('发行渠道已更新，待商务核对确认'); return;
     }
     const f = facts(m);
-    let message = f.checking ? '视频正在校验，请稍候再提交。' : f.errors ? '请先处理视频列表中的异常文件或重复集序。' : f.ready !== f.r.episodes ? '视频数量与合集总集数不一致：需要 ' + f.r.episodes + ' 集，当前已就绪 ' + f.ready + ' 集，请补齐或调整。' : '';
+    let message = f.checking ? '视频正在校验，请稍候再提交。' : f.errors ? '请先处理视频列表中的异常文件或重复集序。' : !f.total ? '请至少上传一集正片。' : f.ready !== f.total ? '请替换所有被驳回的分集后重提。' : '';
     if (message) { error(message); root.querySelector('#dialog-error')?.scrollIntoView({ block: 'nearest' }); return; }
     previousSubmit(form);
   };
   V2_NOTES['v2-film-upload'] = v13Note('供应商上传正片', '批量上传视频，核对集序、视频数量与校验结果后提交审核。', [
     ['配置项', [['批量上传正片', '支持拖拽多个视频或点击批量选择；读取真实视频尺寸与时长，短边须≥720像素。每个文件独立校验，失败不会丢弃同批其他文件。']]],
-    ['列表项', [['集序', '集序只读展示为第X集，删除下拉选择。首次上传按文件名数字自然排序依次编号；操作列上移／下移箭头交换相邻本次视频，集序同步更新，首行上移、末行下移置灰。校验期间不可调整；已提交或已通过分集不参与换位。'], ['视频文件', '上传后逐行展示原文件名、大小、时长、分辨率、校验状态及异常原因。可重选或移除本次文件；首次上传移除后连续编号，多余视频标错并阻止提交。驳回复审时保留已通过分集及集序。'], ['总集数', '显示合集总集数、已就绪视频集数和总时长；校验中或不合格视频不计入已就绪，数量必须与合集总集数一致。']]],
+    ['列表项', [['集序', '集序只读展示为第X集，删除下拉选择。首次上传按文件名数字自然排序依次编号；操作列上移／下移箭头交换相邻本次视频，集序同步更新，首行上移、末行下移置灰。校验期间不可调整；已提交或已通过分集不参与换位。'], ['视频文件', '上传后逐行展示原文件名、大小、时长、分辨率、校验状态及异常原因。可重选或移除本次文件；首次上传可自由增删视频，移除后连续编号，不受新建剧集集数限制。驳回复审时保留已通过分集及集序。'], ['总集数', '按视频列表实时显示当前总集数、已就绪集数和总时长，不与新建剧集集数比较；校验中或不合格视频不计入已就绪。']]],
     ['配置项', [['查看渠道与商务意见', '以明显按钮展示，点击向下展开、再次点击收起；逐渠道及商务展示审核结果和完整备注，无分页，不显示审核人员，不打开新弹窗。'], ['实际发行渠道', '下拉多选，沿用用户截图中的26项线上渠道名称及顺序；支持搜索、已选标签回显与移除，至少选择一项。与平台商务核对使用同一枚举，不使用意向渠道或全渠道汇总选项。商务确认后回显并锁定，不可修改。']]],
-    ['操作项', [['提交正片审核', '校验数量、集序、视频规格及渠道；首次补齐全部分集，复审替换全部驳回分集。提交后正片审核与商务渠道确认并行，不因正片提交自动确认渠道。'], ['修改发行渠道', '正片已提交且商务未确认时允许只修改渠道；已提交视频只读，不重提正片或改变审核轮次。保存及正片重提时均再次校验商务确认状态。'], ['取消', '不改已提交视频、渠道或审核结果；正在读取的文件不写入业务记录。']]]
+    ['操作项', [['提交正片审核', '至少上传一集，校验集序、视频规格及渠道；提交成功按实际视频数量更新合集集数，两端列表和详情同步。复审保留已通过分集，替换全部驳回分集，可追加新集。提交后正片审核与商务渠道确认并行，不因正片提交自动确认渠道。'], ['取消', '不改已提交视频、渠道或审核结果；正在读取的文件不写入业务记录。']]]
   ]);
-  V2_NOTES['v2-film-upload'].caution = '11.18 更新。';
+  V2_NOTES['v2-film-upload'].caution = '11.19 更新。';
+  changedFields.add('集数');
+  for (const key of ['qualityV2', 'eval', 'filmTasksV2', 'detail']) {
+    const section = V2_NOTES[key]?.sections.find(([title]) => title.startsWith('列表项'));
+    if (section && !section[1].some(([label]) => label === '集数')) section[1].unshift(['集数', '上传正片前回显供应商提交剧集信息时的集数；成功提交正片后，以实际上传的总集数为准，同步列表与合集详情。']);
+  }
+
   const previousNote = noteInfo;
   noteInfo = () => {
     if (!current()?.draft.channelsOnly) return previousNote();

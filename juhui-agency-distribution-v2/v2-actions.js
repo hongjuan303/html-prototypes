@@ -4,15 +4,12 @@ dialogBody = function (modal) {
   switch (modal.type) {
     case 'v2-submit':
       return ['提交剧集信息', '<div class="two-fields">' + formField('合集名称', input('name', d.name, '', 'text', 'required maxlength="100"'), true) + formField('集数', input('episodes', d.episodes, '', 'number', 'required min="1" max="1000"'), true) + '</div>' +
-        formField('一卡链接', input('link', d.link, 'https://', 'url', 'required'), true) + '<div class="two-fields">' + formField('内容类型', select('type', V2_TYPES, d.type), true) + formField('发行轮次', select('round', ['首发', '二轮'], d.round), true) + '</div>' +
+        formField('一卡链接', input('link', d.link, 'https://', 'url', 'required'), true) + '<div class="two-fields">' + formField('内容类型', '<select name="type" required>' + (V2_TYPES.includes(d.type) ? '' : '<option value="" disabled selected>请选择内容类型</option>') + options(V2_TYPES, d.type) + '</select>', true) + formField('发行轮次', select('round', ['首发', '二轮'], d.round), true) + '</div>' +
         formField('剧集简介', '<textarea name="intro" rows="4" maxlength="1000" required placeholder="最多1000字">' + esc(d.intro) + '</textarea>', true) +
         '<div class="field"><span>意向发行渠道</span>' + v2Checks('intent', CHANNELS, d.intent) + '</div>' +
         (d.intent.includes('国内渠道') ? '<div class="field"><span>国内渠道排除项</span>' + v2Checks('exclude', EXCLUSIONS, d.exclude) + '</div>' : '') +
         (d.intent.includes('海外 YouTube') ? formField('海外YouTube是否首发', select('youtubeFirst', ['请选择', '是', '否'], d.youtubeFirst || '请选择'), true) : ''), '提交评估', 2];
-    case 'v2-quality-result': {
-      const task = r.qualityTasks.find(t => t.id === modal.taskId);
-      return ['渠道质量评估', '<p class="v2-dialog-summary">' + esc(r.name) + ' · ' + esc(task.channel) + '</p>' + mark(1) + formField('评估结果', select('result', ['通过', '驳回'], d.result), true) + v24QualityRemark('评估意见', d), '提交意见', 2];
-    }
+    case 'v2-quality-result': return v13QualityDialog(modal);
     case 'v2-scheduling':
       return ['设置上线时间', '<div class="form-group"><strong>排播时间 ' + mark(1) + '</strong>' +
         formField('上线时间', input('launch', d.launch, '', 'datetime-local', 'required step="60"'), true) +
@@ -54,13 +51,8 @@ dialogBody = function (modal) {
     }
     case 'v2-channel-id': return ['修改渠道内容ID', '<p>' + esc(r.name) + ' · ' + esc(modal.channel) + '</p>' + mark(1) + formField('渠道内容ID', input('contentId', d.contentId || '', '', 'text', 'required maxlength="100"'), true), '保存', 2];
     case 'v2-channel-reject':
-      return ['驳回渠道正片', '<p>' + esc(r.name) + ' · ' + esc(modal.channel) + '</p>' + mark(1) + '<div class="v2-channel-rejections">' + r.episodeFiles.map(e => '<div><label class="check"><input type="checkbox" name="episodeIds" value="' + e.id + '">第' + e.index + '集</label><textarea name="opinion-' + e.id + '" rows="2" placeholder="本渠道该集的修改意见"></textarea>' + ((r.channelReturns[modal.channel] || []).some(item => item.episodeId === e.id && item.status === '待修改') ? '<span class="tag amber">已驳回待修改</span>' : '') + '</div>').join('') + '</div>', '确认驳回', 2];
-    case 'v2-channel-feedback': {
-      const returns = Object.entries(r.channelReturns).flatMap(([channel, items]) => items.map(item => ({ channel, ...item })));
-      const materials = Object.entries(r.channelMaterialReturns || {}).map(([channel, item]) => '<div class="v2-episode-upload"><strong>' + esc(channel) + ' · 物料</strong>' + tag(item.status) + '<p>' + esc(item.opinion) + '</p>' + (item.status === '待修改' ? act('补充物料', 'v2-material-channel', r.id, 'btn') : '') + '</div>').join('');
-      return ['渠道修改意见 · ' + r.name, mark(1) + materials + returns.map(item => '<div class="v2-episode-upload"><strong>' + esc(item.channel) + ' · 第' + item.index + '集</strong>' + tag(item.status) + '<p>' + esc(item.opinion) + '</p>' +
-        (item.status === '待修改' ? '<label class="btn upload-label">替换视频<input type="file" accept="video/*" data-v2-upload="channel-film" data-v2-key="' + encodeURIComponent(item.channel) + '|' + item.episodeId + '"></label>' + (d.files?.[item.channel + '|' + item.episodeId] ? '<p class="changed-field">已选择新视频</p>' : '') : '') + '</div>').join(''), returns.some(item => item.status === '待修改') ? '提交已替换分集' : '', 2];
-    }
+      return ['驳回渠道正片', '<p>' + esc(r.name) + ' · ' + esc(modal.channel) + '</p>' + mark(1) + '<div class="v2-channel-rejections">' + v59ChannelEpisodes(r, modal.channel).map(e => '<div><label class="check"><input type="checkbox" name="episodeIds" value="' + e.id + '">第' + e.index + '集</label><textarea name="opinion-' + e.id + '" rows="2" placeholder="本渠道该集的修改意见"></textarea>' + ((r.channelReturns[modal.channel] || []).some(item => item.episodeId === e.id && item.status === '待修改') ? '<span class="tag amber">已驳回待修改</span>' : '') + '</div>').join('') + '</div>', '确认驳回', 2];
+    case 'v2-channel-feedback': return v59ChannelFeedbackDialog(modal);
     case 'v2-channel-material-reject': return ['驳回渠道物料', '<p>' + esc(r.name) + ' · ' + esc(modal.channel) + '</p>' + mark(1) + formField('修改意见', '<textarea name="opinion" rows="4" required></textarea>', true), '确认驳回', 2];
     case 'v2-export-fields': return ['合集全部字段', mark(1) + '<dl class="bordered-descriptions">' + Object.entries(v2Flatten(r)).map(([key, value]) => detailField(key, esc(value))).join('') + '</dl>', '', 0];
     case 'v2-data-history': return ['采集记录', mark(1) + (r.dataTask ? '<dl class="detail-grid">' + detailField('供应商', v2SupplierLabel(r)) + detailField('采集账号', esc(v2Supplier(r).middleAccount)) + detailField('状态', tag(r.dataTask.status)) + detailField('创建时间', esc(r.dataTask.time)) + '</dl>' : '<p>暂无采集任务</p>'), '', 0];
@@ -76,7 +68,13 @@ dialogBody = function (modal) {
 Object.assign(clickActions, {
   submit: r => openModal('v2-submit', r?.id, { name: r?.name || '', episodes: r?.episodes || 3, link: r?.link || '', type: r?.type || V2_TYPES[0], round: r?.round || '首发', intro: r?.intro || '', intent: [...(r?.intent || [])], exclude: [...(r?.exclude || [])], youtubeFirst: r?.youtubeFirst || '请选择' }),
   'v2-opinions': r => openModal('v2-opinions', r.id),
-  'v2-quality-result': (_, id) => { const [rid, taskId] = id.split('|'); const r = val(rid), task = r.qualityTasks.find(t => t.id === taskId); if (!task || task.userId !== ui.qualityActor || task.result) return; openModal('v2-quality-result', r.id, { result: '通过', opinion: '' }, { taskId }); },
+  'v2-quality-result': (_, id) => {
+    const r = val(String(id).split('|')[0]), tasks = v13OwnQualityTasks(r);
+    if (!tasks.length) return announce('当前没有可处理的渠道评估。');
+    const draft = {};
+    tasks.forEach((t, i) => { draft['qualityResult' + i] = t.result || ''; draft['qualityOpinion' + i] = t.opinion || ''; });
+    openModal('v2-quality-result', r.id, draft, { qualityActorId: ui.qualityActor, qualityTaskIds: tasks.map(t => t.id), qualityTaskRefs: [...tasks] });
+  },
   'v2-withdraw-quality': (_, id) => { const [rid, taskId] = id.split('|'), r = val(rid), task = r.qualityTasks.find(t => t.id === taskId); if (r.qualityFinal || task.userId !== ui.qualityActor || task.result !== '驳回') return; r.qualityHistory.unshift({ time: now(), action: '撤回' + task.channel + '驳回意见', snapshot: { ...task } }); Object.assign(task, { result: '', opinion: '', time: '' }); persist(); render(); announce('驳回意见已撤回'); },
   'v2-business-final': r => { if (v2QualityReady(r) && !r.qualityFinal) openModal('v2-business-final', r.id, { result: '通过', opinion: '' }); },
   'v2-film-upload': r => { if (combined(r) === '通过' && r.filmStatus !== '审核中') openModal('v2-film-upload', r.id, { files: [] }); else announce('该合集当前不能提交正片'); },
@@ -84,7 +82,7 @@ Object.assign(clickActions, {
   'v2-delivery': r => openModal('v2-delivery', r.id),
   'v2-material': r => { if (r.filmStatus !== '通过') return announce('待正片审核通过后上传物料'); ui.edit = structuredClone(r); navigate('materialsV2'); },
   'v2-material-back': () => { ui.edit = null; navigate('supplierContent'); },
-  'v2-material-channel': r => { if (r.filmStatus !== '通过') return announce('待正片审核通过后上传物料'); ui.edit = structuredClone(r); ui.edit.channelReworkMode = true; ui.edit.reworkChannels = Object.entries(r.channelMaterialReturns).filter(([, item]) => item.status === '待修改').map(([channel]) => channel); navigate('materialsV2'); },
+  'v2-material-channel': (r, value) => v59OpenChannelMaterial(r, value),
   scheduling: r => {
     if (!v2ReadyForSchedule(r)) return announce('物料、正片审核通过且有授权书后才能排播');
     if (v2AwaitingSchedule(r) && v2LaunchTime(r)) return clickActions['v2-schedule-confirm'](r);
@@ -193,13 +191,13 @@ submitDialog = function (form) {
       r.qualityFinal = { result: text('result'), opinion: text('opinion'), actor: '管理员兼商务', time: now() }; r.quality = text('result'); r.qualityHistory.unshift({ time: now(), action: '商务提交最终反馈：' + r.quality, snapshot: { ...r.qualityFinal } }); message = '最终反馈已提交'; break;
     case 'v2-film-upload': {
       if (!d.files.length) return error('请至少选择一个新视频。');
-      const merged = Array.from({ length: r.episodes }, (_, i) => d.files.find(e => e.index === i + 1) || r.episodeFiles.find(e => e.index === i + 1));
-      if (merged.some(e => !e)) return error('首次提交需补齐全部分集。');
+      const merged = [...new Map([...r.episodeFiles, ...d.files].map(e => [e.index, e])).values()].sort((a, b) => a.index - b.index);
+      if (merged.some((e, index) => e.index !== index + 1)) return error('请保持集序从第1集开始连续排列。');
       if (r.episodeFiles.some(e => e.result === '驳回' && !d.files.some(f => f.index === e.index))) return error('请替换所有被驳回的分集后重提。');
       const main = v2Config.users.filter(u => u.roles.includes('正片审核人员'));
       if (!main.length) return error('请先配置参与自动分配的正片审核人员。');
       r.episodeHistory ||= []; d.files.forEach(file => { const old = r.episodeFiles.find(e => e.index === file.index); if (old) r.episodeHistory.push({ ...old, archivedAt: now() }); });
-      r.episodeFiles = merged; if (!v2User(r.filmReviewer)?.roles.includes('正片审核人员')) r.filmReviewer = main[0].id; r.filmStatus = '审核中'; r.filmRound = { submitted: now(), number: (r.filmRound?.number || 0) + 1, ids: d.files.map(e => e.id), kind: r.filmRound ? '复审' : '初审' }; message = '正片已提交审核'; break;
+      r.episodeFiles = merged; r.episodes = merged.length; if (!v2User(r.filmReviewer)?.roles.includes('正片审核人员')) r.filmReviewer = main[0].id; r.filmStatus = '审核中'; r.filmRound = { submitted: now(), number: (r.filmRound?.number || 0) + 1, ids: d.files.map(e => e.id), kind: r.filmRound ? '复审' : '初审' }; message = '正片已提交审核'; break;
     }
     case 'v2-assign-film': if (!v2User(text('reviewer'))?.roles.includes('正片审核人员')) return error('请选择正片审核人员。'); r.filmReviewer = text('reviewer'); message = '审核人员已调配'; break;
     case 'v2-supplier': {
@@ -245,16 +243,27 @@ submitDialog = function (form) {
       if (modal.channel !== ui.channel || !['channel', 'operator'].includes(ui.detailFrom)) return error('当前身份无法修改。');
       (r.channelContentIds ||= {})[modal.channel] = text('contentId'); message = '渠道内容ID已保存'; break;
     case 'v2-channel-reject': {
+      if (!v59CanOperate(r, modal.channel)) return error('无本渠道操作权限。');
       const ids = data.getAll('episodeIds'); if (!ids.length) return error('请至少选择一个分集。');
+      if (ids.some(id => !v59ChannelEpisodes(r, modal.channel).some(ep => ep.id === id))) return error('渠道分集已更新，请重新打开。');
       if (ids.some(id => !text('opinion-' + id))) return error('请为每个选中分集填写本渠道意见。');
       const list = r.channelReturns[modal.channel] ||= [];
-      ids.forEach(id => { const ep = r.episodeFiles.find(e => e.id === id); const existing = list.find(e => e.episodeId === id && e.status === '待修改'); const item = { episodeId: id, index: ep.index, opinion: text('opinion-' + id), status: '待修改', time: now() }; if (existing) Object.assign(existing, item); else list.push(item); }); message = '选中分集已驳回，可继续处理其他分集'; break;
+      ids.forEach(id => {
+        const ep = v59ChannelEpisodes(r, modal.channel).find(e => e.id === id);
+        const existing = list.find(e => e.episodeId === id && ['待修改', '待复核'].includes(e.status));
+        const item = { episodeId: id, index: ep.index, opinion: text('opinion-' + id), status: '待修改', time: now(), actor: r.assignment[modal.channel] };
+        if (existing) { (existing.history ||= []).push({ ...existing, history: undefined }); Object.assign(existing, item); }
+        else list.push(item);
+      }); message = '选中分集已驳回，可继续处理其他分集'; break;
     }
-    case 'v2-channel-feedback': {
-      const entries = Object.entries(d.files || {}); if (!entries.length) return error('请先替换至少一个被驳回分集。');
-      entries.forEach(([key, file]) => { const [channel, id] = key.split('|'); const item = r.channelReturns[channel].find(e => e.episodeId === id && e.status === '待修改'); if (!item) return; item.replacement = file; item.status = '待复核'; item.resubmittedAt = now(); }); message = '已替换分集已提交本渠道复核'; break;
+    case 'v2-channel-feedback': return v59SubmitChannelFilm(modal);
+    case 'v2-channel-material-reject': {
+      if (!v59CanOperate(r, modal.channel)) return error('无本渠道操作权限。');
+      if (!text('opinion')) return error('请填写物料修改意见。');
+      const old = r.channelMaterialReturns?.[modal.channel];
+      (r.channelMaterialReturns ||= {})[modal.channel] = { status: '待修改', opinion: text('opinion'), time: now(), actor: r.assignment[modal.channel], history: old ? [...(old.history || []), { ...old, history: undefined }] : [] };
+      message = '本渠道物料已驳回'; break;
     }
-    case 'v2-channel-material-reject': if (!text('opinion')) return error('请填写物料修改意见。'); (r.channelMaterialReturns ||= {})[modal.channel] = { status: '待修改', opinion: text('opinion'), time: now() }; message = '本渠道物料已驳回'; break;
     case 'v2-managed-rules': v2Config.managedSkipFields = data.getAll('skipFields').filter(key => V2_REUSE_FIELDS.some(([id]) => id === key)); v2Config.managedRulesEnabled = data.has('enabled'); v2SaveConfig(); break;
     default: return;
   }
@@ -294,7 +303,8 @@ root.addEventListener('change', async event => {
   event.stopImmediatePropagation();
   const files = [...f.files]; if (!files.length) return;
   try {
-    if (['film', 'channel-film'].includes(f.dataset.v2Upload)) {
+    if (f.dataset.v2Upload === 'channel-film') return await v59UploadChannelFilm(f, files);
+    if (f.dataset.v2Upload === 'film') {
       const file = files[0], metadata = await v2VideoMetadata(file), r = val(ui.modal.id);
       const index = f.dataset.v2Upload === 'film' ? Number(f.dataset.v2Key) : r.episodeFiles.find(e => e.id === f.dataset.v2Key.split('|')[1])?.index;
       const old = r.episodeFiles.find(e => e.index === index), meta = await v2Remember(file, { ...metadata, index, version: (old?.version || 0) + 1, result: '', opinion: '' });
@@ -323,9 +333,9 @@ root.addEventListener('submit', event => {
     if (!r.release.length) return error('请选择发行渠道。', '#v2-material-error');
     const missing = v2FieldsFor(r).filter(f => f.required && (f.component.includes('上传') ? !r.materials[f.key]?.length : !r.customMaterials[f.key]?.trim()));
     if (missing.length) return error('请补充：' + missing.map(f => f.name).join('、'), '#v2-material-error');
-    if (r.channelReworkMode) r.reworkChannels.forEach(channel => { r.channelMaterialReturns[channel].status = '待复核'; r.channelMaterialReturns[channel].resubmittedAt = now(); });
-    else { r.materialStatus = '审核中'; r.materialSubmitted = now(); }
+    if (!r.channelReworkMode) { r.materialStatus = '审核中'; r.materialSubmitted = now(); }
   }
+  if (r.channelReworkMode) return v59SaveChannelMaterial(r, submit);
   const saved = structuredClone(r); delete saved.channelReworkMode; delete saved.reworkChannels;
   Object.assign(val(r.id), saved); persist(); if (submit) { ui.edit = null; navigate('supplierContent'); } else render(); announce(submit ? '物料已提交审核' : '物料草稿已保存');
 }, true);

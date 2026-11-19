@@ -35,7 +35,7 @@ function v2SupplierContent() {
     r.filmStatus === '通过' && ['待提交', '拒绝'].includes(r.materialStatus) ? act('填写物料', 'v2-material', r.id) : '',
     r.filmStatus === '通过' && Object.values(r.channelMaterialReturns || {}).some(item => item.status === '待修改') ? act('修改渠道物料', 'v2-material-channel', r.id) : '',
     r.filmStatus !== '通过' ? '<button type="button" class="link disabled-action" aria-disabled="true" data-act="v2-material" data-id="' + r.id + '">填写物料</button>' : '',
-    act('查看交付记录', 'v2-delivery', r.id), Object.values(r.channelReturns).some(list => list.length) || Object.keys(r.channelMaterialReturns || {}).length ? act('渠道修改意见', 'v2-channel-feedback', r.id) : '')));
+    act('查看交付记录', 'v2-delivery', r.id))));
   return heading('内容管理') + filters([['name', '合集名称'], ['film', '正片状态', ['待提交', '审核中', '通过', '驳回']], ['material', '物料状态', ['待提交', '审核中', '通过', '拒绝']]]) +
     listing('合集列表', ['ID', '合集名称', '集数', '正片审核状态', '物料审核状态', '发行进度', '操作 ' + mark(1)], rows);
 }

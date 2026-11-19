@@ -1,4 +1,21 @@
 const v13OldSubmitAction = clickActions.submit;
+function v13UpdateQualityDraft(event) {
+  if (ui.modal?.type !== 'v2-quality-result') return;
+  const row = event.target.closest('[data-quality-channel]');
+  if (!row || !event.target.name) return;
+  ui.modal.draft[event.target.name] = event.target.value;
+  const i = row.dataset.qualityChannel, result = row.querySelector('[data-quality-channel-result]'), opinion = row.querySelector('[data-quality-channel-opinion]');
+  if (!result || !opinion) return;
+  const required = result.value === '驳回', label = opinion.closest('.field').querySelector(':scope > span');
+  opinion.setAttribute('aria-required', String(required));
+  label.querySelector('.required')?.remove();
+  if (required) label.insertAdjacentHTML('afterbegin', '<b class="required">*</b>');
+  row.querySelector('#quality-channel-error-' + i).textContent = '';
+  root.querySelector('#dialog-error').textContent = '';
+  opinion.removeAttribute('aria-invalid'); result.removeAttribute('aria-invalid');
+}
+root.addEventListener('input', v13UpdateQualityDraft);
+root.addEventListener('change', v13UpdateQualityDraft);
 clickActions['v13-supplier-new'] = () => openModal('v2-supplier', null, { name: '', business: '', account: '', phone: '', qualityWhitelist: false }, { isNew: true });
 root.addEventListener('input', event => {
   if (!event.target.hasAttribute('data-v13-channel-search')) return;
@@ -46,7 +63,7 @@ root.addEventListener('keydown', event => {
   const picker = root.querySelector('.v13-channel-select[open]');
   if (event.key === 'Escape' && picker) { event.preventDefault(); event.stopImmediatePropagation(); picker.open = false; picker.querySelector('summary').focus(); }
 }, true);
-clickActions.submit = r => { v13OldSubmitAction(r); ui.modal.draft.domesticOnlyWechat = Boolean(r?.domesticOnlyWechat); render(); };
+clickActions.submit = r => { v13OldSubmitAction(r); ui.modal.draft.domesticOnlyWechat = Boolean(r?.domesticOnlyWechat || r?.intent?.includes(V13_WECHAT)); ui.modal.draft.intent = [...new Set(ui.modal.draft.intent.map(c => c === V13_WECHAT ? '国内渠道' : c))]; render(); };
 clickActions['v13-quality-withdraw'] = (_, id) => {
   const [rid, taskId] = id.split('|'), r = val(rid), task = r?.qualityTasks.find(t => t.id === taskId);
   const actor = v2User(ui.qualityActor);
@@ -60,8 +77,9 @@ clickActions['v2-withdraw-quality'] = clickActions['v13-quality-withdraw'];
 clickActions['v2-business-final'] = r => {
   const actor = v13FeedbackActor();
   if (!actor) return announce('仅商务人员可填写最终反馈');
-  if (!v2QualityReady(r) || r.qualityFinal) return announce('当前不满足填写最终反馈的条件');
-  openModal('v2-business-final', r.id, { result: '通过', opinion: '' }, { businessActorId: actor.id });
+  if (r.qualityFinal?.result === '通过') return announce('商务最终反馈已通过，不可修改');
+  if (!r.qualityFinal && !v2QualityReady(r)) return announce('当前不满足填写最终反馈的条件');
+  openModal('v2-business-final', r.id, { result: r.qualityFinal?.result || '通过', opinion: r.qualityFinal?.opinion || '' }, { businessActorId: actor.id, businessFinalRef: r.qualityFinal });
 };
 clickActions['v13-business-withdraw'] = r => {
   if (!v13FeedbackActor()) return announce('仅商务人员可撤回商务反馈');
@@ -102,11 +120,14 @@ submitDialog = form => {
     v2SaveConfig(); closeModal(); announce('人员权限已保存'); return;
   }
   if (modal.type === 'v2-submit') {
+    if (!V2_TYPES.includes(text('type'))) return error('请选择有效的内容类型。');
     if (!text('name') || !Number.isInteger(Number(text('episodes'))) || Number(text('episodes')) < 1 || Number(text('episodes')) > 1000) return error('请填写剧名及1～1000的整数集数。');
     if (!/^https?:\/\//i.test(text('link')) || !text('intro') || Array.from(text('intro')).length > 1000) return error('请填写有效的一卡链接及1000字以内的剧集简介。');
-    if (!d.intent.length) return error('请至少选择一个意向发行渠道。');
-    if (d.intent.includes('海外 YouTube') && !['是', '否'].includes(text('youtubeFirst'))) return error('请选择海外YouTube是否首发。');
-    const supplier = v2Supplier({ supplierId: ui.supplierId }), fields = { name: text('name'), episodes: Number(text('episodes')), link: text('link'), type: text('type'), round: text('round'), intro: text('intro'), youtubeFirst: d.intent.includes('海外 YouTube') ? text('youtubeFirst') : '', intent: [...d.intent], domesticOnlyWechat: Boolean(d.domesticOnlyWechat && d.intent.includes('国内渠道')), exclude: d.intent.includes('国内渠道') && !d.domesticOnlyWechat ? [...d.exclude] : [] };
+    const selectedIntent = data.getAll('intent');
+    if (!selectedIntent.length || selectedIntent.some(c => ![...CHANNELS, V13_WECHAT].includes(c))) return error('请至少选择一个有效的意向发行渠道。');
+    if (selectedIntent.includes('国内渠道') && selectedIntent.includes(V13_WECHAT)) return error('国内渠道与仅微信视频号不能同时选择。');
+    if (selectedIntent.includes('海外 YouTube') && !['是', '否'].includes(text('youtubeFirst'))) return error('请选择海外YouTube是否首发。');
+    const supplier = v2Supplier({ supplierId: ui.supplierId }), fields = { name: text('name'), episodes: Number(text('episodes')), link: text('link'), type: text('type'), round: text('round'), intro: text('intro'), youtubeFirst: selectedIntent.includes('海外 YouTube') ? text('youtubeFirst') : '', intent: selectedIntent.map(c => c === V13_WECHAT ? '国内渠道' : c), domesticOnlyWechat: selectedIntent.includes(V13_WECHAT), exclude: selectedIntent.includes('国内渠道') ? data.getAll('exclude').filter(c => EXCLUSIONS.includes(c)) : [] };
     const contentResubmit = r && r.quality === '通过' && combined(r) === '驳回';
     const onlyEpisodes = contentResubmit && r.episodes !== fields.episodes && ['name', 'link', 'type', 'round', 'intro', 'youtubeFirst'].every(k => String(r[k] || '') === String(fields[k] || '')) && JSON.stringify(r.intent) === JSON.stringify(fields.intent) && JSON.stringify(r.exclude) === JSON.stringify(fields.exclude) && Boolean(r.domesticOnlyWechat) === fields.domesticOnlyWechat;
     const next = r ? structuredClone(r) : newRecord(Math.max(0, ...records.map(x => Number(x.id) || 0)) + 1);
@@ -150,22 +171,48 @@ submitDialog = form => {
     v2SaveConfig(); return v13Finished(modal.isNew ? '供应商已创建' : '供应商资料已保存');
   }
   if (modal.type === 'v2-quality-result') {
-    const task = r.qualityTasks.find(t => t.id === modal.taskId);
-    if (!task || task.result || task.userId !== ui.qualityActor || !v13QualityChannels(v2User(ui.qualityActor)).includes(task.channel)) return error('当前人员没有该项待处理评估。');
-    if (!['通过', '驳回'].includes(text('result'))) return error('请选择评估结果。');
-    if (text('result') === '驳回' && !text('opinion')) return error('驳回时请填写评估意见。');
-    Object.assign(task, { result: text('result'), opinion: text('opinion'), actor: v2User(ui.qualityActor)?.name || '未记录', time: now() });
-    r.qualityHistory.unshift({ time: now(), action: task.channel + '提交' + task.result, snapshot: structuredClone(task) });
+    if (modal.qualityActorId !== ui.qualityActor) return error('处理人员已变化，请重新打开审核弹窗。');
+    const ownTasks = v13OwnQualityTasks(r), pending = modal.qualityTaskIds.map((id, i) => ({ id, i, result: text('qualityResult' + i), opinion: text('qualityOpinion' + i) })).filter(item => {
+      const task = r.qualityTasks.find(t => t.id === item.id);
+      return item.result !== (task?.result || '') || item.opinion !== (task?.opinion || '');
+    });
+    if (!pending.length) return error(ownTasks.some(t => t.result) ? '暂无修改的评估意见。' : '请至少填写一个渠道的评估结果。');
+    const invalid = [];
+    for (const item of pending) {
+      const task = ownTasks.find(t => t.id === item.id);
+      if (!task || task !== modal.qualityTaskRefs[item.i]) return error('渠道任务或权限已变化，请重新打开审核弹窗。');
+      const message = !['通过', '驳回'].includes(item.result) ? '请选择该渠道的评估结果。' : item.result === '驳回' && !item.opinion ? '驳回时请填写该渠道的评估意见。' : '';
+      if (message) {
+        form.querySelector('#quality-channel-error-' + item.i).textContent = message;
+        const control = form.elements.namedItem((item.result ? 'qualityOpinion' : 'qualityResult') + item.i);
+        control.setAttribute('aria-invalid', 'true'); invalid.push(control);
+      }
+    }
+    if (invalid.length) { invalid[0].focus(); return error('请补全标红渠道的信息后提交，本次意见尚未保存。'); }
+    const time = now(), actor = v2User(ui.qualityActor);
+    pending.forEach(item => {
+      const task = ownTasks.find(t => t.id === item.id);
+      const previous = structuredClone(task);
+      if (task.result && !r.qualityHistory.some(h => h.snapshot?.id === task.id && h.snapshot.result === task.result && h.snapshot.opinion === task.opinion && h.snapshot.time === task.time))
+        r.qualityHistory.unshift({ time: task.time || '未记录', action: task.channel + '原评估意见', snapshot: previous });
+      Object.assign(task, { result: item.result, opinion: item.opinion, actor: actor.name, time });
+      r.qualityHistory.unshift({ time, action: task.channel + (previous.result ? '修改为' : '提交') + task.result, snapshot: structuredClone(task) });
+    });
     return v13Finished('渠道评估意见已提交');
   }
   if (modal.type === 'v2-business-final') {
     const actor = v13FeedbackActor();
     if (!actor || actor.id !== modal.businessActorId) return error('当前人员无填写权限，请重新打开反馈。');
-    if (!v2QualityReady(r) || r.qualityFinal) return error('当前不满足提交最终反馈条件。');
+    if (r.qualityFinal?.result === '通过') return error('商务最终反馈已通过，不可修改。');
+    if (r.qualityFinal !== modal.businessFinalRef) return error('最终反馈已变化，请重新打开弹窗。');
+    if (!r.qualityFinal && !v2QualityReady(r)) return error('当前不满足提交最终反馈条件。');
     if (!['通过', '驳回'].includes(text('result'))) return error('请选择最终结果。');
     if (text('result') === '驳回' && !text('opinion')) return error('驳回时请填写反馈意见。');
+    const previous = r.qualityFinal;
+    if (previous && !r.qualityHistory.some(h => h.snapshot?.result === previous.result && h.snapshot.opinion === previous.opinion && h.snapshot.time === previous.time && !h.snapshot.channel))
+      r.qualityHistory.unshift({ time: previous.time || '未记录', action: '商务原最终反馈', snapshot: structuredClone(previous) });
     r.qualityFinal = { result: text('result'), opinion: text('opinion'), actor: actor.name, userId: actor.id, time: now() };
-    r.quality = text('result'); r.qualityHistory.unshift({ time: now(), action: '商务提交最终反馈：' + r.quality, snapshot: structuredClone(r.qualityFinal) });
+    r.quality = text('result'); r.qualityHistory.unshift({ time: now(), action: '商务' + (previous ? '修改' : '提交') + '最终反馈：' + r.quality, snapshot: structuredClone(r.qualityFinal) });
     return v13Finished('最终反馈已提交');
   }
   if (modal.type === 'v13-content-result') {
@@ -203,7 +250,7 @@ submitDialog = form => {
 
 const v13OldReadMaterial = v2ReadMaterial;
 v2ReadMaterial = () => {
-  const locked = ui.edit && v13BusinessConfirmed(val(ui.edit.id)), release = locked ? [...val(ui.edit.id).release] : null;
+  const locked = ui.edit && v13BusinessConfirmed(val(ui.edit.id)), release = locked ? (ui.edit.channelReworkMode ? [...ui.edit.reworkChannels] : [...val(ui.edit.id).release]) : null;
   v13OldReadMaterial();
   if (release && ui.edit) ui.edit.release = release;
 };
@@ -218,13 +265,13 @@ document.addEventListener('change', event => {
 }, true);
 root.addEventListener('change', event => {
   const f = event.target, modal = ui.modal;
-  if (modal?.type === 'v2-submit' && ['intent', 'exclude', 'domesticOnlyWechat'].includes(f.name)) {
+  if (modal?.type === 'v2-submit' && ['intent', 'exclude'].includes(f.name)) {
     event.stopImmediatePropagation();
     const data = new FormData(f.closest('form')), draft = modal.draft, scrollTop = root.querySelector('.dialog-body').scrollTop;
-    draft.intent = data.getAll('intent'); draft.exclude = data.getAll('exclude'); draft.domesticOnlyWechat = data.has('domesticOnlyWechat');
-    if (!draft.intent.includes('国内渠道')) { draft.exclude = []; draft.domesticOnlyWechat = false; }
-    else if (f.name === 'domesticOnlyWechat' && f.checked) draft.exclude = [];
-    else if (f.name === 'exclude' && f.checked) draft.domesticOnlyWechat = false;
+    const selected = data.getAll('intent');
+    draft.domesticOnlyWechat = selected.includes(V13_WECHAT);
+    draft.intent = selected.map(c => c === V13_WECHAT ? '国内渠道' : c);
+    draft.exclude = selected.includes('国内渠道') ? data.getAll('exclude') : [];
     render();
     root.querySelector('.dialog-body').scrollTop = scrollTop;
     [...root.querySelectorAll('.dialog [name="' + f.name + '"]')].find(input => input.value === f.value)?.focus({ preventScroll: true });

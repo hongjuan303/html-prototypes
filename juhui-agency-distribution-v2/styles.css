@@ -52,7 +52,7 @@ strong { font-weight: 600; }
 
 .canvas { display: flex; height: calc(100vh - var(--bar)); overflow-x: auto; overflow-y: hidden; background: #f1f4f9; }
 .product { position: relative; flex: 0 0 var(--product); min-width: 0; height: 100%; background: #fff; }
-.product-inner { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); height: 100%; }
+.product-inner { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); height: 100%; isolation: isolate; }
 .sidebar { display: flex; flex-direction: column; background: #23262f; color: #c9ccd2; }
 .logo { display: grid; grid-template-columns: 18px 1fr; align-items: center; gap: 10px 8px; padding: 23px 12px 24px; border-bottom: 1px solid #353841; color: #fff; }
 .logo strong { font-size: 18px; line-height: 1.2; }

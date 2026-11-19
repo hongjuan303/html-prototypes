@@ -21,6 +21,12 @@ function v13AssociatedChannels(user) {
   return [...new Set((user.channels || []).map(c => aliases[c] || c).filter(c => V13_ASSOCIATED_CHANNELS.includes(c)))];
 }
 const v13QualityChannels = user => (user.channels || []).filter(c => V2_QUALITY_CHANNELS.includes(c));
+function v13OwnQualityTasks(r, actorId = ui.qualityActor) {
+  const actor = v2User(actorId);
+  if (!actor?.roles.includes('内容质量评估') || r?.qualityBypass) return [];
+  return (r?.qualityTasks || []).filter(t => t.userId === actor.id && v13QualityChannels(actor).includes(t.channel))
+    .sort((a, b) => V13_QUALITY_COLUMNS.findIndex(([, c]) => c === a.channel) - V13_QUALITY_COLUMNS.findIndex(([, c]) => c === b.channel));
+}
 const v13OnlyWechat = r => Boolean(r.domesticOnlyWechat && r.intent?.includes('国内渠道'));
 const v13Intent = r => (r.intent || []).map(c => c === '国内渠道' && v13OnlyWechat(r) ? V13_WECHAT : c);
 const v13Businesses = () => v2Config.users.filter(u => u.roles.some(role => ['商务负责人', '商务人员'].includes(role)));
@@ -107,7 +113,7 @@ function v13OpinionSummary(r) {
 function v24FilmDuration(r) {
   if (!r.episodeFiles?.length) return '—';
   const count = r.filmRound?.ids?.length || r.episodeFiles.length;
-  return '<span>' + v2Duration(v2RoundDuration(r)) + '</span><span class="v24-duration-scope">' + (r.filmRound?.kind === '复审' ? '本次替换 ' : '全集 ') + count + ' 集</span>';
+  return '<span>' + v2Duration(v2RoundDuration(r)) + '</span><span class="v24-duration-scope">' + (r.filmRound?.kind === '复审' ? '本次送审 ' : '全集 ') + count + ' 集</span>';
 }
 function v24QualityRemark(label, d) {
   return formField(label, '<textarea name="opinion" data-quality-opinion rows="4" placeholder="通过时选填；驳回时必填"' + (d.result === '驳回' ? ' required' : '') + '>' + esc(d.opinion || '') + '</textarea>', d.result === '驳回');

@@ -7,6 +7,7 @@
 .film-section-heading { justify-content:space-between; margin-bottom:12px; }
 .film-section-heading > span { font-size:13px; color:#606266; }
 .film-section-heading > span strong { color:#303133; font-size:16px; margin:0 4px; }
+.film-section-heading > span.changed-field, .film-section-heading > span.changed-field strong { color:#F28C18; }
 .film-dropzone { position:relative; display:flex; align-items:center; justify-content:center; gap:18px; min-height:106px; padding:16px 24px; border:1px dashed #9cc9fa; border-radius:4px; background:#f7fbff; cursor:pointer; color:#409eff; transition:background .12s,border-color .12s; }
 .film-dropzone:hover, .film-dropzone.is-dragging { border-color:#409eff; background:#ecf5ff; }
 .film-dropzone:focus-within { outline:2px solid #409eff; outline-offset:2px; }

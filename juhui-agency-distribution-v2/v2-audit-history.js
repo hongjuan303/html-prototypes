@@ -133,11 +133,50 @@ V2_NOTES['v2-opinions'] = v13Note('查看评估意见', '正文仅展示审核�
   ['内容质量评估', '展示本轮对应渠道及商务负责人的审核结果、完整备注和时间，不展示审核人员；同渠道多条意见分别保留，商务最终结果归入此Tab。'],
   ['内容评估', '分别展示审核组评估、红果评估、运营评估的结果、完整备注和时间，不展示审核人员；红果不参与时显示无需评估。'],
   ['待审核及历史', '未进入内容评估阶段显示未开始，已进入但未处理显示待审核。历史按两个Tab保留，也不展示审核人员；缺失时间不补造，通过未填备注显示未填写。平台内部审核记录仍保留人员信息。']
-]]], '11.18 更新。');
+]]], '11.19 更新。');
 for (const key of ['history', 'review']) V2_NOTES[key] = v13Note('审核记录', '沿用线上弹窗与Tab结构，补充两类评估完整意见。', [['列表项／操作项', [
   ['审核记录Tab', '按内容质量评估、内容评估、物料审核记录、正片审核记录分开展示；从对应审核页面进入默认选中对应Tab，其他入口默认物料审核记录。切换仅查看，不修改审核结果。'],
   ['内容质量评估', '展示各参与渠道及商务最终反馈，保留撤回、修改和重提前的意见；完整显示评估人、结果、时间与文字意见。'],
   ['内容评估', '展示审核组、红果组、运营组的实际意见及历史，不混入质量评估或正片意见。'],
   ['物料／正片审核记录', '保留线上审核卡片结构；正片可展开逐集审核结果和备注，暂无记录时显示空态。历史缺少的人员与时间不推测补齐。']
-]]], '11.18 更新。');
-render();
+]]], '11.19 更新。');
+function ensureAuditEvaluationExample() {
+  const existing = records.find(r => r.demoScenario === 'audit-evaluation-v59');
+  if (existing) return existing;
+  const supplier = v2Config.suppliers.find(s => s.id === 's1') || v2Config.suppliers[0];
+  if (!supplier) return null;
+  const id = Math.max(1500, ...records.map(r => Number(r.id) || 0)) + 1;
+  const domestic = { id: '国内渠道:q-domestic', channel: '国内渠道', userId: 'q-domestic', actor: '国内评估员（演示）', result: '通过', opinion: '题材适合国内渠道，人物关系清晰，建议进入后续评估。', time: '2026-11-18 09:10' };
+  const youtubeRejected = { id: '海外 YouTube:q-youtube', channel: '海外 YouTube', userId: 'q-youtube', actor: 'YouTube评估员（演示）', result: '驳回', opinion: '请补充英文剧情简介，并核对海外发行授权范围。\n片头字幕需提供可用于海外发布的版本。', time: '2026-11-18 09:20' };
+  const youtubePassed = { ...youtubeRejected, result: '通过', opinion: '英文简介、片头字幕及海外授权范围已补充，可按当前资料发行。', time: '2026-11-18 10:10' };
+  const businessRejected = { userId: 'admin', actor: '商务负责人（演示）', result: '驳回', opinion: '请按YouTube渠道意见补齐资料，商务核对后再次确认。', time: '2026-11-18 09:35' };
+  const businessPassed = { ...businessRejected, result: '通过', opinion: '补充资料已核对，确认引入，进入内容评估。', time: '2026-11-18 10:30' };
+  const previousReviews = [
+    { group: 0, actor: '审核组人员（演示）', result: '通过', opinion: '剧情完整，内容表达符合当前审核要求。', time: '2026-11-18 11:00' },
+    { group: 1, actor: '红果评估员（演示）', result: '通过', opinion: '题材与受众匹配，建议保留主线冲突。', time: '2026-11-18 11:15' },
+    { group: 2, actor: '运营评估员（演示）', result: '驳回', opinion: '剧集简介未突出主线冲突，请补充核心看点后重新提审。', time: '2026-11-18 11:25' }
+  ];
+  const priorRemark = { group: 0, actor: '审核组人员（演示）', result: '通过', opinion: '已核对重提资料，内容审核通过。', time: '2026-11-19 09:00', action: '修改前意见' };
+  const reviews = [
+    { ...priorRemark, opinion: '已核对重提资料，新增的剧情看点与正片一致，内容审核通过。', time: '2026-11-19 09:10' },
+    { group: 1, actor: '红果评估员（演示）', result: '通过', opinion: '', time: '2026-11-19 09:15' },
+    { group: 2, actor: '运营评估员（演示）', result: '通过', opinion: '剧情简介已补充核心冲突和受众看点，同意进入正片交付。', time: '2026-11-19 09:25' }
+  ];
+  const qualityHistory = [[businessPassed, '商务修改最终反馈：通过'], [youtubePassed, 'YouTube修改为通过'], [businessRejected, '商务提交最终反馈：驳回'], [youtubeRejected, 'YouTube提交驳回'], [domestic, '国内渠道提交通过']]
+    .map(([snapshot, action]) => ({ time: snapshot.time, action, snapshot: structuredClone(snapshot) }));
+  const r = newRecord(id, { name: '评估记录示例（演示）', demoScenario: 'audit-evaluation-v59', supplierId: supplier.id, supplier: supplier.name, episodes: 3,
+    submitted: '2026-11-19 08:50', intent: ['国内渠道', '海外 YouTube'], type: V2_TYPES[0], round: '首发', intro: '一部以城市重逢为主线的演示剧集，用于查看分渠道质量意见和三组内容评估历史。', youtubeFirst: '是',
+    quality: '通过', qualityTasks: [domestic, youtubePassed], qualityFinal: businessPassed, qualityHistory,
+    groups: ['通过', '通过', '通过'], reviews, contentReviewHistory: [priorRemark], contentResubmitted: true,
+    evaluationHistory: [{ time: '2026-11-19 08:50', intent: ['国内渠道', '海外 YouTube'], exclude: [], reviews: previousReviews, groups: ['通过', '通过', '驳回'] }],
+    filmStatus: '通过', materialStatus: '通过', episodeFiles: v2Episodes().map(e => ({ ...e, result: '通过' })),
+    authorization: [{ name: '演示授权记录（未附文件原件）', demo: true }], stage: STAGES[2], launch: '2026-11-23 10:00', freeTime: '2026-11-23 10:00',
+    release: ['微信视频号', '字节系', '海外 YouTube'], assignment: { 微信视频号: '视频号运营', 字节系: '字节系运营', '海外 YouTube': 'YouTube运营' },
+    businessChannelConfirmed: true, businessConfirmedBy: '商务负责人（演示）', businessConfirmedAt: '2026-11-19 10:00', businessOwner: supplier.business,
+    channelReturns: {}, channelMaterialReturns: {}, customMaterials: {}, logs: [{ time: '2026-11-19 10:45', text: '演示案例：内容评估、正片与物料已通过，授权及排播已确认；评估记录仅用于原型展示。' }] });
+  records.unshift(r); persist(); return r;
+}
+const auditEvaluationExample = ensureAuditEvaluationExample();
+if (new URLSearchParams(location.search).get('auditExample') === '1' && auditEvaluationExample) {
+  ui.channel = '微信视频号'; navigate('operator'); openModal('history', auditEvaluationExample.id, { auditTab: 'quality' });
+} else render();

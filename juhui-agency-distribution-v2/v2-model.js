@@ -1,6 +1,6 @@
 /* V2 is isolated from the V1 directory, storage and public deployment. */
 const V2_CONFIG_KEY = 'juhui-agency-distribution-v2-config';
-const V2_TYPES = [...TYPES, '海外本土-AI仿真人'];
+const V2_TYPES = [...TYPES];
 const V2_CHANNELS = ['微信视频号', '微信小程序', '字节系', '拼多多', '快手', '优酷视频', ...CHANNELS.slice(1)];
 const V2_QUALITY_CHANNELS = [...CHANNELS, '仅微信视频号'];
 const V2_ROLES = ['管理员', '内容质量评估', '商务负责人', '商务人员', '正片审核负责人', '正片审核人员', '渠道负责人', '渠道运营'];
@@ -177,6 +177,32 @@ function v2EnsureScheduleExamples() {
     });
     if (launch) v2SetSupplierLaunchTime(record, launch);
     recordLog(record, launch ? '排播演示：供应商已填写首发时间，转免时间默认相同，待负责人确认。' : '排播演示：供应商未填写首发时间，待排播负责人补填并保存。');
+    added.push(record);
+  }
+  records.unshift(...added);
+}
+function v2EnsureMaterialExamples() {
+  const supplier = v2Config.suppliers.find(s => s.id === 's1');
+  if (!supplier) return;
+  const cases = [
+    ['domestic-anime', '漫剧物料填写（演示）', V2_TYPES[0], ['微信视频号', '字节系'], ['国内渠道'], '无'],
+    ['domestic-live', '真人剧物料填写（演示）', V2_TYPES[1], ['微信视频号', '优酷视频'], ['国内渠道'], '有'],
+    ['overseas-live', '海外剧物料填写（演示）', V2_TYPES[3], ['海外 TikTok 端原生'], ['海外 TikTok 端原生'], '无']
+  ];
+  const added = [];
+  for (const [key, name, type, release, intent, contract] of cases) {
+    const demoScenario = 'material-examples-v55-' + key;
+    if (records.some(r => r.demoScenario === demoScenario)) continue;
+    const record = newRecord(Math.max(1200, ...records.map(r => Number(r.id) || 0), ...added.map(r => r.id)) + 1, {
+      name, demoScenario, supplierId: supplier.id, supplier: supplier.name, episodes: 3,
+      type, round: '首发', intro: '供应商物料填写演示，正片已审核通过，发行渠道已由商务确认。', orientation: '横屏',
+      intent, release, contract, quality: '通过', groups: ['通过', '通过', '通过'],
+      qualityTasks: [], qualityHistory: [], qualityFinal: { result: '通过', opinion: '演示案例：内容评估已完成。', actor: '演示商务', time: now() },
+      filmStatus: '通过', materialStatus: '待提交', episodeFiles: v2Episodes().map(e => ({ ...e, result: '通过' })),
+      channelReturns: {}, channelMaterialReturns: {}, customMaterials: {}, materialExtras: {},
+      businessOwner: supplier.business, businessChannelConfirmed: true, businessConfirmedAt: now(), businessConfirmedBy: '演示商务'
+    });
+    recordLog(record, '物料填写演示：正片审核及商务渠道确认已完成，可填写并保存物料草稿。');
     added.push(record);
   }
   records.unshift(...added);
