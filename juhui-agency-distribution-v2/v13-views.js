@@ -8,18 +8,21 @@ function v13QualityDialog(modal) {
         formField('评估意见', '<textarea name="qualityOpinion' + i + '" rows="3" data-quality-channel-opinion="' + i + '" aria-required="' + rejected + '" aria-describedby="quality-channel-error-' + i + '" placeholder="通过时选填，驳回时必填">' + esc(opinion) + '</textarea><span id="quality-channel-error-' + i + '" class="error" role="alert"></span>', rejected) + '</div>';
     return '<section class="quality-review-channel" data-quality-channel="' + i + '"><div class="quality-review-channel-heading"><h3 class="changed-field">' + esc(task.channel) + '</h3>' + tag(task.result ? '已提交' : '待审核') + '</div>' + controls + '</section>';
   }).join('');
-  return ['渠道质量评估 · ' + r.name, '<div class="quality-channel-review"><div class="quality-review-intro"><strong>分渠道评估 ' + mark(1) + '</strong><span>各渠道独立填写，提交后可继续修改。</span></div>' + sections + '</div>', '提交意见', 2];
+  return ['渠道质量评估 · ' + r.name, '<div class="quality-channel-review"><div class="quality-review-intro"><strong>分渠道评估 ' + mark(1) + '</strong><span>各渠道独立填写，供应商提交正片前可修改。</span></div>' + sections + '</div>', '提交意见', 2];
 }
 function v13QualityView() {
   const actors = v2Config.users.filter(u => u.roles.includes('内容质量评估') || v13QualityIsBusiness(u));
   const actor = actors.find(u => u.id === ui.qualityActor) || actors[0];
   if (actor) ui.qualityActor = actor.id;
   const business = v13QualityIsBusiness(actor);
-  const items = filtered(records.filter(r => !r.qualityBypass && (business ? r.qualityTasks?.length : r.qualityTasks?.some(t => t.userId === actor?.id))), v2QualityStatus);
+  const items = filtered(records.filter(r => !r.qualityBypass && (business ? v13Intent(r).length : r.qualityTasks?.some(t => t.userId === actor?.id))), v2QualityStatus);
   const rows = items.map(r => {
     const tasks = v13OwnQualityTasks(r, actor.id);
-    const actions = business ? r.qualityFinal ? r.qualityFinal.result === '驳回' ? act('修改最终反馈', 'v2-business-final', r.id) + act('撤回驳回', 'v13-business-withdraw', r.id) : '' : v2QualityReady(r) ? act('最终反馈', 'v2-business-final', r.id) : '<button type="button" class="link" disabled title="待国内或本轮参与渠道完成评估后填写">最终反馈</button>' :
-      (tasks.length ? act('审核', 'v2-quality-result', r.id) : '') + tasks.filter(t => v13CanWithdrawQuality(r, t)).map(t => act('撤回' + (tasks.length > 1 ? t.channel : '') + t.result, 'v13-quality-withdraw', r.id + '|' + t.id)).join('');
+    const feedbackLabel = r.qualityFinal?.result === '驳回' ? '修改最终反馈' : '最终反馈';
+    const feedback = r.qualityFinal?.result === '通过' ? '' : v2QualityReady(r) ? act(feedbackLabel, 'v2-business-final', r.id) : '<button type="button" class="link" disabled title="待国内渠道完成审核后填写">' + feedbackLabel + '</button>';
+    const review = tasks.length ? v13QualityReviewLocked(r) ? '<button type="button" class="link" disabled title="供应商已提交正片，渠道审核结果不可修改">审核</button>' : act('审核', 'v2-quality-result', r.id) : '';
+    const actions = business ? feedback + (r.qualityFinal?.result === '驳回' ? act('撤回驳回', 'v13-business-withdraw', r.id) : '') :
+      review + tasks.filter(t => v13CanWithdrawQuality(r, t)).map(t => act('撤回' + (tasks.length > 1 ? t.channel : '') + t.result, 'v13-quality-withdraw', r.id + '|' + t.id)).join('');
     const opinion = r.qualityFinal ? r.qualityFinal.opinion || '未填写' : r.qualityTasks.filter(t => t.result).map(t => t.channel + '：' + (t.opinion || '未填写')).join('；') || '—';
     return line(esc(r.id), esc(r.name), v2SupplierLabel(r), esc(r.type || '—'), esc(r.episodes), link(r), intentChannels(r), esc(r.round || '—'), v2SubmittedIntroCell(r), esc(r.youtubeFirst || '—'),
       ...V13_QUALITY_COLUMNS.map(([, channel]) => v13QualityChannelCell(r, channel)),

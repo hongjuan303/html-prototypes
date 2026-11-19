@@ -71,6 +71,7 @@ Object.assign(clickActions, {
   'v2-quality-result': (_, id) => {
     const r = val(String(id).split('|')[0]), tasks = v13OwnQualityTasks(r);
     if (!tasks.length) return announce('当前没有可处理的渠道评估。');
+    if (v13QualityReviewLocked(r)) return announce('供应商已提交正片，渠道审核结果不可修改');
     const draft = {};
     tasks.forEach((t, i) => { draft['qualityResult' + i] = t.result || ''; draft['qualityOpinion' + i] = t.opinion || ''; });
     openModal('v2-quality-result', r.id, draft, { qualityActorId: ui.qualityActor, qualityTaskIds: tasks.map(t => t.id), qualityTaskRefs: [...tasks] });

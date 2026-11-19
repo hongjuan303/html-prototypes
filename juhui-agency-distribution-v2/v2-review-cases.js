@@ -116,14 +116,13 @@ V2_NOTES.qualityV2 = v2Note('内容评估 · 内容质量评估', '按实际意�
     ['质量评估状态', '取本轮商务审核结果：通过／驳回；未提交为待审核。']
   ]],
   ['操作项', [
-    ['审核', '本人本轮有渠道任务时，按钮常驻高亮；同一弹窗分渠道展示渠道名、评估结果与评估意见。已提交的通过／驳回均可修改，商务已反馈后也可修改；通过意见选填、驳回必填，保存各渠道历史，不覆盖商务最终结果。'],
-    ['最终反馈', '仅在本Tab提供商务质量审核入口；首次填写沿用国内优先、纯海外全部完成的条件。最终反馈通过后不可修改；驳回后可通过修改最终反馈改为通过。通过进入内容评估，驳回终止后续流转；渠道审核入口始终保留。'],
-    ['撤回', '商务负责人未填写最终反馈时，渠道通过／驳回均可撤回；商务填写后，通过不可撤回，驳回可撤回。'],
+    ['审核', '本人本轮有渠道任务时，同一弹窗分渠道展示渠道名、评估结果与评估意见。供应商未提交正片之前，审核按钮标亮可修改；供应商成功提交正片之后，渠道审核结果不可变更，审核按钮置灰不可点击。'],
+    ['最终反馈', '若意向渠道有国内渠道，需国内渠道审核后才能操作最终反馈；若没有国内渠道，则可直接操作。最终反馈通过后不可撤回、不可修改，进入内容评估；驳回时按钮标亮可修改，改为通过后进入内容评估。'],
     ['审核记录', '查看各渠道及商务的审核结果和审核备注；通过未填写备注显示“未填写”。']
   ]]
 ]);
-V2_NOTES['v2-quality-result'] = v2Note('内容评估 · 内容质量评估 · 渠道质量评估', '同一弹窗按渠道独立填写本人的评估结果和意见。', [['配置项', [['渠道名称', '仅展示本轮分配给本人且仍有权限的渠道，每个渠道独立分组；多人共审时不修改其他人员的任务。'], ['评估结果', '逐渠道选择通过／驳回，已提交结果回填且可继续修改，不因商务已反馈而锁定。'], ['评估意见', '逐渠道独立填写；通过选填，驳回必填，切换结果保留已输入内容。']]], ['操作项', [['提交意见', '可分次提交；只保存本次新增或修改的渠道意见，未填写渠道保持待审核。任一修改项校验失败时本次均不保存；成功后逐渠道更新人员、时间及历史，不覆盖商务结论。'], ['取消', '放弃本次输入，已保存的各渠道结果不变。']]]]);
-V2_NOTES['v2-business-final'] = v2Note('商务最终反馈', '在内容质量评估Tab统一处理商务质量审核。', [['配置项', [['最终结果', '通过／驳回；首次填写沿用国内优先、纯海外全部完成条件。已通过不可修改；已驳回可重新编辑并改为通过。'], ['反馈意见', '通过选填，驳回必填；编辑时回填已保存意见，下方查看本轮实际参与渠道意见。']]], ['操作项', [['提交最终反馈', '再次核对商务权限和当前结果。通过后锁定并进入内容评估；驳回终止后续流转，可再次修改。保留每次结果及意见的历史，状态同步商务列表和供应商；渠道评估仍可修改，但不覆盖商务结论。'], ['取消', '不保存本次反馈。']]]]);
+V2_NOTES['v2-quality-result'] = v2Note('内容评估 · 内容质量评估 · 渠道质量评估', '同一弹窗按渠道独立填写本人的评估结果和意见。', [['配置项', [['渠道名称', '仅展示本轮分配给本人且仍有权限的渠道，每个渠道独立分组；多人共审时不修改其他人员的任务。'], ['评估结果', '逐渠道选择通过／驳回并回填已有结果；供应商未提交正片前可修改，成功提交正片后锁定。'], ['评估意见', '逐渠道独立填写；通过选填，驳回必填，切换结果保留已输入内容。']]], ['操作项', [['提交意见', '可分次提交；只保存本次新增或修改的渠道意见，未填写渠道保持待审核。提交时再次检查正片是否已提交，已提交则不保存；任一修改项校验失败时本次均不保存。成功后逐渠道更新人员、时间及历史，不覆盖商务结论。'], ['取消', '放弃本次输入，已保存的各渠道结果不变。']]]]);
+V2_NOTES['v2-business-final'] = v2Note('商务最终反馈', '在内容质量评估Tab统一处理商务质量审核。', [['配置项', [['最终结果', '通过／驳回；意向包含国内渠道时，需国内渠道完成审核；不含国内渠道时可直接填写。已通过不可修改、不可撤回；已驳回可重新编辑并改为通过。'], ['反馈意见', '通过选填，驳回必填；编辑时回填已保存意见，下方查看本轮实际参与渠道意见。']]], ['操作项', [['提交最终反馈', '再次核对商务权限、国内渠道前置条件和当前结果。通过后锁定并进入内容评估；驳回终止后续流转，可再次修改。保留每次结果及意见的历史，状态同步商务列表和供应商。'], ['取消', '不保存本次反馈。']]]]);
 V2_NOTES.business = v2Note('商务负责人', '保留线上商务跟进列表，补充评估状态和授权书状态。', [['筛选项', [['授权书状态', '下拉单选，枚举未上传、已上传，默认全部；按列表授权书状态筛选。'], ['内容质量评估', '下拉单选，枚举待审核、通过、驳回，默认全部；按商务审核结果筛选，可与其他条件组合，筛选后分页。']]], ['列表项', [['内容质量评估', '只读显示商务质量最终结果；审核与允许的驳回撤回统一在内容质量评估Tab。'], ...GROUPS.map(name => [name, '显示本轮该组内容评估状态。']), ['授权书状态', '至少一份已保存授权书为已上传，没有为未上传；未上传以红色标签突出，上传不代表审核通过。未取得真实资料时显示未读取。']]], ['操作项', [['授权书上传', '回显供应商提交的发行渠道，商务可修改；至少选择一个渠道并上传授权书后保存，以商务保存的渠道为准，渠道与附件同时生效，与正片审核并行。'], ['查看详情、审核记录', '进入合集详情或只读查看评估意见及历史。'], ['修改对接商务', '仅商务负责人可操作；不会因供应商多商务通知而新增多人审批。']]]]);
 V2_NOTES.suppliersV2.sections[1][1].push(['负责商务', '展示供应商关联的全部商务人员，一个供应商可能存在多个商务。']);
 V2_NOTES['v2-supplier'].sections[0][1] = V2_NOTES['v2-supplier'].sections[0][1].map(([name, desc]) => [name, name === '负责商务' ? '多选已有商务人员或商务负责人，至少选一人；支持搜索、移除及完整回显，保留原单人关联。' : desc]);
@@ -138,7 +137,7 @@ for (const key of ['qualityV2', 'eval', 'business', 'suppliersV2', 'v2-supplier'
 V2_NOTES.business.caution = '11.19 更新。';
 V2_NOTES.qualityV2.caution = '11.19 更新。';
 V2_NOTES.eval.caution = '11.19 更新。';
-V2_NOTES['v2-quality-result'].caution = '11.19 更新：分渠道填写，渠道评估可持续修改。';
+V2_NOTES['v2-quality-result'].caution = '11.19 更新：供应商成功提交正片后，渠道审核结果锁定。';
 V2_NOTES['v2-business-final'].caution = '11.19 更新：商务通过后锁定，驳回可修改为通过。';
 function v58EnsureQualityExample() {
   if (records.some(r => r.demoScenario === 'quality-multi-channel-v58')) return;
@@ -152,6 +151,24 @@ function v58EnsureQualityExample() {
   r.qualityTasks = v2MakeTasks(r); records.unshift(r); persist();
 }
 v58EnsureQualityExample();
+function v63EnsureQualityLockExample() {
+  if (records.some(r => r.demoScenario === 'quality-locked-v63')) return;
+  const actor = v2Config.users.find(u => u.id === 'q-tiktok' && v13QualityChannels(u).length > 1);
+  const supplier = v2Config.suppliers.find(s => s.id === 's1');
+  if (!actor || !supplier) return;
+  const r = newRecord(Math.max(1700, ...records.map(r => Number(r.id) || 0)) + 1, {
+    name: '正片提交后评估锁定（演示）', demoScenario: 'quality-locked-v63', supplierId: supplier.id, supplier: supplier.name,
+    episodes: 3, intent: v13QualityChannels(actor), release: ['海外 TikTok 端原生', '海外 TT 小程序'],
+    type: V2_TYPES[3], round: '首发', intro: '供应商已成功提交正片，渠道审核结果锁定。', quality: '通过',
+    qualityFinal: { result: '通过', opinion: '同意引入。', actor: '商务负责人（演示）', time: now() }, qualityHistory: [],
+    groups: ['通过', '通过', '通过'], episodeFiles: v2Episodes(), deliverySubmittedAt: now(), filmStatus: '审核中',
+    materialStatus: '待提交', businessChannelConfirmed: false, channelReturns: {}, channelMaterialReturns: {}, customMaterials: {}
+  });
+  r.qualityTasks = v2MakeTasks(r);
+  if (r.qualityTasks[0]) Object.assign(r.qualityTasks[0], { result: '通过', opinion: '内容适合本渠道。', actor: actor.name, time: now() });
+  records.unshift(r); persist();
+}
+v63EnsureQualityLockExample();
 const v24CaseParam = new URLSearchParams(location.search).get('filmCase');
 if (V24_FILM_CASES.some(([kind]) => kind === v24CaseParam)) v24OpenFilmCase(v24CaseParam);
 else render();

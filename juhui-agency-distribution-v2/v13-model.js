@@ -44,9 +44,10 @@ const v13BusinessConfirmed = r => Object.hasOwn(r, 'businessChannelConfirmed') ?
 const v13MaterialAllowed = r => r.filmStatus === '通过' && v13BusinessConfirmed(r);
 const v13MaterialWait = r => r.filmStatus !== '通过' ? '待正片审核通过后上传物料' : '待商务确认发行渠道后上传物料';
 const v13DeliveryExists = r => Boolean(r.deliverySubmittedAt || r.episodeFiles?.length);
+const v13QualityReviewLocked = r => Boolean(r && (v13DeliveryExists(r) || r.filmRound?.submitted || ['待分配', '审核中', '通过', '驳回', '拒绝'].includes(r.filmStatus)));
 const v13ActorName = (r, index) => r.reviews?.find(x => x.group === index)?.actor || (r.groups[index] ? '未记录' : '');
 const v13QualityResult = t => tag(t.result || '待评估') + (t.result ? ' <span class="reviewer-name">' + esc(t.actor || v2User(t.userId)?.name || '未记录') + '</span>' : '');
-const v13CanWithdrawQuality = (r, task) => ['通过', '驳回'].includes(task?.result) && (!r.qualityFinal || task.result === '驳回');
+const v13CanWithdrawQuality = (r, task) => !v13QualityReviewLocked(r) && ['通过', '驳回'].includes(task?.result) && (!r.qualityFinal || task.result === '驳回');
 function v13QualityChannelCell(r, channel) {
   const tasks = (r.qualityTasks || []).filter(t => t.channel === channel);
   if (!tasks.length) return v13Intent(r).includes(channel) ? tag('未分配') : '<span class="muted">—</span>';
@@ -70,10 +71,11 @@ const v13OldBSkipped = bSkipped;
 bSkipped = r => v13OnlyWechat(r) || v13OldBSkipped(r);
 v2MakeTasks = r => v13Intent(r).flatMap(channel => v2Config.users.filter(u => u.roles.includes('内容质量评估') && u.channels.includes(channel)).map(u => ({ id: channel + ':' + u.id, channel, userId: u.id, result: '', opinion: '', time: '' })));
 v2QualityReady = r => {
-  const tasks = r.qualityTasks || [];
-  if (r.qualityBypass || !tasks.length || v13Intent(r).some(c => !tasks.some(t => t.channel === c))) return false;
-  const domestic = tasks.filter(t => ['国内渠道', V13_WECHAT].includes(t.channel));
-  return tasks.every(t => t.result) || domestic.length > 0 && domestic.every(t => t.result);
+  const intent = v13Intent(r);
+  if (r.qualityBypass || !intent.length) return false;
+  if (!intent.includes('国内渠道')) return true;
+  const domestic = (r.qualityTasks || []).filter(t => t.channel === '国内渠道');
+  return domestic.length > 0 && domestic.every(t => ['通过', '驳回'].includes(t.result));
 };
 const v13OldQualityStatus = v2QualityStatus;
 v2QualityStatus = r => r.qualityBypass ? '白名单免评' : ['评估中', '待商务反馈'].includes(v13OldQualityStatus(r)) ? '待审核' : v13OldQualityStatus(r);

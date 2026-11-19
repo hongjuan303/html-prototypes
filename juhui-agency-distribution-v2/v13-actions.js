@@ -68,6 +68,7 @@ clickActions['v13-quality-withdraw'] = (_, id) => {
   const [rid, taskId] = id.split('|'), r = val(rid), task = r?.qualityTasks.find(t => t.id === taskId);
   const actor = v2User(ui.qualityActor);
   if (!task || task.userId !== actor?.id || !actor?.roles.includes('内容质量评估') || !v13QualityChannels(actor).includes(task.channel) || !task.result) return announce('当前人员没有可撤回的评估意见');
+  if (v13QualityReviewLocked(r)) return announce('供应商已提交正片，渠道审核结果不可修改');
   if (!v13CanWithdrawQuality(r, task)) return announce('商务已填写最终反馈，通过的渠道评估不可撤回');
   r.qualityHistory.unshift({ time: now(), action: '撤回' + task.channel + task.result, snapshot: structuredClone(task) });
   Object.assign(task, { result: '', opinion: '', actor: '', time: '' });
@@ -78,7 +79,7 @@ clickActions['v2-business-final'] = r => {
   const actor = v13FeedbackActor();
   if (!actor) return announce('仅商务人员可填写最终反馈');
   if (r.qualityFinal?.result === '通过') return announce('商务最终反馈已通过，不可修改');
-  if (!r.qualityFinal && !v2QualityReady(r)) return announce('当前不满足填写最终反馈的条件');
+  if (!v2QualityReady(r)) return announce('待国内渠道完成审核后填写最终反馈');
   openModal('v2-business-final', r.id, { result: r.qualityFinal?.result || '通过', opinion: r.qualityFinal?.opinion || '' }, { businessActorId: actor.id, businessFinalRef: r.qualityFinal });
 };
 clickActions['v13-business-withdraw'] = r => {
@@ -171,6 +172,7 @@ submitDialog = form => {
     v2SaveConfig(); return v13Finished(modal.isNew ? '供应商已创建' : '供应商资料已保存');
   }
   if (modal.type === 'v2-quality-result') {
+    if (v13QualityReviewLocked(r)) return error('供应商已提交正片，渠道审核结果不可修改。');
     if (modal.qualityActorId !== ui.qualityActor) return error('处理人员已变化，请重新打开审核弹窗。');
     const ownTasks = v13OwnQualityTasks(r), pending = modal.qualityTaskIds.map((id, i) => ({ id, i, result: text('qualityResult' + i), opinion: text('qualityOpinion' + i) })).filter(item => {
       const task = r.qualityTasks.find(t => t.id === item.id);
@@ -205,7 +207,7 @@ submitDialog = form => {
     if (!actor || actor.id !== modal.businessActorId) return error('当前人员无填写权限，请重新打开反馈。');
     if (r.qualityFinal?.result === '通过') return error('商务最终反馈已通过，不可修改。');
     if (r.qualityFinal !== modal.businessFinalRef) return error('最终反馈已变化，请重新打开弹窗。');
-    if (!r.qualityFinal && !v2QualityReady(r)) return error('当前不满足提交最终反馈条件。');
+    if (!v2QualityReady(r)) return error('待国内渠道完成审核后填写最终反馈。');
     if (!['通过', '驳回'].includes(text('result'))) return error('请选择最终结果。');
     if (text('result') === '驳回' && !text('opinion')) return error('驳回时请填写反馈意见。');
     const previous = r.qualityFinal;
