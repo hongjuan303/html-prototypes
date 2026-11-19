@@ -14,7 +14,7 @@ function v2Overview() {
     ['内容评估', '仅改集数复用意见、未出最终结果可改意见、重提标签（待补原型）', 'eval'],
     ['正片与商务并行', '正片选择发行渠道、展示五类意见、商务确认渠道（待补原型）', 'supplierContent'],
     ['物料填写', '支付宝删除、优酷文件、原文件名、梗概及成片字段关联', 'supplierContent'],
-    ['正片审核', '常驻备注、最终确认、720尺寸、2.5倍速及审核时长', 'filmAuditV2'],
+    ['正片审核', '常驻备注、最终确认、720尺寸、2.5倍速及审核时长', 'filmTasksV2'],
     ['商务面板与授权书', '双角色共存、授权书删除和放宽大小、各评估组状态', 'business'],
     ['排播', '双审与授权书齐备；已有上线时间确认，未填时补充', 'schedule'],
     ['渠道运营', '内容ID修改、分集驳回、复制、新窗口下载及全渠道名称', 'operator'],
@@ -62,7 +62,7 @@ function v2Schedule() {
   const items = filtered(records.filter(v2ReadyForSchedule), v2ScheduleStatus);
   const rows = items.map(r => {
     const pending = v2AwaitingSchedule(r), supplied = v2LaunchTime(r);
-    const when = timestamp(supplied) + '<span class="subline">' + tag(v2ScheduleStatus(r)) + '</span>';
+    const when = (supplied ? timestamp(supplied) : '<span class="muted">待填写</span>') + '<span class="subline">' + tag(v2ScheduleStatus(r)) + '</span>';
     return line(esc(r.id), esc(r.name), v2SupplierLabel(r), when, timestamp(v2FreeTime(r)), buttons(
       act('审核记录', 'history', r.id), pending && supplied ? act('确认', 'v2-schedule-confirm', r.id) : act('设置上线时间', 'scheduling', r.id)));
   });

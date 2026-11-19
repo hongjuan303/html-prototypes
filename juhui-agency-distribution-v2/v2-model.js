@@ -153,6 +153,34 @@ function v2EnsureScheduleConfirmationCase() {
   recordLog(record, '本地演示：正片、物料审核通过且已有授权记录，待排播上线负责人确认');
   records.unshift(record);
 }
+function v2EnsureScheduleExamples() {
+  const cases = [
+    ['supplier-filled-morning', '长街灯火（排播演示）', '2026-11-23 10:00'],
+    ['supplier-filled-evening', '春山有约（排播演示）', '2026-11-24 19:30'],
+    ['scheduler-fill-one', '山海归途（排播演示）', ''],
+    ['scheduler-fill-two', '晚风来信（排播演示）', '']
+  ];
+  const added = [];
+  for (const [key, name, launch] of cases) {
+    const demoScenario = 'schedule-examples-v52-' + key;
+    if (records.some(r => r.demoScenario === demoScenario)) continue;
+    const record = newRecord(Math.max(1000, ...records.map(r => Number(r.id) || 0), ...added.map(r => r.id)) + 1, {
+      name, demoScenario, supplierId: 's1', supplier: '星帆文化（演示）', episodes: 3,
+      type: V2_TYPES[0], round: '首发', intro: '本地排播操作示例，不代表线上业务数据。', orientation: '横屏',
+      intent: ['国内渠道'], release: ['微信视频号', '字节系'], quality: '通过', groups: ['通过', '通过', '通过'],
+      qualityTasks: [], qualityHistory: [], qualityFinal: { result: '通过', opinion: '演示案例：内容评估已完成。', time: now() },
+      filmStatus: '通过', materialStatus: '通过', stage: STAGES[1],
+      authorization: [{ name: '演示授权记录（未附文件原件）', demo: true }],
+      episodeFiles: v2Episodes().map(e => ({ ...e, result: '通过' })),
+      channelReturns: {}, channelMaterialReturns: {}, customMaterials: {}, assignment: {},
+      businessChannelConfirmed: true, businessConfirmedAt: now(), businessConfirmedBy: '演示商务'
+    });
+    if (launch) v2SetSupplierLaunchTime(record, launch);
+    recordLog(record, launch ? '排播演示：供应商已填写首发时间，转免时间默认相同，待负责人确认。' : '排播演示：供应商未填写首发时间，待排播负责人补填并保存。');
+    added.push(record);
+  }
+  records.unshift(...added);
+}
 function v2Seed() {
   const base = (id, name, fields = {}) => newRecord(id, { name, supplierId: 's1', supplier: '星帆文化（演示）', episodes: 3,
     intent: ['国内渠道', '海外 YouTube'], exclude: [], type: V2_TYPES[0], round: '首发', intro: '一段关于归途与重逢的故事。', youtubeFirst: '是',
