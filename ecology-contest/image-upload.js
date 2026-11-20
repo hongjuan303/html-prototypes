@@ -1,4 +1,4 @@
-import {storeFiles,getFile} from './model.js?v=20261102-v1';
+import {storeFiles,getFile} from './model.js?v=20261120-v1';
 
 const placeholder='./assets/cover-placeholder.svg';
 const cache=new Map();

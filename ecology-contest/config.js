@@ -1,4 +1,5 @@
 // Demo 配置与展示规则；真实赛事资料、商务二维码由业务提供。
+import {validateEventFields} from './admin-form-rules.js?v=20261120-v1';
 import {upgradeWorkflow} from './workflow.js?v=20261102-v1';
 export const STUDIO_URL = 'https://aidrama.hzrlhy.com/tools/create';
 export const stageNames = ['作品提交', '主办单位审核', '结果公示'];
@@ -68,6 +69,7 @@ export function upgrade(s) {
   s.version=2;return currentRules(s);
 }
 export function validateEvent(e) {
+  validateEventFields(e);
   if(!e.title?.trim()||!e.host?.trim()||!e.intro?.trim())throw Error('请填写赛事名称、主办单位和赛事介绍');
   if(!e.tracks.length)throw Error('至少开放一个赛道');
   for(const [i,t] of e.tracks.entries()){

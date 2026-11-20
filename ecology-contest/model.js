@@ -1,4 +1,4 @@
-import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261102-v1';
+import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261120-v1';
 import {pending,REVIEWER,orderedFiles,validateEpisodes} from './workflow.js?v=20261102-v1';
 export {publicEvents, publicStatus, validateEvent};
 export const KEY = 'wanxiang-contest-demo-20261014-v1';
@@ -93,7 +93,7 @@ export function reviewWork(s,id,result,note) {
   if(!['通过','拒绝'].includes(result))throw Error('请选择有效审核结果');
   note=String(note??'').trim();
   if(result==='拒绝'&&!note) throw Error('拒绝时请填写评语，说明未通过原因');
-  if(note.length>500) throw Error('评语最多填写 500 字');
+  if(Array.from(note).length>500) throw Error('评语最多填写 500 字');
   const at=time();
   w.status=result==='拒绝'?'未通过':'已通过';
   w.reviewerId=REVIEWER.id;w.reviewerName=REVIEWER.name;w.reviewedAt=at;

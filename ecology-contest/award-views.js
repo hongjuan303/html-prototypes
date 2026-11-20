@@ -1,6 +1,6 @@
-import {eventBy,workBy,uid,publishResults} from './model.js?v=20261103-v3';
-import {rewardFields,bindRewardFields,readRewardFields} from './award-rewards.js?v=20261103-v3';
-import {trackTypeLabel} from './config.js?v=20261102-v1';
+import {eventBy,workBy,uid,publishResults} from './model.js?v=20261120-v1';
+import {rewardFields,bindRewardFields,readRewardFields} from './award-rewards.js?v=20261120-v1';
+import {trackTypeLabel} from './config.js?v=20261120-v1';
 import {canManageAward,canFulfillAward} from './workflow.js?v=20261102-v1';
 
 export function createAwardViews(ctx){

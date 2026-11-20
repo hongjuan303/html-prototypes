@@ -1,0 +1,4 @@
+.admin .field small.field-rule{display:block;font-size:12px;line-height:1.5;color:#64748b;font-weight:400;margin-top:4px;overflow-wrap:anywhere}
+.admin .field small.field-validation-error{display:block;font-size:12px;line-height:1.5;color:#c62828;font-weight:400}
+.admin .field small.field-validation-error:empty{display:none}
+.field [aria-invalid="true"]{border-color:#d93025;box-shadow:0 0 0 1px #d9302515}
