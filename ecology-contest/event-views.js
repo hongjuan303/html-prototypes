@@ -1,7 +1,7 @@
-import {TRACKS,TODAY,uid,eventBy,validateEvent} from './model.js?v=20261120-v1';
-import {STUDIO_URL,stageNames,trackDefaults,examplePrizes,trackLabel,trackTypeLabel,deadline,firstDay} from './config.js?v=20261120-v1';
+import {TRACKS,TODAY,uid,eventBy,validateEvent} from './model.js?v=20261124-v2';
+import {STUDIO_URL,stageNames,trackDefaults,examplePrizes,trackLabel,trackTypeLabel,deadline,firstDay} from './config.js?v=20261124-v2';
 
-import {qrImage,imageUploadControl,bindImageUploads} from './image-upload.js?v=20261120-v1';
+import {qrImage,imageUploadControl,bindImageUploads} from './image-upload.js?v=20261124-v2';
 
 export function createEventViews(c){
   const {esc,money,button,field,input,textarea,options,modal,bindForm,closeModal,persist,render,toast}=c;

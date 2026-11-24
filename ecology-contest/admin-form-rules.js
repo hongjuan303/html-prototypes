@@ -12,7 +12,7 @@ export const trackRules={title:text('赛道名称',30,true),brief:text('创作�
 export const prizeRules={rank:text('奖项名称',30,true),count:integer('名额',1,10000,true),cash:money('现金（元 / 件）'),credits:integer('积分（分 / 件）',0,10000000),goods:text('实物（每件获奖作品所得）',200)};
 export const resourceRules={title:text('资料名称',100,true),url:{label:'资料链接',kind:'url',max:2000,required:true},usage:text('允许使用范围',500,true)};
 export const formRules={
-  'award-form':{rank:text('奖项 / 名次',30,true),cash:money('现金奖励（元）',0.01,true),credits:integer('积分奖励',1,10000000,true),goods:text('实物奖励',200,true),proof:text('线下确认记录',1000,false,true)},
+  'award-form':{proof:text('线下确认记录',1000,false,true)},
   'manual-credit-form':{amount:integer('积分数量',1,10000000,true),note:text('操作原因',500,true,true)},
   'cancel-event-form':{reason:text('取消原因',500,true,true)},
   'offline-form':{proof:text('发放记录',1000,true,true)},
@@ -120,6 +120,6 @@ export function withFieldRules(doc){
   const byLabel=Object.fromEntries(Object.values(rules).map(r=>[r.label,r]));
   if(!Object.keys(rules).length)return doc;
   const sections=doc.sections.map(s=>({...s,items:s.items.map(item=>{const i=item.indexOf('：'),r=byLabel[item.slice(0,i)];return r?item+' '+ruleHint(r)+'。':item;})}));
-  sections.at(-1)?.items.push(commonTextRule,'校验失败：定位首个错误字段并提示，保留已填写内容；修正后可再次提交。'+(['新建赛事','配置赛事'].includes(doc.title)?'未开放赛道的隐藏字段不参与校验。':['录入获奖作品','编辑获奖作品'].includes(doc.title)?'未勾选奖励的隐藏字段不参与校验。':''));
+  sections.at(-1)?.items.push(commonTextRule,'校验失败：定位首个错误字段并提示，保留已填写内容；修正后可再次提交。'+(['新建赛事','配置赛事'].includes(doc.title)?'未开放赛道的隐藏字段不参与校验。':''));
   return {...doc,sections};
 }

@@ -1,5 +1,5 @@
 // Demo 配置与展示规则；真实赛事资料、商务二维码由业务提供。
-import {validateEventFields} from './admin-form-rules.js?v=20261120-v1';
+import {validateEventFields} from './admin-form-rules.js?v=20261124-v2';
 import {upgradeWorkflow} from './workflow.js?v=20261102-v1';
 export const STUDIO_URL = 'https://aidrama.hzrlhy.com/tools/create';
 export const stageNames = ['作品提交', '主办单位审核', '结果公示'];

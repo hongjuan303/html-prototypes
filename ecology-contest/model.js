@@ -1,4 +1,4 @@
-import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261120-v1';
+import {upgrade, trackTypeLabel, projectOwner, publicEvents, publicStatus, validateEvent, isPlatformProject, platformOutputs} from './config.js?v=20261124-v2';
 import {pending,REVIEWER,orderedFiles,validateEpisodes} from './workflow.js?v=20261102-v1';
 export {publicEvents, publicStatus, validateEvent};
 export const KEY = 'wanxiang-contest-demo-20261014-v1';

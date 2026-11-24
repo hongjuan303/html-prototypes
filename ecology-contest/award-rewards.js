@@ -1,4 +1,4 @@
-import {CASH_REWARD_MAX} from './admin-form-rules.js?v=20261120-v1';
+import {CASH_REWARD_MAX} from './admin-form-rules.js?v=20261124-v2';
 const kinds = [
   {key:'cash', choice:'rewardCash', label:'现金', field:'现金奖励（元）'},
   {key:'credits', choice:'rewardCredits', label:'积分', field:'积分奖励'},

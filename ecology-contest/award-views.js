@@ -1,6 +1,6 @@
-import {eventBy,workBy,uid,publishResults} from './model.js?v=20261120-v1';
-import {rewardFields,bindRewardFields,readRewardFields} from './award-rewards.js?v=20261120-v1';
-import {trackTypeLabel} from './config.js?v=20261120-v1';
+import {eventBy,workBy,uid,publishResults} from './model.js?v=20261124-v2';
+import {prizesForWork,initialPrizeValue,selectedPrize,rewardSummary} from './award-prizes.js?v=20261124-v2';
+import {trackTypeLabel} from './config.js?v=20261124-v2';
 import {canManageAward,canFulfillAward} from './workflow.js?v=20261102-v1';
 
 export function createAwardViews(ctx){
@@ -23,13 +23,37 @@ export function createAwardViews(ctx){
     const s=getState(),a=id?s.awards.find(a=>a.id===id):{rank:'',cash:0,credits:0,goods:'',proof:''};
     const e=eventBy(s,eventId);
     if(!a||!e||(id&&a.event!==eventId)||!canManageAward(s,{event:eventId})){toast('当前赛事不能录入或修改获奖作品');return;}
-    modal(id?'编辑获奖作品':'录入获奖作品',`<form id="award-form">${field('所属赛事',`<input value="${esc(e.title)}" readonly>`)}${field('获奖作品 *','<select name="work" required></select>')}<p id="award-candidates-help" class="muted"></p>${field('奖项 / 名次 *',input('rank',a.rank,'如：一等奖、最佳剧本奖',true))}${rewardFields(a,esc)}${field('线下确认记录',textarea('proof',a.proof,'记录确认单位、时间、对接人及依据'))}<div class="form-error" role="alert"></div><div class="form-actions">${button('取消','close')}<button class="btn primary">保存</button></div></form>`);
+    modal(id?'编辑获奖作品':'录入获奖作品',`<form id="award-form">${field('所属赛事',`<input value="${esc(e.title)}" readonly>`)}${field('获奖作品 *','<select name="work" required></select>')}<p id="award-candidates-help" class="muted"></p>${field('奖项 / 名次 *','<select name="prize" required disabled><option value="">请先选择获奖作品</option></select>')}<p id="award-prize-help" class="muted"></p><div id="award-reward-summary" aria-live="polite"></div>${field('线下确认记录',textarea('proof',a.proof,'记录确认单位、时间、对接人及依据'))}<div class="form-error" role="alert"></div><div class="form-actions">${button('取消','close')}<button class="btn primary">保存</button></div></form>`);
     const form=document.querySelector('#award-form');
-    bindRewardFields(form);
     const candidates=()=>getState().works.filter(w=>w.event===eventId&&w.status==='已通过'&&!getState().awards.some(x=>x.work===w.id&&x.id!==id));
     const c=candidates();form.elements.work.innerHTML='<option value="">请选择审核通过的作品</option>'+c.map(w=>`<option value="${w.id}" ${a.work===w.id?'selected':''}>${esc(w.title)} · ${esc(trackTypeLabel(w.track))} · ${esc(w.identity.entity)}</option>`).join('');
     document.querySelector('#award-candidates-help').textContent=c.length?'仅显示本场审核通过且尚未录入的作品。':'本场暂无可录入作品，请先完成参赛作品审核。';
-    bindForm('award-form',d=>{const s=getState();if(!canManageAward(s,{event:eventId}))throw Error('该赛事当前不能录入获奖作品');if(!candidates().some(w=>w.id===d.work))throw Error('请选择本场有效的获奖作品');if(!d.rank.trim())throw Error('请填写奖项 / 名次');const rewards=readRewardFields(d);const {rewardCash,rewardCredits,rewardGoods,...details}=d;const record={...a,...details,...rewards,event:eventId,id:id||uid('award')};if(id)s.awards[s.awards.findIndex(x=>x.id===id)]=record;else s.awards.push(record);persist();closeModal();render();toast('获奖作品已保存，尚未对外发布');});
+    let choices=[],displayedKey='';
+    const syncReward=()=>{
+      const choice=choices.find(x=>x.value===form.elements.prize.value);
+      displayedKey=choice?.key||'';
+      form.querySelector('#award-reward-summary').innerHTML=rewardSummary(choice?.prize,esc);
+      form.querySelector('.form-error').textContent='';
+    };
+    const syncPrizes=(initial=false)=>{
+      const work=workBy(getState(),form.elements.work.value);
+      choices=prizesForWork(eventBy(getState(),eventId),work);
+      const placeholder=!work?'请先选择获奖作品':choices.length?'请选择奖项 / 名次':'该赛道暂无奖项';
+      form.elements.prize.innerHTML='<option value="">'+placeholder+'</option>'+choices.map(x=>'<option value="'+x.value+'">'+esc(x.prize.rank)+'</option>').join('');
+      form.elements.prize.disabled=!choices.length;
+      form.elements.prize.value=initial?initialPrizeValue(choices,a):'';
+      form.querySelector('#award-prize-help').textContent=!work?'':!choices.length?'该赛道尚未配置奖项，请先在赛事配置中补充。':initial&&a.work&&!form.elements.prize.value?'原奖项已变更，请重新选择该赛道的奖项。':'奖项来自该作品所属赛道的赛事配置。';
+      syncReward();
+    };
+    form.elements.work.addEventListener('change',()=>syncPrizes());
+    form.elements.prize.addEventListener('change',()=>{
+      const value=form.elements.prize.value;
+      const latest=prizesForWork(eventBy(getState(),eventId),workBy(getState(),form.elements.work.value));
+      if(latest.find(x=>x.value===value)?.key!==choices.find(x=>x.value===value)?.key){syncPrizes();return;}
+      choices=latest;syncReward();
+    });
+    syncPrizes(true);
+    bindForm('award-form',d=>{const s=getState();if(!canManageAward(s,{event:eventId}))throw Error('该赛事当前不能录入获奖作品');if(!candidates().some(w=>w.id===d.work))throw Error('请选择本场有效的获奖作品');const rewards=selectedPrize(eventBy(s,eventId),workBy(s,d.work),d.prize,displayedKey);const record={...a,work:d.work,proof:d.proof,...rewards,event:eventId,id:id||uid('award')};if(id)s.awards[s.awards.findIndex(x=>x.id===id)]=record;else s.awards.push(record);persist();closeModal();render();toast('获奖作品已保存，尚未对外发布');});
   }
   function publish(eventId){
     const s=getState(),e=eventBy(s,eventId);
