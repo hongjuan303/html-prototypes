@@ -1,8 +1,8 @@
-# 智能混剪 V9 优化版
+# 智能混剪优化
 
-本轮优化需求的独立原型，版本：V9（2026-11-27）。原 V7 保留，刚发布的 V8 已按用户要求撤回；新版本使用独立目录、URL 和 localStorage。
+本轮优化需求的独立原型，名称：智能混剪优化（2026-11-27）。原 V7 保留，使用独立目录和 URL；沿用本轮优化原型的数据，避免更名后丢失已有记录。
 
-在线评审：https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-v9/review.html
+在线评审：https://hongjuan303.github.io/html-prototypes/ai-smart-mixed-cut-optimization/review.html
 
 入口：review.html（index.html 跳转同一原型）。左侧1220px产品，右侧520px/440px说明，整体横向滚动。规范：工作区 `99-模板/产品原型说明标准.md`。
 
